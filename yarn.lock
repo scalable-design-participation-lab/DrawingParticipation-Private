@@ -3041,7 +3041,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/eslint@npm:^9.6.0":
+"@types/eslint@npm:^9, @types/eslint@npm:^9.6.0":
   version: 9.6.0
   resolution: "@types/eslint@npm:9.6.0"
   dependencies:
@@ -6786,7 +6786,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"eslint@npm:^9.8.0":
+"eslint@npm:^9.8.0, eslint@npm:^9.9.0":
   version: 9.9.0
   resolution: "eslint@npm:9.9.0"
   dependencies:
@@ -9505,10 +9505,12 @@ __metadata:
     "@nuxt/eslint": "npm:^0.5.0"
     "@nuxt/fonts": "npm:^0.7.1"
     "@nuxt/ui-pro": "npm:^1.4.1"
+    "@types/eslint": "npm:^9"
     "@unovis/ts": "npm:^1.4.3"
     "@unovis/vue": "npm:^1.4.3"
     "@vueuse/nuxt": "npm:^10.11.0"
     date-fns: "npm:^3.6.0"
+    eslint: "npm:^9.9.0"
     nuxt: "npm:^3"
     typescript: "npm:^5"
     v-calendar: "npm:^3.1.2"
