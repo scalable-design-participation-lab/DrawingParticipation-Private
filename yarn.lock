@@ -4013,6 +4013,8 @@ __metadata:
     "@antfu/eslint-config": "npm:^2.25.0"
     eslint: "npm:^9.8.0"
     eslint-plugin-format: "npm:^0.1.2"
+    nuxt: "npm:^3.12.4"
+    typescript: "npm:^5.5.4"
   languageName: unknown
   linkType: soft
 
@@ -9508,6 +9510,7 @@ __metadata:
     "@vueuse/nuxt": "npm:^10.11.0"
     date-fns: "npm:^3.6.0"
     nuxt: "npm:^3"
+    typescript: "npm:^5"
     v-calendar: "npm:^3.1.2"
     vue-tsc: "npm:^2.0.29"
   languageName: unknown
@@ -12070,6 +12073,26 @@ __metadata:
   version: 0.1.17
   resolution: "type-level-regexp@npm:0.1.17"
   checksum: 10c0/54798f83464cb5ce04246c9c4739ec471c526aaa7690679fddbce05b689b99403de709f3fcb494555d4276b46c606435a95855e52535602f63378ab8b38010d5
+  languageName: node
+  linkType: hard
+
+"typescript@npm:^5, typescript@npm:^5.5.4":
+  version: 5.5.4
+  resolution: "typescript@npm:5.5.4"
+  bin:
+    tsc: bin/tsc
+    tsserver: bin/tsserver
+  checksum: 10c0/422be60f89e661eab29ac488c974b6cc0a660fb2228003b297c3d10c32c90f3bcffc1009b43876a082515a3c376b1eefcce823d6e78982e6878408b9a923199c
+  languageName: node
+  linkType: hard
+
+"typescript@patch:typescript@npm%3A^5#optional!builtin<compat/typescript>, typescript@patch:typescript@npm%3A^5.5.4#optional!builtin<compat/typescript>":
+  version: 5.5.4
+  resolution: "typescript@patch:typescript@npm%3A5.5.4#optional!builtin<compat/typescript>::version=5.5.4&hash=379a07"
+  bin:
+    tsc: bin/tsc
+    tsserver: bin/tsserver
+  checksum: 10c0/73409d7b9196a5a1217b3aaad929bf76294d3ce7d6e9766dd880ece296ee91cf7d7db6b16c6c6c630ee5096eccde726c0ef17c7dfa52b01a243e57ae1f09ef07
   languageName: node
   linkType: hard
 
