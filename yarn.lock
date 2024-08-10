@@ -1653,6 +1653,16 @@ __metadata:
   languageName: unknown
   linkType: soft
 
+"@mono/template@workspace:apps/template":
+  version: 0.0.0-use.local
+  resolution: "@mono/template@workspace:apps/template"
+  dependencies:
+    "@types/eslint": "npm:^9"
+    eslint: "npm:^9"
+    nuxt: "npm:^3"
+  languageName: unknown
+  linkType: soft
+
 "@netlify/functions@npm:^2.8.0":
   version: 2.8.1
   resolution: "@netlify/functions@npm:2.8.1"
