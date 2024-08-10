@@ -6,42 +6,42 @@ export default defineNuxtConfig({
     '@nuxt/eslint',
     '@nuxt/fonts',
     '@nuxt/ui',
-    '@vueuse/nuxt'
+    '@vueuse/nuxt',
   ],
 
   ui: {
-    safelistColors: ['primary', 'red', 'orange', 'green']
+    safelistColors: ['primary', 'red', 'orange', 'green'],
   },
 
   colorMode: {
-    disableTransition: true
+    disableTransition: true,
   },
 
   routeRules: {
     // Temporary workaround for prerender regression. see https://github.com/nuxt/nuxt/issues/27490
-    '/': { prerender: true }
+    '/': { prerender: true },
   },
 
   devtools: {
-    enabled: true
+    enabled: true,
   },
 
   typescript: {
-    strict: false
+    strict: false,
   },
 
   future: {
-    compatibilityVersion: 4
+    compatibilityVersion: 4,
   },
 
   eslint: {
     config: {
       stylistic: {
         commaDangle: 'never',
-        braceStyle: '1tbs'
-      }
-    }
+        braceStyle: '1tbs',
+      },
+    },
   },
 
-  compatibilityDate: '2024-07-11'
+  compatibilityDate: '2024-07-11',
 })
