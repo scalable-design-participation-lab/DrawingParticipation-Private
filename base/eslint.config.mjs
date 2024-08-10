@@ -1,8 +1,13 @@
 // @ts-check
-import withNuxt from './.nuxt/eslint.config.mjs'
+import { createConfigForNuxt } from '@nuxt/eslint-config/flat'
+import root from '../eslint.config.mjs'
 
-export default withNuxt({
-  rules: {
-    '@typescript-eslint/no-explicit-any': 'off'
-  }
-})
+export default createConfigForNuxt(
+  {},
+  root,
+  {
+    rules: {
+      '@typescript-eslint/no-explicit-any': 'warn',
+    },
+  },
+)
