@@ -1631,6 +1631,28 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@mono/base@workspace:base":
+  version: 0.0.0-use.local
+  resolution: "@mono/base@workspace:base"
+  dependencies:
+    "@iconify-json/heroicons": "npm:^1.1.24"
+    "@iconify-json/simple-icons": "npm:^1.1.112"
+    "@nuxt/eslint": "npm:^0.5.0"
+    "@nuxt/fonts": "npm:^0.7.1"
+    "@nuxt/ui-pro": "npm:^1.4.1"
+    "@types/eslint": "npm:^9"
+    "@unovis/ts": "npm:^1.4.3"
+    "@unovis/vue": "npm:^1.4.3"
+    "@vueuse/nuxt": "npm:^10.11.0"
+    date-fns: "npm:^3.6.0"
+    eslint: "npm:^9"
+    nuxt: "npm:^3"
+    typescript: "npm:^5"
+    v-calendar: "npm:^3.1.2"
+    vue-tsc: "npm:^2.0.29"
+  languageName: unknown
+  linkType: soft
+
 "@netlify/functions@npm:^2.8.0":
   version: 2.8.1
   resolution: "@netlify/functions@npm:2.8.1"
@@ -6786,7 +6808,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"eslint@npm:^9.8.0, eslint@npm:^9.9.0":
+"eslint@npm:^9, eslint@npm:^9.8.0":
   version: 9.9.0
   resolution: "eslint@npm:9.9.0"
   dependencies:
@@ -9495,28 +9517,6 @@ __metadata:
   checksum: 10c0/797a8f9f279bfd287c2aba7397df6891cea8e126d7464f8e3f06dcd4bab150c5a02f815fca2b9d910f36e7cc7cffc7cad25dd7f2e5626ebfb943b19f9c9f4479
   languageName: node
   linkType: hard
-
-"nuxt-ui-pro-template-dashboard@workspace:base":
-  version: 0.0.0-use.local
-  resolution: "nuxt-ui-pro-template-dashboard@workspace:base"
-  dependencies:
-    "@iconify-json/heroicons": "npm:^1.1.24"
-    "@iconify-json/simple-icons": "npm:^1.1.112"
-    "@nuxt/eslint": "npm:^0.5.0"
-    "@nuxt/fonts": "npm:^0.7.1"
-    "@nuxt/ui-pro": "npm:^1.4.1"
-    "@types/eslint": "npm:^9"
-    "@unovis/ts": "npm:^1.4.3"
-    "@unovis/vue": "npm:^1.4.3"
-    "@vueuse/nuxt": "npm:^10.11.0"
-    date-fns: "npm:^3.6.0"
-    eslint: "npm:^9.9.0"
-    nuxt: "npm:^3"
-    typescript: "npm:^5"
-    v-calendar: "npm:^3.1.2"
-    vue-tsc: "npm:^2.0.29"
-  languageName: unknown
-  linkType: soft
 
 "nuxt@npm:^3, nuxt@npm:^3.12.4":
   version: 3.12.4
