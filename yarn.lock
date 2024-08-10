@@ -9507,13 +9507,13 @@ __metadata:
     "@unovis/vue": "npm:^1.4.3"
     "@vueuse/nuxt": "npm:^10.11.0"
     date-fns: "npm:^3.6.0"
-    nuxt: "npm:^3.12.4"
+    nuxt: "npm:^3"
     v-calendar: "npm:^3.1.2"
     vue-tsc: "npm:^2.0.29"
   languageName: unknown
   linkType: soft
 
-"nuxt@npm:^3.12.4":
+"nuxt@npm:^3, nuxt@npm:^3.12.4":
   version: 3.12.4
   resolution: "nuxt@npm:3.12.4"
   dependencies:
