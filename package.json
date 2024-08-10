@@ -2,8 +2,8 @@
   "name": "DrawingParticipation-Private",
   "version": "1.0.0",
   "private": true,
-  "repository": "https://github.com/scalable-design-participation-lab/DrawingParticipation-Private.git",
   "packageManager": "yarn@4.4.0",
+  "repository": "https://github.com/scalable-design-participation-lab/DrawingParticipation-Private.git",
   "workspaces": [
     "base",
     "apps/*"
