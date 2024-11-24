@@ -4581,6 +4581,18 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@vueuse/firebase@npm:^11.3.0":
+  version: 11.3.0
+  resolution: "@vueuse/firebase@npm:11.3.0"
+  dependencies:
+    "@vueuse/shared": "npm:11.3.0"
+    vue-demi: "npm:>=0.14.10"
+  peerDependencies:
+    firebase: ">=9.0.0"
+  checksum: 10c0/45c5aa6a8e46cdf21f8a8b77de203531f230d1b44515076da6ca5ac9432468e7dbe15fdf413c67cb5dc95298149e51d3114c9c68adc83620ae9db62ffbe5e773
+  languageName: node
+  linkType: hard
+
 "@vueuse/integrations@npm:^11.2.0":
   version: 11.3.0
   resolution: "@vueuse/integrations@npm:11.3.0"
@@ -4995,6 +5007,15 @@ __metadata:
   checksum: 10c0/4c058baf6df1bc5a1697cf182e2029c58cd99975288a13f9e70068ef5d6f4e1f1fd7c4d2c3c4912eae44797d1725be9700995736deca441b39f3e66d8dee97ef
   languageName: node
   linkType: hard
+
+"auth-74a1f8@workspace:base/layers/auth":
+  version: 0.0.0-use.local
+  resolution: "auth-74a1f8@workspace:base/layers/auth"
+  dependencies:
+    "@vueuse/firebase": "npm:^11.3.0"
+    firebase: "npm:^9"
+  languageName: unknown
+  linkType: soft
 
 "autoprefixer@npm:^10.4.20":
   version: 10.4.20
