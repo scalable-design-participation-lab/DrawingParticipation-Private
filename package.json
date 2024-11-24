@@ -6,6 +6,7 @@
   "repository": "https://github.com/scalable-design-participation-lab/DrawingParticipation-Private.git",
   "workspaces": [
     "base",
+    "base/layers/*",
     "apps/*"
   ],
   "dependencies": {
