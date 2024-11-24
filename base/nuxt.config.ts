@@ -1,6 +1,9 @@
 // https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({
-  extends: ['@nuxt/ui-pro'],
+  extends: [
+    // By default, any layers within your project in the ~/layers directory will be automatically registered as layers in your project. (Nuxt > v3.12)
+    '@nuxt/ui-pro',
+  ],
 
   modules: [
     '@nuxt/eslint',
