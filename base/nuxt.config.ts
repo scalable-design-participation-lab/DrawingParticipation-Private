@@ -6,10 +6,12 @@ export default defineNuxtConfig({
   ],
 
   modules: [
+    //
     '@nuxt/eslint',
     '@nuxt/fonts',
     '@nuxt/ui',
     '@vueuse/nuxt',
+    '@pinia/nuxt',
   ],
 
   ui: {
