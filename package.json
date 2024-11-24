@@ -10,7 +10,7 @@
     "apps/*"
   ],
   "dependencies": {
-    "nuxt": "^3.12.4"
+    "nuxt": "^3.14"
   },
   "devDependencies": {
     "@antfu/eslint-config": "^2.25.0",
