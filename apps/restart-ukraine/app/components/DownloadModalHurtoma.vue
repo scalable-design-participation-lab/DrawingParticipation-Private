@@ -4,16 +4,16 @@
       <template #header>
         <div class="flex place-content-center">
           <h3 class="text-xl font-semibold">Доступ до відкритих даних</h3>
-          <!-- <UButton
+          <UButton
             color="gray"
             variant="ghost"
             icon="i-heroicons-x-mark-20-solid"
             @click="closeModal"
-          /> -->
+          />
         </div>
       </template>
 
-      <p class="text-center leading-tight">
+      <!-- <p class="text-center leading-tight">
         Ми працюємо над тим, щоб дані, створені на платформі, стали відкритими та доступними для всіх. Повертайтеся незабаром, щоб перевірити оновлення.
       </p>
 
@@ -25,9 +25,9 @@
         >
         Повернутися до карти
         </UButton>
-      </div>
+      </div> -->
 
-      <!-- <div class="space-y-6 px-1">
+      <div class="space-y-6 px-1">
         <div class="space-y-2">
           <label class="font-medium text-gray-700">Select Data Type:</label>
           <USelect
@@ -67,15 +67,15 @@
             Download
           </UButton>
         </div> 
-      </div> -->
+      </div>
     </UCard>
   </UModal>
 </template>
 
 <script setup lang="ts">
 import { ref, computed } from 'vue'
-// import { getFirestore, collection, getDocs } from 'firebase/firestore'
-// import { useFirebaseApp } from 'vuefire'
+import { getFirestore, collection, getDocs } from 'firebase/firestore'
+import { useFirebaseApp } from 'vuefire'
 
 const props = defineProps({
   modelValue: {
@@ -91,26 +91,26 @@ const isOpen = computed({
   set: (value) => emit('update:modelValue', value),
 })
 
-// const selectedDataType = ref('')
-// const fileFormat = ref('json')
-// const isLoading = ref(false)
+const selectedDataType = ref('')
+const fileFormat = ref('json')
+const isLoading = ref(false)
 
-// const dataTypes = [
-//   { label: 'All Data', value: 'all' },
-//   { label: 'Space Data', value: 'space' },
-//   { label: 'Belonging Data', value: 'belonging' },
-//   { label: 'Safety Data', value: 'safety' },
-//   { label: 'Environment Data', value: 'environment' },
-// ]
+const dataTypes = [
+  { label: 'All Data', value: 'all' },
+  { label: 'Space Data', value: 'space' },
+  { label: 'Belonging Data', value: 'belonging' },
+  { label: 'Safety Data', value: 'safety' },
+  { label: 'Environment Data', value: 'environment' },
+]
 
-// const fileFormats = [
-//   { label: 'JSON', value: 'json' },
-//   { label: 'CSV', value: 'csv' },
-// ]
+const fileFormats = [
+  { label: 'JSON', value: 'json' },
+  { label: 'CSV', value: 'csv' },
+]
 
-// const isFormValid = computed(() => {
-//   return selectedDataType.value && fileFormat.value
-// })
+const isFormValid = computed(() => {
+  return selectedDataType.value && fileFormat.value
+})
 
 const closeModal = () => {
   isOpen.value = false
