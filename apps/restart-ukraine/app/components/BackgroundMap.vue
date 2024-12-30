@@ -1,94 +1,64 @@
 <template>
-  <ol-map
-    ref="mapInstance"
-    :load-tiles-while-animating="true"
-    :load-tiles-while-interacting="true"
-    :controls="[]"
-    style="width: 100%; height: 100vh"
-    @click="handleMapClick"
+  <GeneralizedBackgroundMap
+    ref="baseMap"
+    :mapbox-style-light="mapboxStyleLight"
+    :mapbox-style-dark="mapboxStyleDark"
+    @map-click="handleMapClick"
   >
-    <ol-zoom-control
-      class="custom-zoom-control"
-      zoomInLabel="➕"
-      zoomOutLabel="➖"
-      :duration="250"
-    />
+    <template #layers>
+      <ol-layer-vector>
+        <ol-source-vector>
+          <DrawingLayer
+            :projection="projection"
+            :show-all-plus-icons="showAllPlusIcons"
+            :show-comment-icons="showCommentIcons"
+            :enable-click="isMapPage"
+            :is-map-page="isMapPage"
+            :show-delete-button="!isMapPage"
+            @toggle-comment-popup="toggleCommentModal"
+            @toggle-image-upload-popup="toggleImageUploadModal"
+            @show-comment-display="handleShowCommentDisplay"
+          />
+        </ol-source-vector>
+      </ol-layer-vector>
+    </template>
 
-    <ol-view
-      ref="view"
-      :center="[3172858.2941718884, 6317486.347640147]"
-      :zoom="12.83"
-      :projection="projection"
-      :rotation="0"
-      :pitch="0"
-      :bearing="0"
-      :maxZoom="19"
-      :minZoom="10"
-    />
-
-    <ol-tile-layer>
-      <ol-source-xyz
-        :url="mapboxUrl"
-        :attributions="mapboxAttribution"
-        :max-zoom="19"
-        :tile-size="512"
-        :tile-pixel-ratio="2"
-      />
-    </ol-tile-layer>
-
-    <ol-layer-vector>
-      <ol-source-vector>
-        <DrawingLayer
-          :projection="projection"
-          :show-all-plus-icons="showAllPlusIcons"
-          :show-comment-icons="showCommentIcons"
-          :enable-click="isMapPage"
-          :is-map-page="isMapPage"
-          :show-delete-button="!isMapPage"
-          @toggle-comment-popup="toggleCommentModal"
-          @toggle-image-upload-popup="toggleImageUploadModal"
-          @show-comment-display="handleShowCommentDisplay"
+    <template #overlays>
+      <ol-overlay
+        v-if="CommentModalVisible"
+        :position="CommentModalPosition"
+        :offset="CommentModalOffset"
+      >
+        <CommentModal
+          :is-visible="CommentModalVisible"
+          :feature-id="selectedFeatureId"
+          class="z-10"
+          @close="closeCommentModal"
         />
-      </ol-source-vector>
-    </ol-layer-vector>
+      </ol-overlay>
 
-    <ol-overlay
-      v-if="CommentModalVisible"
-      :position="CommentModalPosition"
-      :offset="CommentModalOffset"
-    >
-      <CommentModal
-        :is-visible="CommentModalVisible"
-        :feature-id="selectedFeatureId"
-        class="z-10"
-        @close="closeCommentModal"
-      />
-    </ol-overlay>
-
-    <ol-overlay
-      v-if="showCommentDisplay"
-      :position="commentDisplayPosition"
-      :offset="commentDisplayOffset"
-      :positioning="'center-center'"
-    >
-      <CommentDisplay
-        :model-value="showCommentDisplay"
-        :feature="selectedFeatureForDisplay"
-        @update:model-value="updateShowCommentDisplay"
-      />
-    </ol-overlay>
-  </ol-map>
+      <ol-overlay
+        v-if="showCommentDisplay"
+        :position="commentDisplayPosition"
+        :offset="commentDisplayOffset"
+        :positioning="'center-center'"
+      >
+        <CommentDisplay
+          :model-value="showCommentDisplay"
+          :feature="selectedFeatureForDisplay"
+          @update:model-value="updateShowCommentDisplay"
+        />
+      </ol-overlay>
+    </template>
+  </GeneralizedBackgroundMap>
 </template>
 
 <script setup lang="ts">
-import { ref, computed, defineEmits, watch } from 'vue'
+import { ref, computed } from 'vue'
 import { useMapUIStore } from '@/stores/mapUI'
-import { useRuntimeConfig } from '#app'
 import { useRoute } from 'vue-router'
-import DrawingLayer from '../../base/app/components/DrawingLayer/DrawingLayer.vue'
 import CommentModal from './CommentModal.vue'
 import CommentDisplay from './CommentDisplay.vue'
-import { Coordinate } from 'ol/coordinate'
 
 const props = defineProps({
   showAllPlusIcons: {
@@ -111,7 +81,6 @@ const props = defineProps({
 
 const mapUIStore = useMapUIStore()
 const { mapType } = storeToRefs(mapUIStore)
-const config = useRuntimeConfig()
 const route = useRoute()
 
 const projection = ref('EPSG:3857')
@@ -133,27 +102,6 @@ const isDark = computed({
     colorMode.preference = colorMode.value === 'dark' ? 'light' : 'dark'
   }
 })
-
-const mapboxToken = config.public.mapboxToken
-const mapboxStyleLight = 'restartukraine/cm3p0s3gw00yd01seasye5jdw'
-const mapboxStyleDark = 'restartukraine/cm3p4jqnj009y01s79ngdah4r'
-
-const mapboxUrl = computed(() => {
-  let style
-  if (mapType.value === 'vector' && isDark.value) {
-    style = mapboxStyleDark
-  }
-  else if (mapType.value === 'vector' && !isDark.value) {
-    style = mapboxStyleLight
-  }
-  else {
-    style = 'mapbox/satellite-v9'
-  }
-  return `https://api.mapbox.com/styles/v1/${style}/tiles/{z}/{x}/{y}@2x?access_token=${mapboxToken}`
-})
-
-const mapboxAttribution =
-  '© <a href="https://www.mapbox.com/about/maps/">Mapbox</a> © <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
 
 const isMapPage = computed(() => route.name === 'map')
 
@@ -253,7 +201,7 @@ function handleShowCommentDisplay(data) {
   emit('update:selectedFeature', data.feature)
 }
 
-const mapInstance = ref(null)
+const baseMap = ref(null)
 
 const popupOffsets = computed(() => {
   if (isMapPage.value) {
@@ -276,7 +224,7 @@ function calculatePopupPosition(feature: any): {
   position: [number, number]
   offset: [number, number]
 } {
-  const map = mapInstance.value?.map
+  const map = baseMap.value?.map
   if (!map) {
     return {
       position: getFeaturePosition(feature),
@@ -321,43 +269,7 @@ function calculatePopupPosition(feature: any): {
     offset,
   }
 }
+
+const mapboxStyleLight = 'restartukraine/cm3p0s3gw00yd01seasye5jdw'
+const mapboxStyleDark = 'restartukraine/cm3p4jqnj009y01s79ngdah4r'
 </script>
-
-<style>
-.ol-zoom {
-  position: absolute !important;
-  top: 50% !important;
-  transform: translateY(-50%) !important;
-  left: 20px !important;
-  bottom: unset !important;
-  background: none !important;
-  z-index: 1500 !important;
-  box-shadow: none !important;
-}
-
-.ol-control button {
-  @apply text-black dark:text-white !important;
-}
-
-.ol-zoom .ol-zoom-in,
-.ol-zoom .ol-zoom-out {
-  @apply bg-white dark:bg-black !important;
-  border-radius: 50px !important;
-  border: none !important;
-  margin-top: 5px !important;
-  width: 32px !important;
-  height: 32px !important;
-  display: flex !important;
-  align-items: center !important;
-  justify-content: center !important;
-  cursor: pointer !important;
-  font-size: 16px !important;
-}
-
-.ol-zoom .ol-zoom-in:hover,
-.ol-zoom .ol-zoom-out:hover {
-  @apply bg-black dark:bg-white !important;
-  @apply text-white dark:text-black !important;
-  outline: 0 !important;
-}
-</style>
