@@ -4,16 +4,16 @@
       <template #header>
         <div class="flex place-content-center">
           <h3 class="text-xl font-semibold">Доступ до відкритих даних</h3>
-          <!-- <UButton
+          <UButton
             color="gray"
             variant="ghost"
             icon="i-heroicons-x-mark-20-solid"
             @click="closeModal"
-          /> -->
+          />
         </div>
       </template>
 
-      <p class="text-center leading-tight">
+      <!-- <p class="text-center leading-tight">
         Ми працюємо над тим, щоб дані, створені на платформі, стали відкритими та доступними для всіх. Повертайтеся незабаром, щоб перевірити оновлення.
       </p>
 
@@ -25,9 +25,9 @@
         >
         Повернутися до карти
         </UButton>
-      </div>
+      </div> -->
 
-      <!-- <div class="space-y-6 px-1">
+      <div class="space-y-6 px-1">
         <div class="space-y-2">
           <label class="font-medium text-gray-700">Select Data Type:</label>
           <USelect
@@ -67,15 +67,15 @@
             Download
           </UButton>
         </div> 
-      </div> -->
+      </div>
     </UCard>
   </UModal>
 </template>
 
 <script setup lang="ts">
 import { ref, computed } from 'vue'
-// import { getFirestore, collection, getDocs } from 'firebase/firestore'
-// import { useFirebaseApp } from 'vuefire'
+import { getFirestore, collection, getDocs, doc } from 'firebase/firestore'
+import { useFirebaseApp } from 'vuefire'
 
 const props = defineProps({
   modelValue: {
@@ -91,26 +91,27 @@ const isOpen = computed({
   set: (value) => emit('update:modelValue', value),
 })
 
-// const selectedDataType = ref('')
-// const fileFormat = ref('json')
-// const isLoading = ref(false)
+const selectedDataType = ref('')
+const fileFormat = ref('json')
+const isLoading = ref(false)
 
-// const dataTypes = [
-//   { label: 'All Data', value: 'all' },
-//   { label: 'Space Data', value: 'space' },
-//   { label: 'Belonging Data', value: 'belonging' },
-//   { label: 'Safety Data', value: 'safety' },
-//   { label: 'Environment Data', value: 'environment' },
-// ]
+const dataTypes = [
+  { label: 'All Project Data', value: 'all_projects' },
+  { label: 'Space Data', value: 'space' },
+  { label: 'Belonging Data', value: 'belonging' },
+  { label: 'Safety Data', value: 'safety' },
+  { label: 'Environment Data', value: 'environment' },
+  { label: 'User Data', value: 'users' },
+]
 
-// const fileFormats = [
-//   { label: 'JSON', value: 'json' },
-//   { label: 'CSV', value: 'csv' },
-// ]
+const fileFormats = [
+  { label: 'JSON', value: 'json' },
+  { label: 'CSV', value: 'csv' },
+]
 
-// const isFormValid = computed(() => {
-//   return selectedDataType.value && fileFormat.value
-// })
+const isFormValid = computed(() => {
+  return selectedDataType.value && fileFormat.value
+})
 
 const closeModal = () => {
   isOpen.value = false
@@ -118,58 +119,169 @@ const closeModal = () => {
   fileFormat.value = 'json'
 }
 
-const convertToCSV = (data: any) => {
+const convertToCSV = (data: any, dataType: string) => {
   const items: any[] = []
 
-  Object.entries(data).forEach(([projectId, projectData]: [string, any]) => {
-    Object.entries(projectData).forEach(
-      ([category, categoryData]: [string, any]) => {
-        Object.entries(categoryData).forEach(
-          ([type, points]: [string, any]) => {
-            if (Array.isArray(points)) {
-              points.forEach((point: any) => {
-                items.push({
-                  project_id: projectId,
-                  category,
-                  type,
-                  longitude: point.lon,
-                  latitude: point.lat,
-                  comment: point.comment || '',
-                  timestamp: point.timestamp || '',
+  if (dataType === 'users') {
+    Object.entries(data).forEach(([userId, userData]: [string, any]) => {
+      const createdAtTimestamp = userData.createdAt
+      let formattedDate = ''
+      
+      if (createdAtTimestamp) {
+        const seconds = createdAtTimestamp.seconds || 
+                       (typeof createdAtTimestamp === 'string' ? 
+                       parseInt(createdAtTimestamp.match(/seconds=(\d+)/)[1]) : 0)
+        const nanoseconds = createdAtTimestamp.nanoseconds || 
+                          (typeof createdAtTimestamp === 'string' ? 
+                          parseInt(createdAtTimestamp.match(/nanoseconds=(\d+)/)[1]) : 0)
+        
+        const milliseconds = seconds * 1000 + nanoseconds / 1000000
+        
+        formattedDate = new Intl.DateTimeFormat('uk-UA', {
+          timeZone: 'Europe/Kiev',
+          year: 'numeric',
+          month: '2-digit',
+          day: '2-digit',
+          hour: '2-digit',
+          minute: '2-digit',
+          second: '2-digit',
+          hour12: false
+        }).format(new Date(milliseconds))
+      }
+
+      items.push({
+        user_id: userId,
+        firstname: userData.name?.firstname || '',
+        lastname: userData.name?.lastname || '',
+        age: userData.age || '',
+        gender: userData.gender || '',
+        education_level: userData['education level'] || '',
+        city_resident: userData['city resident'] || '',
+        river_resident: userData['river resident'] || '',
+        is_anonymous: userData.isAnonymous || false,
+        uid: userData.uid || '',
+        created_at: formattedDate,
+      })
+    })
+
+    if (items.length === 0) return 'No user data available'
+
+    const header = [
+      'User ID',
+      'First Name',
+      'Last Name',
+      'Age',
+      'Gender',
+      'Education Level',
+      'City Resident',
+      'River Resident',
+      'Created At',
+      'Is Anonymous',
+      'UID',
+    ]
+
+    const rows = items.map(item => [
+      item.user_id,
+      item.firstname,
+      item.lastname,
+      item.age,
+      item.gender,
+      item.education_level,
+      item.city_resident,
+      item.river_resident,
+      item.created_at,
+      item.is_anonymous,
+      item.uid,
+    ])
+
+    return [
+      header.join(','),
+      ...rows.map(row => row.map(field => `"${field}"`).join(','))
+    ].join('\n')
+  } else {
+    Object.entries(data).forEach(([projectId, projectData]: [string, any]) => {
+      Object.entries(projectData).forEach(
+        ([category, categoryData]: [string, any]) => {
+          Object.entries(categoryData).forEach(
+            ([type, points]: [string, any]) => {
+              if (Array.isArray(points)) {
+                points.forEach((point: any) => {
+                  let formattedTimestamp = ''
+                  
+                  try {
+                    if (point.timestamp) {
+                      if (typeof point.timestamp === 'string') {
+                        formattedTimestamp = new Date(point.timestamp).toLocaleString('uk-UA', {
+                          timeZone: 'Europe/Kiev',
+                          year: 'numeric',
+                          month: '2-digit',
+                          day: '2-digit',
+                          hour: '2-digit',
+                          minute: '2-digit',
+                          second: '2-digit',
+                          hour12: false
+                        })
+                      } else if (point.timestamp.seconds) {
+                        const milliseconds = point.timestamp.seconds * 1000 +
+                          (point.timestamp.nanoseconds || 0) / 1000000
+                        formattedTimestamp = new Date(milliseconds).toLocaleString('uk-UA', {
+                          timeZone: 'Europe/Kiev',
+                          year: 'numeric',
+                          month: '2-digit',
+                          day: '2-digit',
+                          hour: '2-digit',
+                          minute: '2-digit',
+                          second: '2-digit',
+                          hour12: false
+                        })
+                      }
+                    }
+                  } catch (error) {
+                    console.error('Error formatting timestamp:', error)
+                    formattedTimestamp = ''
+                  }
+
+                  items.push({
+                    project_id: projectId,
+                    category,
+                    type,
+                    longitude: point.lon,
+                    latitude: point.lat,
+                    comment: point.comment || '',
+                    timestamp: formattedTimestamp,
+                  })
                 })
-              })
-            }
-          },
-        )
-      },
-    )
-  })
+              }
+            },
+          )
+        },
+      )
+    })
 
-  if (items.length === 0) {
-    return 'No data available'
+    if (items.length === 0) return 'No project data available'
+
+    const header = [
+      'Project ID',
+      'Category',
+      'Type',
+      'Longitude',
+      'Latitude',
+      'Comment',
+      'Time (Ukraine)',
+    ]
+
+    const rows = items.map((item) => [
+      item.project_id,
+      item.category,
+      item.type,
+      item.longitude,
+      item.latitude,
+      item.comment ? `"${item.comment.replace(/"/g, '""')}"` : '',
+      item.timestamp,
+    ])
+
+    return [header.join(','), ...rows.map((row) => row.join(','))].join('\n')
   }
-
-  const header = [
-    'Project ID',
-    'Category',
-    'Type',
-    'Longitude',
-    'Latitude',
-    'Comment',
-    'Timestamp',
-  ]
-
-  const rows = items.map((item) => [
-    item.project_id,
-    item.category,
-    item.type,
-    item.longitude,
-    item.latitude,
-    item.comment ? `"${item.comment.replace(/"/g, '""')}"` : '',
-    item.timestamp ? `"${item.timestamp}"` : '',
-  ])
-
-  return [header.join(','), ...rows.map((row) => row.join(','))].join('\n')
 }
 
 const handleDownload = async () => {
@@ -179,20 +291,28 @@ const handleDownload = async () => {
   try {
     const app = useFirebaseApp()
     const db = getFirestore(app)
-    const projectsCollection = collection(db, 'projects')
-    const querySnapshot = await getDocs(projectsCollection)
-
     let downloadData: Record<string, any> = {}
-    querySnapshot.forEach((doc) => {
-      const data = doc.data()
-      if (selectedDataType.value === 'all') {
-        downloadData[doc.id] = data
-      } else {
-        downloadData[doc.id] = {
-          [selectedDataType.value]: data[selectedDataType.value] || {},
+
+    if (selectedDataType.value === 'users') {
+      const usersCollection = collection(db, 'users')
+      const querySnapshot = await getDocs(usersCollection)
+      querySnapshot.forEach((doc) => {
+        downloadData[doc.id] = doc.data()
+      })
+    } else {
+      const projectsCollection = collection(db, 'projects')
+      const querySnapshot = await getDocs(projectsCollection)
+      querySnapshot.forEach((doc) => {
+        const data = doc.data()
+        if (selectedDataType.value === 'all_projects') {
+          downloadData[doc.id] = data
+        } else {
+          downloadData[doc.id] = {
+            [selectedDataType.value]: data[selectedDataType.value] || {},
+          }
         }
-      }
-    })
+      })
+    }
 
     if (Object.keys(downloadData).length === 0) {
       throw new Error('No data available for download')
@@ -201,7 +321,7 @@ const handleDownload = async () => {
     const content =
       fileFormat.value === 'json'
         ? JSON.stringify(downloadData, null, 2)
-        : convertToCSV(downloadData)
+        : convertToCSV(downloadData, selectedDataType.value)
 
     const blob = new Blob([content], {
       type: fileFormat.value === 'json' ? 'application/json' : 'text/csv',
@@ -211,9 +331,10 @@ const handleDownload = async () => {
     const link = document.createElement('a')
     link.href = url
     const timestamp = new Date().toISOString().split('T')[0]
+    const dataTypeLabel = selectedDataType.value === 'users' ? 'users' : `projects-${selectedDataType.value}`
     link.setAttribute(
       'download',
-      `ukraine-data-${selectedDataType.value}-${timestamp}.${fileFormat.value}`,
+      `ukraine-${dataTypeLabel}-${timestamp}.${fileFormat.value}`,
     )
     document.body.appendChild(link)
     link.click()
