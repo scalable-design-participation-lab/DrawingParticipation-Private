@@ -110,7 +110,7 @@ const props = defineProps({
 const emit = defineEmits(['toggle-comment-popup', 'show-comment-display'])
 
 const featureStore = useFeatureStore()
-const subwindowStore = useSideBarStore()
+const sidebarStore = useSideBarStore()
 
 const polygonFeatures = computed(() =>
  featureStore.features.filter((feature) => feature.type === 'Polygon'),
@@ -120,7 +120,7 @@ const visiblePolygonFeatures = computed(() => {
   if (props.showAllPlusIcons) {
     return polygonFeatures.value
   }
-  const spaceSubwindow = subwindowStore.spaceSubwindow
+  const spaceSubwindow = sidebarStore.spaceSubwindow
   return spaceSubwindow === 2 ? polygonFeatures.value : []
 })
 
