@@ -1,17 +1,11 @@
 <template>
   <div>
     <!-- Welcome Back Modal -->
-    <WelcomeBackModal
-      v-if="showWelcomeBack"
-      :user-data="existingUserData"
-      @close="handleWelcomeBackClose"
-    />
+    <WelcomeBackModal v-if="showWelcomeBack" :user-data="existingUserData" @close="handleWelcomeBackClose" />
 
     <!-- Registration Form -->
-    <UCard
-      v-if="isVisible && !isChecking && !showWelcomeBack"
-      class="registration-card max-w-[90vw] w-[500px] max-h-[90vh] overflow-y-auto z-50 absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 rounded-xl shadow-xl scrollbar-thin scrollbar-thumb-gray-400 scrollbar-track-gray-100 dark:bg-black"
-    >
+    <UCard v-if="isVisible && !isChecking && !showWelcomeBack"
+      class="registration-card max-w-[90vw] w-[500px] max-h-[90vh] overflow-y-auto z-50 absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 rounded-xl shadow-xl scrollbar-thin scrollbar-thumb-gray-400 scrollbar-track-gray-100 dark:bg-black">
       <template #header>
         <h3 class="text-xl md:text-2xl font-semibold text-center">
           реєстрація
@@ -22,89 +16,39 @@
         Щоб взяти участь у Гуртома́, дайте відповіді на запитання
       </p>
 
-      <UForm
-        :state="formState"
-        class="space-y-3 md:space-y-4 px-4 md:px-6"
-        @submit="onSubmit"
-      >
+      <UForm :state="formState" class="space-y-3 md:space-y-4 px-4 md:px-6" @submit="onSubmit">
         <UFormGroup label="Прізвище" name="lastname">
-          <UInput
-            v-model="formState.lastname"
-            placeholder="Вкажіть своє прізвище"
-            color="blue"
-            variant="outline"
-            size="md"
-          />
+          <UInput v-model="formState.lastname" placeholder="Вкажіть своє прізвище" color="blue" variant="outline"
+            size="md" />
         </UFormGroup>
         <UFormGroup label="Ім'я" name="firstname">
-          <UInput
-            v-model="formState.firstname"
-            placeholder="Вкажіть своє ім'я"
-            color="blue"
-            variant="outline"
-            size="md"
-          />
+          <UInput v-model="formState.firstname" placeholder="Вкажіть своє ім'я" color="blue" variant="outline"
+            size="md" />
         </UFormGroup>
         <UFormGroup label="Вік" name="age">
-          <UInput
-            v-model="formState.age"
-            type="number"
-            placeholder="Вкажіть свій вік"
-            color="blue"
-            variant="outline"
-            size="md"
-          />
+          <UInput v-model="formState.age" type="number" placeholder="Вкажіть свій вік" color="blue" variant="outline"
+            size="md" />
         </UFormGroup>
         <UFormGroup label="Стать" name="gender">
-          <USelect
-            v-model="formState.gender"
-            :options="genderOptions"
-            placeholder="Оберіть свою стать"
-            color="blue"
-            variant="outline"
-            size="md"
-          />
+          <USelect v-model="formState.gender" :options="genderOptions" placeholder="Оберіть свою стать" color="blue"
+            variant="outline" size="md" />
         </UFormGroup>
         <UFormGroup label="Рівень освіти" name="educationLevel">
-          <USelect
-            v-model="formState.educationLevel"
-            :options="educationOptions"
-            placeholder="Оберіть свій рівень освіти"
-            color="blue"
-            variant="outline"
-            size="md"
-          />
+          <USelect v-model="formState.educationLevel" :options="educationOptions"
+            placeholder="Оберіть свій рівень освіти" color="blue" variant="outline" size="md" />
         </UFormGroup>
         <UFormGroup label="Скільки ви мешкаєте у Вінниці" name="residentSince">
-          <USelect
-            v-model="formState.residentCity"
-            :options="residentCityOptions"
-            placeholder="Напишіть, скільки років ви проживаєте у місті"
-            color="blue"
-            variant="outline"
-            size="md"
-          />
+          <USelect v-model="formState.residentCity" :options="residentCityOptions"
+            placeholder="Напишіть, скільки років ви проживаєте у місті" color="blue" variant="outline" size="md" />
         </UFormGroup>
-        <UFormGroup
-          label="Ви живете біля річки Тяжилівка"
-          name="residentNearRiverSince"
-        >
-          <USelect
-            v-model="formState.residentRiver"
-            :options="residentRiverOptions"
-            placeholder="Оберіть, чи живете ви біля річки Тяжилівка"
-            color="blue"
-            variant="outline"
-            size="md"
-          />
+        <UFormGroup label="Ви живете біля річки Тяжилівка" name="residentNearRiverSince">
+          <USelect v-model="formState.residentRiver" :options="residentRiverOptions"
+            placeholder="Оберіть, чи живете ви біля річки Тяжилівка" color="blue" variant="outline" size="md" />
         </UFormGroup>
 
         <div class="flex justify-center">
-          <UButton
-            type="submit"
-            color="black"
-            class="my-2 px-6 py-3 rounded-full hover:bg-gray-300 hover:text-black dark:hover:bg-zinc-700 dark:hover:text-white"
-          >
+          <UButton type="submit" color="black"
+            class="my-2 px-6 py-3 rounded-full hover:bg-gray-300 hover:text-black dark:hover:bg-zinc-700 dark:hover:text-white">
             перейти до карти
           </UButton>
         </div>
@@ -128,10 +72,10 @@
 
 <script setup>
 import { ref, reactive, watch } from 'vue'
-import { useMapUIStore } from '../stores/mapUI'
 import { getAuth, signInAnonymously } from 'firebase/auth'
 import { useFirestore } from 'vuefire'
 import { collection, addDoc, query, where, getDocs } from 'firebase/firestore'
+import { useUserStore } from '@restartUkraine/user'
 
 const auth = getAuth()
 const props = defineProps({
@@ -140,7 +84,7 @@ const props = defineProps({
 
 const emit = defineEmits(['close'])
 
-const mapUIStore = useMapUIStore()
+const userStore = useUserStore()
 const db = useFirestore()
 
 // Add state for welcome back modal
@@ -206,7 +150,7 @@ const checkExistingUser = async () => {
       const userData = querySnapshot.docs[0].data()
       console.log('Found existing user:', userData)
       existingUserData.value = userData
-      mapUIStore.setUserData(userData)
+      userStore.setUserData(userData)
       showWelcomeBack.value = true
       emit('close')
     } else {
@@ -253,7 +197,7 @@ const onSubmit = async () => {
       name: `${formState.firstname} ${formState.lastname}`,
     })
 
-    mapUIStore.setUserData({
+    userStore.setUserData({
       ...formState,
       uid: user.uid,
     })

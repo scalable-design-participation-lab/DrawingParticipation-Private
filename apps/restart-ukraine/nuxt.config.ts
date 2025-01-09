@@ -1,11 +1,13 @@
 // https://nuxt.com/docs/api/configuration/nuxt-config
+import { defineNuxtConfig } from 'nuxt/config';
+import path from 'path';
 export default defineNuxtConfig({
   extends: ['../../base', '@nuxt/ui-pro'],
-  
+
   target: 'static',
-  
+
   css: ['vue3-openlayers/dist/vue3-openlayers.css'],
-  
+
   future: {
     compatibilityVersion: 4,
   },
@@ -54,5 +56,12 @@ export default defineNuxtConfig({
 
   layouts: {
     default: '~/layouts/default.vue'
+  },
+  vite: {
+    resolve: {
+      alias: {
+        '@restartUkraine': path.resolve(__dirname, '../../base/app/stores/restart-ukraine'),
+      },
+    },
   },
 })
