@@ -92,7 +92,7 @@ const featureStore = useFeatureStore()
 const clickCondition = click
 
 const lineStringFeatures = computed(() =>
-  featureStore.features.filter((feature) => feature.type === 'LineString'),
+  featureStore.features.filter(feature => feature.type === 'LineString'),
 )
 
 function getLineStringStartPoint(feature) {
@@ -112,7 +112,8 @@ function getLineStringEndPoint(feature) {
 function handleIconClick(feature) {
   if (props.isMapPage) {
     emit('show-comment-display', feature)
-  } else {
+  }
+  else {
     emit('toggle-comment-popup', feature)
   }
 }
@@ -124,7 +125,8 @@ function handleDeleteClick(feature) {
 }
 
 function handleCommentIconClick(feature, event) {
-  if (!event) return
+  if (!event)
+    return
   const coordinates = [event.clientX, event.clientY]
   emit('show-comment-display', {
     feature,

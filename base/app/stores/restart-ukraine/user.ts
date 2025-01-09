@@ -1,21 +1,21 @@
-import { defineStore } from 'pinia';
-import { ref } from 'vue';
+import { defineStore } from 'pinia'
+import { ref } from 'vue'
 
-export const useUserStore = defineStore("user", () => {
-  const userData = ref(null);
-  const currentUser = ref(null);
-  const showRegistration = ref(true);
+export const useUserStore = defineStore('user', () => {
+  const userData = ref(null)
+  const currentUser = ref(null)
+  const showRegistration = ref(true)
 
   function setUserData(data: any) {
-    userData.value = data;
-    currentUser.value = data?.userId || null;
-    showRegistration.value = false;
+    userData.value = data
+    currentUser.value = data?.userId || null
+    showRegistration.value = false
   }
 
   function logoutUser() {
-    currentUser.value = null;
-    userData.value = null;
-    showRegistration.value = true;
+    currentUser.value = null
+    userData.value = null
+    showRegistration.value = true
   }
 
   return {
@@ -24,5 +24,5 @@ export const useUserStore = defineStore("user", () => {
     showRegistration,
     setUserData,
     logoutUser,
-  };
-});
+  }
+})

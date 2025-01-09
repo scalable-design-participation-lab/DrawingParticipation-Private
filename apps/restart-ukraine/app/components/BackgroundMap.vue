@@ -1,27 +1,53 @@
 <template>
-  <GeneralizedBackgroundMap ref="baseMap" :mapbox-style-light="mapboxStyleLight" :mapbox-style-dark="mapboxStyleDark"
-    @map-click="handleMapClick">
+  <GeneralizedBackgroundMap
+    ref="baseMap"
+    :mapbox-style-light="mapboxStyleLight"
+    :mapbox-style-dark="mapboxStyleDark"
+    @map-click="handleMapClick"
+  >
     <template #layers>
       <ol-layer-vector>
         <ol-source-vector>
-          <DrawingLayer :projection="projection" :show-all-plus-icons="showAllPlusIcons"
-            :show-comment-icons="showCommentIcons" :enable-click="isMapPage" :is-map-page="isMapPage"
-            :show-delete-button="!isMapPage" @toggle-comment-popup="toggleCommentModal"
-            @toggle-image-upload-popup="toggleImageUploadModal" @show-comment-display="handleShowCommentDisplay" />
+          <DrawingLayer
+            :projection="projection"
+            :show-all-plus-icons="showAllPlusIcons"
+            :show-comment-icons="showCommentIcons"
+            :enable-click="isMapPage"
+            :is-map-page="isMapPage"
+            :show-delete-button="!isMapPage"
+            @toggle-comment-popup="toggleCommentModal"
+            @toggle-image-upload-popup="toggleImageUploadModal"
+            @show-comment-display="handleShowCommentDisplay"
+          />
         </ol-source-vector>
       </ol-layer-vector>
     </template>
 
     <template #overlays>
-      <ol-overlay v-if="CommentModalVisible" :position="CommentModalPosition" :offset="CommentModalOffset">
-        <CommentModal :is-visible="CommentModalVisible" :feature-id="selectedFeatureId" class="z-10"
-          @close="closeCommentModal" />
+      <ol-overlay
+        v-if="CommentModalVisible"
+        :position="CommentModalPosition"
+        :offset="CommentModalOffset"
+      >
+        <CommentModal
+          :is-visible="CommentModalVisible"
+          :feature-id="selectedFeatureId"
+          class="z-10"
+          @close="closeCommentModal"
+        />
       </ol-overlay>
 
-      <ol-overlay v-if="showCommentDisplay" :position="commentDisplayPosition" :offset="commentDisplayOffset"
-        :positioning="'center-center'">
-        <CommentDisplay :model-value="showCommentDisplay" :feature="selectedFeatureForDisplay"
-          @update:model-value="updateShowCommentDisplay" />
+      <ol-overlay
+        v-if="showCommentDisplay"
+        :position="commentDisplayPosition"
+        :offset="commentDisplayOffset"
+        :positioning="'center-center'"
+      >
+        <CommentDisplay
+          :model-value="showCommentDisplay"
+          :feature="selectedFeatureForDisplay"
+          @update:model-value="updateShowCommentDisplay"
+        />
       </ol-overlay>
     </template>
   </GeneralizedBackgroundMap>
@@ -60,7 +86,7 @@ const featureStore = useFeatureStore()
 const drawingStore = useDrawingStore()
 const mapStore = useMapStore()
 const sidebarStore = useSideBarStore()
-const { mapType } = mapStore
+const { mapType } = storeToRefs(mapStore)
 const route = useRoute()
 
 const projection = ref('EPSG:3857')

@@ -1,17 +1,29 @@
 <template>
   <div class="map-container">
-    <GeneralizedHeader class="z-20" :left-items="leftItems" :right-items="rightItems" logo-src="/restart-logo-icon.svg"
-      logo-alt="Restart Agency Logo" logo-link="https://www.restartfuture.org/" />
+    <GeneralizedHeader
+      class="z-20"
+      :left-items="leftItems"
+      :right-items="rightItems"
+      logo-src="/restart-logo-icon.svg"
+      logo-alt="Restart Agency Logo"
+      logo-link="https://www.restartfuture.org/"
+    />
     <div class="map-wrapper">
-      <BackgroundMap :show-all-plus-icons="false" :show-comment-icons="true" :model-value="showCommentDisplay"
-        :selected-feature="selectedFeature" @show-comment-display="handleShowCommentDisplay"
-        @update:model-value="updateShowCommentDisplay" />
+      <BackgroundMap
+        :show-all-plus-icons="false"
+        :show-comment-icons="true"
+        :model-value="showCommentDisplay"
+        :selected-feature="selectedFeature"
+        @show-comment-display="handleShowCommentDisplay"
+        @update:model-value="updateShowCommentDisplay"
+      />
     </div>
     <GeneralizedFooter class="footer-fixed" />
 
     <MapIntroModal v-model="showIntroModal" />
   </div>
 </template>
+
 
 <script setup lang="ts">
 import { onMounted, ref, computed, watch } from 'vue'

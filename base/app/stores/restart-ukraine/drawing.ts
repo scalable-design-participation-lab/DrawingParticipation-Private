@@ -1,21 +1,21 @@
-import { defineStore } from 'pinia';
-import { ref, reactive } from 'vue';
-import { useUserStore } from './user';
-import { useSideBarStore } from './sidebar';
+import { defineStore } from 'pinia'
+import { reactive, ref } from 'vue'
+import { useUserStore } from './user'
+import { useSideBarStore } from './sidebar'
 
-export const useDrawingStore = defineStore("drawing", () => {
-  const drawEnable = ref(false);
-  const drawType = ref('Point');
-  const features = reactive([]);
-  const isProhibitDrawing = ref(false);
+export const useDrawingStore = defineStore('drawing', () => {
+  const drawEnable = ref(false)
+  const drawType = ref('Point')
+  const features = reactive([])
+  const isProhibitDrawing = ref(false)
   const { currentBelongingIcon, currentSafetyIcon, currentEnvironmentIcon } = useSideBarStore()
   const { currentFrequency, setFrequency } = useSideBarStore()
   const { userData } = useUserStore()
 
   function activateDrawing(type: string) {
     setFrequency(type)
-    drawType.value = type;
-    drawEnable.value = true;
+    drawType.value = type
+    drawEnable.value = true
   }
 
   function handleDrawEnd(event) {
@@ -30,67 +30,70 @@ export const useDrawingStore = defineStore("drawing", () => {
         features.push({
           id: Date.now(),
           type: 'Point',
-          coordinates: coordinates,
+          coordinates,
           isProhibit: true,
           comment: '',
           name: userData.value
             ? {
-              firstname: userData.value.firstname,
-              lastname: userData.value.lastname,
-            }
+                firstname: userData.value.firstname,
+                lastname: userData.value.lastname,
+              }
             : null,
-          timestamp: timestamp,
+          timestamp,
         })
         isProhibitDrawing.value = false
-      } else {
+      }
+      else {
         features.push({
           id: Date.now(),
           type: 'Point',
-          coordinates: coordinates,
+          coordinates,
           iconName:
-            currentBelongingIcon.value ||
-            currentSafetyIcon.value ||
-            currentEnvironmentIcon.value,
+            currentBelongingIcon.value
+            || currentSafetyIcon.value
+            || currentEnvironmentIcon.value,
           frequency: currentFrequency,
           comment: '',
           name: userData.value
             ? {
-              firstname: userData.value.firstname,
-              lastname: userData.value.lastname,
-            }
+                firstname: userData.value.firstname,
+                lastname: userData.value.lastname,
+              }
             : null,
-          timestamp: timestamp,
+          timestamp,
         })
       }
-    } else if (geometryType === 'LineString') {
+    }
+    else if (geometryType === 'LineString') {
       const coordinates = feature.getGeometry().getCoordinates()
       features.push({
         id: Date.now(),
         type: 'LineString',
-        coordinates: coordinates,
+        coordinates,
         comment: '',
         name: userData.value
           ? {
-            firstname: userData.value.firstname,
-            lastname: userData.value.lastname,
-          }
+              firstname: userData.value.firstname,
+              lastname: userData.value.lastname,
+            }
           : null,
-        timestamp: timestamp,
+        timestamp,
       })
-    } else if (geometryType === 'Polygon') {
+    }
+    else if (geometryType === 'Polygon') {
       const coordinates = feature.getGeometry().getCoordinates()
       features.push({
         id: Date.now(),
         type: 'Polygon',
-        coordinates: coordinates,
+        coordinates,
         comment: '',
         name: userData.value
           ? {
-            firstname: userData.value.firstname,
-            lastname: userData.value.lastname,
-          }
+              firstname: userData.value.firstname,
+              lastname: userData.value.lastname,
+            }
           : null,
-        timestamp: timestamp,
+        timestamp,
       })
     }
 
@@ -152,7 +155,7 @@ export const useDrawingStore = defineStore("drawing", () => {
     activateEnvironmentDrawing,
     activatePolygonDrawing,
     activateLineStringDrawing,
-    activateProhibitDrawing
+    activateProhibitDrawing,
 
-  };
-});
+  }
+})
