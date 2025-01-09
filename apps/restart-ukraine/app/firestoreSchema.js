@@ -2,16 +2,16 @@ const db = {
   'restart-ukraine-test': {
     users: {
       userId: {
-        name: { lastname: 'lovelace', firstname: 'ada' },
-        age: 100,
-        gender: 'female',
+        'name': { lastname: 'lovelace', firstname: 'ada' },
+        'age': 100,
+        'gender': 'female',
         'education level': 'college',
         'resident since': '5 years',
         'resident near river since': '2022',
       },
     },
   },
-  projects: {
+  'projects': {
     projectId: {
       userId: {
         name: { lastname: 'lovelace', firstname: 'ada' },
@@ -160,7 +160,7 @@ const db = {
           ],
         },
         environment: {
-          pollution: [
+          'pollution': [
             {
               lat: 40.7128,
               lon: 74.006,
@@ -176,7 +176,7 @@ const db = {
               comment: 'some',
             },
           ],
-          trash: [
+          'trash': [
             {
               lat: 40.7128,
               lon: 74.006,

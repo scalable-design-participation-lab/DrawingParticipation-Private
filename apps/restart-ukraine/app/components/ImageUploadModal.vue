@@ -1,39 +1,84 @@
 <template>
-  <UCard v-if="isVisible" class="w-64 bg-black rounded-lg shadow-lg flex flex-col">
+  <UCard
+    v-if="isVisible"
+    class="w-64 bg-black rounded-lg shadow-lg flex flex-col"
+  >
     <div class="p-3">
       <div v-if="selectedImage" class="mb-3">
-        <img :src="selectedImage" alt="Selected image" class="w-full h-32 object-cover rounded" />
+        <img
+          :src="selectedImage"
+          alt="Selected image"
+          class="w-full h-32 object-cover rounded"
+        />
       </div>
-      <div class="relative w-full h-32 bg-slate-800 rounded overflow-hidden mb-3">
-        <div class="absolute inset-0 flex flex-col items-center justify-center text-gray-400">
+      <div
+        class="relative w-full h-32 bg-slate-800 rounded overflow-hidden mb-3"
+      >
+        <div
+          class="absolute inset-0 flex flex-col items-center justify-center text-gray-400"
+        >
           <UIcon name="i-heroicons-arrow-up-tray" class="w-12 h-12 mb-2" />
           <p class="text-sm text-center px-4">
             натисніть для вибору зображення
           </p>
         </div>
-        <input type="file" accept="image/*" multiple class="absolute inset-0 opacity-0 cursor-pointer"
-          @change="handleImageSelect" />
+        <input
+          type="file"
+          accept="image/*"
+          multiple
+          class="absolute inset-0 opacity-0 cursor-pointer"
+          @change="handleImageSelect"
+        />
       </div>
       <div v-for="(image, index) in images" :key="index" class="mb-2">
         <div class="flex justify-between items-center text-white text-sm mb-1">
           <span class="truncate max-w-[180px]">{{ image.name }}</span>
-          <UIcon v-if="image.status === 'success'" name="i-heroicons-check" class="text-green-500 ml-2 flex-shrink-0" />
-          <UIcon v-else-if="image.status === 'error'" name="i-heroicons-x-mark"
-            class="text-red-500 ml-2 flex-shrink-0 cursor-pointer" @click="removeImage(index)" />
-          <UIcon v-else name="i-heroicons-arrow-path" class="text-yellow-500 ml-2 flex-shrink-0 animate-spin" />
+          <UIcon
+            v-if="image.status === 'success'"
+            name="i-heroicons-check"
+            class="text-green-500 ml-2 flex-shrink-0"
+          />
+          <UIcon
+            v-else-if="image.status === 'error'"
+            name="i-heroicons-x-mark"
+            class="text-red-500 ml-2 flex-shrink-0 cursor-pointer"
+            @click="removeImage(index)"
+          />
+          <UIcon
+            v-else
+            name="i-heroicons-arrow-path"
+            class="text-yellow-500 ml-2 flex-shrink-0 animate-spin"
+          />
         </div>
-        <UProgress :value="image.progress" :color="getProgressColor(image.status)" size="xs" />
+        <UProgress
+          :value="image.progress"
+          :color="getProgressColor(image.status)"
+          size="xs"
+        />
       </div>
 
-      <UTextarea v-model="localComment" placeholder="Напишіть коментар" class="flex-grow text-sm resize-none mt-4" />
+      <UTextarea
+        v-model="localComment"
+        placeholder="Напишіть коментар"
+        class="flex-grow text-sm resize-none mt-4"
+      />
 
       <div class="flex justify-between mt-2">
-        <UButton color="gray" size="sm" variant="ghost" class="w-[48%] rounded-full flex justify-center"
-          @click="closePopup">
+        <UButton
+          color="gray"
+          size="sm"
+          variant="ghost"
+          class="w-[48%] rounded-full flex justify-center"
+          @click="closePopup"
+        >
           Закрити
         </UButton>
-        <UButton color="primary" size="sm" class="w-[48%] rounded-full flex justify-center"
-          @click="addCommentAndUpload">
+        <UButton
+          color="primary"
+          size="sm"
+          class="w-[48%] rounded-full flex justify-center"
+          @click="addCommentAndUpload"
+        >
           {{ existingComment ? 'Оновити' : 'Додати' }}
         </UButton>
       </div>

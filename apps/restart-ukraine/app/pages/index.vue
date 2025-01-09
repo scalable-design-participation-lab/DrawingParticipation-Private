@@ -132,17 +132,38 @@ onMounted(() => {
     <!-- Main Content -->
     <div v-show="!isLoading">
       <SideBar class="z-30" />
-      <BackgroundMap :class="{ 'filter blur-md': isMapBlurred }" :show-all-plus-icons="true"
-        :show-comment-icons="false" />
-      <GeneralizedHeader class="z-20" :left-items="leftItems" :right-items="rightItems"
-        logo-src="/restart-logo-icon.svg" logo-alt="Restart Agency Logo" logo-link="https://www.restartfuture.org/" />
+      <BackgroundMap
+        :class="{ 'filter blur-md': isMapBlurred }"
+        :show-all-plus-icons="true"
+        :show-comment-icons="false"
+      />
+      <GeneralizedHeader
+        class="z-20"
+        :left-items="leftItems"
+        :right-items="rightItems"
+        logo-src="/restart-logo-icon.svg"
+        logo-alt="Restart Agency Logo"
+        logo-link="https://www.restartfuture.org/"
+      />
       <GeneralizedFooter class="z-20" />
-      <OnboardingModal :is-visible="showOnboarding" @show-registration="handleShowRegistration" />
-      <RegistrationModal :is-visible="showRegistration" @close="handleCloseRegistration" />
-      <div v-if="isMapBlurred" class="absolute inset-0 bg-black bg-opacity-50 z-40"
-        @click.self="userStore.showRegistration = true" />
+      <OnboardingModal
+        :is-visible="showOnboarding"
+        @show-registration="handleShowRegistration"
+      />
+      <RegistrationModal
+        :is-visible="showRegistration"
+        @close="handleCloseRegistration"
+      />
+      <div
+        v-if="isMapBlurred"
+        class="absolute inset-0 bg-black bg-opacity-50 z-40"
+        @click.self="userStore.showRegistration = true"
+      />
       <Teleport to="body">
-        <DownloadModalHurtoma v-model="showDownloadModal" @download="handleDownload" />
+        <DownloadModalHurtoma
+          v-model="showDownloadModal"
+          @download="handleDownload"
+        />
       </Teleport>
     </div>
   </div>

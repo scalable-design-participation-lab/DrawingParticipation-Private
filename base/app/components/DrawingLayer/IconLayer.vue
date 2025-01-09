@@ -128,9 +128,9 @@ function handleSelect(event, feature) {
     const coordinates = olFeature.getGeometry().getCoordinates()
 
     const feature = props.features.find(
-      (f) =>
-        Math.abs(f.coordinates[0] - coordinates[0]) < 0.0000001 &&
-        Math.abs(f.coordinates[1] - coordinates[1]) < 0.0000001,
+      f =>
+        Math.abs(f.coordinates[0] - coordinates[0]) < 0.0000001
+        && Math.abs(f.coordinates[1] - coordinates[1]) < 0.0000001,
     )
 
     if (feature) {
@@ -158,14 +158,14 @@ function shouldShowPlusIcon(feature) {
       return true
     }
     if (
-      belongingSubwindow === 1 &&
-      ['heart', 'smile', 'dislike'].includes(feature.iconName)
+      belongingSubwindow === 1
+      && ['heart', 'smile', 'dislike'].includes(feature.iconName)
     ) {
       return true
     }
     if (
-      safetySubwindow === 1 &&
-      ['broken', 'calm', 'lock'].includes(feature.iconName)
+      safetySubwindow === 1
+      && ['broken', 'calm', 'lock'].includes(feature.iconName)
     ) {
       return true
     }
@@ -197,6 +197,8 @@ function handleCommentIconClick(feature, event) {
   emit('show-comment-display', { feature, position: iconPosition })
 }
 </script>
+
+
 
 <style scoped>
 .plus-icon-container {

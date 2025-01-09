@@ -84,9 +84,8 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
+import { useMapUIStore } from '@/stores/mapUI'
 import { click } from 'ol/events/condition'
-import { useFeatureStore } from '../../stores/restart-ukraine/features'
-import { useSideBarStore } from '~/stores/restart-ukraine/sidebar'
 
 const props = defineProps({
   showAllPlusIcons: {
@@ -109,18 +108,17 @@ const props = defineProps({
 
 const emit = defineEmits(['toggle-comment-popup', 'show-comment-display'])
 
-const featureStore = useFeatureStore()
-const sidebarStore = useSideBarStore()
+const mapUIStore = useMapUIStore()
 
 const polygonFeatures = computed(() =>
- featureStore.features.filter((feature) => feature.type === 'Polygon'),
+  mapUIStore.features.filter((feature) => feature.type === 'Polygon'),
 )
 
 const visiblePolygonFeatures = computed(() => {
   if (props.showAllPlusIcons) {
     return polygonFeatures.value
   }
-  const spaceSubwindow = sidebarStore.spaceSubwindow
+  const spaceSubwindow = mapUIStore.spaceSubwindow
   return spaceSubwindow === 2 ? polygonFeatures.value : []
 })
 
@@ -171,7 +169,7 @@ function handleSelect(event) {
 
 function handleDeleteClick(feature) {
   if (confirm('Ви впевнені, що хочете видалити цю відмітку?')) {
-    featureStore.deleteFeature(feature.id)
+    mapUIStore.deleteFeature(feature.id)
   }
 }
 

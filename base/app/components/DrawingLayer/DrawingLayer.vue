@@ -1,10 +1,18 @@
 <template>
   <ol-vector-layer>
     <ol-source-vector :projection="projection">
-      <ol-interaction-draw v-if="drawEnable" :type="drawType" @drawend="handleDrawEnd" @drawstart="handleDrawStart">
+      <ol-interaction-draw
+        v-if="drawEnable"
+        :type="drawType"
+        @drawend="handleDrawEnd"
+        @drawstart="handleDrawStart"
+      >
         <ol-style>
-          <ol-style-stroke :color="getDrawColor" :width="2"
-            :line-dash="drawType === 'LineString' ? [6, 6] : undefined" />
+          <ol-style-stroke
+            :color="getDrawColor"
+            :width="2"
+            :line-dash="drawType === 'LineString' ? [6, 6] : undefined"
+          />
           <ol-style-fill :color="[0, 0, 0, 0]" />
           <ol-style-circle :radius="5">
             <ol-style-fill :color="getDrawColor" />
@@ -13,23 +21,44 @@
         </ol-style>
       </ol-interaction-draw>
 
-      <IconLayer :features="pointFeatures" :get-icon-for-feature="getIconForFeature"
-        :show-all-plus-icons="showAllPlusIcons" :show-comment-icons="showCommentIcons" :enable-click="enableClick"
-        :is-map-page="isMapPage" :show-delete-button="showDeleteButton" @toggle-comment-popup="toggleCommentModal"
-        @toggle-image-upload-popup="toggleImageUploadModal" @show-comment-display="handleShowCommentDisplay" />
+      <IconLayer
+        :features="pointFeatures"
+        :get-icon-for-feature="getIconForFeature"
+        :show-all-plus-icons="showAllPlusIcons"
+        :show-comment-icons="showCommentIcons"
+        :enable-click="enableClick"
+        :is-map-page="isMapPage"
+        :show-delete-button="showDeleteButton"
+        @toggle-comment-popup="toggleCommentModal"
+        @toggle-image-upload-popup="toggleImageUploadModal"
+        @show-comment-display="handleShowCommentDisplay"
+      />
 
-      <PolygonLayer :show-all-plus-icons="showAllPlusIcons" :show-comment-icons="showCommentIcons"
-        :enable-click="enableClick" :is-map-page="isMapPage" :show-delete-button="showDeleteButton"
-        @toggle-comment-popup="toggleCommentModal" @show-comment-display="handleShowCommentDisplay" />
-      <LineStringLayer :show-comment-icons="showCommentIcons" :enable-click="enableClick" :is-map-page="isMapPage"
-        :show-delete-button="showDeleteButton" @toggle-comment-popup="toggleCommentModal"
-        @show-comment-display="handleShowCommentDisplay" />
+      <PolygonLayer
+        :show-all-plus-icons="showAllPlusIcons"
+        :show-comment-icons="showCommentIcons"
+        :enable-click="enableClick"
+        :is-map-page="isMapPage"
+        :show-delete-button="showDeleteButton"
+        @toggle-comment-popup="toggleCommentModal"
+        @show-comment-display="handleShowCommentDisplay"
+      />
+      <LineStringLayer
+        :show-comment-icons="showCommentIcons"
+        :enable-click="enableClick"
+        :is-map-page="isMapPage"
+        :show-delete-button="showDeleteButton"
+        @toggle-comment-popup="toggleCommentModal"
+        @show-comment-display="handleShowCommentDisplay"
+      />
     </ol-source-vector>
   </ol-vector-layer>
 </template>
 
 <script setup lang="ts">
 import { computed } from 'vue'
+import { useDrawingStore } from '~/stores/restart-ukraine/drawing'
+import { useSideBarStore } from '~/stores/restart-ukraine/sidebar'
 import IconLayer from './IconLayer.vue'
 import PolygonLayer from './PolygonLayer.vue'
 import LineStringLayer from './LineStringLayer.vue'
@@ -49,8 +78,7 @@ import pollutionIcon from '@/assets/icons/pollution.svg'
 import leafIcon from '@/assets/icons/leaf.svg'
 import prohibitIcon from '@/assets/icons/prohibit.svg'
 import trashIcon from '@/assets/icons/trash.svg'
-import { useDrawingStore } from '~/stores/restart-ukraine/drawing'
-import { useSideBarStore } from '~/stores/restart-ukraine/sidebar'
+
 
 const props = defineProps({
   projection: {
@@ -93,7 +121,7 @@ const drawType = computed(() => drawStore.drawType)
 const currentColor = computed(() => sidebarStore.currentColor)
 
 const pointFeatures = computed(() =>
-  drawStore.features.filter((feature) => feature.type === 'Point'),
+  drawStore.features.filter(feature => feature.type === 'Point'),
 )
 
 function handleDrawStart(event) {
@@ -137,31 +165,31 @@ function getIconForFeature(feature) {
   }
 
   if (
-    featureTypeMap[Object.keys(feature).find((key) => feature[key] === true)]
+    featureTypeMap[Object.keys(feature).find(key => feature[key] === true)]
   ) {
     return featureTypeMap[
-      Object.keys(feature).find((key) => feature[key] === true)
+      Object.keys(feature).find(key => feature[key] === true)
     ]
   }
 
   // Map icon names to icons
   const iconMap = {
-    pollution: pollutionIcon,
-    leaf: leafIcon,
+    'pollution': pollutionIcon,
+    'leaf': leafIcon,
     'flora-fauna': leafIcon,
-    lock: lockIcon,
-    great: lockIcon,
-    calm: calmIcon,
-    safe: calmIcon,
-    broken: brokenIcon,
-    unsafe: brokenIcon,
-    dislike: dislikeIcon,
-    negative: dislikeIcon,
-    heart: heartIcon,
-    love: heartIcon,
-    smile: smileIcon,
-    positive: smileIcon,
-    trash: trashIcon,
+    'lock': lockIcon,
+    'great': lockIcon,
+    'calm': calmIcon,
+    'safe': calmIcon,
+    'broken': brokenIcon,
+    'unsafe': brokenIcon,
+    'dislike': dislikeIcon,
+    'negative': dislikeIcon,
+    'heart': heartIcon,
+    'love': heartIcon,
+    'smile': smileIcon,
+    'positive': smileIcon,
+    'trash': trashIcon,
   }
 
   if (feature.iconName && iconMap[feature.iconName]) {
@@ -171,13 +199,13 @@ function getIconForFeature(feature) {
   // Map frequencies to icons
   const frequencyMap = {
     'every day': blueIcon,
-    everyday: blueIcon,
+    'everyday': blueIcon,
     'every week': greenIcon,
-    everyweek: greenIcon,
-    sometimes: purpleIcon,
+    'everyweek': greenIcon,
+    'sometimes': purpleIcon,
     'only once': yellowIcon,
-    once: yellowIcon,
-    never: redIcon,
+    'once': yellowIcon,
+    'never': redIcon,
   }
 
   return frequencyMap[feature.frequency] || redIcon

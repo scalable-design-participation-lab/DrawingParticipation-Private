@@ -1,41 +1,87 @@
 <template>
-  <UCard
-    class="fixed right-6 top-24 w-96 md:w-80 max-h-[calc(100vh-11rem)] z-40 shadow-xl dark:bg-black flex flex-col overflow-hidden">
-    <div class="flex-1 overflow-y-scroll max-h-[calc(100vh-13rem)] px-1">
-      <UAccordion color="white" variant="solid" :items="menuItems" class="space-y-1.5">
+  <UCard 
+    class="fixed right-6 top-24 w-96 md:w-80 max-h-[calc(100vh-11rem)] z-40 shadow-xl dark:bg-black flex flex-col overflow-hidden"
+  >
+    <div 
+      class="flex-1 overflow-y-scroll max-h-[calc(100vh-13rem)] px-1"
+    >
+      <UAccordion
+        color="white"
+        variant="solid"
+        :items="menuItems"
+        class="space-y-1.5"
+      >
         <template #item="{ item }">
-          <SubWindow v-if="item.label === 'Середовище'" :current-subwindow="spaceSubwindow" :max-subwindow="4"
-            :progress-percentage="spaceProgressPercentage" :title="spaceContent.title" :icon="spaceContent.icon"
-            :paragraph="spaceContent.description" :button="spaceContent.button" :button-group="spaceContent.buttonGroup"
-            :icon-grid="spaceSubwindow === 4 ? prohibitIconGrid : null" @prev="sidebarStore.prevSpaceSubwindow()"
-            @next="sidebarStore.nextSpaceSubwindow()">
+          <SubWindow
+            v-if="item.label === 'Середовище'"
+            :current-subwindow="spaceSubwindow"
+            :max-subwindow="4"
+            :progress-percentage="spaceProgressPercentage"
+            :title="spaceContent.title"
+            :icon="spaceContent.icon"
+            :paragraph="spaceContent.description"
+            :button="spaceContent.button"
+            :button-group="spaceContent.buttonGroup"
+            :icon-grid="spaceSubwindow === 4 ? prohibitIconGrid : null"
+            @prev="sidebarStore.prevSpaceSubwindow()"
+            @next="sidebarStore.nextSpaceSubwindow()"
+          >
           </SubWindow>
-          <SubWindow v-if="item.label === 'Приналежність'" :current-subwindow="belongingSubwindow" :max-subwindow="1"
-            :progress-percentage="belongingProgressPercentage" :title="belongingContent.title"
-            :icon="belongingContent.icon" :paragraph="belongingContent.description"
-            :icon-grid="belongingSubwindow === 1 ? belongingIconGrid : null" @prev="prevBelongingSubwindow"
-            @next="nextBelongingSubwindow">
+          <SubWindow
+            v-if="item.label === 'Приналежність'"
+            :current-subwindow="belongingSubwindow"
+            :max-subwindow="1"
+            :progress-percentage="belongingProgressPercentage"
+            :title="belongingContent.title"
+            :icon="belongingContent.icon"
+            :paragraph="belongingContent.description"
+            :icon-grid="belongingSubwindow === 1 ? belongingIconGrid : null"
+            @prev="prevBelongingSubwindow"
+            @next="nextBelongingSubwindow"
+          >
           </SubWindow>
-          <SubWindow v-if="item.label === 'Безпека'" :current-subwindow="safetySubwindow" :max-subwindow="1"
-            :progress-percentage="safetyProgressPercentage" :title="safetyContent.title" :icon="safetyContent.icon"
-            :paragraph="safetyContent.description" :icon-grid="safetySubwindow === 1 ? safetyIconGrid : null"
-            @prev="prevSafetySubwindow" @next="nextSafetySubwindow">
+          <SubWindow
+            v-if="item.label === 'Безпека'"
+            :current-subwindow="safetySubwindow"
+            :max-subwindow="1"
+            :progress-percentage="safetyProgressPercentage"
+            :title="safetyContent.title"
+            :icon="safetyContent.icon"
+            :paragraph="safetyContent.description"
+            :icon-grid="safetySubwindow === 1 ? safetyIconGrid : null"
+            @prev="prevSafetySubwindow"
+            @next="nextSafetySubwindow"
+          >
           </SubWindow>
-          <SubWindow v-if="item.label === 'Екологія'" :current-subwindow="environmentSubwindow" :max-subwindow="2"
-            :progress-percentage="environmentProgressPercentage" :title="environmentContent.title"
-            :icon="environmentContent.icon" :paragraph="environmentContent.description" :icon-grid="environmentSubwindow === 1
+          <SubWindow
+            v-if="item.label === 'Екологія'"
+            :current-subwindow="environmentSubwindow"
+            :max-subwindow="2"
+            :progress-percentage="environmentProgressPercentage"
+            :title="environmentContent.title"
+            :icon="environmentContent.icon"
+            :paragraph="environmentContent.description"
+            :icon-grid="
+              environmentSubwindow === 1
                 ? pollutionIconGrid
                 : environmentSubwindow === 2
                   ? leafIconGrid
                   : null
-              " @prev="prevEnvironmentSubwindow" @next="nextEnvironmentSubwindow">
+            "
+            @prev="prevEnvironmentSubwindow"
+            @next="nextEnvironmentSubwindow"
+          >
           </SubWindow>
         </template>
       </UAccordion>
-
+      
       <UButton
         class="my-2 py-3 px-6 rounded-full flex place-self-end hover:bg-gray-300 hover:text-black dark:hover:bg-zinc-700 dark:hover:text-white"
-        color="black" :loading="isSaving" :disabled="isSaving" @click="saveData">
+        color="black"
+        :loading="isSaving"
+        :disabled="isSaving"
+        @click="saveData"
+      >
         {{ isSaving ? 'подаючи...' : 'завершити' }}
       </UButton>
       <ThankYouModal v-model="showThankYouModal" />
