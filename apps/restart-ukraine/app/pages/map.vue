@@ -1,22 +1,11 @@
 <template>
   <div class="map-container">
-    <GeneralizedHeader
-      class="z-20"
-      :left-items="leftItems"
-      :right-items="rightItems"
-      logo-src="/restart-logo-icon.svg"
-      logo-alt="Restart Agency Logo"
-      logo-link="https://www.restartfuture.org/"
-    />
+    <GeneralizedHeader class="z-20" :left-items="leftItems" :right-items="rightItems" logo-src="/restart-logo-icon.svg"
+      logo-alt="Restart Agency Logo" logo-link="https://www.restartfuture.org/" />
     <div class="map-wrapper">
-      <BackgroundMap
-        :show-all-plus-icons="false"
-        :show-comment-icons="true"
-        :model-value="showCommentDisplay"
-        :selected-feature="selectedFeature"
-        @show-comment-display="handleShowCommentDisplay"
-        @update:model-value="updateShowCommentDisplay"
-      />
+      <BackgroundMap :show-all-plus-icons="false" :show-comment-icons="true" :model-value="showCommentDisplay"
+        :selected-feature="selectedFeature" @show-comment-display="handleShowCommentDisplay"
+        @update:model-value="updateShowCommentDisplay" />
     </div>
     <GeneralizedFooter class="footer-fixed" />
 
@@ -27,12 +16,14 @@
 <script setup lang="ts">
 import { onMounted, ref, computed, watch } from 'vue'
 import { useRoute } from 'vue-router'
-import MapIntroModal from '~/components/MapIntroModal.vue'
-import { useMapUIStore } from '@/stores/mapUI'
+import MapIntroModal from '../components/MapIntroModal.vue'
 import { useFirestore } from 'vuefire'
 import { collection, getDocs } from 'firebase/firestore'
+import { useMapStore } from '@restartUkraine/map'
+import { useFeatureStore } from '@restartUkraine/features'
 
-const mapUIStore = useMapUIStore()
+const featureStore = useFeatureStore()
+const mapStore = useMapStore()
 const db = useFirestore()
 const route = useRoute()
 const showIntroModal = ref(false)
@@ -73,7 +64,7 @@ const rightItems = ref([
     onClick: () => {
       currentMapType.value =
         currentMapType.value === 'light' ? 'satellite' : 'light'
-      mapUIStore.setMapType(currentMapType.value)
+      mapStore.setMapType(currentMapType.value)
     },
   },
 ])
@@ -88,7 +79,7 @@ onMounted(async () => {
     // Process space data including prohibit points
     if (Array.isArray(projectData.space.prohibit)) {
       projectData.space.prohibit.forEach((point) => {
-        mapUIStore.addFeature({
+        featureStore.addFeature({
           type: 'Point',
           coordinates: [point.lon, point.lat],
           isProhibit: true,
@@ -108,7 +99,7 @@ onMounted(async () => {
         frequency !== 'restricted'
       ) {
         projectData.space[frequency].forEach((point) => {
-          mapUIStore.addFeature({
+          featureStore.addFeature({
             type: 'Point',
             coordinates: [point.lon, point.lat],
             frequency: frequency,
@@ -123,7 +114,7 @@ onMounted(async () => {
     // Process space.recreational data (Polygons)
     if (Array.isArray(projectData.space.recreational)) {
       projectData.space.recreational.forEach((polygon) => {
-        mapUIStore.addFeature({
+        featureStore.addFeature({
           type: 'Polygon',
           coordinates: JSON.parse(polygon.geometry),
           comment: polygon.comment,
@@ -136,7 +127,7 @@ onMounted(async () => {
     // Process space.restricted data (LineStrings)
     if (Array.isArray(projectData.space.restricted)) {
       projectData.space.restricted.forEach((lineString) => {
-        mapUIStore.addFeature({
+        featureStore.addFeature({
           type: 'LineString',
           coordinates: JSON.parse(lineString.geometry),
           comment: lineString.comment,
@@ -150,7 +141,7 @@ onMounted(async () => {
     Object.keys(projectData.belonging).forEach((key) => {
       if (Array.isArray(projectData.belonging[key])) {
         projectData.belonging[key].forEach((point) => {
-          mapUIStore.addFeature({
+          featureStore.addFeature({
             type: 'Point',
             coordinates: [point.lon, point.lat],
             iconName: key,
@@ -166,7 +157,7 @@ onMounted(async () => {
     Object.keys(projectData.safety).forEach((key) => {
       if (Array.isArray(projectData.safety[key])) {
         projectData.safety[key].forEach((point) => {
-          mapUIStore.addFeature({
+          featureStore.addFeature({
             type: 'Point',
             coordinates: [point.lon, point.lat],
             iconName: key,
@@ -182,7 +173,7 @@ onMounted(async () => {
     Object.keys(projectData.environment).forEach((key) => {
       if (Array.isArray(projectData.environment[key])) {
         projectData.environment[key].forEach((point) => {
-          mapUIStore.addFeature({
+          featureStore.addFeature({
             type: 'Point',
             coordinates: [point.lon, point.lat],
             iconName: key,

@@ -75,8 +75,9 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import { useMapUIStore } from '@/stores/mapUI'
 import { click } from 'ol/events/condition'
+import { useFeatureStore } from '~/stores/restart-ukraine/features'
+import { useSideBarStore } from '~/stores/restart-ukraine/sidebar'
 
 const props = defineProps({
   features: {
@@ -115,7 +116,8 @@ const emit = defineEmits([
   'show-comment-display',
 ])
 
-const mapUIStore = useMapUIStore()
+const featureStore = useFeatureStore()
+const subwindowStore = useSideBarStore()
 
 const clickCondition = click
 
@@ -146,10 +148,10 @@ function shouldShowPlusIcon(feature) {
     return true
   }
 
-  const spaceSubwindow = mapUIStore.spaceSubwindow
-  const belongingSubwindow = mapUIStore.belongingSubwindow
-  const safetySubwindow = mapUIStore.safetySubwindow
-  const environmentSubwindow = mapUIStore.environmentSubwindow
+  const spaceSubwindow = subwindowStore.spaceSubwindow
+  const belongingSubwindow = subwindowStore.belongingSubwindow
+  const safetySubwindow = subwindowStore.safetySubwindow
+  const environmentSubwindow = subwindowStore.environmentSubwindow
 
   if (feature.type === 'Point') {
     if (spaceSubwindow === 1 && !feature.iconName) {
@@ -186,7 +188,7 @@ function handlePlusIconClick(feature) {
 function handleDeleteClick(feature) {
   // Add confirmation dialog
   if (confirm('Ви впевнені, що хочете видалити цю відмітку?')) {
-    mapUIStore.deleteFeature(feature.id)
+    featureStore.deleteFeature(feature.id)
   }
 }
 

@@ -68,8 +68,8 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import { useMapUIStore } from '@/stores/mapUI'
 import { click } from 'ol/events/condition'
+import { useFeatureStore } from '~/stores/restart-ukraine/features'
 
 const props = defineProps({
   enableClick: {
@@ -88,11 +88,11 @@ const props = defineProps({
 
 const emit = defineEmits(['toggle-comment-popup', 'show-comment-display'])
 
-const mapUIStore = useMapUIStore()
+const featureStore = useFeatureStore()
 const clickCondition = click
 
 const lineStringFeatures = computed(() =>
-  mapUIStore.features.filter((feature) => feature.type === 'LineString'),
+  featureStore.features.filter((feature) => feature.type === 'LineString'),
 )
 
 function getLineStringStartPoint(feature) {
@@ -119,7 +119,7 @@ function handleIconClick(feature) {
 
 function handleDeleteClick(feature) {
   if (confirm('Ви впевнені, що хочете видалити цю відмітку?')) {
-    mapUIStore.deleteFeature(feature.id)
+    featureStore.deleteFeature(feature.id)
   }
 }
 

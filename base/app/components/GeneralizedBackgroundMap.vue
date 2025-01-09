@@ -1,11 +1,11 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue'
 import { useRuntimeConfig } from '#app'
-import { useMapUIStore } from '@/stores/mapUI'
+import { useMapStore } from '~/stores/restart-ukraine/map'
 
 const props = defineProps({
   center: {
-    type: Array as PropType<[number, number]>,
+    type: Object as PropType<[number, number]>,
     default: () => [3172858.2941718884, 6317486.347640147],
   },
   zoom: {
@@ -57,8 +57,8 @@ const props = defineProps({
 const emit = defineEmits(['map-click'])
 
 const config = useRuntimeConfig()
-const mapUIStore = useMapUIStore()
-const { mapType } = storeToRefs(mapUIStore)
+const { mapType } = storeToRefs(useMapStore());
+console.log("Map type", mapType)
 const mapInstance = ref(null)
 
 const colorMode = useColorMode()
@@ -93,42 +93,17 @@ defineExpose({
 </script>
 
 <template>
-  <ol-map
-    ref="mapInstance"
-    :load-tiles-while-animating="true"
-    :load-tiles-while-interacting="true"
-    :controls="[]"
-    :style="{ width: '100%', height: mapHeight }"
-    @click="handleMapClick"
-  >
-    <ol-zoom-control
-      v-if="showZoomControl"
-      class="custom-zoom-control"
-      zoom-in-label="➕"
-      zoom-out-label="➖"
-      :duration="250"
-    />
+  <ol-map ref="mapInstance" :load-tiles-while-animating="true" :load-tiles-while-interacting="true" :controls="[]"
+    :style="{ width: '100%', height: mapHeight }" @click="handleMapClick">
+    <ol-zoom-control v-if="showZoomControl" class="custom-zoom-control" zoom-in-label="➕" zoom-out-label="➖"
+      :duration="250" />
 
-    <ol-view
-      ref="view"
-      :center="center"
-      :zoom="zoom"
-      :projection="projection"
-      :rotation="rotation"
-      :pitch="pitch"
-      :bearing="bearing"
-      :max-zoom="maxZoom"
-      :min-zoom="minZoom"
-    />
+    <ol-view ref="view" :center="center" :zoom="zoom" :projection="projection" :rotation="rotation" :pitch="pitch"
+      :bearing="bearing" :max-zoom="maxZoom" :min-zoom="minZoom" />
 
     <ol-tile-layer>
-      <ol-source-xyz
-        :url="mapboxUrl"
-        :attributions="mapboxAttribution"
-        :max-zoom="19"
-        :tile-size="512"
-        :tile-pixel-ratio="2"
-      />
+      <ol-source-xyz :url="mapboxUrl" :attributions="mapboxAttribution" :max-zoom="19" :tile-size="512"
+        :tile-pixel-ratio="2" />
     </ol-tile-layer>
 
     <!-- Slot for additional layers -->

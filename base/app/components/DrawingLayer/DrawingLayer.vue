@@ -1,18 +1,10 @@
 <template>
   <ol-vector-layer>
     <ol-source-vector :projection="projection">
-      <ol-interaction-draw
-        v-if="drawEnable"
-        :type="drawType"
-        @drawend="handleDrawEnd"
-        @drawstart="handleDrawStart"
-      >
+      <ol-interaction-draw v-if="drawEnable" :type="drawType" @drawend="handleDrawEnd" @drawstart="handleDrawStart">
         <ol-style>
-          <ol-style-stroke
-            :color="getDrawColor"
-            :width="2"
-            :line-dash="drawType === 'LineString' ? [6, 6] : undefined"
-          />
+          <ol-style-stroke :color="getDrawColor" :width="2"
+            :line-dash="drawType === 'LineString' ? [6, 6] : undefined" />
           <ol-style-fill :color="[0, 0, 0, 0]" />
           <ol-style-circle :radius="5">
             <ol-style-fill :color="getDrawColor" />
@@ -21,43 +13,23 @@
         </ol-style>
       </ol-interaction-draw>
 
-      <IconLayer
-        :features="pointFeatures"
-        :get-icon-for-feature="getIconForFeature"
-        :show-all-plus-icons="showAllPlusIcons"
-        :show-comment-icons="showCommentIcons"
-        :enable-click="enableClick"
-        :is-map-page="isMapPage"
-        :show-delete-button="showDeleteButton"
-        @toggle-comment-popup="toggleCommentModal"
-        @toggle-image-upload-popup="toggleImageUploadModal"
-        @show-comment-display="handleShowCommentDisplay"
-      />
+      <IconLayer :features="pointFeatures" :get-icon-for-feature="getIconForFeature"
+        :show-all-plus-icons="showAllPlusIcons" :show-comment-icons="showCommentIcons" :enable-click="enableClick"
+        :is-map-page="isMapPage" :show-delete-button="showDeleteButton" @toggle-comment-popup="toggleCommentModal"
+        @toggle-image-upload-popup="toggleImageUploadModal" @show-comment-display="handleShowCommentDisplay" />
 
-      <PolygonLayer
-        :show-all-plus-icons="showAllPlusIcons"
-        :show-comment-icons="showCommentIcons"
-        :enable-click="enableClick"
-        :is-map-page="isMapPage"
-        :show-delete-button="showDeleteButton"
-        @toggle-comment-popup="toggleCommentModal"
-        @show-comment-display="handleShowCommentDisplay"
-      />
-      <LineStringLayer
-        :show-comment-icons="showCommentIcons"
-        :enable-click="enableClick"
-        :is-map-page="isMapPage"
-        :show-delete-button="showDeleteButton"
-        @toggle-comment-popup="toggleCommentModal"
-        @show-comment-display="handleShowCommentDisplay"
-      />
+      <PolygonLayer :show-all-plus-icons="showAllPlusIcons" :show-comment-icons="showCommentIcons"
+        :enable-click="enableClick" :is-map-page="isMapPage" :show-delete-button="showDeleteButton"
+        @toggle-comment-popup="toggleCommentModal" @show-comment-display="handleShowCommentDisplay" />
+      <LineStringLayer :show-comment-icons="showCommentIcons" :enable-click="enableClick" :is-map-page="isMapPage"
+        :show-delete-button="showDeleteButton" @toggle-comment-popup="toggleCommentModal"
+        @show-comment-display="handleShowCommentDisplay" />
     </ol-source-vector>
   </ol-vector-layer>
 </template>
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import { useMapUIStore } from '@/stores/mapUI'
 import IconLayer from './IconLayer.vue'
 import PolygonLayer from './PolygonLayer.vue'
 import LineStringLayer from './LineStringLayer.vue'
@@ -77,6 +49,8 @@ import pollutionIcon from '@/assets/icons/pollution.svg'
 import leafIcon from '@/assets/icons/leaf.svg'
 import prohibitIcon from '@/assets/icons/prohibit.svg'
 import trashIcon from '@/assets/icons/trash.svg'
+import { useDrawingStore } from '~/stores/restart-ukraine/drawing'
+import { useSideBarStore } from '~/stores/restart-ukraine/sidebar'
 
 const props = defineProps({
   projection: {
@@ -111,22 +85,23 @@ const emit = defineEmits([
   'show-comment-display',
 ])
 
-const mapUIStore = useMapUIStore()
+const drawStore = useDrawingStore()
+const sidebarStore = useSideBarStore()
 
-const drawEnable = computed(() => mapUIStore.drawEnable)
-const drawType = computed(() => mapUIStore.drawType)
-const currentColor = computed(() => mapUIStore.currentColor)
+const drawEnable = computed(() => drawStore.drawEnable)
+const drawType = computed(() => drawStore.drawType)
+const currentColor = computed(() => sidebarStore.currentColor)
 
 const pointFeatures = computed(() =>
-  mapUIStore.features.filter((feature) => feature.type === 'Point'),
+  drawStore.features.filter((feature) => feature.type === 'Point'),
 )
 
 function handleDrawStart(event) {
-  mapUIStore.handleDrawStart(event)
+  drawStore.handleDrawStart(event)
 }
 
 function handleDrawEnd(event) {
-  mapUIStore.handleDrawEnd(event)
+  drawStore.handleDrawEnd(event)
 }
 
 const getDrawColor = computed(() => {

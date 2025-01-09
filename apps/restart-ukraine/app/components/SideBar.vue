@@ -1,87 +1,41 @@
 <template>
-  <UCard 
-    class="fixed right-6 top-24 w-96 md:w-80 max-h-[calc(100vh-11rem)] z-40 shadow-xl dark:bg-black flex flex-col overflow-hidden"
-  >
-    <div 
-      class="flex-1 overflow-y-scroll max-h-[calc(100vh-13rem)] px-1"
-    >
-      <UAccordion
-        color="white"
-        variant="solid"
-        :items="menuItems"
-        class="space-y-1.5"
-      >
+  <UCard
+    class="fixed right-6 top-24 w-96 md:w-80 max-h-[calc(100vh-11rem)] z-40 shadow-xl dark:bg-black flex flex-col overflow-hidden">
+    <div class="flex-1 overflow-y-scroll max-h-[calc(100vh-13rem)] px-1">
+      <UAccordion color="white" variant="solid" :items="menuItems" class="space-y-1.5">
         <template #item="{ item }">
-          <SubWindow
-            v-if="item.label === 'Середовище'"
-            :current-subwindow="spaceSubwindow"
-            :max-subwindow="4"
-            :progress-percentage="spaceProgressPercentage"
-            :title="spaceContent.title"
-            :icon="spaceContent.icon"
-            :paragraph="spaceContent.description"
-            :button="spaceContent.button"
-            :button-group="spaceContent.buttonGroup"
-            :icon-grid="spaceSubwindow === 4 ? prohibitIconGrid : null"
-            @prev="mapUIStore.prevSpaceSubwindow()"
-            @next="mapUIStore.nextSpaceSubwindow()"
-          >
+          <SubWindow v-if="item.label === 'Середовище'" :current-subwindow="spaceSubwindow" :max-subwindow="4"
+            :progress-percentage="spaceProgressPercentage" :title="spaceContent.title" :icon="spaceContent.icon"
+            :paragraph="spaceContent.description" :button="spaceContent.button" :button-group="spaceContent.buttonGroup"
+            :icon-grid="spaceSubwindow === 4 ? prohibitIconGrid : null" @prev="subwindowStore.prevSpaceSubwindow()"
+            @next="subwindowStore.nextSpaceSubwindow()">
           </SubWindow>
-          <SubWindow
-            v-if="item.label === 'Приналежність'"
-            :current-subwindow="belongingSubwindow"
-            :max-subwindow="1"
-            :progress-percentage="belongingProgressPercentage"
-            :title="belongingContent.title"
-            :icon="belongingContent.icon"
-            :paragraph="belongingContent.description"
-            :icon-grid="belongingSubwindow === 1 ? belongingIconGrid : null"
-            @prev="prevBelongingSubwindow"
-            @next="nextBelongingSubwindow"
-          >
+          <SubWindow v-if="item.label === 'Приналежність'" :current-subwindow="belongingSubwindow" :max-subwindow="1"
+            :progress-percentage="belongingProgressPercentage" :title="belongingContent.title"
+            :icon="belongingContent.icon" :paragraph="belongingContent.description"
+            :icon-grid="belongingSubwindow === 1 ? belongingIconGrid : null" @prev="prevBelongingSubwindow"
+            @next="nextBelongingSubwindow">
           </SubWindow>
-          <SubWindow
-            v-if="item.label === 'Безпека'"
-            :current-subwindow="safetySubwindow"
-            :max-subwindow="1"
-            :progress-percentage="safetyProgressPercentage"
-            :title="safetyContent.title"
-            :icon="safetyContent.icon"
-            :paragraph="safetyContent.description"
-            :icon-grid="safetySubwindow === 1 ? safetyIconGrid : null"
-            @prev="prevSafetySubwindow"
-            @next="nextSafetySubwindow"
-          >
+          <SubWindow v-if="item.label === 'Безпека'" :current-subwindow="safetySubwindow" :max-subwindow="1"
+            :progress-percentage="safetyProgressPercentage" :title="safetyContent.title" :icon="safetyContent.icon"
+            :paragraph="safetyContent.description" :icon-grid="safetySubwindow === 1 ? safetyIconGrid : null"
+            @prev="prevSafetySubwindow" @next="nextSafetySubwindow">
           </SubWindow>
-          <SubWindow
-            v-if="item.label === 'Екологія'"
-            :current-subwindow="environmentSubwindow"
-            :max-subwindow="2"
-            :progress-percentage="environmentProgressPercentage"
-            :title="environmentContent.title"
-            :icon="environmentContent.icon"
-            :paragraph="environmentContent.description"
-            :icon-grid="
-              environmentSubwindow === 1
+          <SubWindow v-if="item.label === 'Екологія'" :current-subwindow="environmentSubwindow" :max-subwindow="2"
+            :progress-percentage="environmentProgressPercentage" :title="environmentContent.title"
+            :icon="environmentContent.icon" :paragraph="environmentContent.description" :icon-grid="environmentSubwindow === 1
                 ? pollutionIconGrid
                 : environmentSubwindow === 2
                   ? leafIconGrid
                   : null
-            "
-            @prev="prevEnvironmentSubwindow"
-            @next="nextEnvironmentSubwindow"
-          >
+              " @prev="prevEnvironmentSubwindow" @next="nextEnvironmentSubwindow">
           </SubWindow>
         </template>
       </UAccordion>
-      
+
       <UButton
         class="my-2 py-3 px-6 rounded-full flex place-self-end hover:bg-gray-300 hover:text-black dark:hover:bg-zinc-700 dark:hover:text-white"
-        color="black"
-        :loading="isSaving"
-        :disabled="isSaving"
-        @click="saveData"
-      >
+        color="black" :loading="isSaving" :disabled="isSaving" @click="saveData">
         {{ isSaving ? 'подаючи...' : 'завершити' }}
       </UButton>
       <ThankYouModal v-model="showThankYouModal" />
@@ -110,7 +64,6 @@
 
 <script setup lang="ts">
 import { computed, ref } from 'vue'
-import { useMapUIStore } from '../stores/mapUI'
 import SubWindow from './SubWindow.vue'
 import { useRouter } from 'vue-router'
 import ThankYouModal from './ThankYouModal.vue'
@@ -125,14 +78,19 @@ import trashIcon from '@/assets/icons/trash.svg'
 import pollutionIcon from '@/assets/icons/pollution.svg'
 import leafIcon from '@/assets/icons/leaf.svg'
 import prohibitIcon from '@/assets/icons/prohibit.svg'
+import { useSideBarStore } from '@restartUkraine/sidebar'
+import { useDrawingStore } from '@restartUkraine/drawing'
+import { useDb } from '@restartUkraine/db'
 
-const mapUIStore = useMapUIStore()
+const drawingStore = useDrawingStore()
+const subwindowStore = useSideBarStore()
+const dbStore = useDb()
 const router = useRouter()
 
-const spaceSubwindow = computed(() => mapUIStore.spaceSubwindow)
-const belongingSubwindow = computed(() => mapUIStore.belongingSubwindow)
-const safetySubwindow = computed(() => mapUIStore.safetySubwindow)
-const environmentSubwindow = computed(() => mapUIStore.environmentSubwindow)
+const spaceSubwindow = computed(() => subwindowStore.spaceSubwindow)
+const belongingSubwindow = computed(() => subwindowStore.belongingSubwindow)
+const safetySubwindow = computed(() => subwindowStore.safetySubwindow)
+const environmentSubwindow = computed(() => subwindowStore.environmentSubwindow)
 
 const menuItems = [
   {
@@ -166,27 +124,27 @@ const spaceContent = computed(() => {
         {
           text: 'щодня',
           color: 'blue',
-          action: () => mapUIStore.activateDrawing('every day'),
+          action: () => drawingStore.activateDrawing('every day'),
         },
         {
           text: 'щотижня',
           color: 'green',
-          action: () => mapUIStore.activateDrawing('every week'),
+          action: () => drawingStore.activateDrawing('every week'),
         },
         {
           text: 'інколи',
           color: 'purple',
-          action: () => mapUIStore.activateDrawing('sometimes'),
+          action: () => drawingStore.activateDrawing('sometimes'),
         },
         {
           text: 'лише раз',
           color: 'yellow',
-          action: () => mapUIStore.activateDrawing('only once'),
+          action: () => drawingStore.activateDrawing('only once'),
         },
         {
           text: 'ніколи',
           color: 'red',
-          action: () => mapUIStore.activateDrawing('never'),
+          action: () => drawingStore.activateDrawing('never'),
         },
       ],
     },
@@ -197,7 +155,7 @@ const spaceContent = computed(() => {
       button: {
         text: 'додати',
         color: 'primary',
-        action: () => mapUIStore.activatePolygonDrawing(),
+        action: () => drawingStore.activatePolygonDrawing(),
       },
     },
     3: {
@@ -207,7 +165,7 @@ const spaceContent = computed(() => {
       button: {
         text: 'додати',
         color: 'red',
-        action: () => mapUIStore.activateLineStringDrawing(),
+        action: () => drawingStore.activateLineStringDrawing(),
       },
     },
     4: {
@@ -305,7 +263,7 @@ const environmentContent = computed(() => {
 
 const pollutionIconGrid = computed(() => ({
   icons: [
-  {
+    {
       name: 'trash',
       src: trashIcon,
       tooltip: 'сміття навколо',
@@ -346,47 +304,47 @@ const showSubmitButton = computed(() => {
 })
 
 function nextBelongingSubwindow() {
-  mapUIStore.nextBelongingSubwindow()
+  subwindowStore.nextBelongingSubwindow()
 }
 
 function prevBelongingSubwindow() {
-  mapUIStore.prevBelongingSubwindow()
+  subwindowStore.prevBelongingSubwindow()
 }
 
 function selectBelongingIcon(iconName: string) {
   console.log('Selected icon:', iconName)
-  mapUIStore.activateBelongingDrawing(iconName)
+  drawingStore.activateBelongingDrawing(iconName)
 }
 
 function nextSafetySubwindow() {
-  mapUIStore.nextSafetySubwindow()
+  subwindowStore.nextSafetySubwindow()
 }
 
 function prevSafetySubwindow() {
-  mapUIStore.prevSafetySubwindow()
+  subwindowStore.prevSafetySubwindow()
 }
 
 function selectSafetyIcon(iconName: string) {
   console.log('Selected safety icon:', iconName)
-  mapUIStore.activateSafetyDrawing(iconName)
+  drawingStore.activateSafetyDrawing(iconName)
 }
 
 function nextEnvironmentSubwindow() {
-  mapUIStore.nextEnvironmentSubwindow()
+  subwindowStore.nextEnvironmentSubwindow()
 }
 
 function prevEnvironmentSubwindow() {
-  mapUIStore.prevEnvironmentSubwindow()
+  subwindowStore.prevEnvironmentSubwindow()
 }
 
 function selectEnvironmentIcon(iconName: string) {
   console.log('Selected icon:', iconName)
-  mapUIStore.activateEnvironmentDrawing(iconName)
+  drawingStore.activateEnvironmentDrawing(iconName)
 }
 
 function selectProhibitIcon() {
   console.log('Selected prohibit icon')
-  mapUIStore.activateProhibitDrawing()
+  drawingStore.activateProhibitDrawing()
 }
 
 const isSaving = ref(false)
@@ -400,7 +358,7 @@ const showThankYouModal = ref(false)
 async function saveData() {
   isSaving.value = true
   try {
-    await mapUIStore.saveDataToDatabase()
+    await dbStore.saveDataToDatabase()
     showThankYouModal.value = true
   } catch (error) {
     console.error('Error submitting data to database:', error)
