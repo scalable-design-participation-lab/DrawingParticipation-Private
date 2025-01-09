@@ -7,8 +7,8 @@
           <SubWindow v-if="item.label === 'Середовище'" :current-subwindow="spaceSubwindow" :max-subwindow="4"
             :progress-percentage="spaceProgressPercentage" :title="spaceContent.title" :icon="spaceContent.icon"
             :paragraph="spaceContent.description" :button="spaceContent.button" :button-group="spaceContent.buttonGroup"
-            :icon-grid="spaceSubwindow === 4 ? prohibitIconGrid : null" @prev="subwindowStore.prevSpaceSubwindow()"
-            @next="subwindowStore.nextSpaceSubwindow()">
+            :icon-grid="spaceSubwindow === 4 ? prohibitIconGrid : null" @prev="sidebarStore.prevSpaceSubwindow()"
+            @next="sidebarStore.nextSpaceSubwindow()">
           </SubWindow>
           <SubWindow v-if="item.label === 'Приналежність'" :current-subwindow="belongingSubwindow" :max-subwindow="1"
             :progress-percentage="belongingProgressPercentage" :title="belongingContent.title"
@@ -83,14 +83,14 @@ import { useDrawingStore } from '@restartUkraine/drawing'
 import { useDb } from '@restartUkraine/db'
 
 const drawingStore = useDrawingStore()
-const subwindowStore = useSideBarStore()
+const sidebarStore = useSideBarStore()
 const dbStore = useDb()
 const router = useRouter()
 
-const spaceSubwindow = computed(() => subwindowStore.spaceSubwindow)
-const belongingSubwindow = computed(() => subwindowStore.belongingSubwindow)
-const safetySubwindow = computed(() => subwindowStore.safetySubwindow)
-const environmentSubwindow = computed(() => subwindowStore.environmentSubwindow)
+const spaceSubwindow = computed(() => sidebarStore.spaceSubwindow)
+const belongingSubwindow = computed(() => sidebarStore.belongingSubwindow)
+const safetySubwindow = computed(() => sidebarStore.safetySubwindow)
+const environmentSubwindow = computed(() => sidebarStore.environmentSubwindow)
 
 const menuItems = [
   {
@@ -304,11 +304,11 @@ const showSubmitButton = computed(() => {
 })
 
 function nextBelongingSubwindow() {
-  subwindowStore.nextBelongingSubwindow()
+  sidebarStore.nextBelongingSubwindow()
 }
 
 function prevBelongingSubwindow() {
-  subwindowStore.prevBelongingSubwindow()
+  sidebarStore.prevBelongingSubwindow()
 }
 
 function selectBelongingIcon(iconName: string) {
@@ -317,11 +317,11 @@ function selectBelongingIcon(iconName: string) {
 }
 
 function nextSafetySubwindow() {
-  subwindowStore.nextSafetySubwindow()
+  sidebarStore.nextSafetySubwindow()
 }
 
 function prevSafetySubwindow() {
-  subwindowStore.prevSafetySubwindow()
+  sidebarStore.prevSafetySubwindow()
 }
 
 function selectSafetyIcon(iconName: string) {
@@ -330,11 +330,11 @@ function selectSafetyIcon(iconName: string) {
 }
 
 function nextEnvironmentSubwindow() {
-  subwindowStore.nextEnvironmentSubwindow()
+  sidebarStore.nextEnvironmentSubwindow()
 }
 
 function prevEnvironmentSubwindow() {
-  subwindowStore.prevEnvironmentSubwindow()
+  sidebarStore.prevEnvironmentSubwindow()
 }
 
 function selectEnvironmentIcon(iconName: string) {

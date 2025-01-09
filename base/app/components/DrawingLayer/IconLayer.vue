@@ -117,7 +117,7 @@ const emit = defineEmits([
 ])
 
 const featureStore = useFeatureStore()
-const subwindowStore = useSideBarStore()
+const sidebarStore = useSideBarStore()
 
 const clickCondition = click
 
@@ -148,10 +148,10 @@ function shouldShowPlusIcon(feature) {
     return true
   }
 
-  const spaceSubwindow = subwindowStore.spaceSubwindow
-  const belongingSubwindow = subwindowStore.belongingSubwindow
-  const safetySubwindow = subwindowStore.safetySubwindow
-  const environmentSubwindow = subwindowStore.environmentSubwindow
+  const spaceSubwindow = sidebarStore.spaceSubwindow
+  const belongingSubwindow = sidebarStore.belongingSubwindow
+  const safetySubwindow = sidebarStore.safetySubwindow
+  const environmentSubwindow = sidebarStore.environmentSubwindow
 
   if (feature.type === 'Point') {
     if (spaceSubwindow === 1 && !feature.iconName) {
