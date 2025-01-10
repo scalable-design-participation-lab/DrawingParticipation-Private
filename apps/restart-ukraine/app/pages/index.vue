@@ -1,7 +1,8 @@
 <script setup lang="ts">
 import { computed, onMounted, ref } from 'vue'
-import { useUserStore } from '@restartUkraine/user'
-import { useMapStore } from '@restartUkraine/map'
+import { useUserStore } from '@base/stores/user'
+import { useMapStore } from '@base/stores/map'
+import type { MapType } from '@base/stores/types/store'
 
 // Map store
 const userStore = useUserStore()
@@ -36,7 +37,7 @@ const rightItems = ref([
     ),
     onClick: () => {
       currentMapType.value
-        = currentMapType.value === 'vector' ? 'satellite' : 'vector'
+        = currentMapType.value === 'vector' ? 'satellite' : 'vector' as MapType
       setMapType(currentMapType.value)
     },
   },

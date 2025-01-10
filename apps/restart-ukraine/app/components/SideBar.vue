@@ -124,9 +124,9 @@ import trashIcon from '@/assets/icons/trash.svg'
 import pollutionIcon from '@/assets/icons/pollution.svg'
 import leafIcon from '@/assets/icons/leaf.svg'
 import prohibitIcon from '@/assets/icons/prohibit.svg'
-import { useSideBarStore } from '@restartUkraine/sidebar'
-import { useDrawingStore } from '@restartUkraine/drawing'
-import { useDb } from '@restartUkraine/db'
+import { useSideBarStore } from '@base/stores/sidebar'
+import { useDrawingStore } from '@base/stores/drawing'
+import { useDb } from "../stores/db"
 
 const drawingStore = useDrawingStore()
 const sidebarStore = useSideBarStore()

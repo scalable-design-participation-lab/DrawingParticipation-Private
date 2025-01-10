@@ -131,7 +131,7 @@ import { ref, reactive, watch } from 'vue'
 import { getAuth, signInAnonymously } from 'firebase/auth'
 import { useFirestore } from 'vuefire'
 import { collection, addDoc, query, where, getDocs } from 'firebase/firestore'
-import { useUserStore } from '@restartUkraine/user'
+import { useUserStore } from '@base/stores/user'
 
 const auth = getAuth()
 const props = defineProps({

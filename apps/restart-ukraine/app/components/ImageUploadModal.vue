@@ -88,7 +88,7 @@
 
 <script setup>
 import { ref, watch, onMounted } from 'vue'
-import { useFeatureStore } from '@restartUkraine/features'
+import { useFeatureStore } from '@base/stores/features'
 
 const props = defineProps({
   isVisible: Boolean,

@@ -58,10 +58,10 @@ import { ref, computed } from 'vue'
 import { useRoute } from 'vue-router'
 import CommentModal from './CommentModal.vue'
 import CommentDisplay from './CommentDisplay.vue'
-import { useFeatureStore } from '@restartUkraine/features';
-import { useDrawingStore } from '@restartUkraine/drawing';
-import { useMapStore } from '@restartUkraine/map';
-import { useSideBarStore } from '@restartUkraine/sidebar';
+import { useFeatureStore } from '@base/stores/features'
+import { useDrawingStore } from '@base/stores/drawing'
+import { useMapStore } from '@base/stores/map'
+import { useSideBarStore } from '@base/stores/sidebar'
 
 const props = defineProps({
   showAllPlusIcons: {

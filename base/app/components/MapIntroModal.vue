@@ -1,9 +1,31 @@
+<script setup lang="ts">
+const props = defineProps({
+  modelValue: {
+    type: Boolean,
+    default: false,
+  },
+})
+
+const emit = defineEmits(['update:modelValue'])
+
+const isOpen = computed({
+  get: () => props.modelValue,
+  set: value => emit('update:modelValue', value),
+})
+
+function closeModal() {
+  isOpen.value = false
+}
+</script>
+
 <template>
   <UModal v-model="isOpen" :ui="{ width: 'md:max-w-xl' }">
     <UCard>
       <template #header>
         <div class="flex items-center gap-2">
-          <h3 class="text-xl font-semibold">Карта громадської участі</h3>
+          <h3 class="text-xl font-semibold">
+            Карта громадської участі
+          </h3>
         </div>
       </template>
 
@@ -30,23 +52,3 @@
     </UCard>
   </UModal>
 </template>
-
-<script setup lang="ts">
-const props = defineProps({
-  modelValue: {
-    type: Boolean,
-    default: false,
-  },
-})
-
-const emit = defineEmits(['update:modelValue'])
-
-const isOpen = computed({
-  get: () => props.modelValue,
-  set: value => emit('update:modelValue', value),
-})
-
-function closeModal() {
-  isOpen.value = false
-}
-</script>

@@ -1,11 +1,11 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue'
 import { useRuntimeConfig } from '#app'
-import { useMapStore } from '~/stores/restart-ukraine/map'
+import { useMapStore } from '~/stores/map'
 
 const props = defineProps({
   center: {
-    type: Object as PropType<[number, number]>,
+    type: Array,
     default: () => [3172858.2941718884, 6317486.347640147],
   },
   zoom: {

@@ -3,6 +3,9 @@ import { defineNuxtConfig } from 'nuxt/config';
 import path from 'path';
 export default defineNuxtConfig({
   extends: ['../../base', '@nuxt/ui-pro'],
+  devtools: {
+    enabled: true
+  },
 
   target: 'static',
 
@@ -60,7 +63,7 @@ export default defineNuxtConfig({
   vite: {
     resolve: {
       alias: {
-        '@restartUkraine': path.resolve(__dirname, '../../base/app/stores/restart-ukraine'),
+        '@base': path.resolve(__dirname, '../../base/app'),
       },
     },
   },
