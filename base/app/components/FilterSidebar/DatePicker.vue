@@ -14,11 +14,9 @@
 
 <script setup lang="ts">
 import { DatePicker as VCalendarDatePicker } from 'v-calendar'
-import type {
-  DatePickerDate,
-  DatePickerRangeObject,
-} from 'v-calendar/dist/types/src/use/datePicker'
+
 import 'v-calendar/dist/style.css'
+import type { DatePickerDate, DatePickerRangeObject } from 'v-calendar/dist/types/src/use/datePicker.js'
 
 /**
  * Props for the DatePicker component

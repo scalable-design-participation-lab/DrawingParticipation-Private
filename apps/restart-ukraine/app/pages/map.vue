@@ -31,8 +31,8 @@ import { useRoute } from 'vue-router'
 import MapIntroModal from '../components/MapIntroModal.vue'
 import { useFirestore } from 'vuefire'
 import { collection, getDocs } from 'firebase/firestore'
-import { useMapStore } from '@restartUkraine/map'
-import { useFeatureStore } from '@restartUkraine/features'
+import { useMapStore } from '@base/stores/map'
+import { useFeatureStore } from '@base/stores/features'
 
 const featureStore = useFeatureStore()
 const mapStore = useMapStore()

@@ -35,10 +35,5 @@ logs
 !.yarn/sdks
 !.yarn/versions
 
-
-#VScode 
-.vscode
-
-
 # Sandbox 
 sandbox

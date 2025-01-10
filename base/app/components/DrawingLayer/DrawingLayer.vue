@@ -1,67 +1,10 @@
-<template>
-  <ol-vector-layer>
-    <ol-source-vector :projection="projection">
-      <ol-interaction-draw
-        v-if="drawEnable"
-        :type="drawType"
-        @drawend="handleDrawEnd"
-        @drawstart="handleDrawStart"
-      >
-        <ol-style>
-          <ol-style-stroke
-            :color="getDrawColor"
-            :width="2"
-            :line-dash="drawType === 'LineString' ? [6, 6] : undefined"
-          />
-          <ol-style-fill :color="[0, 0, 0, 0]" />
-          <ol-style-circle :radius="5">
-            <ol-style-fill :color="getDrawColor" />
-            <ol-style-stroke :color="getDrawColor" :width="1" />
-          </ol-style-circle>
-        </ol-style>
-      </ol-interaction-draw>
-
-      <IconLayer
-        :features="pointFeatures"
-        :get-icon-for-feature="getIconForFeature"
-        :show-all-plus-icons="showAllPlusIcons"
-        :show-comment-icons="showCommentIcons"
-        :enable-click="enableClick"
-        :is-map-page="isMapPage"
-        :show-delete-button="showDeleteButton"
-        @toggle-comment-popup="toggleCommentModal"
-        @toggle-image-upload-popup="toggleImageUploadModal"
-        @show-comment-display="handleShowCommentDisplay"
-      />
-
-      <PolygonLayer
-        :show-all-plus-icons="showAllPlusIcons"
-        :show-comment-icons="showCommentIcons"
-        :enable-click="enableClick"
-        :is-map-page="isMapPage"
-        :show-delete-button="showDeleteButton"
-        @toggle-comment-popup="toggleCommentModal"
-        @show-comment-display="handleShowCommentDisplay"
-      />
-      <LineStringLayer
-        :show-comment-icons="showCommentIcons"
-        :enable-click="enableClick"
-        :is-map-page="isMapPage"
-        :show-delete-button="showDeleteButton"
-        @toggle-comment-popup="toggleCommentModal"
-        @show-comment-display="handleShowCommentDisplay"
-      />
-    </ol-source-vector>
-  </ol-vector-layer>
-</template>
-
 <script setup lang="ts">
 import { computed } from 'vue'
-import { useDrawingStore } from '~/stores/restart-ukraine/drawing'
-import { useSideBarStore } from '~/stores/restart-ukraine/sidebar'
+import { useSideBarStore } from '../../stores/sidebar'
 import IconLayer from './IconLayer.vue'
 import PolygonLayer from './PolygonLayer.vue'
 import LineStringLayer from './LineStringLayer.vue'
+import { useDrawingStore } from '~/stores/drawing'
 
 import redIcon from '@/assets/icons/red.svg'
 import greenIcon from '@/assets/icons/green.svg'
@@ -79,8 +22,7 @@ import leafIcon from '@/assets/icons/leaf.svg'
 import prohibitIcon from '@/assets/icons/prohibit.svg'
 import trashIcon from '@/assets/icons/trash.svg'
 
-
-const props = defineProps({
+defineProps({
   projection: {
     type: String,
     required: true,
@@ -211,3 +153,60 @@ function getIconForFeature(feature) {
   return frequencyMap[feature.frequency] || redIcon
 }
 </script>
+
+<template>
+  <ol-vector-layer>
+    <ol-source-vector :projection="projection">
+      <ol-interaction-draw
+        v-if="drawEnable"
+        :type="drawType"
+        @drawend="handleDrawEnd"
+        @drawstart="handleDrawStart"
+      >
+        <ol-style>
+          <ol-style-stroke
+            :color="getDrawColor"
+            :width="2"
+            :line-dash="drawType === 'LineString' ? [6, 6] : undefined"
+          />
+          <ol-style-fill :color="[0, 0, 0, 0]" />
+          <ol-style-circle :radius="5">
+            <ol-style-fill :color="getDrawColor" />
+            <ol-style-stroke :color="getDrawColor" :width="1" />
+          </ol-style-circle>
+        </ol-style>
+      </ol-interaction-draw>
+
+      <IconLayer
+        :features="pointFeatures"
+        :get-icon-for-feature="getIconForFeature"
+        :show-all-plus-icons="showAllPlusIcons"
+        :show-comment-icons="showCommentIcons"
+        :enable-click="enableClick"
+        :is-map-page="isMapPage"
+        :show-delete-button="showDeleteButton"
+        @toggle-comment-popup="toggleCommentModal"
+        @toggle-image-upload-popup="toggleImageUploadModal"
+        @show-comment-display="handleShowCommentDisplay"
+      />
+
+      <PolygonLayer
+        :show-all-plus-icons="showAllPlusIcons"
+        :show-comment-icons="showCommentIcons"
+        :enable-click="enableClick"
+        :is-map-page="isMapPage"
+        :show-delete-button="showDeleteButton"
+        @toggle-comment-popup="toggleCommentModal"
+        @show-comment-display="handleShowCommentDisplay"
+      />
+      <LineStringLayer
+        :show-comment-icons="showCommentIcons"
+        :enable-click="enableClick"
+        :is-map-page="isMapPage"
+        :show-delete-button="showDeleteButton"
+        @toggle-comment-popup="toggleCommentModal"
+        @show-comment-display="handleShowCommentDisplay"
+      />
+    </ol-source-vector>
+  </ol-vector-layer>
+</template>
