@@ -127,6 +127,7 @@ import prohibitIcon from '@/assets/icons/prohibit.svg'
 import { useSideBarStore } from '@base/stores/sidebar'
 import { useDrawingStore } from '@base/stores/drawing'
 import { useDb } from "../stores/db"
+import type { IconType } from '@base/stores/types/store'
 
 const drawingStore = useDrawingStore()
 const sidebarStore = useSideBarStore()
@@ -357,7 +358,7 @@ function prevBelongingSubwindow() {
   sidebarStore.prevBelongingSubwindow()
 }
 
-function selectBelongingIcon(iconName: string) {
+function selectBelongingIcon(iconName: IconType) {
   console.log('Selected icon:', iconName)
   drawingStore.activateBelongingDrawing(iconName)
 }
@@ -370,7 +371,7 @@ function prevSafetySubwindow() {
   sidebarStore.prevSafetySubwindow()
 }
 
-function selectSafetyIcon(iconName: string) {
+function selectSafetyIcon(iconName: IconType) {
   console.log('Selected safety icon:', iconName)
   drawingStore.activateSafetyDrawing(iconName)
 }
@@ -383,7 +384,7 @@ function prevEnvironmentSubwindow() {
   sidebarStore.prevEnvironmentSubwindow()
 }
 
-function selectEnvironmentIcon(iconName: string) {
+function selectEnvironmentIcon(iconName: IconType) {
   console.log('Selected icon:', iconName)
   drawingStore.activateEnvironmentDrawing(iconName)
 }

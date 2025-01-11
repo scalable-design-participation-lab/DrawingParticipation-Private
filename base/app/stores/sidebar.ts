@@ -179,7 +179,7 @@ export const useSideBarStore = defineStore('sidebar', () => {
    * @param icon - The icon name to set the icon for.
    */
   function setEnvironmentIcon(icon: IconType): void {
-    currentSafetyIcon.value = icon
+    currentEnvironmentIcon.value = icon
   }
 
   return {

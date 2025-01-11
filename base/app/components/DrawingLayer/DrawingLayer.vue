@@ -21,6 +21,7 @@ import pollutionIcon from '@/assets/icons/pollution.svg'
 import leafIcon from '@/assets/icons/leaf.svg'
 import prohibitIcon from '@/assets/icons/prohibit.svg'
 import trashIcon from '@/assets/icons/trash.svg'
+import { useFeatureStore } from '~/stores/features'
 
 defineProps({
   projection: {
@@ -57,13 +58,14 @@ const emit = defineEmits([
 
 const drawStore = useDrawingStore()
 const sidebarStore = useSideBarStore()
+const featureStore = useFeatureStore()
 
 const drawEnable = computed(() => drawStore.drawEnable)
 const drawType = computed(() => drawStore.drawType)
 const currentColor = computed(() => sidebarStore.currentColor)
 
 const pointFeatures = computed(() =>
-  drawStore.features.filter(feature => feature.type === 'Point'),
+  featureStore.features.filter(feature => feature.type === 'Point'),
 )
 
 function handleDrawStart(event) {
@@ -141,9 +143,7 @@ function getIconForFeature(feature) {
   // Map frequencies to icons
   const frequencyMap = {
     'every day': blueIcon,
-    'everyday': blueIcon,
     'every week': greenIcon,
-    'everyweek': greenIcon,
     'sometimes': purpleIcon,
     'only once': yellowIcon,
     'once': yellowIcon,
