@@ -1,8 +1,9 @@
 import { defineStore } from 'pinia'
-import { reactive, ref } from 'vue'
+import { ref } from 'vue'
 import { useSideBarStore } from './sidebar'
 import { useUserStore } from './user'
 import type { DrawType, Feature, FrequencyType, IconType } from './types/store'
+import { useFeatureStore } from './features'
 
 /**
  * Pinia store for managing drawing-related functionality.
@@ -13,12 +14,19 @@ export const useDrawingStore = defineStore('drawing', () => {
   // Reactive state variables
   const drawEnable = ref(false) // Whether drawing is enabled
   const drawType = ref<DrawType>('Point') // Current drawing geometry type
-  const features = reactive<Feature[]>([]) // Array of drawn features
   const isProhibitDrawing = ref(false) // Indicates if the current drawing is a prohibited feature
 
   // External stores
-  const { currentBelongingIcon, currentSafetyIcon, currentEnvironmentIcon, currentFrequency, setFrequency, setBelongingIcon, setEnvironmentIcon, setSafetyIcon } = useSideBarStore()
+  const sideBarStore = useSideBarStore()
+  const {
+    currentBelongingIcon,
+    currentSafetyIcon,
+    currentEnvironmentIcon,
+    currentFrequency,
+  } = storeToRefs(sideBarStore)
+  const { setBelongingIcon, setSafetyIcon, setEnvironmentIcon, setFrequency } = sideBarStore
   const { userData } = useUserStore()
+  const { features } = useFeatureStore()
 
   /**
    * Activates a drawing mode for a specific geometry type.
@@ -53,10 +61,10 @@ export const useDrawingStore = defineStore('drawing', () => {
           type: 'Point' as DrawType,
           coordinates: pointCoordinates,
           comment: '',
-          name: userData.value
+          name: userData
             ? {
-                firstname: userData.value.firstname,
-                lastname: userData.value.lastname,
+                firstname: userData.firstname,
+                lastname: userData.lastname,
               }
             : null,
           timestamp,
@@ -68,8 +76,8 @@ export const useDrawingStore = defineStore('drawing', () => {
           isProhibitDrawing.value = false
         }
         else {
-          feature.iconName = currentBelongingIcon || currentSafetyIcon || currentEnvironmentIcon
-          feature.frequency = currentFrequency
+          feature.iconName = currentSafetyIcon.value || currentBelongingIcon.value || currentEnvironmentIcon.value
+          feature.frequency = currentFrequency.value
         }
         // Push the feature to the array
         features.push(feature)
@@ -82,10 +90,10 @@ export const useDrawingStore = defineStore('drawing', () => {
           type: 'LineString',
           coordinates: lineCoordinates,
           comment: '',
-          name: userData.value
+          name: userData
             ? {
-                firstname: userData.value.firstname,
-                lastname: userData.value.lastname,
+                firstname: userData.firstname,
+                lastname: userData.lastname,
               }
             : null,
           timestamp,
@@ -101,10 +109,10 @@ export const useDrawingStore = defineStore('drawing', () => {
           type: 'Polygon',
           coordinates: polygonCoordinates,
           comment: '',
-          name: userData.value
+          name: userData
             ? {
-                firstname: userData.value.firstname,
-                lastname: userData.value.lastname,
+                firstname: userData.firstname,
+                lastname: userData.lastname,
               }
             : null,
           timestamp,
@@ -198,7 +206,6 @@ export const useDrawingStore = defineStore('drawing', () => {
   return {
     drawEnable,
     drawType,
-    features,
     isProhibitDrawing,
     activateDrawing,
     handleDrawEnd,
