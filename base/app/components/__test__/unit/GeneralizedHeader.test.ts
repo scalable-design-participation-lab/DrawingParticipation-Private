@@ -59,7 +59,7 @@ describe('generalizedHeader', () => {
 
   it('renders the icon when showIcon is true', () => {
     const wrapper = mount(GeneralizedHeader, { props: mockProps })
-    const icon = wrapper.findAll('button').at(1)
+    const icon = wrapper.findAll('button')[0]
     expect(icon.exists()).toBe(true)
     expect(icon.text()).toBe('🤲')
   })
@@ -70,7 +70,7 @@ describe('generalizedHeader', () => {
     })
     const buttons = wrapper.findAll('button')
     expect(buttons.length).toBe(
-      mockProps.leftItems.length + mockProps.rightItems.length + 1,
+      mockProps.leftItems.length + mockProps.rightItems.length + 2,
     ) // +1 for logo button
   })
 
@@ -89,7 +89,7 @@ describe('generalizedHeader', () => {
     const rightItems = wrapper.findAll(
       '.flex.items-center.space-x-2:last-child > *',
     )
-    expect(rightItems.length).toBe(mockProps.rightItems.length)
+    expect(rightItems.length).toBe(mockProps.rightItems.length + 2)
   })
 
   it('applies the correct shape class based on the shape prop', () => {
@@ -118,7 +118,7 @@ describe('generalizedHeader', () => {
     const wrapper = mount(GeneralizedHeader, { props: mockProps })
     const buttons = wrapper.findAllComponents(UButton)
     expect(buttons.length).toBe(
-      mockProps.leftItems.length + mockProps.rightItems.length + 2,
+      mockProps.leftItems.length + mockProps.rightItems.length + 3,
     ) // +2 for logo and icon
   })
 

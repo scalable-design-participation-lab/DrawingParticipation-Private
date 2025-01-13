@@ -3,6 +3,9 @@
   "compilerOptions": {
     "baseUrl": "./",
     "paths": {
+      "@components/*": [
+        "app/components/*"
+      ],
       "@base/*": [
         "../../base/app/*"
       ]

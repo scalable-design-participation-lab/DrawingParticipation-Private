@@ -1,10 +1,11 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import { useSideBarStore } from '../../stores/sidebar'
+import { useFeatureStore } from '../../stores/features'
+import { useDrawingStore } from '../../stores/drawing'
 import IconLayer from './IconLayer.vue'
 import PolygonLayer from './PolygonLayer.vue'
 import LineStringLayer from './LineStringLayer.vue'
-import { useDrawingStore } from '~/stores/drawing'
 
 import redIcon from '@/assets/icons/red.svg'
 import greenIcon from '@/assets/icons/green.svg'
@@ -21,7 +22,6 @@ import pollutionIcon from '@/assets/icons/pollution.svg'
 import leafIcon from '@/assets/icons/leaf.svg'
 import prohibitIcon from '@/assets/icons/prohibit.svg'
 import trashIcon from '@/assets/icons/trash.svg'
-import { useFeatureStore } from '~/stores/features'
 
 defineProps({
   projection: {

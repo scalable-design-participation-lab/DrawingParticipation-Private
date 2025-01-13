@@ -100,9 +100,13 @@ onMounted(() => {
 
 <template>
   <div class="flex flex-col gap-2.5">
-    <UButton size="sm" color="gray" variant="soft" @click="toggleAll">
-      {{ allSelected ? 'Deselect All' : 'Select All' }}
-    </UButton>
+    <UButton
+      size="sm"
+      color="gray"
+      variant="soft"
+      :label="allSelected ? 'Deselect All' : 'Select All'"
+      @click="toggleAll"
+    />
     <UCheckbox
       v-for="item in items"
       :key="item.value"
