@@ -4,6 +4,7 @@
   "private": true,
   "scripts": {
     "test": "vitest",
+    "coverage": "vitest --coverage",
     "build": "nuxt build",
     "dev": "nuxt dev",
     "generate": "nuxt generate",
@@ -59,6 +60,7 @@
     "@pinia/testing": "^0.1.5",
     "@types/node": "^22.8.4",
     "@vitejs/plugin-vue-jsx": "^4.0.1",
+    "@vitest/coverage-v8": "2.1.8",
     "@vue/test-utils": "^2.4.6",
     "autoprefixer": "^10.4.20",
     "babel-eslint": "^10.1.0",
