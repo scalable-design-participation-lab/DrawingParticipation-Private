@@ -62,6 +62,7 @@ import { useFeatureStore } from '@base/stores/features'
 import { useDrawingStore } from '@base/stores/drawing'
 import { useMapStore } from '@base/stores/map'
 import { useSideBarStore } from '@base/stores/sidebar'
+import { storeToRefs } from 'pinia'
 
 const props = defineProps({
   showAllPlusIcons: {
@@ -98,16 +99,6 @@ const commentDisplayOffset = ref<[number, number]>([0, 0])
 const showCommentDisplay = ref(false)
 const selectedFeatureForDisplay = ref(null)
 const CommentModalOffset = ref([0, 0])
-
-const colorMode = useColorMode()
-const isDark = computed({
-  get() {
-    return colorMode.value === 'dark'
-  },
-  set() {
-    colorMode.preference = colorMode.value === 'dark' ? 'light' : 'dark'
-  }
-})
 
 const isMapPage = computed(() => route.name === 'map')
 
