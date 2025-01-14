@@ -207,7 +207,7 @@ const shapeClass = computed(() => {
         </template>
         <!-- Dark Mode Toggle -->
         <UColorModeButton
-          class="h-full px-2 sm:px-4 md:px-5 lg:px-4 text-xs !bg-gray-50 hover:!bg-black hover:!text-white dark:!bg-black shadow-lg dark:hover:!bg-slate-800 text-black dark:text-white hidden md:flex" :class="[
+          class="h-full px-2 md:px-3 lg:px-4 text-xs !bg-gray-50 hover:!bg-black hover:!text-white dark:!bg-black shadow-lg dark:hover:!bg-slate-800 text-black dark:text-white hidden md:flex" :class="[
             shapeClass,
           ]"
           @click="isDark = !isDark"

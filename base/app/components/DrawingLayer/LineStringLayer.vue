@@ -1,75 +1,7 @@
-<template>
-  <ol-vector-layer>
-    <ol-source-vector>
-      <ol-feature v-for="feature in lineStringFeatures" :key="feature.id">
-        <ol-geom-line-string :coordinates="feature.coordinates" />
-        <ol-style>
-          <ol-style-stroke color="red" :width="2" :line-dash="[6, 6]" />
-        </ol-style>
-      </ol-feature>
-    </ol-source-vector>
-  </ol-vector-layer>
-
-  <ol-overlay
-    v-if="!isMapPage"
-    v-for="feature in lineStringFeatures"
-    :key="`plus-${feature.id}`"
-    :position="getLineStringStartPoint(feature)"
-    :offset="[20, 20]"
-    :stopEvent="false"
-    :positioning="'bottom-right'"
-  >
-    <div class="plus-icon-container" @click.stop="handleIconClick(feature)">
-      <img
-        src="@/assets/icons/open-icon.svg"
-        alt="Open Icon"
-        class="plus-icon"
-      />
-    </div>
-  </ol-overlay>
-
-  <ol-overlay
-    v-if="showDeleteButton"
-    v-for="feature in lineStringFeatures"
-    :key="`delete-${feature.id}`"
-    :position="getLineStringEndPoint(feature)"
-    :offset="[20, -20]"
-    :stopEvent="false"
-    :positioning="'top-right'"
-  >
-    <div class="delete-icon-container" @click.stop="handleDeleteClick(feature)">
-      <img
-        src="@/assets/icons/delete.svg"
-        alt="Delete Icon"
-        class="delete-icon-img"
-      />
-    </div>
-  </ol-overlay>
-
-  <ol-overlay
-    v-for="feature in lineStringFeatures"
-    :key="`comment-${feature.id}`"
-    :position="getLineStringEndPoint(feature)"
-    :offset="[20, -20]"
-    :stopEvent="false"
-    :positioning="'top-right'"
-  >
-    <div
-      class="comment-display-icon"
-      @click.stop.prevent="(event) => handleCommentIconClick(feature, event)"
-    >
-      <UIcon
-        name="i-heroicons-chat-bubble-left-ellipsis"
-        class="text-lg text-gray-600 hover:text-gray-800"
-      />
-    </div>
-  </ol-overlay>
-</template>
-
 <script setup lang="ts">
 import { computed } from 'vue'
-import { useMapUIStore } from '@/stores/mapUI'
 import { click } from 'ol/events/condition'
+import { useFeatureStore } from '~/stores/features'
 
 const props = defineProps({
   enableClick: {
@@ -88,11 +20,11 @@ const props = defineProps({
 
 const emit = defineEmits(['toggle-comment-popup', 'show-comment-display'])
 
-const mapUIStore = useMapUIStore()
+const featureStore = useFeatureStore()
 const clickCondition = click
 
 const lineStringFeatures = computed(() =>
-  mapUIStore.features.filter((feature) => feature.type === 'LineString'),
+  featureStore.features.filter(feature => feature.type === 'LineString'),
 )
 
 function getLineStringStartPoint(feature) {
@@ -112,19 +44,21 @@ function getLineStringEndPoint(feature) {
 function handleIconClick(feature) {
   if (props.isMapPage) {
     emit('show-comment-display', feature)
-  } else {
+  }
+  else {
     emit('toggle-comment-popup', feature)
   }
 }
 
 function handleDeleteClick(feature) {
   if (confirm('Ви впевнені, що хочете видалити цю відмітку?')) {
-    mapUIStore.deleteFeature(feature.id)
+    featureStore.deleteFeature(feature.id)
   }
 }
 
 function handleCommentIconClick(feature, event) {
-  if (!event) return
+  if (!event)
+    return
   const coordinates = [event.clientX, event.clientY]
   emit('show-comment-display', {
     feature,
@@ -132,6 +66,74 @@ function handleCommentIconClick(feature, event) {
   })
 }
 </script>
+
+<template>
+  <ol-vector-layer>
+    <ol-source-vector>
+      <ol-feature v-for="feature in lineStringFeatures" :key="feature.id">
+        <ol-geom-line-string :coordinates="feature.coordinates" />
+        <ol-style>
+          <ol-style-stroke color="red" :width="2" :line-dash="[6, 6]" />
+        </ol-style>
+      </ol-feature>
+    </ol-source-vector>
+  </ol-vector-layer>
+
+  <ol-overlay
+    v-for="feature in lineStringFeatures"
+    v-if="!isMapPage"
+    :key="`plus-${feature.id}`"
+    :position="getLineStringStartPoint(feature)"
+    :offset="[20, 20]"
+    :stop-event="false"
+    positioning="bottom-right"
+  >
+    <div class="plus-icon-container" @click.stop="handleIconClick(feature)">
+      <img
+        src="@/assets/icons/open-icon.svg"
+        alt="Open Icon"
+        class="plus-icon"
+      >
+    </div>
+  </ol-overlay>
+
+  <ol-overlay
+    v-for="feature in lineStringFeatures"
+    v-if="showDeleteButton"
+    :key="`delete-${feature.id}`"
+    :position="getLineStringEndPoint(feature)"
+    :offset="[20, -20]"
+    :stop-event="false"
+    positioning="top-right"
+  >
+    <div class="delete-icon-container" @click.stop="handleDeleteClick(feature)">
+      <img
+        src="@/assets/icons/delete.svg"
+        alt="Delete Icon"
+        class="delete-icon-img"
+      >
+    </div>
+  </ol-overlay>
+
+  <ol-overlay
+    v-for="feature in lineStringFeatures"
+    :key="`comment-${feature.id}`"
+    :position="getLineStringEndPoint(feature)"
+    :offset="[20, -20]"
+    :stop-event="false"
+    positioning="top-right"
+  >
+    <div
+      class="comment-display-icon"
+      @click.stop.prevent="(event) => handleCommentIconClick(feature, event)"
+    >
+      <UIcon
+        name="i-heroicons-chat-bubble-left-ellipsis"
+        class="text-lg text-gray-600 hover:text-gray-800"
+      />
+    </div>
+  </ol-overlay>
+</template>
 
 <style scoped>
 .prohibit-icon {

@@ -1,10 +1,13 @@
 <script setup lang="ts">
 import { computed, onMounted, ref } from 'vue'
-import { useMapUIStore } from '../stores/mapUI'
+import { useUserStore } from '@base/stores/user'
+import { useMapStore } from '@base/stores/map'
+import type { MapType } from '@base/stores/types/store'
 
 // Map store
-const mapUIStore = useMapUIStore()
-const { setMapType } = mapUIStore
+const userStore = useUserStore()
+const mapStore = useMapStore()
+const { setMapType } = mapStore
 const currentMapType = ref('vector')
 const isLoading = ref(true)
 
@@ -34,13 +37,13 @@ const rightItems = ref([
     ),
     onClick: () => {
       currentMapType.value
-        = currentMapType.value === 'vector' ? 'satellite' : 'vector'
+        = currentMapType.value === 'vector' ? 'satellite' : 'vector' as MapType
       setMapType(currentMapType.value)
     },
   },
 ])
 
-const isMapBlurred = computed(() => mapUIStore.showRegistration)
+const isMapBlurred = computed(() => userStore.showRegistration)
 
 const showDownloadModal = ref(false)
 const showOnboarding = ref(true)
@@ -155,7 +158,7 @@ onMounted(() => {
       <div
         v-if="isMapBlurred"
         class="absolute inset-0 bg-black bg-opacity-50 z-40"
-        @click.self="mapUIStore.showRegistration = true"
+        @click.self="userStore.showRegistration = true"
       />
       <Teleport to="body">
         <DownloadModalHurtoma

@@ -1,11 +1,11 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue'
 import { useRuntimeConfig } from '#app'
-import { useMapUIStore } from '@/stores/mapUI'
+import { useMapStore } from '~/stores/map'
 
 const props = defineProps({
   center: {
-    type: Array as PropType<[number, number]>,
+    type: Array,
     default: () => [3172858.2941718884, 6317486.347640147],
   },
   zoom: {
@@ -57,8 +57,7 @@ const props = defineProps({
 const emit = defineEmits(['map-click'])
 
 const config = useRuntimeConfig()
-const mapUIStore = useMapUIStore()
-const { mapType } = storeToRefs(mapUIStore)
+const { mapType } = storeToRefs(useMapStore())
 const mapInstance = ref(null)
 
 const colorMode = useColorMode()

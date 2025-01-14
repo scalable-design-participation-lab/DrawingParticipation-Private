@@ -128,10 +128,10 @@
 
 <script setup>
 import { ref, reactive, watch } from 'vue'
-import { useMapUIStore } from '../stores/mapUI'
 import { getAuth, signInAnonymously } from 'firebase/auth'
 import { useFirestore } from 'vuefire'
 import { collection, addDoc, query, where, getDocs } from 'firebase/firestore'
+import { useUserStore } from '@base/stores/user'
 
 const auth = getAuth()
 const props = defineProps({
@@ -140,7 +140,7 @@ const props = defineProps({
 
 const emit = defineEmits(['close'])
 
-const mapUIStore = useMapUIStore()
+const userStore = useUserStore()
 const db = useFirestore()
 
 // Add state for welcome back modal
@@ -206,7 +206,7 @@ const checkExistingUser = async () => {
       const userData = querySnapshot.docs[0].data()
       console.log('Found existing user:', userData)
       existingUserData.value = userData
-      mapUIStore.setUserData(userData)
+      userStore.setUserData(userData)
       showWelcomeBack.value = true
       emit('close')
     } else {
@@ -253,7 +253,7 @@ const onSubmit = async () => {
       name: `${formState.firstname} ${formState.lastname}`,
     })
 
-    mapUIStore.setUserData({
+    userStore.setUserData({
       ...formState,
       uid: user.uid,
     })

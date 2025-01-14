@@ -55,10 +55,13 @@
 
 <script setup lang="ts">
 import { ref, computed } from 'vue'
-import { useMapUIStore } from '@/stores/mapUI'
 import { useRoute } from 'vue-router'
 import CommentModal from './CommentModal.vue'
 import CommentDisplay from './CommentDisplay.vue'
+import { useFeatureStore } from '@base/stores/features'
+import { useDrawingStore } from '@base/stores/drawing'
+import { useMapStore } from '@base/stores/map'
+import { useSideBarStore } from '@base/stores/sidebar'
 
 const props = defineProps({
   showAllPlusIcons: {
@@ -79,8 +82,11 @@ const props = defineProps({
   },
 })
 
-const mapUIStore = useMapUIStore()
-const { mapType } = storeToRefs(mapUIStore)
+const featureStore = useFeatureStore()
+const drawingStore = useDrawingStore()
+const mapStore = useMapStore()
+const sidebarStore = useSideBarStore()
+const { mapType } = storeToRefs(mapStore)
 const route = useRoute()
 
 const projection = ref('EPSG:3857')
@@ -95,10 +101,10 @@ const CommentModalOffset = ref([0, 0])
 
 const colorMode = useColorMode()
 const isDark = computed({
-  get () {
+  get() {
     return colorMode.value === 'dark'
   },
-  set () {
+  set() {
     colorMode.preference = colorMode.value === 'dark' ? 'light' : 'dark'
   }
 })
@@ -153,12 +159,12 @@ function closeCommentModal() {
 }
 
 function handleMapClick(event) {
-  if (mapUIStore.drawEnable && mapUIStore.drawType === 'Point') {
+  if (drawingStore.drawEnable && drawingStore.drawType === 'Point') {
     const coordinate = event.coordinate
-    mapUIStore.addFeature({
+    featureStore.addFeature({
       type: 'Point',
       coordinates: coordinate,
-      frequency: mapUIStore.currentFrequency,
+      frequency: sidebarStore.currentFrequency,
     })
   }
 }

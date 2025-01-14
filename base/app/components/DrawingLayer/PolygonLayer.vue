@@ -1,91 +1,8 @@
-<template>
-  <ol-vector-layer>
-    <ol-source-vector>
-      <ol-feature v-for="feature in polygonFeatures" :key="feature.id">
-        <ol-geom-polygon :coordinates="feature.coordinates" />
-        <ol-style>
-          <ol-style-stroke color="black" :width="2" :line-dash="[10, 10]" />
-          <ol-style-fill :color="[0, 0, 0, 0]" />
-        </ol-style>
-      </ol-feature>
-    </ol-source-vector>
-  </ol-vector-layer>
-
-  <ol-overlay
-    v-for="feature in visiblePolygonFeatures"
-    :key="`overlay-${feature.id}`"
-    :position="getFeatureIconPosition(feature)"
-    :offset="[0, 0]"
-    :stopEvent="false"
-    :positioning="'center-center'"
-  >
-    <div class="polygon-plus-icon" @click.stop="toggleCommentModal(feature)">
-      <svg
-        width="24"
-        height="24"
-        viewBox="0 0 18 18"
-        fill="none"
-        xmlns="http://www.w3.org/2000/svg"
-      >
-        <circle cx="9" cy="9" r="9" fill="black" />
-        <path
-          d="M9 14L9 4"
-          stroke="white"
-          stroke-width="4"
-          stroke-linecap="round"
-        />
-        <path
-          d="M4 9L14 9"
-          stroke="white"
-          stroke-width="4"
-          stroke-linecap="round"
-        />
-      </svg>
-    </div>
-  </ol-overlay>
-
-  <ol-overlay
-    v-if="showDeleteButton"
-    v-for="feature in visiblePolygonFeatures"
-    :key="`delete-${feature.id}`"
-    :position="getFeatureIconPosition(feature)"
-    :offset="[30, 0]"
-    :stopEvent="false"
-    :positioning="'center-center'"
-  >
-    <div class="delete-icon-container" @click.stop="handleDeleteClick(feature)">
-      <img
-        src="@/assets/icons/delete.svg"
-        alt="Delete Icon"
-        class="delete-icon"
-      />
-    </div>
-  </ol-overlay>
-
-  <ol-overlay
-    v-for="feature in polygonFeatures"
-    :key="`comment-${feature.id}`"
-    :position="getFeatureIconPosition(feature)"
-    :offset="[30, 0]"
-    :stopEvent="false"
-    :positioning="'center-center'"
-  >
-    <div
-      class="comment-display-icon"
-      @click.stop.prevent="(event) => handleCommentIconClick(feature, event)"
-    >
-      <UIcon
-        name="i-heroicons-chat-bubble-left-ellipsis"
-        class="text-lg text-gray-600 hover:text-gray-800"
-      />
-    </div>
-  </ol-overlay>
-</template>
-
 <script setup lang="ts">
 import { computed } from 'vue'
-import { useMapUIStore } from '@/stores/mapUI'
 import { click } from 'ol/events/condition'
+import { useFeatureStore } from '~/stores/features'
+import { useSideBarStore } from '~/stores/sidebar'
 
 const props = defineProps({
   showAllPlusIcons: {
@@ -108,17 +25,18 @@ const props = defineProps({
 
 const emit = defineEmits(['toggle-comment-popup', 'show-comment-display'])
 
-const mapUIStore = useMapUIStore()
+const featureStore = useFeatureStore()
+const sideBarStore = useSideBarStore()
 
 const polygonFeatures = computed(() =>
-  mapUIStore.features.filter((feature) => feature.type === 'Polygon'),
+  featureStore.features.filter(feature => feature.type === 'Polygon'),
 )
 
 const visiblePolygonFeatures = computed(() => {
   if (props.showAllPlusIcons) {
     return polygonFeatures.value
   }
-  const spaceSubwindow = mapUIStore.spaceSubwindow
+  const spaceSubwindow = sideBarStore.spaceSubwindow
   return spaceSubwindow === 2 ? polygonFeatures.value : []
 })
 
@@ -147,16 +65,18 @@ function handleSelect(event) {
       try {
         const featureCoords = f.coordinates
         return (
-          coordinates[0].length === featureCoords[0].length &&
-          coordinates[0].every((coord, index) => {
+          coordinates[0].length === featureCoords[0].length
+          && coordinates[0].every((coord, index) => {
             const featureCoord = featureCoords[0][index]
             return (
-              Math.abs(coord[0] - featureCoord[0]) < 0.0000001 &&
-              Math.abs(coord[1] - featureCoord[1]) < 0.0000001
+              Math.abs(coord[0] - featureCoord[0]) < 0.0000001
+              && Math.abs(coord[1] - featureCoord[1]) < 0.0000001
             )
           })
         )
-      } catch (error) {
+      }
+      catch (error) {
+        console.warn('Error comparing coordinates', error)
         return false
       }
     })
@@ -169,12 +89,13 @@ function handleSelect(event) {
 
 function handleDeleteClick(feature) {
   if (confirm('Ви впевнені, що хочете видалити цю відмітку?')) {
-    mapUIStore.deleteFeature(feature.id)
+    featureStore.deleteFeature(feature.id)
   }
 }
 
 function handleCommentIconClick(feature, event) {
-  if (!event) return
+  if (!event)
+    return
   const coordinates = [event.clientX, event.clientY]
   emit('show-comment-display', {
     feature,
@@ -182,6 +103,90 @@ function handleCommentIconClick(feature, event) {
   })
 }
 </script>
+
+<template>
+  <ol-vector-layer>
+    <ol-source-vector>
+      <ol-feature v-for="feature in polygonFeatures" :key="feature.id">
+        <ol-geom-polygon :coordinates="feature.coordinates" />
+        <ol-style>
+          <ol-style-stroke color="black" :width="2" :line-dash="[10, 10]" />
+          <ol-style-fill :color="[0, 0, 0, 0]" />
+        </ol-style>
+      </ol-feature>
+    </ol-source-vector>
+  </ol-vector-layer>
+
+  <ol-overlay
+    v-for="feature in visiblePolygonFeatures"
+    :key="`overlay-${feature.id}`"
+    :position="getFeatureIconPosition(feature)"
+    :offset="[0, 0]"
+    :stop-event="false"
+    positioning="center-center"
+  >
+    <div class="polygon-plus-icon" @click.stop="toggleCommentModal(feature)">
+      <svg
+        width="24"
+        height="24"
+        viewBox="0 0 18 18"
+        fill="none"
+        xmlns="http://www.w3.org/2000/svg"
+      >
+        <circle cx="9" cy="9" r="9" fill="black" />
+        <path
+          d="M9 14L9 4"
+          stroke="white"
+          stroke-width="4"
+          stroke-linecap="round"
+        />
+        <path
+          d="M4 9L14 9"
+          stroke="white"
+          stroke-width="4"
+          stroke-linecap="round"
+        />
+      </svg>
+    </div>
+  </ol-overlay>
+
+  <ol-overlay
+    v-for="feature in visiblePolygonFeatures"
+    v-if="showDeleteButton"
+    :key="`delete-${feature.id}`"
+    :position="getFeatureIconPosition(feature)"
+    :offset="[30, 0]"
+    :stop-event="false"
+    positioning="center-center"
+  >
+    <div class="delete-icon-container" @click.stop="handleDeleteClick(feature)">
+      <img
+        src="@/assets/icons/delete.svg"
+        alt="Delete Icon"
+        class="delete-icon"
+      >
+    </div>
+  </ol-overlay>
+
+  <ol-overlay
+    v-for="feature in polygonFeatures"
+    :key="`comment-${feature.id}`"
+    :position="getFeatureIconPosition(feature)"
+    :offset="[30, 0]"
+    :stop-event="false"
+    positioning="center-center"
+  >
+    <div
+      class="comment-display-icon"
+      @click.stop.prevent="(event) => handleCommentIconClick(feature, event)"
+    >
+      <UIcon
+        name="i-heroicons-chat-bubble-left-ellipsis"
+        class="text-lg text-gray-600 hover:text-gray-800"
+      />
+    </div>
+  </ol-overlay>
+</template>
 
 <style scoped>
 .polygon-plus-icon {

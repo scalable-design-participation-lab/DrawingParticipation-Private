@@ -31,7 +31,7 @@
 
 <script setup>
 import { ref, watch, onMounted } from 'vue'
-import { useMapUIStore } from '../stores/mapUI'
+import { useFeatureStore } from '@base/stores/features'
 
 const props = defineProps({
   isVisible: Boolean,
@@ -40,7 +40,7 @@ const props = defineProps({
 
 const emit = defineEmits(['close'])
 
-const mapUIStore = useMapUIStore()
+const featureStore = useFeatureStore()
 const localComment = ref('')
 const existingComment = ref('')
 
@@ -72,7 +72,7 @@ watch(
 )
 
 function loadExistingComment() {
-  const comment = mapUIStore.getComment(props.featureId)
+  const comment = featureStore.getComment(props.featureId)
   existingComment.value = comment
   localComment.value = comment
 }
@@ -83,7 +83,7 @@ function handleInput(event) {
 
 function addComment() {
   if (props.featureId !== null) {
-    mapUIStore.addComment(props.featureId, localComment.value)
+    featureStore.addComment(props.featureId, localComment.value)
     existingComment.value = localComment.value
     closePopup()
   }
