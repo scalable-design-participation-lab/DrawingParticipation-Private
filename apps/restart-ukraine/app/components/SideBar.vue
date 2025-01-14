@@ -23,8 +23,8 @@
             :button="spaceContent.button"
             :button-group="spaceContent.buttonGroup"
             :icon-grid="spaceSubwindow === 4 ? prohibitIconGrid : null"
-            @prev="mapUIStore.prevSpaceSubwindow()"
-            @next="mapUIStore.nextSpaceSubwindow()"
+            @prev="sidebarStore.prevSpaceSubwindow()"
+            @next="sidebarStore.nextSpaceSubwindow()"
           >
           </SubWindow>
           <SubWindow
@@ -110,7 +110,6 @@
 
 <script setup lang="ts">
 import { computed, ref } from 'vue'
-import { useMapUIStore } from '../stores/mapUI'
 import SubWindow from './SubWindow.vue'
 import { useRouter } from 'vue-router'
 import ThankYouModal from './ThankYouModal.vue'
@@ -125,14 +124,20 @@ import trashIcon from '@/assets/icons/trash.svg'
 import pollutionIcon from '@/assets/icons/pollution.svg'
 import leafIcon from '@/assets/icons/leaf.svg'
 import prohibitIcon from '@/assets/icons/prohibit.svg'
+import { useSideBarStore } from '@base/stores/sidebar'
+import { useDrawingStore } from '@base/stores/drawing'
+import { useDb } from "../stores/db"
+import type { IconType } from '@base/stores/types/store'
 
-const mapUIStore = useMapUIStore()
+const drawingStore = useDrawingStore()
+const sidebarStore = useSideBarStore()
+const dbStore = useDb()
 const router = useRouter()
 
-const spaceSubwindow = computed(() => mapUIStore.spaceSubwindow)
-const belongingSubwindow = computed(() => mapUIStore.belongingSubwindow)
-const safetySubwindow = computed(() => mapUIStore.safetySubwindow)
-const environmentSubwindow = computed(() => mapUIStore.environmentSubwindow)
+const spaceSubwindow = computed(() => sidebarStore.spaceSubwindow)
+const belongingSubwindow = computed(() => sidebarStore.belongingSubwindow)
+const safetySubwindow = computed(() => sidebarStore.safetySubwindow)
+const environmentSubwindow = computed(() => sidebarStore.environmentSubwindow)
 
 const menuItems = [
   {
@@ -166,27 +171,27 @@ const spaceContent = computed(() => {
         {
           text: 'щодня',
           color: 'blue',
-          action: () => mapUIStore.activateDrawing('every day'),
+          action: () => drawingStore.activateDrawing('every day'),
         },
         {
           text: 'щотижня',
           color: 'green',
-          action: () => mapUIStore.activateDrawing('every week'),
+          action: () => drawingStore.activateDrawing('every week'),
         },
         {
           text: 'інколи',
           color: 'purple',
-          action: () => mapUIStore.activateDrawing('sometimes'),
+          action: () => drawingStore.activateDrawing('sometimes'),
         },
         {
           text: 'лише раз',
           color: 'yellow',
-          action: () => mapUIStore.activateDrawing('only once'),
+          action: () => drawingStore.activateDrawing('only once'),
         },
         {
           text: 'ніколи',
           color: 'red',
-          action: () => mapUIStore.activateDrawing('never'),
+          action: () => drawingStore.activateDrawing('never'),
         },
       ],
     },
@@ -197,7 +202,7 @@ const spaceContent = computed(() => {
       button: {
         text: 'додати',
         color: 'primary',
-        action: () => mapUIStore.activatePolygonDrawing(),
+        action: () => drawingStore.activatePolygonDrawing(),
       },
     },
     3: {
@@ -207,7 +212,7 @@ const spaceContent = computed(() => {
       button: {
         text: 'додати',
         color: 'red',
-        action: () => mapUIStore.activateLineStringDrawing(),
+        action: () => drawingStore.activateLineStringDrawing(),
       },
     },
     4: {
@@ -305,7 +310,7 @@ const environmentContent = computed(() => {
 
 const pollutionIconGrid = computed(() => ({
   icons: [
-  {
+    {
       name: 'trash',
       src: trashIcon,
       tooltip: 'сміття навколо',
@@ -346,47 +351,47 @@ const showSubmitButton = computed(() => {
 })
 
 function nextBelongingSubwindow() {
-  mapUIStore.nextBelongingSubwindow()
+  sidebarStore.nextBelongingSubwindow()
 }
 
 function prevBelongingSubwindow() {
-  mapUIStore.prevBelongingSubwindow()
+  sidebarStore.prevBelongingSubwindow()
 }
 
-function selectBelongingIcon(iconName: string) {
+function selectBelongingIcon(iconName: IconType) {
   console.log('Selected icon:', iconName)
-  mapUIStore.activateBelongingDrawing(iconName)
+  drawingStore.activateBelongingDrawing(iconName)
 }
 
 function nextSafetySubwindow() {
-  mapUIStore.nextSafetySubwindow()
+  sidebarStore.nextSafetySubwindow()
 }
 
 function prevSafetySubwindow() {
-  mapUIStore.prevSafetySubwindow()
+  sidebarStore.prevSafetySubwindow()
 }
 
-function selectSafetyIcon(iconName: string) {
+function selectSafetyIcon(iconName: IconType) {
   console.log('Selected safety icon:', iconName)
-  mapUIStore.activateSafetyDrawing(iconName)
+  drawingStore.activateSafetyDrawing(iconName)
 }
 
 function nextEnvironmentSubwindow() {
-  mapUIStore.nextEnvironmentSubwindow()
+  sidebarStore.nextEnvironmentSubwindow()
 }
 
 function prevEnvironmentSubwindow() {
-  mapUIStore.prevEnvironmentSubwindow()
+  sidebarStore.prevEnvironmentSubwindow()
 }
 
-function selectEnvironmentIcon(iconName: string) {
+function selectEnvironmentIcon(iconName: IconType) {
   console.log('Selected icon:', iconName)
-  mapUIStore.activateEnvironmentDrawing(iconName)
+  drawingStore.activateEnvironmentDrawing(iconName)
 }
 
 function selectProhibitIcon() {
   console.log('Selected prohibit icon')
-  mapUIStore.activateProhibitDrawing()
+  drawingStore.activateProhibitDrawing()
 }
 
 const isSaving = ref(false)
@@ -400,7 +405,7 @@ const showThankYouModal = ref(false)
 async function saveData() {
   isSaving.value = true
   try {
-    await mapUIStore.saveDataToDatabase()
+    await dbStore.saveDataToDatabase()
     showThankYouModal.value = true
   } catch (error) {
     console.error('Error submitting data to database:', error)

@@ -88,7 +88,7 @@
 
 <script setup>
 import { ref, watch, onMounted } from 'vue'
-import { useMapUIStore } from '../stores/mapUI'
+import { useFeatureStore } from '@base/stores/features'
 
 const props = defineProps({
   isVisible: Boolean,
@@ -97,7 +97,7 @@ const props = defineProps({
 
 const emit = defineEmits(['close', 'upload'])
 
-const mapUIStore = useMapUIStore()
+const featureStore = useFeatureStore()
 
 const images = ref([])
 const selectedImage = ref(null)
@@ -132,12 +132,12 @@ watch(
 )
 
 function loadExistingData() {
-  const comment = mapUIStore.getComment(props.featureId)
+  const comment = featureStore.getComment(props.featureId)
   existingComment.value = comment
   localComment.value = comment
 
   // Load existing images if any
-  const feature = mapUIStore.features.find((f) => f.id === props.featureId)
+  const feature = featureStore.features.find((f) => f.id === props.featureId)
   if (feature?.images) {
     images.value = feature.images.map((img) => ({
       name: img.name,
@@ -204,9 +204,9 @@ function closePopup() {
 
 function addCommentAndUpload() {
   if (props.featureId !== null) {
-    mapUIStore.addComment(props.featureId, localComment.value)
+    featureStore.addComment(props.featureId, localComment.value)
     // Update images in the store
-    mapUIStore.updateFeatureImages(props.featureId, images.value)
+    featureStore.updateFeatureImages(props.featureId, images.value)
     existingComment.value = localComment.value
   }
   console.log('Uploading images:', images.value)

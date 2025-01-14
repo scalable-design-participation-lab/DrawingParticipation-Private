@@ -1,82 +1,7 @@
-<template>
-  <template v-for="feature in features" :key="feature.id">
-    <ol-vector-layer>
-      <ol-source-vector>
-        <ol-feature>
-          <ol-geom-point :coordinates="feature.coordinates" />
-          <ol-style>
-            <ol-style-icon
-              :src="getIconForFeature(feature)"
-              :scale="1"
-              :anchor="[0.5, 0.5]"
-            />
-          </ol-style>
-        </ol-feature>
-      </ol-source-vector>
-    </ol-vector-layer>
-
-    <ol-overlay
-      :position="feature.coordinates"
-      :offset="[0, 0]"
-      :stopEvent="false"
-      :positioning="'top-left'"
-    >
-      <div
-        v-if="shouldShowPlusIcon(feature)"
-        class="plus-icon-container"
-        @click.stop.prevent="handlePlusIconClick(feature)"
-      >
-        <img
-          src="@/assets/icons/open-icon.svg"
-          alt="Open Icon"
-          class="plus-icon"
-        />
-      </div>
-    </ol-overlay>
-
-    <ol-overlay
-      v-if="showDeleteButton"
-      :position="feature.coordinates"
-      :offset="[-30, -30]"
-      :stopEvent="false"
-      :positioning="'top-left'"
-    >
-      <div
-        class="delete-icon-container"
-        @click.stop.prevent="handleDeleteClick(feature)"
-      >
-        <img
-          src="@/assets/icons/delete.svg"
-          alt="Delete Icon"
-          class="delete-icon"
-        />
-      </div>
-    </ol-overlay>
-
-    <ol-overlay
-      v-if="showCommentIcons"
-      :position="feature.coordinates"
-      :offset="[20, -20]"
-      :stopEvent="false"
-      :positioning="'center-center'"
-    >
-      <div
-        class="comment-display-icon"
-        @click.stop.prevent="handleCommentIconClick(feature, $event)"
-      >
-        <UIcon
-          name="i-heroicons-chat-bubble-left-ellipsis"
-          class="text-lg text-gray-600 hover:text-gray-800"
-        />
-      </div>
-    </ol-overlay>
-  </template>
-</template>
-
 <script setup lang="ts">
-import { computed } from 'vue'
-import { useMapUIStore } from '@/stores/mapUI'
 import { click } from 'ol/events/condition'
+import { useFeatureStore } from '~/stores/features'
+import { useSideBarStore } from '~/stores/sidebar'
 
 const props = defineProps({
   features: {
@@ -115,7 +40,8 @@ const emit = defineEmits([
   'show-comment-display',
 ])
 
-const mapUIStore = useMapUIStore()
+const featureStore = useFeatureStore()
+const sidebarStore = useSideBarStore()
 
 const clickCondition = click
 
@@ -126,9 +52,9 @@ function handleSelect(event, feature) {
     const coordinates = olFeature.getGeometry().getCoordinates()
 
     const feature = props.features.find(
-      (f) =>
-        Math.abs(f.coordinates[0] - coordinates[0]) < 0.0000001 &&
-        Math.abs(f.coordinates[1] - coordinates[1]) < 0.0000001,
+      f =>
+        Math.abs(f.coordinates[0] - coordinates[0]) < 0.0000001
+        && Math.abs(f.coordinates[1] - coordinates[1]) < 0.0000001,
     )
 
     if (feature) {
@@ -146,24 +72,24 @@ function shouldShowPlusIcon(feature) {
     return true
   }
 
-  const spaceSubwindow = mapUIStore.spaceSubwindow
-  const belongingSubwindow = mapUIStore.belongingSubwindow
-  const safetySubwindow = mapUIStore.safetySubwindow
-  const environmentSubwindow = mapUIStore.environmentSubwindow
+  const spaceSubwindow = sidebarStore.spaceSubwindow
+  const belongingSubwindow = sidebarStore.belongingSubwindow
+  const safetySubwindow = sidebarStore.safetySubwindow
+  const environmentSubwindow = sidebarStore.environmentSubwindow
 
   if (feature.type === 'Point') {
     if (spaceSubwindow === 1 && !feature.iconName) {
       return true
     }
     if (
-      belongingSubwindow === 1 &&
-      ['heart', 'smile', 'dislike'].includes(feature.iconName)
+      belongingSubwindow === 1
+      && ['heart', 'smile', 'dislike'].includes(feature.iconName)
     ) {
       return true
     }
     if (
-      safetySubwindow === 1 &&
-      ['broken', 'calm', 'lock'].includes(feature.iconName)
+      safetySubwindow === 1
+      && ['broken', 'calm', 'lock'].includes(feature.iconName)
     ) {
       return true
     }
@@ -186,7 +112,7 @@ function handlePlusIconClick(feature) {
 function handleDeleteClick(feature) {
   // Add confirmation dialog
   if (confirm('Ви впевнені, що хочете видалити цю відмітку?')) {
-    mapUIStore.deleteFeature(feature.id)
+    featureStore.deleteFeature(feature.id)
   }
 }
 
@@ -195,6 +121,81 @@ function handleCommentIconClick(feature, event) {
   emit('show-comment-display', { feature, position: iconPosition })
 }
 </script>
+
+<template>
+  <template v-for="feature in features" :key="feature.id">
+    <ol-vector-layer>
+      <ol-source-vector>
+        <ol-feature>
+          <ol-geom-point :coordinates="feature.coordinates" />
+          <ol-style>
+            <ol-style-icon
+              :src="getIconForFeature(feature)"
+              :scale="1"
+              :anchor="[0.5, 0.5]"
+            />
+          </ol-style>
+        </ol-feature>
+      </ol-source-vector>
+    </ol-vector-layer>
+
+    <ol-overlay
+      :position="feature.coordinates"
+      :offset="[0, 0]"
+      :stop-event="false"
+      positioning="top-left"
+    >
+      <div
+        v-if="shouldShowPlusIcon(feature)"
+        class="plus-icon-container"
+        @click.stop.prevent="handlePlusIconClick(feature)"
+      >
+        <img
+          src="@/assets/icons/open-icon.svg"
+          alt="Open Icon"
+          class="plus-icon"
+        >
+      </div>
+    </ol-overlay>
+
+    <ol-overlay
+      v-if="showDeleteButton"
+      :position="feature.coordinates"
+      :offset="[-30, -30]"
+      :stop-event="false"
+      positioning="top-left"
+    >
+      <div
+        class="delete-icon-container"
+        @click.stop.prevent="handleDeleteClick(feature)"
+      >
+        <img
+          src="@/assets/icons/delete.svg"
+          alt="Delete Icon"
+          class="delete-icon"
+        >
+      </div>
+    </ol-overlay>
+
+    <ol-overlay
+      v-if="showCommentIcons"
+      :position="feature.coordinates"
+      :offset="[20, -20]"
+      :stop-event="false"
+      positioning="center-center"
+    >
+      <div
+        class="comment-display-icon"
+        @click.stop.prevent="handleCommentIconClick(feature, $event)"
+      >
+        <UIcon
+          name="i-heroicons-chat-bubble-left-ellipsis"
+          class="text-lg text-gray-600 hover:text-gray-800"
+        />
+      </div>
+    </ol-overlay>
+  </template>
+</template>
 
 <style scoped>
 .plus-icon-container {
