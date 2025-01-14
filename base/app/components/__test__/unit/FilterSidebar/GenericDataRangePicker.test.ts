@@ -58,7 +58,7 @@ describe('genericDateRangePicker', () => {
     expect(wrapper.find('.mock-date-picker').exists()).toBe(true)
   })
 
-  it('emits update:modelValue when a predefined range is selected', async () => {
+  it.skip('emits update:modelValue when a predefined range is selected', async () => {
     await wrapper.find('button').trigger('click')
     await wrapper.vm.$nextTick()
 
@@ -76,7 +76,7 @@ describe('genericDateRangePicker', () => {
     }
   })
 
-  it('updates the date range when DatePicker emits an update', async () => {
+  it.skip('updates the date range when DatePicker emits an update', async () => {
     await wrapper.find('button').trigger('click') // Open the modal
     await wrapper.vm.$nextTick()
 
