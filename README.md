@@ -48,10 +48,10 @@ project
 | | └───**test**/
 | | | └───unit/
 | | | | └───HelloWorldComponents/
-| | | | | HelloWorld.test.ts
+| | | | |   HelloWorld.test.ts
 | | | └───integration/
 | | └───HelloWorldComponents/
-| | | | HelloWorld.vue
+| | |   HelloWorld.vue
 
 ```
 
