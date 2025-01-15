@@ -39,6 +39,9 @@ describe('genericDateRangePicker', () => {
       },
     })
   })
+  it('renders correctly', () => {
+    expect(wrapper.element).toMatchSnapshot()
+  })
 
   it('renders the component', () => {
     expect(wrapper.find('button').exists()).toBe(true)

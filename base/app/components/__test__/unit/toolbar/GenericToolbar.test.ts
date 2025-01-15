@@ -32,6 +32,11 @@ function createWrapper(props = {}) {
 }
 
 describe('genericToolbar', () => {
+  it('renders correctly', () => {
+    const wrapper = createWrapper()
+    expect(wrapper.element).toMatchSnapshot()
+  })
+
   it('renders the correct number of tool buttons', () => {
     const wrapper = createWrapper()
     expect(wrapper.findAll('.w-14.h-14').length).toBe(2)
