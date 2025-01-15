@@ -1,0 +1,31 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`CommentModal.vue > renders correctly 1`] = `
+<div
+  class="u-card dark:bg-black shadow-lg flex flex-col"
+>
+  
+  <textarea
+    class="u-textarea flex-grow text-sm resize-none"
+  />
+  <div
+    class="flex justify-between mt-4"
+  >
+    <button
+      class="u-button rounded-full flex justify-center"
+    >
+      
+       Закрити 
+      
+    </button>
+    <button
+      class="u-button px-5 py-2 rounded-full flex justify-center hover:bg-gray-300 hover:text-black dark:hover:bg-zinc-700 dark:hover:text-white"
+    >
+      
+      Додати
+      
+    </button>
+  </div>
+  
+</div>
+`;

@@ -31,6 +31,11 @@ describe('generalizedFooter', () => {
     buttons: [{ label: 'Sign Up' }, { label: 'Login' }],
   }
 
+  it('renders correctly', () => {
+    const wrapper = mount(GeneralizedFooter, { props: mockProps })
+    expect(wrapper.element).toMatchSnapshot()
+  })
+
   it('renders the component correctly', () => {
     const wrapper = mount(GeneralizedFooter, { props: mockProps })
     expect(wrapper.find('footer').exists()).toBe(true)

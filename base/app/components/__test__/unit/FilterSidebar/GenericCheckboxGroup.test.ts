@@ -30,6 +30,11 @@ describe('genericCheckboxGroup', () => {
     modelValue: { opt1: true, opt2: false },
   }
 
+  it('renders correctly', () => {
+    const wrapper = mount(GenericCheckboxGroup, { props: mockProps })
+    expect(wrapper.element).toMatchSnapshot()
+  })
+
   it('renders the component correctly', () => {
     const wrapper = mount(GenericCheckboxGroup, { props: mockProps })
     expect(wrapper.find('div').exists()).toBe(true)

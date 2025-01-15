@@ -1,0 +1,66 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`CommentDisplay.vue > renders correctly 1`] = `
+<div
+  class="u-card min-w-48 max-w-72 shadow-lg text-black dark:text-white"
+  data-v-dfaab4d5=""
+>
+  
+  <div
+    data-v-dfaab4d5=""
+  >
+    <p
+      class="text-sm"
+      data-v-dfaab4d5=""
+    >
+      Test comment
+    </p>
+  </div>
+  
+  
+  <div
+    class="flex items-center justify-between"
+    data-v-dfaab4d5=""
+  >
+    <div
+      class="flex items-center gap-2"
+      data-v-dfaab4d5=""
+    >
+      <h3
+        class="font-medium"
+        data-v-dfaab4d5=""
+      >
+        Точка забруднення
+      </h3>
+    </div>
+    <div
+      class="flex items-center gap-2"
+      data-v-dfaab4d5=""
+    >
+      <div
+        class="u-avatar"
+        data-v-dfaab4d5=""
+      >
+        John
+      </div>
+      <button
+        class="u-button"
+        data-v-dfaab4d5=""
+      >
+        i-heroicons-x-mark
+      </button>
+    </div>
+  </div>
+  <div
+    class="text-xs text-gray-500 dark:text-gray-300"
+    data-v-dfaab4d5=""
+  >
+    <span
+      data-v-dfaab4d5=""
+    >
+      Nov 1, 2023
+    </span>
+  </div>
+  
+</div>
+`;

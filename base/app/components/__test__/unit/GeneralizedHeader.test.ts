@@ -44,6 +44,11 @@ describe('generalizedHeader', () => {
     shape: 'rounded',
   }
 
+  it ('renders correctly', () => {
+    const wrapper = mount(GeneralizedHeader, { props: mockProps })
+    expect(wrapper.element).toMatchSnapshot()
+  })
+
   it('renders the component correctly', () => {
     const wrapper = mount(GeneralizedHeader, { props: mockProps })
     expect(wrapper.find('header').exists()).toBe(true)
