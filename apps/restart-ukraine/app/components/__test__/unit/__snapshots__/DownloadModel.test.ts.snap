@@ -1,5 +1,0 @@
-// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
-
-exports[`DownloadModal.vue > renders correctly 1`] = `<!--teleport start-->`;
-
-exports[`DownloadModel.vue > render correctly 1`] = `<!--teleport start-->`;
