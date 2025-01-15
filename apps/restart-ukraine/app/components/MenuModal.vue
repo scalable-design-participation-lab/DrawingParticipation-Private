@@ -43,15 +43,15 @@ const isOpen = computed({
 
 const menuItems = [
   {
-    label: 'Карта',
+    label: 'Головна',
     action: 'home',
   },
   {
-    label: 'Про проєкт',
+    label: 'Про нас',
     action: 'about',
   },
   {
-    label: 'Допомога',
+    label: 'Підтримка',
     action: 'help',
   },
   {

@@ -101,7 +101,7 @@ describe("DownloadModal.vue", () => {
       global: {
         stubs: config.global.stubs,
       },
-    });
+    })  ;
     expect(emptyWrapper.vm.selectedFilters).toEqual({});
   });
-});
+})  ;
