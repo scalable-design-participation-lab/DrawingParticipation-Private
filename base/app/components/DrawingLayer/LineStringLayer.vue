@@ -1,7 +1,8 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import { click } from 'ol/events/condition'
-import { useFeatureStore } from '~/stores/features'
+import { useFeatureStore } from '../../stores/features'
+import { useRouteFeatureStore } from '../../stores/route-features'
 
 const props = defineProps({
   enableClick: {
@@ -21,11 +22,13 @@ const props = defineProps({
 const emit = defineEmits(['toggle-comment-popup', 'show-comment-display'])
 
 const featureStore = useFeatureStore()
+const routeFeautureStore = useRouteFeatureStore()
 const clickCondition = click
 
-const lineStringFeatures = computed(() =>
-  featureStore.features.filter(feature => feature.type === 'LineString'),
-)
+const lineStringFeatures = computed(() => {
+  const data = routeFeautureStore.getDataForRoute()
+  return data.filter(feature => feature.type === 'LineString')
+})
 
 function getLineStringStartPoint(feature) {
   if (feature.coordinates.length > 0) {

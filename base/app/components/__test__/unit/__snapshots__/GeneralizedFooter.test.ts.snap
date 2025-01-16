@@ -1,0 +1,72 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`generalizedFooter > renders correctly 1`] = `
+<div
+  class="relative"
+>
+  <footer
+    class="fixed bottom-6 left-6 right-6 flex justify-between items-end sm:flex-row flex-col z-40"
+  >
+    <div
+      class="footer-left"
+    >
+      <h2
+        class="text-2xl"
+      >
+        Test Company
+      </h2>
+      <nav
+        class="mt-4"
+      >
+        <ul
+          class="space-y-2"
+        >
+          
+          <li>
+            <a>
+              
+              About
+              
+            </a>
+          </li>
+          <li>
+            <a>
+              
+              Contact
+              
+            </a>
+          </li>
+          
+        </ul>
+      </nav>
+    </div>
+    <div
+      class="flex items-center gap-4 sm:mt-0 mt-4"
+    >
+      <div
+        class="flex gap-4"
+      >
+        
+        <button>
+          Sign Up
+        </button>
+        <button>
+          Login
+        </button>
+        
+      </div>
+      <button
+        aria-label="Help"
+        class="w-12 h-12 rounded-full bg-white dark:bg-black flex items-center justify-center font-semibold text-lg md:text-xl cursor-pointer shadow-md hover:bg-black hover:text-white dark:text-white dark:hover:bg-slate-800"
+      >
+         ? 
+      </button>
+    </div>
+  </footer>
+  <!-- Add SupportModal -->
+  <div
+    class=""
+    modelvalue="false"
+  />
+</div>
+`;

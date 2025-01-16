@@ -1,4 +1,6 @@
 // https://nuxt.com/docs/api/configuration/nuxt-config
+import path from 'node:path'
+
 export default defineNuxtConfig({
   extends: [
     // By default, any layers within your project in the ~/layers directory will be automatically registered as layers in your project. (Nuxt > v3.12)
