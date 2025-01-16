@@ -32,9 +32,9 @@ import MapIntroModal from '../components/MapIntroModal.vue'
 import { useFirestore } from 'vuefire'
 import { collection, getDocs } from 'firebase/firestore'
 import { useMapStore } from '@base/stores/map'
-import { useFeatureStore } from '@base/stores/features'
+import { useAllFeatureStore } from '@base/stores/all-features'
 
-const featureStore = useFeatureStore()
+const featureStore = useAllFeatureStore()
 const mapStore = useMapStore()
 const db = useFirestore()
 const route = useRoute()
@@ -65,18 +65,18 @@ const leftItems = ref([
 ])
 
 // Add right items for map controls
-const currentMapType = ref('light')
+const {mapType} = storeToRefs(mapStore)
 const rightItems = ref([
   {
     icon: computed(() =>
-      currentMapType.value === 'light'
+      mapType.value === 'vector'
         ? 'i-heroicons:map'
         : 'i-heroicons:globe-americas-20-solid',
     ),
     onClick: () => {
-      currentMapType.value =
-        currentMapType.value === 'light' ? 'satellite' : 'light'
-      mapStore.setMapType(currentMapType.value)
+      mapType.value =
+        mapType.value === 'vector' ? 'satellite' : 'vector'
+      mapStore.setMapType(mapType.value)
     },
   },
 ])
