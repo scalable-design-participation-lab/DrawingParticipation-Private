@@ -64,7 +64,8 @@ exports[`generalizedFooter > renders correctly 1`] = `
     </div>
   </footer>
   <!-- Add SupportModal -->
-  <supportmodal
+  <div
+    class=""
     modelvalue="false"
   />
 </div>

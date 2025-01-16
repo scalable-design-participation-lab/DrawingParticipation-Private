@@ -1,6 +1,8 @@
 import { describe, expect, it, vi } from 'vitest'
+import type { VueWrapper } from '@vue/test-utils'
 import { config, mount } from '@vue/test-utils'
 import GeneralizedHeader from '@components/GeneralizedHeader.vue'
+import Nop from '@components/Nop.vue'
 
 // Mock NuxtUI components
 const UButton = {
@@ -27,35 +29,50 @@ config.global.stubs = {
   UDropdown,
   NuxtLink,
 }
-
+const mockProps = {
+  leftItems: [
+    { label: 'Home', to: '/' },
+    { label: 'About', to: '/about' },
+  ],
+  rightItems: [
+    { label: 'Login', onClick: vi.fn() },
+    { label: 'Sign Up', to: '/signup' },
+  ],
+  logoSrc: '/logo.png',
+  logoAlt: 'Test Logo',
+  showIcon: true,
+  shape: 'rounded',
+}
 describe('generalizedHeader', () => {
-  const mockProps = {
-    leftItems: [
-      { label: 'Home', to: '/' },
-      { label: 'About', to: '/about' },
-    ],
-    rightItems: [
-      { label: 'Login', onClick: vi.fn() },
-      { label: 'Sign Up', to: '/signup' },
-    ],
-    logoSrc: '/logo.png',
-    logoAlt: 'Test Logo',
-    showIcon: true,
-    shape: 'rounded',
-  }
+  let wrapper: VueWrapper<any>
+
+  beforeEach(() => {
+    vi.clearAllMocks()
+
+    wrapper = mount(GeneralizedHeader, {
+      props: {
+        ...mockProps,
+      },
+      global: {
+        components:
+        {
+          MenuModal: Nop,
+          UColorModeButton: Nop,
+        },
+      },
+
+    })
+  })
 
   it ('renders correctly', () => {
-    const wrapper = mount(GeneralizedHeader, { props: mockProps })
     expect(wrapper.element).toMatchSnapshot()
   })
 
   it('renders the component correctly', () => {
-    const wrapper = mount(GeneralizedHeader, { props: mockProps })
     expect(wrapper.find('header').exists()).toBe(true)
   })
 
   it('renders the logo when logoSrc is provided', () => {
-    const wrapper = mount(GeneralizedHeader, { props: mockProps })
     const logo = wrapper.find('img')
     expect(logo.exists()).toBe(true)
     expect(logo.attributes('src')).toBe(mockProps.logoSrc)
@@ -63,24 +80,19 @@ describe('generalizedHeader', () => {
   })
 
   it('renders the icon when showIcon is true', () => {
-    const wrapper = mount(GeneralizedHeader, { props: mockProps })
     const icon = wrapper.findAll('button')[0]
     expect(icon.exists()).toBe(true)
     expect(icon.text()).toBe('🤲')
   })
 
   it('does not render the icon when showIcon is false', () => {
-    const wrapper = mount(GeneralizedHeader, {
-      props: { ...mockProps, showIcon: false },
-    })
     const buttons = wrapper.findAll('button')
     expect(buttons.length).toBe(
-      mockProps.leftItems.length + mockProps.rightItems.length + 2,
+      mockProps.leftItems.length + mockProps.rightItems.length + 3,
     ) // +1 for logo button
   })
 
   it('renders the correct number of left items', () => {
-    const wrapper = mount(GeneralizedHeader, { props: mockProps })
     const leftItems = wrapper
       .findAllComponents(UButton)
       .filter(button =>
@@ -90,7 +102,6 @@ describe('generalizedHeader', () => {
   })
 
   it('renders the correct number of right items', () => {
-    const wrapper = mount(GeneralizedHeader, { props: mockProps })
     const rightItems = wrapper.findAll(
       '.flex.items-center.space-x-2:last-child > *',
     )
@@ -98,7 +109,6 @@ describe('generalizedHeader', () => {
   })
 
   it('applies the correct shape class based on the shape prop', () => {
-    const wrapper = mount(GeneralizedHeader, { props: mockProps })
     const buttons = wrapper.findAllComponents(UButton)
     buttons.forEach((button) => {
       expect(button.attributes('class')).toContain('rounded-full')
@@ -106,6 +116,12 @@ describe('generalizedHeader', () => {
 
     const rectangularWrapper = mount(GeneralizedHeader, {
       props: { ...mockProps, shape: 'rectangular' },
+      global: {
+        components: {
+          MenuModal: Nop,
+          UColorModeButton: Nop,
+        },
+      },
     })
     const rectangularButtons = rectangularWrapper.findAllComponents(UButton)
     rectangularButtons.forEach((button) => {
@@ -114,13 +130,11 @@ describe('generalizedHeader', () => {
   })
 
   it('renders NuxtLink for items with "to" prop', () => {
-    const wrapper = mount(GeneralizedHeader, { props: mockProps })
     const links = wrapper.findAllComponents(NuxtLink)
     expect(links.length).toBe(3) // 2 from leftItems, 1 from rightItems
   })
 
   it('renders UButton for items without "to" prop', () => {
-    const wrapper = mount(GeneralizedHeader, { props: mockProps })
     const buttons = wrapper.findAllComponents(UButton)
     expect(buttons.length).toBe(
       mockProps.leftItems.length + mockProps.rightItems.length + 3,
@@ -135,7 +149,12 @@ describe('generalizedHeader', () => {
         { label: 'More', dropdown: { items: [{ label: 'Submenu' }] } },
       ],
     }
-    const wrapper = mount(GeneralizedHeader, { props: propsWithDropdown })
+    const wrapper = mount(GeneralizedHeader, { props: propsWithDropdown, global: {
+      components: {
+        MenuModal: Nop,
+        UColorModeButton: Nop,
+      },
+    } })
     const dropdowns = wrapper.findAllComponents(UDropdown)
     expect(dropdowns.length).toBe(1)
   })

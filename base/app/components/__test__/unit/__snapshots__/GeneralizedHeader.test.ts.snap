@@ -112,7 +112,7 @@ exports[`generalizedHeader > renders correctly 1`] = `
       
       
       <!-- Dark Mode Toggle -->
-      <ucolormodebutton
+      <div
         class="h-full px-2 md:px-3 lg:px-4 text-xs !bg-gray-50 hover:!bg-black hover:!text-white dark:!bg-black shadow-lg dark:hover:!bg-slate-800 text-black dark:text-white hidden md:flex rounded-full"
         data-v-7abae708=""
       />
@@ -127,7 +127,8 @@ exports[`generalizedHeader > renders correctly 1`] = `
     </div>
   </header>
   <!-- Add popups -->
-  <menumodal
+  <div
+    class=""
     data-v-7abae708=""
     modelvalue="false"
   />
