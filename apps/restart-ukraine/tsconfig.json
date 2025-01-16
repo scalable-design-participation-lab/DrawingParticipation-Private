@@ -10,6 +10,9 @@
       "@base/*": [
         "../../base/app/*"
       ]
-    }
+    },
+    "types": [
+      "vitest/globals"
+    ]
   }
 }

@@ -1,6 +1,8 @@
 import { describe, expect, it } from 'vitest'
+import type { VueWrapper } from '@vue/test-utils'
 import { config, mount } from '@vue/test-utils'
 import GeneralizedFooter from '@components/GeneralizedFooter.vue'
+import Nop from '@components/Nop.vue'
 
 // Mock NuxtUI components
 const ULink = {
@@ -22,6 +24,7 @@ config.global.stubs = {
 }
 
 describe('generalizedFooter', () => {
+  let wrapper: VueWrapper<any>
   const mockProps = {
     title: 'Test Company',
     links: [
@@ -31,25 +34,37 @@ describe('generalizedFooter', () => {
     buttons: [{ label: 'Sign Up' }, { label: 'Login' }],
   }
 
+  beforeEach(
+    () => {
+      vi.clearAllMocks()
+      wrapper = mount(GeneralizedFooter, {
+        props: {
+          ...mockProps,
+        },
+        global: {
+          components: {
+            SupportModal: Nop,
+          },
+        },
+      })
+    },
+  )
+
   it('renders correctly', () => {
-    const wrapper = mount(GeneralizedFooter, { props: mockProps })
     expect(wrapper.element).toMatchSnapshot()
   })
 
   it('renders the component correctly', () => {
-    const wrapper = mount(GeneralizedFooter, { props: mockProps })
     expect(wrapper.find('footer').exists()).toBe(true)
     expect(wrapper.find('h2').text()).toBe(mockProps.title)
   })
 
   it('renders the correct number of links', () => {
-    const wrapper = mount(GeneralizedFooter, { props: mockProps })
     const links = wrapper.findAll('nav ul li')
     expect(links).toHaveLength(mockProps.links.length)
   })
 
   it('renders the correct number of buttons', () => {
-    const wrapper = mount(GeneralizedFooter, { props: mockProps })
     const buttons = wrapper
       .findAllComponents(UButton)
       .filter(button => button.props('label'))
@@ -57,14 +72,12 @@ describe('generalizedFooter', () => {
   })
 
   it('renders the help button', () => {
-    const wrapper = mount(GeneralizedFooter, { props: mockProps })
     const helpButton = wrapper.find('button[aria-label="Help"]')
     expect(helpButton.exists()).toBe(true)
     expect(helpButton.text()).toBe('?')
   })
 
   it('renders link labels correctly', () => {
-    const wrapper = mount(GeneralizedFooter, { props: mockProps })
     const links = wrapper.findAll('nav ul li a')
     links.forEach((link, index) => {
       expect(link.text()).toBe(mockProps.links[index].label)
@@ -72,7 +85,6 @@ describe('generalizedFooter', () => {
   })
 
   it('renders button labels correctly', () => {
-    const wrapper = mount(GeneralizedFooter, { props: mockProps })
     const buttons = wrapper
       .findAllComponents(UButton)
       .filter(button => button.props('label'))
