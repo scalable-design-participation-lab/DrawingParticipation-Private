@@ -32,8 +32,9 @@ import MapIntroModal from '../components/MapIntroModal.vue'
 import { useFirestore } from 'vuefire'
 import { collection, getDocs } from 'firebase/firestore'
 import { useMapStore } from '@base/stores/map'
-import { useFeatureStore } from '@base/stores/features'
-const featureStore = useFeatureStore()
+import { useAllFeatureStore } from '@base/stores/all-features'
+
+const featureStore = useAllFeatureStore()
 const mapStore = useMapStore()
 const db = useFirestore()
 const route = useRoute()
