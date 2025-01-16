@@ -1,10 +1,10 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import { useSideBarStore } from '../../stores/sidebar'
+import { useDrawingStore } from '../../stores/drawing'
 import IconLayer from './IconLayer.vue'
 import PolygonLayer from './PolygonLayer.vue'
 import LineStringLayer from './LineStringLayer.vue'
-import { useDrawingStore } from '~/stores/drawing'
 
 import redIcon from '@/assets/icons/red.svg'
 import greenIcon from '@/assets/icons/green.svg'
@@ -21,7 +21,7 @@ import pollutionIcon from '@/assets/icons/pollution.svg'
 import leafIcon from '@/assets/icons/leaf.svg'
 import prohibitIcon from '@/assets/icons/prohibit.svg'
 import trashIcon from '@/assets/icons/trash.svg'
-import { useFeatureStore } from '~/stores/features'
+import { useRouteFeatureStore } from '~/stores/route-features'
 
 defineProps({
   projection: {
@@ -58,14 +58,16 @@ const emit = defineEmits([
 
 const drawStore = useDrawingStore()
 const sidebarStore = useSideBarStore()
-const featureStore = useFeatureStore()
+const routeFeatureStore = useRouteFeatureStore()
 
 const drawEnable = computed(() => drawStore.drawEnable)
 const drawType = computed(() => drawStore.drawType)
 const currentColor = computed(() => sidebarStore.currentColor)
 
-const pointFeatures = computed(() =>
-  featureStore.features.filter(feature => feature.type === 'Point'),
+const pointFeatures = computed(() => {
+  const data = routeFeatureStore.getDataForRoute()
+  return data.filter(feature => feature.type === 'Point')
+},
 )
 
 function handleDrawStart(event) {

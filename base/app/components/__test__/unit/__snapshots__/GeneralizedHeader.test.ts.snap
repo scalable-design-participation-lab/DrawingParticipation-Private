@@ -1,0 +1,136 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`generalizedHeader > renders correctly 1`] = `
+<div
+  class="relative"
+  data-v-7abae708=""
+>
+  <header
+    class="h-10 lg:h-12 fixed top-6 left-6 right-6 flex justify-between bg-transparent z-50"
+    data-v-7abae708=""
+  >
+    <!-- items left -->
+    <div
+      class="h-full flex space-x-2 sm:space-x-3 relative"
+      data-v-7abae708=""
+    >
+      <button
+        alt="Scalable Design Participation Lab Logo"
+        class="w-10 lg:w-12 text-xl sm:text-2xl !rounded-lg flex justify-center !bg-gray-50 dark:!bg-black shadow-lg hover:scale-105 relative z-10 rounded-full"
+        data-v-7abae708=""
+        target="_blank"
+        to="https://www.northeastern.edu/"
+      >
+        
+         🤲 
+        
+      </button>
+      <button
+        class="w-10 lg:w-12 !rounded-lg flex justify-center !bg-gray-50 dark:!bg-black shadow-lg hover:scale-105 rounded-full"
+        data-v-7abae708=""
+        target="_blank"
+        to=""
+      >
+        
+        <img
+          alt="Test Logo"
+          class="w-9/12 h-auto"
+          data-v-7abae708=""
+          src="/logo.png"
+        />
+        
+      </button>
+      
+      
+      <a
+        custom=""
+        data-v-7abae708=""
+      >
+        
+        <button
+          class="h-full px-3 sm:px-4 !rounded-lg text-xs sm:text-sm md:text-base lg:text-lg shadow-lg text-black dark:text-white !bg-gray-50 dark:!bg-black hover:scale-105 rounded-full"
+          data-v-7abae708=""
+        >
+          
+          Home
+          
+        </button>
+        
+      </a>
+      
+      
+      <a
+        custom=""
+        data-v-7abae708=""
+      >
+        
+        <button
+          class="h-full px-3 sm:px-4 !rounded-lg text-xs sm:text-sm md:text-base lg:text-lg shadow-lg text-black dark:text-white !bg-gray-50 dark:!bg-black hover:scale-105 rounded-full"
+          data-v-7abae708=""
+        >
+          
+          About
+          
+        </button>
+        
+      </a>
+      
+      
+    </div>
+    <!-- items right -->
+    <div
+      class="h-full flex space-x-2 sm:space-x-3 items-center relative z-10"
+      data-v-7abae708=""
+    >
+      
+      
+      <button
+        class="h-full px-2 md:px-3 lg:px-4 text-xs md:text-base lg:text-lg rounded-full !bg-gray-50 hover:!bg-black hover:!text-white dark:!bg-black shadow-lg dark:hover:!bg-slate-800 text-black dark:text-white hidden md:flex rounded-full"
+        data-v-7abae708=""
+      >
+        
+        Login
+        
+      </button>
+      
+      
+      <a
+        custom=""
+        data-v-7abae708=""
+      >
+        
+        <button
+          class="h-full px-2 md:px-3 lg:px-4 text-xs md:text-base lg:text-lg rounded-full !bg-gray-50 hover:!bg-black hover:!text-white dark:!bg-black shadow-lg dark:hover:!bg-slate-800 text-black dark:text-white hidden md:flex rounded-full"
+          data-v-7abae708=""
+        >
+          
+          Sign Up
+          
+        </button>
+        
+      </a>
+      
+      
+      <!-- Dark Mode Toggle -->
+      <div
+        class="h-full px-2 md:px-3 lg:px-4 text-xs !bg-gray-50 hover:!bg-black hover:!text-white dark:!bg-black shadow-lg dark:hover:!bg-slate-800 text-black dark:text-white hidden md:flex rounded-full"
+        data-v-7abae708=""
+      />
+      <!-- Menu -->
+      <button
+        class="h-full px-2 md:px-2 lg:px-3.5 text-lg !bg-gray-50 hover:!bg-black hover:!text-white dark:!bg-black shadow-lg dark:hover:!bg-slate-800 text-black dark:text-white rounded-full"
+        data-v-7abae708=""
+      >
+        
+        
+      </button>
+    </div>
+  </header>
+  <!-- Add popups -->
+  <div
+    class=""
+    data-v-7abae708=""
+    modelvalue="false"
+  />
+</div>
+`;

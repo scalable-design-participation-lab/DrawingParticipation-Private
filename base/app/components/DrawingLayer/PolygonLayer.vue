@@ -1,8 +1,9 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import { click } from 'ol/events/condition'
-import { useFeatureStore } from '~/stores/features'
-import { useSideBarStore } from '~/stores/sidebar'
+import { useRouteFeatureStore } from '../../stores/route-features'
+import { useSideBarStore } from '../../stores/sidebar'
+import { useFeatureStore } from '../../stores/features'
 
 const props = defineProps({
   showAllPlusIcons: {
@@ -25,12 +26,14 @@ const props = defineProps({
 
 const emit = defineEmits(['toggle-comment-popup', 'show-comment-display'])
 
-const featureStore = useFeatureStore()
 const sideBarStore = useSideBarStore()
+const routeFeatureStore = useRouteFeatureStore()
+const featureStore = useFeatureStore()
 
-const polygonFeatures = computed(() =>
-  featureStore.features.filter(feature => feature.type === 'Polygon'),
-)
+const polygonFeatures = computed(() => {
+  const data = routeFeatureStore.getDataForRoute()
+  return data.filter(feature => feature.type === 'Polygon')
+})
 
 const visiblePolygonFeatures = computed(() => {
   if (props.showAllPlusIcons) {

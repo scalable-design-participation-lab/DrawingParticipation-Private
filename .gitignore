@@ -37,3 +37,6 @@ logs
 
 # Sandbox 
 sandbox
+
+# Vitest coverage
+coverage

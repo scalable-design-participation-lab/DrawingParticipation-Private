@@ -37,8 +37,8 @@ const rightItems = ref([
     ),
     onClick: () => {
       currentMapType.value
-        = currentMapType.value === 'vector' ? 'satellite' : 'vector' as MapType
-      setMapType(currentMapType.value)
+        = currentMapType.value === 'vector' ? 'satellite' : 'vector' 
+      setMapType(currentMapType.value as MapType)
     },
   },
 ])
@@ -159,12 +159,16 @@ onMounted(() => {
         v-if="isMapBlurred"
         class="absolute inset-0 bg-black bg-opacity-50 z-40"
         @click.self="userStore.showRegistration = true"
-      />
+      ></div>
       <Teleport to="body">
-        <DownloadModalHurtoma
+        <!-- <DownloadModalHurtoma
           v-model="showDownloadModal"
           @download="handleDownload"
-        />
+        /> -->
+        <CommingSoon
+          v-model="showDownloadModal"
+          @download="handleDownload"
+         />
       </Teleport>
     </div>
   </div>

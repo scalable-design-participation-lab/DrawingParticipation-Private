@@ -1,0 +1,16 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`genericDateRangePicker > renders correctly 1`] = `
+<div>
+  <button>
+    
+    1 Jan, 2025 - 15 Jan, 2025
+    
+  </button>
+  <teleport-stub
+    to="body"
+  >
+    <!--v-if-->
+  </teleport-stub>
+</div>
+`;
