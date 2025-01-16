@@ -67,22 +67,13 @@ const closeModal = () => {
 const handleItemClick = (item) => {
   closeModal()
 
-  const isOnMapPage = router.currentRoute.value.path === '/map'
 
   switch (item.action) {
     case 'home':
-      if (isOnMapPage) {
-        router.push('/').then(() => window.location.reload())
-      } else {
         router.push('/')
-      }
       break
     case 'about':
-      if (isOnMapPage) {
-        router.push('/about').then(() => window.location.reload())
-      } else {
         router.push('/about')
-      }
       break
     case 'help':
       showSupportModal.value = true

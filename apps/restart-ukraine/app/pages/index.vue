@@ -37,8 +37,8 @@ const rightItems = ref([
     ),
     onClick: () => {
       currentMapType.value
-        = currentMapType.value === 'vector' ? 'satellite' : 'vector' as MapType
-      setMapType(currentMapType.value)
+        = currentMapType.value === 'vector' ? 'satellite' : 'vector' 
+      setMapType(currentMapType.value as MapType)
     },
   },
 ])
