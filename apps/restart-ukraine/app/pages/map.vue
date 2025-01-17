@@ -82,6 +82,7 @@ const rightItems = ref([
 ])
 
 onMounted(async () => {
+  if (featureStore.allFeatures.length != 0) return
   const projectsCollection = collection(db, 'projects')
   const querySnapshot = await getDocs(projectsCollection)
 
