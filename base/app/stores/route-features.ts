@@ -10,7 +10,7 @@ export const useRouteFeatureStore = defineStore('router-feature', () => {
   // Define a mapping of routes to data sources
   const routeDataMap = {
     '/': () => featureStore.features,
-    '/map': () => allFeatureStore.allFeatures,
+    '/result': () => allFeatureStore.allFeatures,
   }
 
   const defaultDataSource = () => []

@@ -79,7 +79,7 @@ const handleItemClick = (item) => {
       showSupportModal.value = true
       break
     case 'results':
-      router.push('/map')
+      router.push('/result')
       break
   }
 
