@@ -30,7 +30,7 @@
       <UButton
         class="my-2 py-3 px-6 rounded-full flex place-self-start bg-gray-300 dark:bg-zinc-600 dark:text-white text-black hover:text-white dark:hover:bg-zinc-700 dark:hover:text-white"
         color="black"
-        to="/map/"
+        to="/result/"
       >
       Подивитись результати
       </UButton>
@@ -96,7 +96,7 @@
     <div class="mt-12 md:mt-24 space-y-1 flex flex-col">
       <a href="/" class="hover:underline">Карта</a>
       <a href="/about/" class="hover:underline">Про проєкт</a>
-      <a href="/map/" class="hover:underline">Допомога</a>
+      <a href="/result/" class="hover:underline">Допомога</a>
       </div>
     </div>
   </div>

@@ -2,6 +2,7 @@
 import { computed } from 'vue'
 import { useSideBarStore } from '../../stores/sidebar'
 import { useDrawingStore } from '../../stores/drawing'
+import { useRouteFeatureStore } from '../../stores/route-features'
 import IconLayer from './IconLayer.vue'
 import PolygonLayer from './PolygonLayer.vue'
 import LineStringLayer from './LineStringLayer.vue'
@@ -21,7 +22,6 @@ import pollutionIcon from '@/assets/icons/pollution.svg'
 import leafIcon from '@/assets/icons/leaf.svg'
 import prohibitIcon from '@/assets/icons/prohibit.svg'
 import trashIcon from '@/assets/icons/trash.svg'
-import { useRouteFeatureStore } from '~/stores/route-features'
 
 defineProps({
   projection: {
