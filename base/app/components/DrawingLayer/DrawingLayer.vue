@@ -2,7 +2,7 @@
 import { computed } from 'vue'
 import { useSideBarStore } from '../../stores/sidebar'
 import { useDrawingStore } from '../../stores/drawing'
-import { useRouteFeatureStore } from '../../stores/route-features'
+import { useRouteFeatureStore } from '../../../../apps/restart-ukraine/app/stores/route-features'
 import IconLayer from './IconLayer.vue'
 import PolygonLayer from './PolygonLayer.vue'
 import LineStringLayer from './LineStringLayer.vue'
