@@ -5,7 +5,7 @@ import { createPinia, setActivePinia } from 'pinia';
 
 // Mock vue-router
 vi.mock('vue-router', () => ({
-  useRoute: vi.fn(() => ({ name: 'map' }))
+  useRoute: vi.fn(() => ({ name: 'result' }))
 }));
 
 // Mock Components with simple implementations
