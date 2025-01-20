@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import { click } from 'ol/events/condition'
-import { useRouteFeatureStore } from '../../stores/route-features'
+import { useRouteFeatureStore } from '../../../../apps/restart-ukraine/app/stores/route-features'
 import { useSideBarStore } from '../../stores/sidebar'
 import { useFeatureStore } from '../../stores/features'
 

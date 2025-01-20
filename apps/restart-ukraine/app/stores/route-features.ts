@@ -1,5 +1,5 @@
 import { useAllFeatureStore } from './all-features'
-import { useFeatureStore } from './features'
+import { useFeatureStore } from '@base/stores/features'
 
 // This could be a composable instead of a store
 export const useRouteFeatureStore = defineStore('router-feature', () => {
