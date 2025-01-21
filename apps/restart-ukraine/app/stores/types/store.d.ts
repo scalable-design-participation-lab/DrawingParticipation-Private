@@ -36,7 +36,7 @@ export interface ProjectData {
   }
 }
 
-export type  CategoryKey =
+export type Category =
   | 'space.prohibit'
   | 'space.recreational'
   | 'space.restricted'
