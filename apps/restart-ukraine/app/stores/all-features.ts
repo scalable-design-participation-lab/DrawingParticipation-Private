@@ -1,12 +1,29 @@
 import { useFirestore } from 'vuefire'
 import { collection, getDocs } from 'firebase/firestore'
-import type { Feature } from '@base/stores/types/store'
+import type { DrawType, Feature, FrequencyType } from '@base/stores/types/store'
+import type { CategoryKey } from './types/store';
+
 
 export const useAllFeatureStore = defineStore('all-features',  () => {
   /**
    * List of geospatial features.
    */
   const allFeatures = reactive<Feature[]>([])
+
+  /**
+   * Map of geospatial feature by Type
+   */
+  const featuresByType = reactive<Record<DrawType, Feature[]>>({
+    Point: [],
+    LineString: [],
+    Polygon: []
+  })
+
+  /**
+   * Map of geospatial feature by Category
+   */
+  const featuresByCategory  = reactive<Record<CategoryKey,Feature[]>>({})
+
   /**
    * adds a new feature to the store.
    *
@@ -42,6 +59,9 @@ export const useAllFeatureStore = defineStore('all-features',  () => {
    */
   async function fetchAllFeature(): Promise<void> {
     allFeatures.length = 0 // clear the array
+    Object.assign(featuresByType, {});
+    Object.assign(featuresByCategory, {});
+
     const db = useFirestore()
     const projectsCollection = collection(db, 'projects')
     const querySnapshot = await getDocs(projectsCollection)
@@ -52,14 +72,17 @@ export const useAllFeatureStore = defineStore('all-features',  () => {
       // Process space data including prohibit points
       if (Array.isArray(projectData.space.prohibit)) {
         projectData.space.prohibit.forEach((point) => {
-          allFeatures.push({
+          const feature: Feature = {
             type: 'Point',
             coordinates: [point.lon, point.lat],
             isProhibit: true,
             comment: point.comment,
             name: projectData.name,
             timestamp: point.timestamp,
-          })
+          } 
+          allFeatures.push(feature)
+          addToMap(featuresByType, feature.type, feature)
+          addToMap(featuresByCategory, 'space.prohibit', feature)
         })
       }
 
@@ -72,14 +95,17 @@ export const useAllFeatureStore = defineStore('all-features',  () => {
           frequency !== 'restricted'
         ) {
           projectData.space[frequency].forEach((point) => {
-            allFeatures.push({
+            const feature: Feature ={
               type: 'Point',
               coordinates: [point.lon, point.lat],
-              frequency: frequency,
+              frequency: frequency as FrequencyType,
               comment: point.comment,
               name: projectData.name,
               timestamp: point.timestamp,
-            })
+            } 
+            allFeatures.push(feature)
+            addToMap(featuresByType, feature.type, feature)
+            addToMap(featuresByCategory, `space.${frequency}`, feature)
           })
         }
       })
@@ -87,76 +113,58 @@ export const useAllFeatureStore = defineStore('all-features',  () => {
       // Process space.recreational data (Polygons)
       if (Array.isArray(projectData.space.recreational)) {
         projectData.space.recreational.forEach((polygon) => {
-          allFeatures.push({
+          const feature: Feature = {
             type: 'Polygon',
             coordinates: JSON.parse(polygon.geometry),
             comment: polygon.comment,
             name: projectData.name,
             timestamp: polygon.timestamp,
-          })
+          }
+          allFeatures.push(feature)
+          addToMap(featuresByType, feature.type, feature)
+          addToMap(featuresByCategory, `space.recreational`, feature)
         })
       }
 
       // Process space.restricted data (LineStrings)
       if (Array.isArray(projectData.space.restricted)) {
         projectData.space.restricted.forEach((lineString) => {
-          allFeatures.push({
+          const feature: Feature ={
             type: 'LineString',
             coordinates: JSON.parse(lineString.geometry),
             comment: lineString.comment,
             name: projectData.name,
             timestamp: lineString.timestamp,
-          })
+          } 
+          allFeatures.push(feature)
+          addToMap(featuresByType, feature.type, feature)
+          addToMap(featuresByCategory, `space.restricted`, feature)
         })
       }
 
-      // Process belonging data
-      Object.keys(projectData.belonging).forEach((key) => {
-        if (Array.isArray(projectData.belonging[key])) {
-          projectData.belonging[key].forEach((point) => {
-            allFeatures.push({
-              type: 'Point',
-              coordinates: [point.lon, point.lat],
-              iconName: key,
-              comment: point.comment,
-              name: projectData.name,
-              timestamp: point.timestamp,
-            })
-          })
+     // Process belonging, safety, and environment data
+      ['belonging', 'safety', 'environment'].forEach((category) => {
+        if (projectData[category]) {
+          Object.keys(projectData[category]).forEach((key) => {
+            if (Array.isArray(projectData[category][key])) {
+              projectData[category][key].forEach((point) => {
+                const feature: Feature = {
+                  id: Date.now(),
+                  type: 'Point',
+                  coordinates: [point.lon, point.lat],
+                  iconName: key,
+                  comment: point.comment,
+                  name: projectData.name,
+                  timestamp: point.timestamp,
+                };
+                allFeatures.push(feature);
+                addToMap(featuresByType, feature.type, feature);
+                addToMap(featuresByCategory, `${category}.${key}`, feature);
+              });
+            }
+          });
         }
-      })
-
-      // Process safety data
-      Object.keys(projectData.safety).forEach((key) => {
-        if (Array.isArray(projectData.safety[key])) {
-          projectData.safety[key].forEach((point) => {
-            allFeatures.push({
-              type: 'Point',
-              coordinates: [point.lon, point.lat],
-              iconName: key,
-              comment: point.comment,
-              name: projectData.name,
-              timestamp: point.timestamp,
-            })
-          })
-        }
-      })
-
-      // Process environment data
-      Object.keys(projectData.environment).forEach((key) => {
-        if (Array.isArray(projectData.environment[key])) {
-          projectData.environment[key].forEach((point) => {
-            allFeatures.push({
-              type: 'Point',
-              coordinates: [point.lon, point.lat],
-              iconName: key,
-              comment: point.comment,
-              name: projectData.name,
-              timestamp: point.timestamp,
-            })
-          })
-        }
-      })
+      });
     }
   }
 
@@ -165,8 +173,23 @@ export const useAllFeatureStore = defineStore('all-features',  () => {
     fetchAllFeature()
   })
 
+/**
+ * Helper function to categorize features as they're added
+ * @param map  a Map of geospatial features
+ * @param key  a key label for the store
+ * @param value the value for the key 
+ */
+function addToMap(map: Record<string, Feature[]>, key: string, value: Feature) {
+  if (!map[key]) {
+    map[key] = []; // Initialize the array if it doesn't exist
+  }
+  map[key].push(value); // Push the value to the array
+}
+
   return {
     allFeatures,
     addFeature,
+    featuresByCategory,
+    featuresByType
   }
 })
