@@ -2,23 +2,26 @@
 import { ref, computed } from "vue";
 import { useAllFeatureStore } from "../stores/all-features";
 import GeoJSON from "ol/format/GeoJSON";
+import type { Category} from "../stores/types/store";
 
-const { allFeatures } = useAllFeatureStore(); // Access the features from the store
+const { allFeatures, featuresByCategory } = useAllFeatureStore(); 
 const center = ref([3172858.2941718884, 6317486.347640147]);
 const projection = ref("EPSG:3857");
 const zoom = ref(5);
 const blur = ref(20);
 const radius = ref(20);
 const geoJson = new GeoJSON();
-
-// Convert allFeatures to GeoJSON features
+const filterOption = ref<Category | string>("")
+const filterOptions = computed(() => Object.keys(featuresByCategory));
 const geoJsonFeatures = computed(() => {
-  // Transform `allFeatures` into a GeoJSON feature collection
-  const features = allFeatures.map((feature) => ({
+  // Filter features based on the selected filter option 
+  const filteredFeatures = filterOption.value !== "" ? featuresByCategory[filterOption.value] : allFeatures
+
+  const features = filteredFeatures.map((feature) => ({
     type: "Feature",
     geometry: {
-      type: feature.type, // Use the type from the feature (e.g., "Point", "Polygon")
-      coordinates: feature.coordinates, // Use the coordinates from the feature
+      type: feature.type, 
+      coordinates: feature.coordinates, 
     },
   }));
 
@@ -47,7 +50,7 @@ function featuresloadend() {
   
 
 <template>
-    <form>
+    <form class="absolute z-50 bg-white shadow-lg p-4 text-black">
       <fieldset>
         <label for="blur">Blur</label>
         <input
@@ -72,6 +75,18 @@ function featuresloadend() {
         />
         <span class="description">{{ radius }}</span>
       </fieldset>
+      <fieldset>
+        <legend>Filter Options</legend>
+        <div v-for="option in filterOptions" :key="option" class="mb-2 flex items-center space-x-2">
+          <input
+            type="radio"
+            :id="`filter-${option}`"
+            :value="option"
+            v-model="filterOption"
+          />
+          <label :for="`filter-${option}`"> {{ option }}</label>
+        </div>
+    </fieldset>
     </form>
   
     <ol-map
