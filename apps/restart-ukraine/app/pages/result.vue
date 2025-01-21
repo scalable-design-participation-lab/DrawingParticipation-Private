@@ -26,11 +26,9 @@
 
 
 <script setup lang="ts">
-import { onMounted, ref, computed, watch } from 'vue'
+import {  ref, computed, watch } from 'vue'
 import { useRoute } from 'vue-router'
 import MapIntroModal from '../components/MapIntroModal.vue'
-import { useFirestore } from 'vuefire'
-import { collection, getDocs } from 'firebase/firestore'
 import { useMapStore } from '@base/stores/map'
 import { useAllFeatureStore } from '@base/stores/all-features'
 
