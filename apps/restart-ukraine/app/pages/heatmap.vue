@@ -1,3 +1,51 @@
+<script setup lang="ts">
+import { ref, computed } from "vue";
+import { useAllFeatureStore } from "../stores/all-features";
+import GeoJSON from "ol/format/GeoJSON";
+
+const { allFeatures } = useAllFeatureStore(); // Access the features from the store
+const center = ref([3172858.2941718884, 6317486.347640147]);
+const projection = ref("EPSG:3857");
+const zoom = ref(5);
+const blur = ref(20);
+const radius = ref(20);
+const geoJson = new GeoJSON();
+
+// Convert allFeatures to GeoJSON features
+const geoJsonFeatures = computed(() => {
+  // Transform `allFeatures` into a GeoJSON feature collection
+  const features = allFeatures.map((feature) => ({
+    type: "Feature",
+    geometry: {
+      type: feature.type, // Use the type from the feature (e.g., "Point", "Polygon")
+      coordinates: feature.coordinates, // Use the coordinates from the feature
+    },
+  }));
+
+  const featureCollection = {
+    type: "FeatureCollection",
+    features,
+  };
+
+  // Read the features into OpenLayers GeoJSON format
+  return geoJson.readFeatures(featureCollection);
+});
+
+function featuresloadstart() {
+  console.log("features load start");
+}
+
+function featuresloaderror() {
+  console.log("features load error");
+}
+
+function featuresloadend() {
+  console.log("features load end");
+}
+</script>
+
+  
+
 <template>
     <form>
       <fieldset>
@@ -30,7 +78,7 @@
       ref="map"
       :loadTilesWhileAnimating="true"
       :loadTilesWhileInteracting="true"
-      style="height: 400px"
+      style="height: 100vh"
     >
       <ol-view
         ref="view"
@@ -47,36 +95,17 @@
         title="heatmap"
         :blur="blur"
         :radius="radius"
-        :weight="heatmapWeight"
         :zIndex="1"
       >
         <ol-source-vector
-          ref="earthquakes"
-          url="https://raw.githubusercontent.com/openlayers/openlayers/main/examples/data/kml/2012_Earthquakes_Mag5.kml"
-          :format="kmlFormat"
+        :features="geoJsonFeatures"
+        :format="geoJson"
+        @featuresloadstart="featuresloadstart"
+        @featuresloadend="featuresloadend"
+        @featuresloaderror="featuresloaderror"
         >
         </ol-source-vector>
       </ol-heatmap-layer>
     </ol-map>
   </template>
   
-  <script setup>
-  import { ref } from "vue";
-  import KML from "ol/format/KML"; // Explicitly import the KML format
-  
-  const center = ref([101.97, 4.21]);
-  const projection = ref("EPSG:4326");
-  const zoom = ref(5);
-  const blur = ref(20);
-  const radius = ref(20);
-  
-  // Use the imported KML format
-  const kmlFormat = new KML({ extractStyles: false });
-  
-  const heatmapWeight = function (feature) {
-    // Extract magnitude from feature name
-    const name = feature.get("name");
-    const magnitude = parseFloat(name.substr(2));
-    return magnitude - 5;
-  };
-  </script>
