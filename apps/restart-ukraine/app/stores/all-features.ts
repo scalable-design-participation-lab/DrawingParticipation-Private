@@ -1,7 +1,7 @@
 import { useFirestore } from 'vuefire'
 import { collection, getDocs } from 'firebase/firestore'
 import type { DrawType, Feature, FrequencyType } from '@base/stores/types/store'
-import type { CategoryKey } from './types/store';
+import type { Category } from './types/store';
 
 
 export const useAllFeatureStore = defineStore('all-features',  () => {
@@ -22,7 +22,7 @@ export const useAllFeatureStore = defineStore('all-features',  () => {
   /**
    * Map of geospatial feature by Category
    */
-  const featuresByCategory  = reactive<Record<CategoryKey,Feature[]>>({})
+  const featuresByCategory  = reactive<Record<Category,Feature[]>>({})
 
   /**
    * adds a new feature to the store.
