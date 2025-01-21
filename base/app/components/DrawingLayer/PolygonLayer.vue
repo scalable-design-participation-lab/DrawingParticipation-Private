@@ -128,7 +128,10 @@ function handleCommentIconClick(feature, event) {
     :stop-event="false"
     positioning="center-center"
   >
-    <div class="polygon-plus-icon" @click.stop="toggleCommentModal(feature)">
+    <div
+      v-if="showAllPlusIcons"
+      class="polygon-plus-icon" @click.stop="toggleCommentModal(feature)"
+    >
       <svg
         width="24"
         height="24"
