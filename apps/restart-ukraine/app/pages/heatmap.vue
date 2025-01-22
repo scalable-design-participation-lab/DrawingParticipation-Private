@@ -4,6 +4,7 @@ import { useAllFeatureStore } from "../stores/all-features";
 import GeoJSON from "ol/format/GeoJSON";
 import type { Category} from "../stores/types/store";
 import GeneralizedBackgroundMap from "@base/components/GeneralizedBackgroundMap.vue";
+import HeatMap from "@base/components/GeoSpatialLayer/HeatMap.vue";
 
 const blur = useState("blur", () => 20);
 const radius = useState("radius", () => 20);
@@ -33,17 +34,6 @@ const geoJsonFeatures = computed(() => {
   return geoJson.readFeatures(featureCollection);
 });
 
-function featuresloadstart() {
-  console.log("features load start");
-}
-
-function featuresloaderror() {
-  console.log("features load error");
-}
-
-function featuresloadend() {
-  console.log("features load end");
-}
 </script>
 
 <template>
@@ -69,11 +59,10 @@ function featuresloadend() {
 
   <GeneralizedBackgroundMap ref="baseMap">
     <template #layers>
-      <ol-heatmap-layer title="heatmap" :blur="blur" :radius="radius" :zIndex="1">
-        <ol-source-vector :features="geoJsonFeatures" :format="geoJson" @featuresloadstart="featuresloadstart"
-          @featuresloadend="featuresloadend" @featuresloaderror="featuresloaderror">
-        </ol-source-vector>
-      </ol-heatmap-layer>
+      <HeatMap
+      :blur="blur"
+      :radius="radius"
+      :features="geoJsonFeatures"/>
     </template>
   </GeneralizedBackgroundMap>
 </template>
