@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue'
+import { useMapStore } from '../stores/map'
 import { useRuntimeConfig } from '#app'
-import { useMapStore } from '~/stores/map'
 
 const props = defineProps({
   center: {
