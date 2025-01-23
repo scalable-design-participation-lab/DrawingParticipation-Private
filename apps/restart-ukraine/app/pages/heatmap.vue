@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, computed } from "vue";
+import { computed } from "vue";
 import { useAllFeatureStore } from "../stores/all-features";
 import GeoJSON from "ol/format/GeoJSON";
 import type { Category} from "../stores/types/store";
@@ -17,7 +17,7 @@ const geoJsonFeatures = computed(() => {
   // Filter features based on the selected filter option 
   const filteredFeatures = filterOption.value !== "" ? featuresByCategory[filterOption.value] : allFeatures
 
-  const features = filteredFeatures.map((feature) => ({
+  const features = filteredFeatures.map((feature: { type: any; coordinates: any; }) => ({
     type: "Feature",
     geometry: {
       type: feature.type, 

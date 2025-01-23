@@ -1,0 +1,14 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`heatMap.vue > renders correctly 1`] = `
+<ol-heatmap-layer
+  radius="10"
+  title="heatmap"
+  z-index="1"
+>
+  <ol-source-vector
+    features=""
+    format="[object Object]"
+  />
+</ol-heatmap-layer>
+`;
