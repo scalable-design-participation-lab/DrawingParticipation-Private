@@ -1,7 +1,8 @@
 <script setup lang="ts">
 import { click } from 'ol/events/condition'
-import { useFeatureStore } from '~/stores/features'
-import { useSideBarStore } from '~/stores/sidebar'
+import { useRoute } from 'vue-router'
+import { useFeatureStore } from '../../stores/features'
+import { useSideBarStore } from '../../stores/sidebar'
 
 const props = defineProps({
   features: {
@@ -166,6 +167,7 @@ function handleCommentIconClick(feature, event) {
       positioning="top-left"
     >
       <div
+
         class="delete-icon-container"
         @click.stop.prevent="handleDeleteClick(feature)"
       >

@@ -106,6 +106,6 @@ describe("MenuModal.vue", () => {
 
     // Test "Результати"
     await buttons[3].trigger("click");
-    expect(mockRouter.push).toHaveBeenCalledWith("/map");
+    expect(mockRouter.push).toHaveBeenCalledWith("/result");
   });
 });
