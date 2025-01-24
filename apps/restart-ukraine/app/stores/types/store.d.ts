@@ -36,11 +36,3 @@ export interface ProjectData {
   }
 }
 
-export type Category =
-  | 'space.prohibit'
-  | 'space.recreational'
-  | 'space.restricted'
-  | `space.${string}` // for other dynamic space keys
-  | `belonging.${string}`
-  | `safety.${string}`
-  | `environment.${string}`;

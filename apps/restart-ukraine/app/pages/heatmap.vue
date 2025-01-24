@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import { computed } from "vue";
-import { useAllFeatureStore } from "../stores/all-features";
+import { useAllFeatureStore } from "../../../../base/app/stores/all-features";
 import GeoJSON from "ol/format/GeoJSON";
-import type { Category} from "../stores/types/store";
+import type { Category} from "@base/stores/types/store";
 import GeneralizedBackgroundMap from "@base/components/GeneralizedBackgroundMap.vue";
 import HeatMap from "@base/components/GeoSpatialLayer/HeatMap.vue";
 

@@ -46,3 +46,15 @@ export type DrawType = 'Point' | 'LineString' | 'Polygon'
  * Represent the Map Type
  */
 export type MapType = 'vector' | 'satellite'
+
+/**
+ * Represent the Icon category
+ */
+export type Category =
+  | 'space.prohibit'
+  | 'space.recreational'
+  | 'space.restricted'
+  | `space.${string}` // for other dynamic space keys
+  | `belonging.${string}`
+  | `safety.${string}`
+  | `environment.${string}`
