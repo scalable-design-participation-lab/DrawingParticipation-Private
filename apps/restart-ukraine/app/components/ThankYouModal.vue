@@ -45,7 +45,7 @@ const isOpen = computed({
 function viewResults() {
   isOpen.value = false
   router.push({
-    path: '/map',
+    path: '/result',
     query: { showIntro: 'false' },
   })
 }

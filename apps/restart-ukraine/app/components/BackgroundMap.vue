@@ -23,6 +23,7 @@
       </ol-layer-vector>
     </template>
 
+    
     <template #overlays>
       <ol-overlay
         v-if="CommentModalVisible"
@@ -100,7 +101,7 @@ const showCommentDisplay = ref(false)
 const selectedFeatureForDisplay = ref(null)
 const CommentModalOffset = ref([0, 0])
 
-const isMapPage = computed(() => route.name === 'map')
+const isMapPage = computed(() => route.name === 'result')
 
 function toggleCommentModal(feature) {
   console.log('Toggle comment popup:', feature)
