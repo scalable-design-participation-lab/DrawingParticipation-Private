@@ -103,7 +103,7 @@ export const useAllFeatureStore = defineStore('all-features', () => {
             }
             allFeatures.push(feature)
             addToMap(featuresByType, feature.type, feature)
-            addToMap(featuresByCategory, `space.${frequency}`, feature)
+            addToMap(featuresByCategory, `frequency.${frequency}`, feature)
           })
         }
       })
