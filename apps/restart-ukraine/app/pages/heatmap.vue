@@ -4,8 +4,7 @@ import { useAllFeatureStore } from "../../../../base/app/stores/all-features";
 import GeoJSON from "ol/format/GeoJSON";
 import GeneralizedBackgroundMap from "@base/components/GeneralizedBackgroundMap.vue";
 import HeatMap from "@base/components/GeoSpatialLayer/HeatMap.vue";
-import type { MapType } from "@base/stores/types/store";
-import { useUserStore } from "@base/stores/user";
+import type { Feature, MapType } from "@base/stores/types/store";
 import { useMapStore } from "@base/stores/map";
 
 // Map store
@@ -42,15 +41,18 @@ const rightItems = ref([
 ])
 const selectedOptions = useState<string[]>("selectedOptions", () => []); // Updated to support multiple categories
 const geoJson = new GeoJSON();
+const isFilterComments = useState('isFilterComments', () => false)
 
 const { allFeatures, featuresByCategory } = useAllFeatureStore(); 
 
 
 const geoJsonFeatures = computed(() => {
   // Filter features based on selected categories
-  const filteredFeatures = selectedOptions.value.length
+  let filteredFeatures = selectedOptions.value.length !== 0
     ? selectedOptions.value.flatMap((category) => featuresByCategory[category] || [])
     : allFeatures;
+
+  if (isFilterComments.value) filteredFeatures = filteredFeatures.filter((feat: Feature) => feat.comment.length !== 0)
 
   const features = filteredFeatures.map((feature: { type: any; coordinates: any }) => ({
     type: "Feature",
@@ -77,6 +79,11 @@ function handleUpdateSelection(data: string) {
   }
 }
 
+
+function handleUpdateFilter() { 
+  isFilterComments.value = !isFilterComments.value
+}
+
 </script>
 
 <template>
@@ -88,7 +95,7 @@ function handleUpdateSelection(data: string) {
         logo-alt="Restart Agency Logo"
         logo-link="https://www.restartfuture.org/"
       />
-  <HeatMapSideBar @update-selection="handleUpdateSelection" />
+  <HeatMapSideBar @update-selection="handleUpdateSelection" @update-filter="handleUpdateFilter" />
 
   <GeneralizedBackgroundMap ref="baseMap">
     <template #layers>
