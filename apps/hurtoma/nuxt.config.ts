@@ -1,10 +1,12 @@
 // https://nuxt.com/docs/api/configuration/nuxt-config
-import { defineNuxtConfig } from 'nuxt/config';
-import path from 'path';
+import path from 'node:path'
+import { defineNuxtConfig } from 'nuxt/config'
+
 export default defineNuxtConfig({
   extends: ['../../base', '@nuxt/ui-pro'],
+
   devtools: {
-    enabled: true
+    enabled: true,
   },
 
   target: 'static',
@@ -15,17 +17,10 @@ export default defineNuxtConfig({
     compatibilityVersion: 4,
   },
 
-  postcss: {
-    plugins: {
-      tailwindcss: {},
-      autoprefixer: {},
-    },
-  },
-
   modules: [
     '@pinia/nuxt',
     '@nuxt/ui',
-    'nuxt-vuefire'
+    'nuxt-vuefire',
   ],
 
   vuefire: {
@@ -54,12 +49,13 @@ export default defineNuxtConfig({
   ],
 
   plugins: [
-    { src: '~/plugins/vue3-openlayers.js', mode: 'client' }
+    { src: '~/plugins/vue3-openlayers.js', mode: 'client' },
   ],
 
   layouts: {
-    default: '~/layouts/default.vue'
+    default: '~/layouts/default.vue',
   },
+
   vite: {
     resolve: {
       alias: {
