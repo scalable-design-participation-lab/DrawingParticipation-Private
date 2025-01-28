@@ -3,12 +3,10 @@ import path from 'node:path'
 
 export default defineNuxtConfig({
   extends: [
-    // By default, any layers within your project in the ~/layers directory will be automatically registered as layers in your project. (Nuxt > v3.12)
     '@nuxt/ui-pro',
   ],
 
   modules: [
-    //
     '@nuxt/eslint',
     '@nuxt/fonts',
     '@nuxt/ui',
@@ -50,5 +48,5 @@ export default defineNuxtConfig({
     },
   },
 
-  compatibilityDate: '2024-07-11',
+  compatibilityDate: '2025-01-27',
 })
