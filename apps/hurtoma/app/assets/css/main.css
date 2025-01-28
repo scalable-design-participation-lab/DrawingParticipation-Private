@@ -1,6 +1,11 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import 'tailwindcss';
+
+@custom-variant dark (&:is(.dark *));
+
+@theme {
+  --drop-shadow-full: 0px 5px 25px rgba(0, 0, 0, 0.4);
+  --font-helvetica: Helvetica Now, sans-serif;
+}
 
 @layer base {
   body {
