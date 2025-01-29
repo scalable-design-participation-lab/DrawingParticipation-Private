@@ -1,27 +1,64 @@
 <script setup lang="ts">
 import { computed } from "vue";
-import { useAllFeatureStore } from "../stores/all-features";
+import { useAllFeatureStore } from "../../../../base/app/stores/all-features";
 import GeoJSON from "ol/format/GeoJSON";
-import type { Category} from "../stores/types/store";
 import GeneralizedBackgroundMap from "@base/components/GeneralizedBackgroundMap.vue";
 import HeatMap from "@base/components/GeoSpatialLayer/HeatMap.vue";
+import type { Feature, MapType } from "@base/stores/types/store";
+import { useMapStore } from "@base/stores/map";
 
-const blur = useState("blur", () => 20);
-const radius = useState("radius", () => 20);
-const filterOption = useState<Category | string>("filterOption", () => "");
+// Map store
+const mapStore = useMapStore()
+const { setMapType } = mapStore
+const currentMapType = ref('vector')
+
+const leftItems = ref([
+  {
+    label: 'Drawing Participation',
+    color: 'black',
+    to: '/about/',
+  },
+  {
+    label: 'Гуртомá',
+    color: 'black',
+    to: '/about/',
+  },
+])
+
+const rightItems = ref([
+  {
+    icon: computed(() =>
+      currentMapType.value === 'vector'
+        ? 'i-heroicons:map'
+        : 'i-heroicons:globe-americas-20-solid',
+    ),
+    onClick: () => {
+      currentMapType.value
+        = currentMapType.value === 'vector' ? 'satellite' : 'vector' 
+      setMapType(currentMapType.value as MapType)
+    },
+  },
+])
+const selectedOptions = useState<string[]>("selectedOptions", () => []); // Updated to support multiple categories
 const geoJson = new GeoJSON();
+const isFilterComments = useState('isFilterComments', () => false)
 
 const { allFeatures, featuresByCategory } = useAllFeatureStore(); 
-const filterOptions = computed(() => Object.keys(featuresByCategory));
-const geoJsonFeatures = computed(() => {
-  // Filter features based on the selected filter option 
-  const filteredFeatures = filterOption.value !== "" ? featuresByCategory[filterOption.value] : allFeatures
 
-  const features = filteredFeatures.map((feature: { type: any; coordinates: any; }) => ({
+
+const geoJsonFeatures = computed(() => {
+  // Filter features based on selected categories
+  let filteredFeatures = selectedOptions.value.length !== 0
+    ? selectedOptions.value.flatMap((category) => featuresByCategory[category] || [])
+    : allFeatures;
+
+  if (isFilterComments.value) filteredFeatures = filteredFeatures.filter((feat: Feature) => feat.comment.length !== 0)
+
+  const features = filteredFeatures.map((feature: { type: any; coordinates: any }) => ({
     type: "Feature",
     geometry: {
-      type: feature.type, 
-      coordinates: feature.coordinates, 
+      type: feature.type,
+      coordinates: feature.coordinates,
     },
   }));
 
@@ -34,34 +71,35 @@ const geoJsonFeatures = computed(() => {
   return geoJson.readFeatures(featureCollection);
 });
 
+function handleUpdateSelection(data: string) {
+  if (selectedOptions.value.includes(data)) {
+    selectedOptions.value = selectedOptions.value.filter(item=> item !== data);
+  } else {
+    selectedOptions.value.push(data)
+  }
+}
+
+
+function handleUpdateFilter() { 
+  isFilterComments.value = !isFilterComments.value
+}
+
 </script>
 
 <template>
-  <form class="absolute z-50 bg-white shadow-lg p-4 text-black">
-    <fieldset>
-      <label for="blur">Blur</label>
-      <input type="range" id="blur" min="0" max="100" step="1" v-model.number="blur" />
-      <span class="description">{{ blur }}</span>
-    </fieldset>
-    <fieldset>
-      <label for="radius">Radius</label>
-      <input type="range" id="radius" min="0" max="100" step="1" v-model.number="radius" />
-      <span class="description">{{ radius }}</span>
-    </fieldset>
-    <fieldset>
-      <legend>Filter Options</legend>
-      <div v-for="option in filterOptions" :key="option" class="mb-2 flex items-center space-x-2">
-        <input type="radio" :id="`filter-${option}`" :value="option" v-model="filterOption" />
-        <label :for="`filter-${option}`"> {{ option }}</label>
-      </div>
-    </fieldset>
-  </form>
+ <GeneralizedHeader
+        class="z-20"
+        :left-items="leftItems"
+        :right-items="rightItems"
+        logo-src="/restart-logo-icon.svg"
+        logo-alt="Restart Agency Logo"
+        logo-link="https://www.restartfuture.org/"
+      />
+  <HeatMapSideBar @update-selection="handleUpdateSelection" @update-filter="handleUpdateFilter" />
 
   <GeneralizedBackgroundMap ref="baseMap">
     <template #layers>
       <HeatMap
-      :blur="blur"
-      :radius="radius"
       :features="geoJsonFeatures"/>
     </template>
   </GeneralizedBackgroundMap>
