@@ -51,8 +51,8 @@ const formState = reactive({
   age: '',
   gender: '',
   educationLevel: '',
-  residentCity: '',
-  residentRiver: '',
+  residentSince: '',
+  residentNearRiverSince: '',
 })
 
 const genderOptions = [
@@ -138,8 +138,8 @@ const onSubmit = async () => {
       age: parseInt(formState.age),
       gender: formState.gender,
       'education level': formState.educationLevel,
-      'city resident': formState.residentCity,
-      'river resident': formState.residentRiver,
+      'city resident': formState.residentSince,
+      'river resident': formState.residentNearRiverSince,
       createdAt: new Date(),
       isAnonymous: true,
     })
@@ -254,7 +254,7 @@ watch(
         </UFormGroup>
         <UFormGroup label="Скільки ви мешкаєте у Вінниці" name="residentSince">
           <USelect
-            v-model="formState.residentCity"
+            v-model="formState.residentSince"
             :options="residentCityOptions"
             placeholder="Напишіть, скільки років ви проживаєте у місті"
             color="blue"
@@ -267,7 +267,7 @@ watch(
           name="residentNearRiverSince"
         >
           <USelect
-            v-model="formState.residentRiver"
+            v-model="formState.residentNearRiverSince"
             :options="residentRiverOptions"
             placeholder="Оберіть, чи живете ви біля річки Тяжилівка"
             color="blue"
