@@ -37,6 +37,7 @@
     "json2csv": "^6.0.0-alpha.2",
     "lodash": "^4.17.21",
     "mapbox-gl": "^3.7.0",
+    "nuxt-color-picker": "^1.2.7",
     "ol": "^10.2.1",
     "ol-contextmenu": "^5.5.0",
     "ol-ext": "^4.0.23",
@@ -50,7 +51,8 @@
     "vue-router": "^4.4.5",
     "vue-virtual-scroll-list": "^2.3.5",
     "vue3-openlayers": "^11.2.1",
-    "vuefire": "^3.2.0"
+    "vuefire": "^3.2.0",
+    "yup": "^1.6.1"
   },
   "devDependencies": {
     "@babel/core": "^7.26.0",
