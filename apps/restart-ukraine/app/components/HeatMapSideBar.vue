@@ -3,16 +3,16 @@
     class="fixed right-6 top-24 w-96 md:w-80 max-h-[calc(100vh-11rem)] z-40 shadow-xl dark:bg-black flex flex-col overflow-hidden"
   >
     <div 
-      class="flex-1 overflow-y-hidden max-h-[calc(100vh-13rem)] px-1"
+      class="flex-1 overflow-y-hidden max-h-[calc(100vh-13rem)] px-1 "
     >
       <div v-if="sections.length">
-        <div v-for="section in sections" :key="section">
-          <span class="my-1 capitalize text-black font-semibold"> {{ section }} </span>
+        <div v-for="section in sections" :key="section" class="my-2">
+          <span class="my-1 capitalize text-black font-semibold dark:text-white"> {{ section }} </span>
           <div class="flex-auto"> 
             <UButton 
               v-for="button in categories[section]" 
-              :class="highlightedButtons.has(button) ? 'bg-black text-white' : 'bg-white text-black '" 
-              class="mx-1 my-1 border border-black  hover:bg-black hover:text-white rounded-full capitalize" 
+              :class="highlightedButtons.has(button) ? 'bg-black text-white dark:bg-green-500' : 'bg-gray-100 text-black dark:bg-gray-100 dark:text-black'" 
+              class="mx-1 my-1 hover:bg-black dark:hover:bg-green-500 hover:text-white rounded-full capitalize" 
               :key="button" 
               @click="handleClick(button, section)"
             >
@@ -21,7 +21,7 @@
           </div> 
         </div>
         <div class="flex justify-between" v-for="filter in filters" :key="filter">
-          <span class="my-1 capitalize text-black font-semibold"> {{ filter }} </span>
+          <span class="my-1 capitalize text-black font-semibold dark:text-white"> {{ filter }} </span>
             <UToggle 
               :key="filter" 
               class="my-1"
@@ -31,9 +31,7 @@
               off-icon="i-heroicons-x-mark-20-solid"
               :modelValue="highlightedButtons.has(filter)"
               @click="handleFilter(filter)"
-            >
-              {{ highlightedButtons.has(filter) ? "Off" : "On"  }}
-            </UToggle>
+            />
       </div>
       </div>
       <div v-else>

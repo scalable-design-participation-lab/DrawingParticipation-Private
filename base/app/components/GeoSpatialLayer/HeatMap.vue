@@ -34,6 +34,19 @@ export interface HeatmapLayerProps {
   features?: Feature<Geometry>[]
 
   /**
+   * The color gradient of the heatmap, specified as an array of CSS color strings.
+   * Colors should transition smoothly from cool to warm
+   * @default ['#00f', '#0ff', '#0f0', '#ff0', '#f00']
+   */
+  gradient?: string[]
+
+  /**
+   * Visibility of the heatmap
+   * @default true
+   */
+  visible?: boolean
+
+  /**
    * Callback function triggered when feature loading starts.
    * Logs "features load start" by default.
    * @default () => console.log('features load start')
@@ -66,11 +79,13 @@ withDefaults(defineProps<HeatmapLayerProps>(), {
   featuresloadstart: () => console.log('features load start'),
   featuresloadend: () => console.log('features load end'),
   featuresloaderror: () => console.log('features load error'),
+  gradient: () => ['#00f', '#0ff', '#0f0', '#ff0', '#f00'],
+  visible: true,
 })
 </script>
 
 <template>
-  <ol-heatmap-layer title="heatmap" :blur="blur" :radius="radius" :z-index="1">
+  <ol-heatmap-layer title="heatmap" :blur="blur" :radius="radius" :z-index="1" :gradient="gradient" :visible="visible">
     <ol-source-vector
       :features="features"
       :format="format"
