@@ -1,34 +1,137 @@
-<script setup lang="ts">
+<template>
+  <div>
+    <!-- Welcome Back Modal -->
+    <WelcomeBackModal
+      v-if="showWelcomeBack"
+      :user-data="existingUserData"
+      @close="handleWelcomeBackClose"
+    />
+
+    <!-- Registration Form -->
+    <UCard
+      v-if="isVisible && !isChecking && !showWelcomeBack"
+      class="registration-card max-w-[90vw] w-[500px] max-h-[90vh] overflow-y-auto z-50 absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 rounded-xl shadow-xl scrollbar-thin scrollbar-thumb-gray-400 scrollbar-track-gray-100 dark:bg-black"
+    >
+      <template #header>
+        <h3 class="text-xl md:text-2xl font-semibold text-center">
+          реєстрація
+        </h3>
+      </template>
+
+      <p class="mb-4 px-6 leading-tight">
+        Щоб взяти участь у Гуртома́, дайте відповіді на запитання
+      </p>
+
+      <UForm
+        :state="formState"
+        class="space-y-3 md:space-y-4 px-4 md:px-6"
+        @submit="onSubmit"
+      >
+        <UFormGroup label="Прізвище" name="lastname">
+          <UInput
+            v-model="formState.lastname"
+            placeholder="Вкажіть своє прізвище"
+            color="blue"
+            variant="outline"
+            size="md"
+          />
+        </UFormGroup>
+        <UFormGroup label="Ім'я" name="firstname">
+          <UInput
+            v-model="formState.firstname"
+            placeholder="Вкажіть своє ім'я"
+            color="blue"
+            variant="outline"
+            size="md"
+          />
+        </UFormGroup>
+        <UFormGroup label="Вік" name="age">
+          <UInput
+            v-model="formState.age"
+            type="number"
+            placeholder="Вкажіть свій вік"
+            color="blue"
+            variant="outline"
+            size="md"
+          />
+        </UFormGroup>
+        <UFormGroup label="Стать" name="gender">
+          <USelect
+            v-model="formState.gender"
+            :options="genderOptions"
+            placeholder="Оберіть свою стать"
+            color="blue"
+            variant="outline"
+            size="md"
+          />
+        </UFormGroup>
+        <UFormGroup label="Рівень освіти" name="educationLevel">
+          <USelect
+            v-model="formState.educationLevel"
+            :options="educationOptions"
+            placeholder="Оберіть свій рівень освіти"
+            color="blue"
+            variant="outline"
+            size="md"
+          />
+        </UFormGroup>
+        <UFormGroup label="Скільки ви мешкаєте у Вінниці" name="residentSince">
+          <USelect
+            v-model="formState.residentCity"
+            :options="residentCityOptions"
+            placeholder="Напишіть, скільки років ви проживаєте у місті"
+            color="blue"
+            variant="outline"
+            size="md"
+          />
+        </UFormGroup>
+        <UFormGroup
+          label="Ви живете біля річки Тяжилівка"
+          name="residentNearRiverSince"
+        >
+          <USelect
+            v-model="formState.residentRiver"
+            :options="residentRiverOptions"
+            placeholder="Оберіть, чи живете ви біля річки Тяжилівка"
+            color="blue"
+            variant="outline"
+            size="md"
+          />
+        </UFormGroup>
+
+        <div class="flex justify-center">
+          <UButton
+            type="submit"
+            color="black"
+            class="my-2 px-6 py-3 rounded-full hover:bg-gray-300 hover:text-black dark:hover:bg-zinc-700 dark:hover:text-white"
+          >
+            перейти до карти
+          </UButton>
+        </div>
+      </UForm>
+
+      <template #footer>
+        <p class="text-xs text-slate-400 px-4 py-3 md:px-6 leading-tight">
+          Беручи участь у цьому опитуванні, ви погоджуєтесь на збір, обробку та
+          використання ваших відповідей у дослідницьких цілях відповідно до
+          чинного законодавства України. Ваші персональні дані залишаються
+          конфіденційними та не передаватимуться третім особам без вашої згоди,
+          за винятком випадків, передбачених законом. Зверніть увагу, що надані
+          вами медіафайли чи коментарі можуть бути опубліковані для загального
+          доступу. Участь у дослідженні є добровільною, і ви можете припинити її
+          у будь-який момент.
+        </p>
+      </template>
+    </UCard>
+  </div>
+</template>
+
+<script setup>
 import { ref, reactive, watch } from 'vue'
 import { getAuth, signInAnonymously } from 'firebase/auth'
 import { useFirestore } from 'vuefire'
 import { collection, addDoc, query, where, getDocs } from 'firebase/firestore'
 import { useUserStore } from '@base/stores/user'
-import { number, object, string, type InferType } from 'yup'
-
-// https://ui.nuxt.com/components/form
-const schema = object({
-  lastname: string().required('Прізвище є обов’язковим'),
-  firstname: string().required('Ім’я є обов’язковим'),
-  age: number()
-    .required('Вік є обов’язковим')
-    .typeError('Вік має бути числом')
-    .positive('Вік має бути позитивним числом')
-    .integer('Вік має бути цілим числом'),
-  gender: string()
-    .required('Стать є обов’язковою')
-    .oneOf(['male', 'female', 'other'], 'Оберіть коректну стать'),
-  educationLevel: string()
-    .required('Рівень освіти є обов’язковим')
-    .oneOf(['average', 'incomplete_higher', 'higher'], 'Оберіть коректний рівень освіти'),
-  residentSince: string()
-    .required('Тривалість проживання у Вінниці є обов’язковою')
-    .oneOf(['less_than_1_year', '1_5_years', '5_10_years', 'more_than_10_years'], 'Оберіть коректний варіант'),
-  residentNearRiverSince: string()
-    .required('Це питання є обов’язковим')
-    .oneOf(['yes', 'no', 'unfamiliar'], 'Оберіть коректний варіант'),
-})
-type Schema = InferType<typeof schema>
 
 const auth = getAuth()
 const props = defineProps({
@@ -174,131 +277,3 @@ watch(
   },
 )
 </script>
-<template>
-  <div>
-    <!-- Welcome Back Modal -->
-    <WelcomeBackModal
-      v-if="showWelcomeBack"
-      :user-data="existingUserData"
-      @close="handleWelcomeBackClose"
-    />
-
-    <!-- Registration Form -->
-    <UCard
-      v-if="isVisible && !isChecking && !showWelcomeBack"
-      class="registration-card max-w-[90vw] w-[500px] max-h-[90vh] overflow-y-auto z-50 absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 rounded-xl shadow-xl scrollbar-thin scrollbar-thumb-gray-400 scrollbar-track-gray-100 dark:bg-black"
-    >
-      <template #header>
-        <h3 class="text-xl md:text-2xl font-semibold text-center">
-          реєстрація
-        </h3>
-      </template>
-
-      <p class="mb-4 px-6 leading-tight">
-        Щоб взяти участь у Гуртома́, дайте відповіді на запитання
-      </p>
-
-      <UForm
-        :schema="schema"
-        :state="formState"
-        class="space-y-3 md:space-y-4 px-4 md:px-6"
-        @submit="onSubmit"
-      >
-        <UFormGroup label="Прізвище" name="lastname">
-          <UInput
-            v-model="formState.lastname"
-            placeholder="Вкажіть своє прізвище"
-            color="blue"
-            variant="outline"
-            size="md"
-          />
-        </UFormGroup>
-        <UFormGroup label="Ім'я" name="firstname">
-          <UInput
-            v-model="formState.firstname"
-            placeholder="Вкажіть своє ім'я"
-            color="blue"
-            variant="outline"
-            size="md"
-          />
-        </UFormGroup>
-        <UFormGroup label="Вік" name="age">
-          <UInput
-            v-model="formState.age"
-            type="number"
-            placeholder="Вкажіть свій вік"
-            color="blue"
-            variant="outline"
-            size="md"
-          />
-        </UFormGroup>
-        <UFormGroup label="Стать" name="gender">
-          <USelect
-            v-model="formState.gender"
-            :options="genderOptions"
-            placeholder="Оберіть свою стать"
-            color="blue"
-            variant="outline"
-            size="md"
-          />
-        </UFormGroup>
-        <UFormGroup label="Рівень освіти" name="educationLevel">
-          <USelect
-            v-model="formState.educationLevel"
-            :options="educationOptions"
-            placeholder="Оберіть свій рівень освіти"
-            color="blue"
-            variant="outline"
-            size="md"
-          />
-        </UFormGroup>
-        <UFormGroup label="Скільки ви мешкаєте у Вінниці" name="residentSince">
-          <USelect
-            v-model="formState.residentCity"
-            :options="residentCityOptions"
-            placeholder="Напишіть, скільки років ви проживаєте у місті"
-            color="blue"
-            variant="outline"
-            size="md"
-          />
-        </UFormGroup>
-        <UFormGroup
-          label="Ви живете біля річки Тяжилівка"
-          name="residentNearRiverSince"
-        >
-          <USelect
-            v-model="formState.residentRiver"
-            :options="residentRiverOptions"
-            placeholder="Оберіть, чи живете ви біля річки Тяжилівка"
-            color="blue"
-            variant="outline"
-            size="md"
-          />
-        </UFormGroup>
-
-        <div class="flex justify-center">
-          <UButton
-            type="submit"
-            color="black"
-            class="my-2 px-6 py-3 rounded-full hover:bg-gray-300 hover:text-black dark:hover:bg-zinc-700 dark:hover:text-white"
-          >
-            перейти до карти
-          </UButton>
-        </div>
-      </UForm>
-
-      <template #footer>
-        <p class="text-xs text-slate-400 px-4 py-3 md:px-6 leading-tight">
-          Беручи участь у цьому опитуванні, ви погоджуєтесь на збір, обробку та
-          використання ваших відповідей у дослідницьких цілях відповідно до
-          чинного законодавства України. Ваші персональні дані залишаються
-          конфіденційними та не передаватимуться третім особам без вашої згоди,
-          за винятком випадків, передбачених законом. Зверніть увагу, що надані
-          вами медіафайли чи коментарі можуть бути опубліковані для загального
-          доступу. Участь у дослідженні є добровільною, і ви можете припинити її
-          у будь-який момент.
-        </p>
-      </template>
-    </UCard>
-  </div>
-</template>
