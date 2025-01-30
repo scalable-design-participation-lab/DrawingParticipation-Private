@@ -60,8 +60,8 @@ const refVariable = ref('#000');
     >
       <div v-if="sections.length" >
           <h1 class="my-1 capitalize text-black font-semibold dark:text-white"> Layers </h1>
-          <div class="my-2 w-64 h-20 overflow-auto border-2 p-3 rounded-md scroll-smooth"> 
-            <div class="flex flex-wrap gap-1">
+          <div class="my-2 w-64 h-20 overflow-auto p-3 rounded-md scroll-smooth"> 
+            <div class="flex flex-grow gap-1">
               <UPopover v-for="highlightedButton in highlightedButtons" :key="highlightedButton" :popper="{ placement: 'bottom-start', arrow: true, resize: true}" :ui="{rounded: 'rounded-3xl'}">
                     <UButton 
                       class="mx-1 my-1 dark:hover:bg-green-500 hover:bg-black hover:text-white rounded-full capitalize bg-black text-white dark:bg-green-500" 
@@ -108,10 +108,10 @@ const refVariable = ref('#000');
                             </div>
                             <div>
                               <label class="text-sm text-gray-700 dark:text-gray-300">Secondary Color</label>
-                                <color-picker-block
-                                  v-model="refVariable"
-                                  @change="console.log('New color:', $event)"
-                                />
+                                  <color-picker-block
+                                v-model="refVariable"
+                                @change="console.log('new color:', $event)"
+                              />
                             </div>
                           </div>
                         </div>
@@ -125,7 +125,7 @@ const refVariable = ref('#000');
             <UButton 
               v-for="button in categories[section]" 
               :class="highlightedButtons.has(button) ? 'bg-black text-white dark:bg-green-500' : 'bg-gray-100 text-black dark:bg-gray-100 dark:text-black'" 
-              class="mx-1 my-1 hover:bg-green-500 dark:hover:bg-green-500 hover:text-white rounded-full capitalize" 
+              class="mx-1 my-1 hover:bg-green-500 dark:hover:bg-green-500 hover:text-white  rounded-full capitalize" 
               :key="button" 
               @click="handleClick(button, section)"
             >
@@ -153,4 +153,3 @@ const refVariable = ref('#000');
     </div>
   </UCard>
 </template>
-

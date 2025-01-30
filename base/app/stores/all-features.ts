@@ -1,10 +1,9 @@
 import { useFirestore } from 'vuefire'
 import { collection, getDocs } from 'firebase/firestore'
-import type { DrawType, Feature, FrequencyType } from '@base/stores/types/store'
-import type { Category } from './types/store';
+import type { Category } from '../../../apps/restart-ukraine/app/stores/types/store'
+import type { DrawType, Feature, FrequencyType } from './types/store'
 
-
-export const useAllFeatureStore = defineStore('all-features',  () => {
+export const useAllFeatureStore = defineStore('all-features', () => {
   /**
    * List of geospatial features.
    */
@@ -16,13 +15,13 @@ export const useAllFeatureStore = defineStore('all-features',  () => {
   const featuresByType = reactive<Record<DrawType, Feature[]>>({
     Point: [],
     LineString: [],
-    Polygon: []
+    Polygon: [],
   })
 
   /**
    * Map of geospatial feature by Category
    */
-  const featuresByCategory  = reactive<Record<Category,Feature[]>>({})
+  const featuresByCategory = reactive<Record<Category, Feature[]>>({})
 
   /**
    * adds a new feature to the store.
@@ -38,7 +37,7 @@ export const useAllFeatureStore = defineStore('all-features',  () => {
 
   /**
    * Fetches all feature data from the Firestore database and populates the `allFeatures` array.
-   * 
+   *
    * This function queries the Firestore collection `projects` and processes the data within it
    * to extract and categorize geospatial features. Features are added to the `allFeatures` array
    * based on their type (e.g., Point, Polygon, LineString) and associated metadata.
@@ -59,8 +58,8 @@ export const useAllFeatureStore = defineStore('all-features',  () => {
    */
   async function fetchAllFeature(): Promise<void> {
     allFeatures.length = 0 // clear the array
-    Object.assign(featuresByType, {});
-    Object.assign(featuresByCategory, {});
+    Object.assign(featuresByType, {})
+    Object.assign(featuresByCategory, {})
 
     const db = useFirestore()
     const projectsCollection = collection(db, 'projects')
@@ -79,7 +78,7 @@ export const useAllFeatureStore = defineStore('all-features',  () => {
             comment: point.comment,
             name: projectData.name,
             timestamp: point.timestamp,
-          } 
+          }
           allFeatures.push(feature)
           addToMap(featuresByType, feature.type, feature)
           addToMap(featuresByCategory, 'space.prohibit', feature)
@@ -89,23 +88,23 @@ export const useAllFeatureStore = defineStore('all-features',  () => {
       // Process other space data (excluding prohibit)
       Object.keys(projectData.space).forEach((frequency) => {
         if (
-          Array.isArray(projectData.space[frequency]) &&
-          frequency !== 'prohibit' &&
-          frequency !== 'recreational' &&
-          frequency !== 'restricted'
+          Array.isArray(projectData.space[frequency])
+          && frequency !== 'prohibit'
+          && frequency !== 'recreational'
+          && frequency !== 'restricted'
         ) {
           projectData.space[frequency].forEach((point) => {
-            const feature: Feature ={
+            const feature: Feature = {
               type: 'Point',
               coordinates: [point.lon, point.lat],
               frequency: frequency as FrequencyType,
               comment: point.comment,
               name: projectData.name,
               timestamp: point.timestamp,
-            } 
+            }
             allFeatures.push(feature)
             addToMap(featuresByType, feature.type, feature)
-            addToMap(featuresByCategory, `space.${frequency}`, feature)
+            addToMap(featuresByCategory, `frequency.${frequency}`, feature)
           })
         }
       })
@@ -129,20 +128,20 @@ export const useAllFeatureStore = defineStore('all-features',  () => {
       // Process space.restricted data (LineStrings)
       if (Array.isArray(projectData.space.restricted)) {
         projectData.space.restricted.forEach((lineString) => {
-          const feature: Feature ={
+          const feature: Feature = {
             type: 'LineString',
             coordinates: JSON.parse(lineString.geometry),
             comment: lineString.comment,
             name: projectData.name,
             timestamp: lineString.timestamp,
-          } 
+          }
           allFeatures.push(feature)
           addToMap(featuresByType, feature.type, feature)
           addToMap(featuresByCategory, `space.restricted`, feature)
         })
       }
 
-     // Process belonging, safety, and environment data
+      // Process belonging, safety, and environment data
       ['belonging', 'safety', 'environment'].forEach((category) => {
         if (projectData[category]) {
           Object.keys(projectData[category]).forEach((key) => {
@@ -156,15 +155,15 @@ export const useAllFeatureStore = defineStore('all-features',  () => {
                   comment: point.comment,
                   name: projectData.name,
                   timestamp: point.timestamp,
-                };
-                allFeatures.push(feature);
-                addToMap(featuresByType, feature.type, feature);
-                addToMap(featuresByCategory, `${category}.${key}`, feature);
-              });
+                }
+                allFeatures.push(feature)
+                addToMap(featuresByType, feature.type, feature)
+                addToMap(featuresByCategory, `${category}.${key}`, feature)
+              })
             }
-          });
+          })
         }
-      });
+      })
     }
   }
 
@@ -173,23 +172,23 @@ export const useAllFeatureStore = defineStore('all-features',  () => {
     fetchAllFeature()
   })
 
-/**
- * Helper function to categorize features as they're added
- * @param map  a Map of geospatial features
- * @param key  a key label for the store
- * @param value the value for the key 
- */
-function addToMap(map: Record<string, Feature[]>, key: string, value: Feature) {
-  if (!map[key]) {
-    map[key] = []; // Initialize the array if it doesn't exist
+  /**
+   * Helper function to categorize features as they're added
+   * @param map  a Map of geospatial features
+   * @param key  a key label for the store
+   * @param value the value for the key
+   */
+  function addToMap(map: Record<string, Feature[]>, key: string, value: Feature) {
+    if (!map[key]) {
+      map[key] = [] // Initialize the array if it doesn't exist
+    }
+    map[key].push(value) // Push the value to the array
   }
-  map[key].push(value); // Push the value to the array
-}
 
   return {
     allFeatures,
     addFeature,
     featuresByCategory,
-    featuresByType
+    featuresByType,
   }
 })
