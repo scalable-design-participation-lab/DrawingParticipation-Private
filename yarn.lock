@@ -3504,6 +3504,7 @@ __metadata:
     lodash: "npm:^4.17.21"
     mapbox-gl: "npm:^3.7.0"
     nuxt: "npm:^3.12.4"
+    nuxt-color-picker: "npm:^1.2.7"
     nuxt-vuefire: "npm:^1.0.4"
     ol: "npm:^10.2.1"
     ol-contextmenu: "npm:^5.5.0"
@@ -16272,6 +16273,15 @@ __metadata:
     nuxt: bin/nuxi.mjs
     nuxt-cli: bin/nuxi.mjs
   checksum: 10c0/60a2760fd86af869342880ff85d07020386e806f8310087a0ae6ba1550be06560ab527774b18e0e5d9a3da52e2cd2345c51e996bb164a9f7b6fb2cdc4727e3f3
+  languageName: node
+  linkType: hard
+
+"nuxt-color-picker@npm:^1.2.7":
+  version: 1.2.7
+  resolution: "nuxt-color-picker@npm:1.2.7"
+  dependencies:
+    "@nuxt/kit": "npm:^3.14.1592"
+  checksum: 10c0/f7166a2cac841638f5094f2da1b69efb32e9665d5a64d704942a93db80abf908daee187bc14b725a6f3108d6d4de7e0fd099c6adff06c13de321ae4f050a2136
   languageName: node
   linkType: hard
 

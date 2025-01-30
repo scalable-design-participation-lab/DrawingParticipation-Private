@@ -2,7 +2,7 @@
 import { computed } from 'vue'
 import { click } from 'ol/events/condition'
 import { useFeatureStore } from '../../stores/features'
-import { useRouteFeatureStore } from '../../../../apps/restart-ukraine/app/stores/route-features'
+import { useRouteFeatureStore } from '../../stores/route-features'
 
 const props = defineProps({
   enableClick: {
