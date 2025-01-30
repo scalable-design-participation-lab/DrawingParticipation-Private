@@ -51,8 +51,8 @@ function handleClick(button: string, section: string) {
     if (!buttonSettings[key]) {
       buttonSettings[key] = {
         weight: 1,
-        blur: 5,
-        radius: 10,
+        blur: 20,
+        radius: 20,
         opacity: 0.8,
         gradient: [getRandomHexColor(),  '#0ff', '#0f0', '#ff0', getRandomHexColor()],
         visible: true
@@ -109,6 +109,9 @@ function selectRange(duration: Duration) {
   selected.value = { start: sub(new Date(), duration), end: new Date() }
   emit("updateFilterTime", selected.value)
 }
+const buttonBackground = (section: string, button: string) => {
+  return buttonSettings[`${section}.${button}`]?.gradient?.[4] || 'transparent';
+};
 </script>
 
 <template>
@@ -126,10 +129,8 @@ function selectRange(duration: Duration) {
                 mode="hover"
               >
                 <UButton 
-                  :class="['mx-1 my-1 rounded-full capitalize flex p',
-                    highlightedButtons.has(button) 
-                      ? 'bg-black text-white dark:bg-green-500 hover:bg-black dark:hover:bg-green-600' 
-                      : 'bg-gray-100 text-black dark:bg-gray-100 dark:text-black hover:bg-green-500 dark:hover:bg-green-500 hover:text-white']"
+                  :class="['mx-1 my-1 rounded-full capitalize flex p text-white']"
+                  :style="highlightedButtons.has(button) ? { backgroundColor: buttonBackground(section, button) } : {}"
                   @click="handleClick(button, section)"
                   trailing-icon="i-heroicons-chevron-down-20-solid"
                 >
