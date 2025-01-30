@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { computed, reactive, watch } from 'vue';
 import { useAllFeatureStore } from '@base/stores/all-features';
+import { sub, format, isSameDay, type Duration } from 'date-fns'
 
 // 🎨 Function to Generate Random Hex Colors
 function getRandomHexColor(): string {
@@ -17,7 +18,7 @@ const buttonSettings = reactive<Record<string, {
   visible: boolean;
 }>>({});
 
-const emit = defineEmits(['updateSelection', 'updateFilter']);
+const emit = defineEmits(['updateSelection', 'updateFilter', 'updateFilterTime']);
 const { featuresByCategory } = useAllFeatureStore();
 
 // 📌 Compute Categories and Sections
@@ -87,6 +88,26 @@ const filters = ref(["Comments"]);
 function handleFilter(button: string) {
   highlightedButtons.has(button) ? highlightedButtons.delete(button) : highlightedButtons.add(button);
   emit('updateFilter');
+}
+
+// ⏳ Handle Fitler Time 
+const ranges = [
+  { label: 'Last 7 days', duration: { days: 7 } },
+  { label: 'Last 14 days', duration: { days: 14 } },
+  { label: 'Last 30 days', duration: { days: 30 } },
+  { label: 'Last 3 months', duration: { months: 3 } },
+  { label: 'Last 6 months', duration: { months: 6 } },
+  { label: 'Last year', duration: { years: 1 } }
+]
+const selected = ref({ start: sub(new Date(), { days: 14 }), end: new Date() })
+
+function isRangeSelected(duration: Duration) {
+  return isSameDay(selected.value.start, sub(new Date(), duration)) && isSameDay(selected.value.end, new Date())
+}
+
+function selectRange(duration: Duration) {
+  selected.value = { start: sub(new Date(), duration), end: new Date() }
+  emit("updateFilterTime", selected.value)
 }
 </script>
 
@@ -178,7 +199,35 @@ function handleFilter(button: string) {
             </template>
           </div> 
         </div>
+        <!-- Date Time Range Picker -->
+        <div class="flex-auto"> 
+          <span class="my-1 capitalize text-black font-semibold dark:text-white">Time </span>
+          <UPopover :popper="{ placement: 'auto' }" class="px-5 py-2">
+            <UButton icon="i-heroicons-calendar-days-20-solid" color="green">
+              {{ format(selected.start, 'd MMM, yyy') }} - {{ format(selected.end, 'd MMM, yyy') }}
+            </UButton>
 
+            <template #panel="{ close }">
+              <div class="flex flex-grow items-center sm:divide-x divide-gray-200 dark:divide-gray-800">
+                <div class="hidden sm:flex flex-col py-4">
+                  <UButton
+                    v-for="(range, index) in ranges"
+                    :key="index"
+                    :label="range.label"
+                    color="gray"
+                    variant="ghost"
+                    class="rounded-none px-6"
+                    :class="[isRangeSelected(range.duration) ? 'bg-gray-100 dark:bg-gray-800' : 'hover:bg-gray-50 dark:hover:bg-gray-800/50']"
+                    truncate
+                    @click="selectRange(range.duration)"
+                  />
+                </div>
+
+                <DatePicker v-model="selected" @close="close" />
+              </div>
+            </template>
+          </UPopover>
+        </div>
         <!-- 🎛 Filters -->
         <div class="flex justify-between" v-for="filter in filters" :key="filter">
           <span class="my-1 capitalize text-black font-semibold dark:text-white">{{ filter }}</span>
@@ -193,6 +242,7 @@ function handleFilter(button: string) {
             @click="handleFilter(filter)"
           />
         </div>
+        
       </div>
       <div v-else>
         <p>No data available to display.</p>

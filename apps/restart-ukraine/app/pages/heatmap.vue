@@ -37,14 +37,20 @@ const { featuresByCategory } = useAllFeatureStore();
 const geoJson = new GeoJSON();
 
 // 🌍 Reactive State
-const selectedOptions = useState<string[]>("selectedOptions", () => []);
 const isFilterComments = useState<boolean>("isFilterComments", () => false);
+const filterTime = useState<{start: Date, end: Date}>("isFilterTime", () => ({ start: new Date(), end: new Date() }));
 
 // 📌 Function to Convert Features into OpenLayers GeoJSON Format
 const getGeoJsonFeature = (key: string) => {
   let features = featuresByCategory[key] ?? [];
   if (isFilterComments.value) {
     features = features.filter((feat: Feature) => feat.comment.length > 0);
+  }
+  if (filterTime.value) { 
+    features = features.filter((feat: Feature) => {
+      const featureCurrentTime = new Date(feat.timestamp as string);
+      return featureCurrentTime >= filterTime.value.start && featureCurrentTime <= filterTime.value.end
+    });
   }
   return geoJson.readFeatures({
     type: "FeatureCollection",
@@ -94,6 +100,10 @@ const handleUpdateSelection = (key: string, settings: object) => {
 const handleUpdateFilter = () => {
   isFilterComments.value = !isFilterComments.value;
 };
+
+const handleUpdateFilterTime = (timeRange: {start: Date, end: Date}) => { 
+  filterTime.value = timeRange
+}
 </script>
 
 <template>
@@ -108,7 +118,9 @@ const handleUpdateFilter = () => {
   />
 
   <!-- 📌 SIDEBAR -->
-  <HeatMapSideBar @update-selection="handleUpdateSelection" @update-filter="handleUpdateFilter" />
+  <HeatMapSideBar
+   @update-selection="handleUpdateSelection" @update-filter="handleUpdateFilter"
+   @update-filter-time="handleUpdateFilterTime" />
 
   <!-- 📌 MAP & LAYERS -->
   <GeneralizedBackgroundMap ref="baseMap">
