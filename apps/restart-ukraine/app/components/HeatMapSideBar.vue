@@ -2,6 +2,7 @@
 import { computed, reactive, watch } from 'vue';
 import { useAllFeatureStore } from '@base/stores/all-features';
 import { sub, format, isSameDay, type Duration } from 'date-fns'
+import draggable from 'vuedraggable';
 
 // 🎨 Function to Generate Random Hex Colors
 function getRandomHexColor(): string {
@@ -118,6 +119,32 @@ function selectRange(duration: Duration) {
 const buttonBackground = (section: string, button: string) => {
   return buttonSettings[`${section}.${button}`]?.gradient?.[4] || 'transparent';
 };
+// 🖱 Proper drag end handler
+const handleDragEnd = () => {
+  // Force update the buttonSettings reactivity
+  Object.values(buttonSettings).forEach(settings => {
+    settings.zIndex = settings.zIndex; // Trigger reactivity
+  });
+};
+// 🔄 Improved sortedSettings implementation
+const sortedSettings = computed({
+  get: () => {
+    return Object.entries(buttonSettings)
+      .filter(([_, settings]) => settings.visible)
+      .map(([key, settings]) => ({
+        key,
+        ...settings,
+        zIndex: settings.zIndex || 1
+      }))
+      .sort((a, b) => b.zIndex - a.zIndex);
+  },
+  set: (value) => {
+    // Update all zIndex values based on new order
+    value.forEach((item, index) => {
+      buttonSettings[item.key].zIndex = value.length - index;
+    });
+  }
+});
 </script>
 
 <template>
@@ -305,12 +332,27 @@ const buttonBackground = (section: string, button: string) => {
         </div>
       </template>
       <!-- Layers Tab -->
-      <template  #layers="{item}">
-        <div class="flex-1 overflow-auto max-h-[calc(100vh-13rem)] px-4 py-2">
-          <p v-for="key in Object.keys(buttonSettings)" class="text-gray-600 dark:text-gray-300">
-            {{ key }}
-          </p>
-        </div>
+      <template #layers="{ item }">
+    <div class="flex-1 overflow-auto max-h-[calc(100vh-13rem)] px-4 py-2">
+      <draggable 
+        v-model="sortedSettings"
+        item-key="key"
+        handle=".handle"
+        @end="handleDragEnd"
+        class="space-y-2"
+      >
+        <template #item="{ element }">
+          <div 
+            class="p-2 rounded-lg bg-white dark:bg-gray-800 shadow-sm cursor-move border dark:border-gray-700 flex items-center gap-2"
+            :style="{ zIndex: element.zIndex }"
+          >
+            <UIcon name="i-heroicons-bars-3-20-solid" class="handle text-gray-400 hover:text-gray-600 dark:hover:text-gray-200" />
+            <span class="flex-1">{{ element.key }}</span>
+            <span class="text-sm text-gray-500">z-{{ element.zIndex }}</span>
+          </div>
+        </template>
+      </draggable>
+    </div>
     </template>
     </UTabs>
   </UCard>
