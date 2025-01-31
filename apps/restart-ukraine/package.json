@@ -52,7 +52,8 @@
     "vue-virtual-scroll-list": "^2.3.5",
     "vue3-openlayers": "^11.2.1",
     "vuedraggable": "^4.1.0",
-    "vuefire": "^3.2.0"
+    "vuefire": "^3.2.0",
+    "yup": "^1.6.1"
   },
   "devDependencies": {
     "@babel/core": "^7.26.0",
