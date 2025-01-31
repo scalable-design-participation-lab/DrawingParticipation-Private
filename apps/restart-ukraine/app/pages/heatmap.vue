@@ -135,6 +135,7 @@ const handleUpdateFilterTime = (timeRange: {start: Date, end: Date}) => {
         :blur="layerSettings[key]?.blur"
         :radius="layerSettings[key]?.radius"
         :opacity="layerSettings[key]?.opacity"
+        :z-index="layerSettings[key]?.zIndex"
       />
     </template>
   </GeneralizedBackgroundMap>
