@@ -122,21 +122,25 @@ const buttonBackground = (section: string, button: string) => {
           <span class="my-1 capitalize text-black font-semibold dark:text-white">{{ section }}</span>
           <div class="flex-wrap flex"> 
             <template v-for="button in categories[section]" :key="button">
-              <UPopover
-                v-if="highlightedButtons.has(button)"
-                :popper="{ placement: 'auto', resize: true }"
-                :ui="{ rounded: 'rounded-3xl', trigger: 'inline-flex w-auto max-w-max' }"
-                mode="hover"
-              >
                 <UButton 
-                  :class="['mx-1 my-1 rounded-full capitalize flex p text-white']"
+                  v-if="highlightedButtons.has(button)"
+                  :class="['mx-1 my-1 rounded-full capitalize flex p text-white align-middle']"
                   :style="highlightedButtons.has(button) ? { backgroundColor: buttonBackground(section, button) } : {}"
                   @click="handleClick(button, section)"
-                  trailing-icon="i-heroicons-chevron-down-20-solid"
                 >
-                  {{ button }}
-                </UButton>
+                {{ button }}
+                <UIcon name="i-tabler:minus-vertical"/>
 
+              <UPopover 
+                :popper="{ placement: 'auto'}"
+                :ui="{ rounded: 'rounded-3xl', trigger: 'inline-flex w-auto max-w-max' }"
+                @click.stop
+              >
+                <UIcon 
+                  name="i-heroicons-chevron-down-20-solid"
+                  class="hover:cursor-pointer hover:opacity-80 mt-1"
+                />
+              
                 <template #panel>
                   <div class="p-5 bg-white shadow-lg border dark:bg-gray-800 dark:border-gray-700 rounded-3xl">
                     <p class="text-black dark:text-white mb-4">Settings for {{ button }}</p>
@@ -186,6 +190,7 @@ const buttonBackground = (section: string, button: string) => {
                   </div>
                 </template>
               </UPopover>
+              </UButton>
 
               <UButton 
                 v-else
