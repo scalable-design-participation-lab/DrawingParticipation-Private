@@ -53,6 +53,12 @@ export interface HeatmapLayerProps {
   weight?: () => number
 
   /**
+   * Z index of the heatmap layers
+   * @default 1
+   */
+  zIndex?: number
+
+  /**
    * Callback function triggered when feature loading starts.
    * Logs "features load start" by default.
    * @default () => console.log('features load start')
@@ -81,6 +87,7 @@ withDefaults(defineProps<HeatmapLayerProps>(), {
   blur: 20,
   radius: 20,
   visible: true,
+  zIndex: 1,
   weight: () => 1,
   format: () => new GeoJSON(),
   features: () => [],
@@ -92,7 +99,7 @@ withDefaults(defineProps<HeatmapLayerProps>(), {
 </script>
 
 <template>
-  <ol-heatmap-layer title="heatmap" :blur="blur" :radius="radius" :z-index="1" :gradient="gradient" :visible="visible" :weight="weight">
+  <ol-heatmap-layer title="heatmap" :blur="blur" :radius="radius" :z-index="zIndex" :gradient="gradient" :visible="visible" :weight="weight">
     <ol-source-vector
       :features="features"
       :format="format"

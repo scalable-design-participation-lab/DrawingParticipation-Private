@@ -16,8 +16,10 @@ const buttonSettings = reactive<Record<string, {
   opacity: number;
   gradient: string[];
   visible: boolean;
+  zIndex: number;
 }>>({});
 
+const currentZIndex = useState("zIndex", () => 1)
 const emit = defineEmits(['updateSelection', 'updateFilter', 'updateFilterTime']);
 const { featuresByCategory } = useAllFeatureStore();
 
@@ -46,6 +48,7 @@ function handleClick(button: string, section: string) {
   if (isSelected) {
     highlightedButtons.delete(button);
     buttonSettings[key].visible = false;
+    buttonSettings[key].zIndex = 0; 
   } else {
     highlightedButtons.add(button);
     if (!buttonSettings[key]) {
@@ -55,9 +58,12 @@ function handleClick(button: string, section: string) {
         radius: 20,
         opacity: 0.8,
         gradient: [getRandomHexColor(),  '#0ff', '#0f0', '#ff0', getRandomHexColor()],
-        visible: true
+        visible: true,
+        zIndex: currentZIndex.value,
       };
+      currentZIndex.value += 1
     } else {
+      buttonSettings[key].zIndex = currentZIndex.value; 
       buttonSettings[key].visible = true;
     }
   }
@@ -301,8 +307,8 @@ const buttonBackground = (section: string, button: string) => {
       <!-- Layers Tab -->
       <template  #layers="{item}">
         <div class="flex-1 overflow-auto max-h-[calc(100vh-13rem)] px-4 py-2">
-          <p class="text-gray-600 dark:text-gray-300">
-            Layers configuration will be available here.
+          <p v-for="key in Object.keys(buttonSettings)" class="text-gray-600 dark:text-gray-300">
+            {{ key }}
           </p>
         </div>
     </template>
