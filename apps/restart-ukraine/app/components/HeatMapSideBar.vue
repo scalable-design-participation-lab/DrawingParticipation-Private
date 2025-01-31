@@ -68,8 +68,6 @@ function handleClick(button: string, section: string) {
       buttonSettings[key].visible = true;
     }
   }
-
-  emit('updateSelection', key, buttonSettings[key]);
 }
 
 // 🔥 Handle Gradient Color Updates (Ensuring Reactivity)
