@@ -51,6 +51,7 @@
     "vue-router": "^4.4.5",
     "vue-virtual-scroll-list": "^2.3.5",
     "vue3-openlayers": "^11.2.1",
+    "vuedraggable": "^4.1.0",
     "vuefire": "^3.2.0"
   },
   "devDependencies": {
