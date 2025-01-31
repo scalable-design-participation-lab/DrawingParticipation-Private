@@ -82,11 +82,11 @@ watch(buttonSettings, (newSettings) => {
 }, { deep: true });
 
 // 🏷 Filters
-const filters = ref(["Comments"]);
+const filters = ref({"Comments": false});
 
 // 🎯 Handle Filter Toggle
-function handleFilter(button: string) {
-  highlightedButtons.has(button) ? highlightedButtons.delete(button) : highlightedButtons.add(button);
+function handleFilter(key: string) {
+  filters.value[key] = !filters.value[key]
   emit('updateFilter');
 }
 
@@ -116,143 +116,196 @@ const buttonBackground = (section: string, button: string) => {
 
 <template>
   <UCard class="fixed right-6 top-24 w-96 md:w-80 max-h-[calc(100vh-11rem)] z-40 shadow-xl dark:bg-black flex flex-col overflow-hidden">
-    <div class="flex-1 overflow-auto max-h-[calc(100vh-13rem)] px-1">
-      <div v-if="sections.length">
-        <div v-for="section in sections" :key="section" class="my-2">
-          <span class="my-1 capitalize text-black font-semibold dark:text-white">{{ section }}</span>
-          <div class="flex-wrap flex"> 
-            <template v-for="button in categories[section]" :key="button">
-                <UButton 
-                  v-if="highlightedButtons.has(button)"
-                  :class="['mx-1 my-1 rounded-full capitalize flex p text-white align-middle']"
-                  :style="highlightedButtons.has(button) ? { backgroundColor: buttonBackground(section, button) } : {}"
-                  @click="handleClick(button, section)"
-                >
-                {{ button }}
-                <UIcon name="i-tabler:minus-vertical"/>
+    <UTabs 
+        :items="[
+          { label: 'Data', slot: 'data' },
+          { label: 'Layers', slot: 'layers' },
+        ]" 
+      >
+        <!-- Data Tab -->
+      <template #data="{ item }">
+        <div class="flex-1 overflow-auto max-h-[calc(100vh-13rem)] px-1">
+          <div v-if="sections.length">
+            <div v-for="section in sections" :key="section" class="my-2">
+              <span class="my-1 capitalize text-black font-semibold dark:text-white">{{ section }}</span>
+              <div class="flex-wrap flex"> 
+                <template v-for="button in categories[section]" :key="button">
+                    <UButton 
+                    size="2xs"
+                      v-if="highlightedButtons.has(button)"
+                      :class="['mx-1 my-1 rounded-full capitalize flex p text-white align-middle dark:text-white']"
+                      :style="highlightedButtons.has(button) ? { backgroundColor: buttonBackground(section, button) } : {}"
+                      @click="handleClick(button, section)"
+                    >
+                    {{ button }}
+                    <UIcon name="i-tabler:minus-vertical"/>
 
-              <UPopover 
-                :popper="{ placement: 'auto'}"
-                :ui="{ rounded: 'rounded-3xl', trigger: 'inline-flex w-auto max-w-max' }"
-                @click.stop
-              >
-                <UIcon 
-                  name="i-heroicons-chevron-down-20-solid"
-                  class="hover:cursor-pointer hover:opacity-80 mt-1"
-                />
-              
-                <template #panel>
-                  <div class="p-5 bg-white shadow-lg border dark:bg-gray-800 dark:border-gray-700 rounded-3xl">
-                    <p class="text-black dark:text-white mb-4">Settings for {{ button }}</p>
-                    
-                    <!-- 🎚 Weight -->
-                    <div class="mb-3">
-                      <label class="text-sm text-gray-700 dark:text-gray-300">Weight</label>
-                      <UInput v-model="buttonSettings[`${section}.${button}`].weight" type="number" class="w-full" 
-                        :min="0" :max="1" step="0.1" />
-                    </div>
+                  <UPopover 
+                    :popper="{ placement: 'auto'}"
+                    :ui="{ rounded: 'rounded-3xl', trigger: 'inline-flex w-auto max-w-max' }"
+                    @click.stop
+                  >
+                    <UIcon 
+                      name="i-heroicons-chevron-down-20-solid"
+                      class="hover:cursor-pointer hover:opacity-80 mt-1"
+                    />
+                  
+                    <template #panel>
+                      <div class="p-5 bg-white shadow-lg border dark:bg-gray-800 dark:border-gray-700 rounded-2xl">
+                        <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">Settings for {{ button }}</h3>
+                        
+                        <div class="grid grid-cols-2 gap-4">
+                          <!-- Weight -->
+                          <div class="space-y-1">
+                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Weight</label>
+                            <UInput 
+                              v-model="buttonSettings[`${section}.${button}`].weight"
+                              type="number"
+                              :min="0"
+                              :max="1"
+                              step="0.1"
+                              class="w-full"
+                              :ui="{ base: 'text-center' }"
+                            />
+                          </div>
 
-                    <!-- 🎚 Blur -->
-                    <div class="mb-3">
-                      <label class="text-sm text-gray-700 dark:text-gray-300">Blur</label>
-                      <URange v-model="buttonSettings[`${section}.${button}`].blur" :min="0" :max="20" class="w-full" />
-                    </div>
+                          <!-- Blur -->
+                          <div class="space-y-1">
+                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Blur (px)</label>
+                            <UInput 
+                              v-model="buttonSettings[`${section}.${button}`].blur"
+                              type="number"
+                              :min="0"
+                              :max="100"
+                              class="w-full"
+                              :ui="{ base: 'text-center' }"
+                            />
+                          </div>
 
-                    <!-- 🎚 Radius -->
-                    <div class="mb-3">
-                      <label class="text-sm text-gray-700 dark:text-gray-300">Radius</label>
-                      <URange v-model="buttonSettings[`${section}.${button}`].radius" :min="0" :max="100" class="w-full" />
-                    </div>
+                          <!-- Radius -->
+                          <div class="space-y-1">
+                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Radius (px)</label>
+                            <UInput 
+                              v-model="buttonSettings[`${section}.${button}`].radius"
+                              type="number"
+                              :min="0"
+                              :max="100"
+                              class="w-full"
+                              :ui="{ base: 'text-center' }"
+                            />
+                          </div>
 
-                    <!-- 🎚 Opacity -->
-                    <div class="mb-3">
-                      <label class="text-sm text-gray-700 dark:text-gray-300">Opacity</label>
-                      <UInput v-model="buttonSettings[`${section}.${button}`].opacity" type="number" step="0.1" min="0" max="1" class="w-full" />
-                    </div>
+                          <!-- Opacity -->
+                          <div class="space-y-1">
+                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Opacity (%)</label>
+                            <UInput 
+                              :model-value="Math.round(buttonSettings[`${section}.${button}`].opacity * 100)"
+                              @update:model-value="buttonSettings[`${section}.${button}`].opacity = $event / 100"
+                              type="number"
+                              :min="0"
+                              :max="100"
+                              class="w-full"
+                              :ui="{ base: 'text-center' }"
+                            />
+                          </div>
 
-                    <!-- 🎨 Color Pickers -->
-                    <div class="flex gap-4">
-                      <div>
-                        <label class="text-sm text-gray-700 dark:text-gray-300">Primary Color</label>
-                        <color-picker-block
-                          v-model="buttonSettings[`${section}.${button}`].gradient[0]"
-                          @change="updateGradient(section, button, 0, $event.hex)"
-                        />
+                          <!-- Color Pickers -->
+                          <div class="col-span-2 grid grid-cols-2 gap-4">
+                            <div class="space-y-1">
+                              <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Primary Color</label>
+                              <color-picker-block
+                                v-model="buttonSettings[`${section}.${button}`].gradient[0]"
+                                @change="updateGradient(section, button, 0, $event.hex)"
+                                class="w-full h-10 rounded-lg overflow-hidden"
+                              />
+                            </div>
+                            <div class="space-y-1">
+                              <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Secondary Color</label>
+                              <color-picker-block
+                                v-model="buttonSettings[`${section}.${button}`].gradient[4]"
+                                @change="updateGradient(section, button, 4, $event.hex)"
+                                class="w-full h-10 rounded-lg overflow-hidden"
+                              />
+                            </div>
+                          </div>
+                        </div>
                       </div>
-                      <div>
-                        <label class="text-sm text-gray-700 dark:text-gray-300">Secondary Color</label>
-                        <color-picker-block
-                          v-model="buttonSettings[`${section}.${button}`].gradient[4]"
-                          @change="updateGradient(section, button, 4, $event.hex)"
-                        />
-                      </div>
+                    </template>
+                  </UPopover>
+                  </UButton>
+
+                  <UButton 
+                  size="2xs"
+                    v-else
+                    :class="['mx-1 my-1 rounded-full capitalize', 
+                      highlightedButtons.has(button) 
+                        ? 'bg-black text-white dark:bg-green-500 hover:bg-black dark:hover:bg-green-600' 
+                        : 'bg-gray-100 text-black dark:bg-gray-100 dark:text-black hover:bg-green-500 dark:hover:bg-green-500 hover:text-white']"
+                    @click="handleClick(button, section)"
+                  >
+                    {{ button }}
+                  </UButton>
+                </template>
+              </div> 
+            </div>
+            <!-- Date Time Range Picker -->
+            <div class="flex-auto"> 
+              <span class="my-1 capitalize text-black font-semibold dark:text-white">Time </span>
+              <UPopover :popper="{ placement: 'auto' }" class="px-5 py-2">
+                <UButton icon="i-heroicons-calendar-days-20-solid" color="green">
+                  {{ format(selected.start, 'd MMM, yyy') }} - {{ format(selected.end, 'd MMM, yyy') }}
+                </UButton>
+
+                <template #panel="{ close }">
+                  <div class="flex flex-grow items-center sm:divide-x divide-gray-200 dark:divide-gray-800">
+                    <div class="hidden sm:flex flex-col py-4">
+                      <UButton
+                        v-for="(range, index) in ranges"
+                        :key="index"
+                        :label="range.label"
+                        color="gray"
+                        variant="ghost"
+                        class="rounded-none px-6"
+                        :class="[isRangeSelected(range.duration) ? 'bg-gray-100 dark:bg-gray-800' : 'hover:bg-gray-50 dark:hover:bg-gray-800/50']"
+                        truncate
+                        @click="selectRange(range.duration)"
+                      />
                     </div>
+
+                    <DatePicker v-model="selected" @close="close" />
                   </div>
                 </template>
               </UPopover>
-              </UButton>
-
-              <UButton 
-                v-else
-                :class="['mx-1 my-1 rounded-full capitalize', 
-                  highlightedButtons.has(button) 
-                    ? 'bg-black text-white dark:bg-green-500 hover:bg-black dark:hover:bg-green-600' 
-                    : 'bg-gray-100 text-black dark:bg-gray-100 dark:text-black hover:bg-green-500 dark:hover:bg-green-500 hover:text-white']"
-                @click="handleClick(button, section)"
-              >
-                {{ button }}
-              </UButton>
-            </template>
-          </div> 
+            </div>
+            <!-- 🎛 Filters -->
+            <div class="flex justify-between" v-for="key in Object.keys(filters)" :key="key">
+              <span class="my-1 capitalize text-black font-semibold dark:text-white">{{ key }}</span>
+              <UToggle 
+                :key="filters[key]" 
+                class="my-1"
+                color="green"
+                size="lg"
+                on-icon="i-heroicons-check-20-solid"
+                off-icon="i-heroicons-x-mark-20-solid"
+                :modelValue="filters[key]"
+                @click="handleFilter(key)"
+              />
+            </div>
+            
+          </div>
+          <div v-else>
+            <p>No data available to display.</p>
+          </div>
         </div>
-        <!-- Date Time Range Picker -->
-        <div class="flex-auto"> 
-          <span class="my-1 capitalize text-black font-semibold dark:text-white">Time </span>
-          <UPopover :popper="{ placement: 'auto' }" class="px-5 py-2">
-            <UButton icon="i-heroicons-calendar-days-20-solid" color="green">
-              {{ format(selected.start, 'd MMM, yyy') }} - {{ format(selected.end, 'd MMM, yyy') }}
-            </UButton>
-
-            <template #panel="{ close }">
-              <div class="flex flex-grow items-center sm:divide-x divide-gray-200 dark:divide-gray-800">
-                <div class="hidden sm:flex flex-col py-4">
-                  <UButton
-                    v-for="(range, index) in ranges"
-                    :key="index"
-                    :label="range.label"
-                    color="gray"
-                    variant="ghost"
-                    class="rounded-none px-6"
-                    :class="[isRangeSelected(range.duration) ? 'bg-gray-100 dark:bg-gray-800' : 'hover:bg-gray-50 dark:hover:bg-gray-800/50']"
-                    truncate
-                    @click="selectRange(range.duration)"
-                  />
-                </div>
-
-                <DatePicker v-model="selected" @close="close" />
-              </div>
-            </template>
-          </UPopover>
+      </template>
+      <!-- Layers Tab -->
+      <template  #layers="{item}">
+        <div class="flex-1 overflow-auto max-h-[calc(100vh-13rem)] px-4 py-2">
+          <p class="text-gray-600 dark:text-gray-300">
+            Layers configuration will be available here.
+          </p>
         </div>
-        <!-- 🎛 Filters -->
-        <div class="flex justify-between" v-for="filter in filters" :key="filter">
-          <span class="my-1 capitalize text-black font-semibold dark:text-white">{{ filter }}</span>
-          <UToggle 
-            :key="filter" 
-            class="my-1"
-            color="green"
-            size="lg"
-            on-icon="i-heroicons-check-20-solid"
-            off-icon="i-heroicons-x-mark-20-solid"
-            :modelValue="highlightedButtons.has(filter)"
-            @click="handleFilter(filter)"
-          />
-        </div>
-        
-      </div>
-      <div v-else>
-        <p>No data available to display.</p>
-      </div>
-    </div>
+    </template>
+    </UTabs>
   </UCard>
 </template>
