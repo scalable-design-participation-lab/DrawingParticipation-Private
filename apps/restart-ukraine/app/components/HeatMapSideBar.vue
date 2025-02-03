@@ -129,17 +129,21 @@ const sortedSettings = computed({
   get: () => {
     return Object.entries(buttonSettings)
       .filter(([_, settings]) => settings.visible)
-      .map(([key, settings]) => ({
-        key,
-        ...settings,
-        zIndex: settings.zIndex || 1
-      }))
+      .map(([key, settings]) => {
+        const [section, button] = key.split(".");
+        return {
+          key: button,
+          section: section,
+          ...settings,
+          zIndex: settings.zIndex || 1
+        };
+      })
       .sort((a, b) => b.zIndex - a.zIndex);
   },
   set: (value) => {
     // Update all zIndex values based on new order
     value.forEach((item, index) => {
-      buttonSettings[item.key].zIndex = value.length - index;
+      buttonSettings[`${item.section}.${item.key}`].zIndex = value.length - index;
     });
   }
 });
@@ -147,16 +151,79 @@ const sortedSettings = computed({
 
 <template>
   <UCard class="fixed right-6 top-24 w-96 md:w-80 max-h-[calc(100vh-11rem)] z-40 shadow-xl dark:bg-black flex flex-col overflow-hidden">
-    <UTabs 
-        :items="[
-          { label: 'Data', slot: 'data' },
-          { label: 'Layers', slot: 'layers' },
-        ]" 
-      >
-        <!-- Data Tab -->
-      <template #data="{ item }">
         <div class="flex-1 overflow-auto max-h-[calc(100vh-13rem)] px-1">
           <div v-if="sections.length">
+            <!-- 🎛 Layers Section -->
+            <div class="flex justify-between items-center mb-2">
+              <span class="my-1 capitalize text-black font-semibold dark:text-white">Layers</span>
+              <UPopover 
+                :popper="{ placement: 'bottom-end', strategy: 'absolute' }"
+                :ui="{ 
+                  base: 'overflow-visible',
+                  rounded: 'rounded-lg',
+                  ring: 'ring-1 ring-gray-200 dark:ring-gray-800'
+                }"
+              >
+                <UButton 
+                  size="2xs"
+                  class="bg-gray-100 gap-1.5 px-3 py-1.5 text-black rounded-full hover:bg-green-500 dark:bg-white dark:hover:bg-green-500"
+                  trailing-icon="i-heroicons-chevron-down-20-solid"
+                >
+                Edit Layers
+                </UButton>
+
+                <template #panel>
+                  <div class="w-64 py-2 px-5 dark:bg-black h-48 overflow-scroll">
+                    <div class="my-1 capitalize text-black font-semibold dark:text-white">
+                      Drag to reorder layers
+                    </div>
+                    
+                    <draggable 
+                      v-model="sortedSettings"
+                      item-key="key"
+                      handle=".drag-handle"
+                      ghost-class="opacity-50"
+                      drag-class="cursor-grabbing"
+                      @end="handleDragEnd"
+                      class="space-y-1 "
+                    >
+                      <template #item="{ element }">
+                        <div class="group relative flex items-center justify-between">
+                          <!-- Z-Index Indicator -->
+                          <span class="ml-2 text-xs text-black dark:text-white">
+                            z-{{ element.zIndex }}
+                          </span>
+                          <!-- Layer Button -->
+                            <UButton 
+                              size="xs"
+                              :class="[
+                                'truncate text-left transition-all rounded-full mx-2 cursor-default',
+                              ]"
+                              :style="{ 
+                                backgroundColor: buttonBackground(element.section, element.key),
+                              }"
+                              @click.stop
+                            >
+                              <span class="text-sm font-medium text-white/90 ">
+                                {{ element.key }}
+                              </span>
+                            </UButton>
+                          <UIcon name="i-heroicons-bars-3-20-solid" class="drag-handle text-black hover:cursor-pointer dark:text-white"/>
+                        </div>
+                      </template>
+                    </draggable>
+
+                    <!-- Empty State -->
+                    <div 
+                      v-if="!sortedSettings.length"
+                      class="text-center p-4 text-sm text-gray-400 dark:text-gray-500"
+                    >
+                      No layers available
+                    </div>
+                  </div>
+                </template>
+              </UPopover>
+            </div>
             <div v-for="section in sections" :key="section" class="my-2">
               <span class="my-1 capitalize text-black font-semibold dark:text-white">{{ section }}</span>
               <div class="flex-wrap flex"> 
@@ -182,7 +249,7 @@ const sortedSettings = computed({
                     />
                   
                     <template #panel>
-                      <div class="p-5 bg-white shadow-lg border dark:bg-gray-800 dark:border-gray-700 rounded-2xl">
+                      <div class="p-5 bg-white shadow-lg border dark:bg-black dark:border-gray-700 rounded-2xl">
                         <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">Settings for {{ button }}</h3>
                         
                         <div class="grid grid-cols-2 gap-4">
@@ -328,30 +395,5 @@ const sortedSettings = computed({
             <p>No data available to display.</p>
           </div>
         </div>
-      </template>
-      <!-- Layers Tab -->
-      <template #layers="{ item }">
-    <div class="flex-1 overflow-auto max-h-[calc(100vh-13rem)] px-4 py-2">
-      <draggable 
-        v-model="sortedSettings"
-        item-key="key"
-        handle=".handle"
-        @end="handleDragEnd"
-        class="space-y-2"
-      >
-        <template #item="{ element }">
-          <div 
-            class="p-2 rounded-lg bg-white dark:bg-gray-800 shadow-sm cursor-move border dark:border-gray-700 flex items-center gap-2"
-            :style="{ zIndex: element.zIndex }"
-          >
-            <UIcon name="i-heroicons-bars-3-20-solid" class="handle text-gray-400 hover:text-gray-600 dark:hover:text-gray-200" />
-            <span class="flex-1">{{ element.key }}</span>
-            <span class="text-sm text-gray-500">z-{{ element.zIndex }}</span>
-          </div>
-        </template>
-      </draggable>
-    </div>
-    </template>
-    </UTabs>
   </UCard>
 </template>
