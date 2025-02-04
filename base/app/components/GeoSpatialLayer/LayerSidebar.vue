@@ -73,7 +73,7 @@ function layerColor(section: string, layer: string) {
           >
             <UButton
               size="2xs"
-              class="bg-gray-100 gap-1.5 px-3 py-1.5 text-black rounded-full hover:bg-green-500 dark:bg-white dark:hover:bg-green-500"
+              class="bg-gray-100 gap-1.5 px-3 py-1.5 text-black rounded-full hover:bg-green-500 hover:text-white dark:bg-white dark:hover:bg-green-500"
               trailing-icon="i-heroicons-chevron-down-20-solid"
             >
               Edit Layers
