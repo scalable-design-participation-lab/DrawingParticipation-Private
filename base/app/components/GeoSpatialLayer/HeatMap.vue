@@ -3,6 +3,16 @@ import type Feature from 'ol/Feature'
 import GeoJSON from 'ol/format/GeoJSON'
 import type { Geometry } from 'ol/geom'
 
+export interface HeatMapLayerSettings {
+  weight: number
+  blur: number
+  radius: number
+  opacity: number
+  gradient: string[]
+  visible: boolean
+  zIndex: number
+}
+
 /**
  * Type definition for the props of the HeatmapLayer component.
  */
@@ -42,7 +52,7 @@ export interface HeatmapLayerProps {
 
   /**
    * Visibility of the heatmap
-   * @default true
+   * @default false
    */
   visible?: boolean
 
@@ -86,7 +96,7 @@ export interface HeatmapLayerProps {
 withDefaults(defineProps<HeatmapLayerProps>(), {
   blur: 20,
   radius: 20,
-  visible: true,
+  visible: false,
   zIndex: 1,
   weight: () => 1,
   format: () => new GeoJSON(),
