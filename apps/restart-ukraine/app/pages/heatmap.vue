@@ -3,9 +3,10 @@ import { computed, reactive, watch } from "vue";
 import { useAllFeatureStore } from "../../../../base/app/stores/all-features";
 import GeoJSON from "ol/format/GeoJSON";
 import GeneralizedBackgroundMap from "@base/components/GeneralizedBackgroundMap.vue";
-import HeatMap from "@base/components/GeoSpatialLayer/HeatMap.vue";
+import HeatMap, { type HeatMapLayerSettings } from "@base/components/GeoSpatialLayer/HeatMap.vue";
 import type { Feature, MapType } from "@base/stores/types/store";
 import { useMapStore } from "@base/stores/map";
+import LayerSideBar from "@base/components/GeoSpatialLayer/LayerSidebar.vue"
 
 // 🌍 Map Store
 const mapStore = useMapStore();
@@ -37,13 +38,12 @@ const { featuresByCategory } = useAllFeatureStore();
 const geoJson = new GeoJSON();
 
 // 🌍 Reactive State
-const isFilterComments = useState<boolean>("isFilterComments", () => false);
 const filterTime = useState<{start: Date, end: Date}>("isFilterTime", () => ({ start: new Date(), end: new Date() }));
 
 // 📌 Function to Convert Features into OpenLayers GeoJSON Format
-const getGeoJsonFeature = (key: string) => {
-  let features = featuresByCategory[key] ?? [];
-  if (isFilterComments.value) {
+const getGeoJsonFeature = (featureKey: string) => {
+  let features = featuresByCategory[featureKey] ?? [];
+  if (filters["Comments"]) {
     features = features.filter((feat: Feature) => feat.comment.length > 0);
   }
   if (filterTime.value) { 
@@ -68,28 +68,6 @@ const features = computed(() =>
   )
 );
 
-// 🎛 Layer Settings (Per Category)
-const layerSettings = reactive<{ [key: string]: any }>({});
-
-// 🎯 Initialize Default Layer Settings when Features Change
-watch(
-  () => features.value,
-  (newFeatures) => {
-    Object.keys(newFeatures).forEach((key) => {
-      if (!layerSettings[key]) {
-        layerSettings[key] = {
-          weight: () => 1,
-          blur: 20,
-          radius: 20,
-          opacity: 1,
-          gradient: ["#00f", "#f00"],
-          visible: false,
-        };
-      }
-    });
-  },
-  { immediate: true }
-);
 
 // 🎯 Handle Sidebar Updates (Selection + Layer Settings)
 const handleUpdateSelection = (key: string, settings: object) => {
@@ -97,13 +75,36 @@ const handleUpdateSelection = (key: string, settings: object) => {
 };
 
 // 🎯 Handle Comment Filter Toggle
-const handleUpdateFilter = () => {
-  isFilterComments.value = !isFilterComments.value;
+const handleUpdateFilter = (key: string) => {
+  filters[key] = !filters[key]
 };
 
 const handleUpdateFilterTime = (timeRange: {start: Date, end: Date}) => { 
   filterTime.value = timeRange
 }
+// 📌 Compute Categories and Sections
+const categories = computed(() => {
+  const grouped: Record<string, string[]> = {};
+  Object.keys(featuresByCategory).forEach((key) => {
+    const [section, category] = key.split('.');
+    if (section && category) {
+      grouped[section] = grouped[section] || [];
+      grouped[section].push(category);
+    }
+  });
+  return grouped;
+});
+const filters = reactive({ "Comments": false });
+const layerSettings = reactive<Record<string, HeatMapLayerSettings>>({});
+const ranges: { label: string; duration: Duration }[] = [
+  { label: 'Last 7 days', duration: { days: 7 } },
+  { label: 'Last 14 days', duration: { days: 14 } },
+  { label: 'Last 30 days', duration: { days: 30 } },
+  { label: 'Last 3 months', duration: { months: 3 } },
+  { label: 'Last 6 months', duration: { months: 6 } },
+  { label: 'Last year', duration: { years: 1 } }
+];
+
 </script>
 
 <template>
@@ -118,8 +119,13 @@ const handleUpdateFilterTime = (timeRange: {start: Date, end: Date}) => {
   />
 
   <!-- 📌 SIDEBAR -->
-  <HeatMapSideBar
-   @update-selection="handleUpdateSelection" @update-filter="handleUpdateFilter"
+  <LayerSideBar
+   :ranges="ranges"
+   :layerSettings="layerSettings"
+   :filters="filters"
+   :categories="categories"
+   @update-selection="handleUpdateSelection"
+   @update-filter="handleUpdateFilter"
    @update-filter-time="handleUpdateFilterTime" />
 
   <!-- 📌 MAP & LAYERS -->
