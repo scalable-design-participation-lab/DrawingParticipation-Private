@@ -6,7 +6,7 @@ import GeneralizedBackgroundMap from "@base/components/GeneralizedBackgroundMap.
 import HeatMap, { type HeatMapLayerSettings } from "@base/components/GeoSpatialLayer/HeatMap.vue";
 import type { Feature, MapType } from "@base/stores/types/store";
 import { useMapStore } from "@base/stores/map";
-import LayerSideBar from "@base/components/GeoSpatialLayer/LayerSidebar.vue"
+import LayerSideBar from "@base/components/GeoSpatialLayer/LayerSideBar.vue"
 
 // 🌍 Map Store
 const mapStore = useMapStore();

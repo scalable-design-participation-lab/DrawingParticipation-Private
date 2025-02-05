@@ -2,6 +2,7 @@
 import { watch } from 'vue'
 import draggable from 'vuedraggable'
 import { type Duration, format } from 'date-fns'
+import { useLayerSidebarEmits } from '../../composables/useLayerSideBarEmits'
 import { useFilters } from '../../composables/useFilters'
 import { useLayerSettings } from '../../composables/useLayerSettings'
 import { useTimeRange } from '../../composables/useTimeRange'
@@ -12,11 +13,14 @@ import type { HeatMapLayerSettings } from './HeatMap.vue'
 // ─────────────────────────────
 
 // Define the emits interface
-interface LayerSidebarEmits {
+// Client are able to sync with child component through these events
+// If not implement, replace with stub, the component will still function
+export interface LayerSidebarEmits {
   (e: 'updateSelection', key: string, settings: HeatMapLayerSettings): void
   (e: 'updateFilter', key: string): void
   (e: 'updateFilterTime', timeRange: { start: Date, end: Date }): void
 }
+
 // To allow reusing this sidebar for any layer type,
 // pass in the available categories via props.
 const props = defineProps<{
@@ -36,10 +40,10 @@ const { layerSettings, highlightedButtons, sortedSettings, toggleLayer, updateGr
 const { filters, toggleFilter } = useFilters(props.filters)
 const { selected, isRangeSelected, selectRange } = useTimeRange({ days: 14 })
 
+const { updateSelection, updateFilter, updateFilterTime } = useLayerSidebarEmits(emit)
+
 watch(layerSettings, () => {
-  Object.entries(layerSettings).forEach(([key, settings]) => {
-    emit('updateSelection', key, settings)
-  })
+  updateSelection(layerSettings)
 }, { deep: true, immediate: true })
 
 // ─────────────────────────────
@@ -47,16 +51,20 @@ watch(layerSettings, () => {
 // ─────────────────────────────
 function handleFilter(key: string) {
   toggleFilter(key)
-  emit('updateFilter', key)
+  updateFilter(key)
 }
 
 watch(selected, (newRange) => {
-  emit('updateFilterTime', newRange)
+  updateFilterTime(newRange)
 })
 
-// Helpers
+// Helper to get the layer color
 function layerColor(section: string, layer: string) {
-  return layerSettings[`${section}.${layer}`]?.gradient?.[4] || 'transparent'
+  return layerSettings[getLayerKey(section, layer)]?.gradient?.[4] || 'transparent'
+}
+// Helper: Build a unique key for a layer
+function getLayerKey(section: string, layer: string): string {
+  return `${section}.${layer}`
 }
 </script>
 
@@ -73,7 +81,7 @@ function layerColor(section: string, layer: string) {
           >
             <UButton
               size="2xs"
-              class="bg-gray-100 gap-1.5 px-3 py-1.5 text-black rounded-full hover:bg-green-500 hover:text-white dark:bg-white dark:hover:bg-green-500"
+              class="bg-gray-100 mx-1 my-1 text-black rounded-full hover:bg-green-500 hover:text-white dark:bg-white dark:hover:bg-green-500"
               trailing-icon="i-heroicons-chevron-down-20-solid"
             >
               Edit Layers
@@ -99,7 +107,7 @@ function layerColor(section: string, layer: string) {
                         {{ index + 1 }} .
                       </span>
                       <UButton
-                        size="xs"
+                        size="2xs"
                         class="truncate text-left transition-all rounded-full mx-2 cursor-default"
                         :style="{ backgroundColor: layerColor(element.section, element.key) }"
                         @click.stop
@@ -129,12 +137,12 @@ function layerColor(section: string, layer: string) {
               <UButton
                 v-if="highlightedButtons.has(button)"
                 size="2xs"
-                class="mx-1 my-1 rounded-full capitalize flex p text-white align-middle dark:text-white"
+                class="mx-1 my-1 rounded-full capitalize flex text-white align-middle dark:text-white"
                 :style="{ backgroundColor: layerColor(section, button) }"
                 @click="toggleLayer(button, section)"
               >
                 {{ button }}
-                <UIcon name="i-tabler:minus-vertical" />
+                <UIcon name="i-tabler:minus-vertical" class="p-0" />
                 <!-- Popover for layer settings -->
                 <UPopover
                   :popper="{ placement: 'auto' }"
@@ -157,7 +165,7 @@ function layerColor(section: string, layer: string) {
                             Weight
                           </label>
                           <UInput
-                            v-model="layerSettings[`${section}.${button}`].weight"
+                            v-model="layerSettings[getLayerKey(section, button)].weight"
                             type="number"
                             :min="0"
                             :max="1"
@@ -172,7 +180,7 @@ function layerColor(section: string, layer: string) {
                             Blur (px)
                           </label>
                           <UInput
-                            v-model="layerSettings[`${section}.${button}`].blur"
+                            v-model="layerSettings[getLayerKey(section, button)].blur"
                             type="number"
                             :min="0"
                             :max="100"
@@ -186,7 +194,7 @@ function layerColor(section: string, layer: string) {
                             Radius (px)
                           </label>
                           <UInput
-                            v-model="layerSettings[`${section}.${button}`].radius"
+                            v-model="layerSettings[getLayerKey(section, button)].radius"
                             type="number"
                             :min="0"
                             :max="100"
@@ -200,13 +208,13 @@ function layerColor(section: string, layer: string) {
                             Opacity (%)
                           </label>
                           <UInput
-                            :model-value="Math.round(layerSettings[`${section}.${button}`].opacity * 100)"
+                            :model-value="Math.round(layerSettings[getLayerKey(section, button)].opacity * 100)"
                             type="number"
                             :min="0"
                             :max="100"
                             class="w-full"
                             :ui="{ base: 'text-center' }"
-                            @update:model-value="value => layerSettings[`${section}.${button}`].opacity = value / 100"
+                            @update:model-value="value => layerSettings[getLayerKey(section, button)].opacity = value / 100"
                           />
                         </div>
                         <!-- Color Pickers -->
@@ -216,7 +224,7 @@ function layerColor(section: string, layer: string) {
                               Primary Color
                             </label>
                             <color-picker-block
-                              v-model="layerSettings[`${section}.${button}`].gradient[0]"
+                              v-model="layerSettings[getLayerKey(section, button)].gradient[0]"
                               class="w-full h-10 rounded-lg overflow-hidden"
                               @change="updateGradient(section, button, 0, $event.hex)"
                             />
@@ -226,7 +234,7 @@ function layerColor(section: string, layer: string) {
                               Secondary Color
                             </label>
                             <color-picker-block
-                              v-model="layerSettings[`${section}.${button}`].gradient[4]"
+                              v-model="layerSettings[getLayerKey(section, button)].gradient[4]"
                               class="w-full h-10 rounded-lg overflow-hidden"
                               @change="updateGradient(section, button, 4, $event.hex)"
                             />
@@ -241,7 +249,8 @@ function layerColor(section: string, layer: string) {
               <UButton
                 v-else
                 size="2xs"
-                class="mx-1 my-1 rounded-full capitalize" :class="[
+                class="mx-1 my-1 rounded-full capitalize"
+                :class="[
                   highlightedButtons.has(button)
                     ? 'bg-black text-white dark:bg-green-500 hover:bg-black dark:hover:bg-green-600'
                     : 'bg-gray-100 text-black dark:bg-gray-100 dark:text-black hover:bg-green-500 dark:hover:bg-green-500 hover:text-white',
