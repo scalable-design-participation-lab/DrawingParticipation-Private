@@ -2,7 +2,7 @@
 import { watch } from 'vue'
 import draggable from 'vuedraggable'
 import { type Duration, format } from 'date-fns'
-import { useLayerSidebarEmits } from '../../composables/useLayerSideBarEmits'
+import { useLayerSidebarEmits } from '../../composables/useLayerSidebarEmits'
 import { useFilters } from '../../composables/useFilters'
 import { useLayerSettings } from '../../composables/useLayerSettings'
 import { useTimeRange } from '../../composables/useTimeRange'
