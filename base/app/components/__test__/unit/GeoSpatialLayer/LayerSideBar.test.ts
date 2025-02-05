@@ -2,7 +2,7 @@ import type { VueWrapper } from '@vue/test-utils'
 import { config, mount } from '@vue/test-utils'
 import { describe, expect, it } from 'vitest'
 import { format } from 'date-fns'
-import LayerSidebar from '@components/GeoSpatialLayer/LayerSideBar.vue'
+import LayerSidebar from '@components/GeoSpatialLayer/LayerSidebar.vue'
 
 // Dummy data for props
 const dummyCategories = {

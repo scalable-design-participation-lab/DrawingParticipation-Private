@@ -1,5 +1,5 @@
 import type { HeatMapLayerSettings } from '@components/GeoSpatialLayer/HeatMap.vue'
-import type { LayerSidebarEmits } from '@components/GeoSpatialLayer/LayerSideBar.vue'
+import type { LayerSidebarEmits } from '@components/GeoSpatialLayer/LayerSidebar.vue'
 
 export function useLayerSidebarEmits(emit: LayerSidebarEmits) {
   const updateSelection = (layerSettings: Record<string, HeatMapLayerSettings>) => {
