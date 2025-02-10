@@ -12,7 +12,13 @@ turf.featureEach(points, function (point) {
 <template> 
 <GeneralizedBackgroundMap ref="baseMap" :min-zoom="0">
     <template #layers> 
-        <Interpolate :points="points" property="solRad" :gridType="'points'" :units="'miles'" :visible="true" :zIndex="1" />
+        <Interpolate 
+        :points="points" 
+        :property="'solRad'"
+        :gridType="'points'"
+        :units="'miles'"
+        :visible="true"
+        :zIndex="1" />
     </template>
 </GeneralizedBackgroundMap>
 </template>
