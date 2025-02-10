@@ -13,7 +13,7 @@ type GridType = 'Hexagon' | 'Triangle' | 'Square'
 /**
  * Default Props
  */
-const props = withDefaults(defineProps<HexGridLayerProps>(), {
+const props = withDefaults(defineProps<GridLayerProps>(), {
   points: () => [],
   bbox: () => [28.422271, 49.200576, 28.582271, 49.285576],
   cellSide: 1,
@@ -27,7 +27,7 @@ const props = withDefaults(defineProps<HexGridLayerProps>(), {
 /**
  * Defines the properties for the HexGridLayer component.
  */
-interface HexGridLayerProps {
+interface GridLayerProps {
   /**
    * An array of point features used to compute the hex grid.
    * Each point contains geographic coordinates in the format [longitude, latitude].
