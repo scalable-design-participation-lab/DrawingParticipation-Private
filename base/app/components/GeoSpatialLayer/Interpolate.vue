@@ -11,7 +11,7 @@ interface InterpolationProps {
    * A collection of input points as a Turf.js FeatureCollection.
    * Must include a property for interpolation.
    */
-  points: any
+  points: any // needs to be a FeatureCollection but turf doesn't have types for that
 
   /**
    * The name of the property to interpolate.
