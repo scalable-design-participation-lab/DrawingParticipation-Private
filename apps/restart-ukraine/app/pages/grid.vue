@@ -1,3 +1,9 @@
+<script setup lang="ts">
+import { useAllFeatureStore } from '@base/stores/all-features';
+import Grid, { type PointFeature } from '@base/components/GeoSpatialLayer/Grid.vue';
+
+const { featuresByType } = useAllFeatureStore();
+</script>
 <template>
   <GeneralizedBackgroundMap>
     <template #layers>
@@ -13,9 +19,3 @@
   </GeneralizedBackgroundMap>
 </template>
 
-<script setup lang="ts">
-import { useAllFeatureStore } from '@base/stores/all-features';
-import Grid, { type PointFeature } from '@base/components/GeoSpatialLayer/Grid.vue';
-
-const { featuresByType } = useAllFeatureStore();
-</script>
