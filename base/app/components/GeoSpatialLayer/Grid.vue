@@ -8,7 +8,7 @@ import { toLonLat } from 'ol/proj'
 /**
  * Grid Type
  */
-type GridType = 'Hexagon' | 'Triangle' | 'Square'
+export type GridType = 'Hexagon' | 'Triangle' | 'Square'
 
 /**
  * Default Props
