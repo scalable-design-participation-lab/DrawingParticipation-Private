@@ -1,0 +1,10 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`grid.vue > renders correctly 1`] = `
+<div
+  class=""
+  id="gridLayer"
+  visible="false"
+  z-index="0"
+/>
+`;
