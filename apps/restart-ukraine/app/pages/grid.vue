@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { useAllFeatureStore } from '@base/stores/all-features';
-import Grid, { type GridType, type PointFeature } from '@base/components/GeoSpatialLayer/Grid.vue';
-import GridController from '@base/components/GeoSpatialLayer/GridController.vue';
+import Grid, { type GridType, type PointFeature } from '@base/components/GeoSpatialLayer/Grid/Grid.vue';
+import GridController from '@base/components/GeoSpatialLayer/Grid/GridController.vue';
 
 const { featuresByType } = useAllFeatureStore();
 const shape = ref<GridType>('Hexagon');

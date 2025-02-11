@@ -1,4 +1,4 @@
-import Grid from '@components/GeoSpatialLayer/Grid.vue'
+import Grid from '@components/GeoSpatialLayer/Grid/Grid.vue'
 import { type VueWrapper, mount } from '@vue/test-utils'
 import * as turf from '@turf/turf'
 import Nop from '@components/Nop.vue'
