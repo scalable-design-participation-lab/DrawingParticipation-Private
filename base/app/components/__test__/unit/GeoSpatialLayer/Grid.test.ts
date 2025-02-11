@@ -36,6 +36,7 @@ describe('grid.vue', () => {
     expect(wrapper.props().zIndex).toBe(0)
     expect(wrapper.props().shape).toBe('Hexagon')
     expect(wrapper.props().visible).toBe(false)
+    expect(wrapper.props().bbox).toStrictEqual([28.422271, 49.200576, 28.582271, 49.285576])
   })
 
   it('computedHexFeatures should return empty array when no points are provided', async () => {
