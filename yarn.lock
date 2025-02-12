@@ -3504,6 +3504,7 @@ __metadata:
     lodash: "npm:^4.17.21"
     mapbox-gl: "npm:^3.7.0"
     nuxt: "npm:^3.12.4"
+    nuxt-color-picker: "npm:^1.2.7"
     nuxt-vuefire: "npm:^1.0.4"
     ol: "npm:^10.2.1"
     ol-contextmenu: "npm:^5.5.0"
@@ -3521,9 +3522,9 @@ __metadata:
     vitest: "npm:^2.1.4"
     vue-chart-3: "npm:^3.1.8"
     vue-chartjs: "npm:^5.3.1"
-    vue-router: "npm:^4.4.5"
     vue-virtual-scroll-list: "npm:^2.3.5"
     vue3-openlayers: "npm:^11.2.1"
+    vuedraggable: "npm:^4.1.0"
     vuefire: "npm:^3.2.0"
     yup: "npm:^1.6.1"
   languageName: unknown
@@ -16276,6 +16277,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"nuxt-color-picker@npm:^1.2.7":
+  version: 1.2.7
+  resolution: "nuxt-color-picker@npm:1.2.7"
+  dependencies:
+    "@nuxt/kit": "npm:^3.14.1592"
+  checksum: 10c0/f7166a2cac841638f5094f2da1b69efb32e9665d5a64d704942a93db80abf908daee187bc14b725a6f3108d6d4de7e0fd099c6adff06c13de321ae4f050a2136
+  languageName: node
+  linkType: hard
+
 "nuxt-vuefire@npm:^1.0.4":
   version: 1.0.4
   resolution: "nuxt-vuefire@npm:1.0.4"
@@ -18862,6 +18872,13 @@ __metadata:
     ip-address: "npm:^9.0.5"
     smart-buffer: "npm:^4.2.0"
   checksum: 10c0/d54a52bf9325165770b674a67241143a3d8b4e4c8884560c4e0e078aace2a728dffc7f70150660f51b85797c4e1a3b82f9b7aa25e0a0ceae1a243365da5c51a7
+  languageName: node
+  linkType: hard
+
+"sortablejs@npm:1.14.0":
+  version: 1.14.0
+  resolution: "sortablejs@npm:1.14.0"
+  checksum: 10c0/b792790286d54af5ebb083300d0cb3f96f5cf840e85f4953aa2074a69c1671a3d6a73f8d5fcc948b27c0573575ff98ec32346f7dcfe6230d517d7a81ea7ad314
   languageName: node
   linkType: hard
 
@@ -21570,6 +21587,17 @@ __metadata:
     typescript:
       optional: true
   checksum: 10c0/4bbb5caf3f04fed933b01c100804f3693ff902984a3152ea1359a972264fa3240f6551d32f0163a79c64df3715b4d6691818c9f652cdd41b2473c69e2b0a373d
+  languageName: node
+  linkType: hard
+
+"vuedraggable@npm:^4.1.0":
+  version: 4.1.0
+  resolution: "vuedraggable@npm:4.1.0"
+  dependencies:
+    sortablejs: "npm:1.14.0"
+  peerDependencies:
+    vue: ^3.0.1
+  checksum: 10c0/e5121ca53081e63f6a3e1dc4c3c02ae86fd6b896ccf37d9a0f88abb993fd9da3a1b54635541854a2a85b65e30dae00e545a2c208708e7df73424bd64c2e59cbc
   languageName: node
   linkType: hard
 
