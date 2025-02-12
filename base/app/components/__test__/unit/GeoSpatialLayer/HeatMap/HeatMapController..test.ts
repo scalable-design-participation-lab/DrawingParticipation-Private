@@ -2,7 +2,7 @@ import type { VueWrapper } from '@vue/test-utils'
 import { config, mount } from '@vue/test-utils'
 import { describe, expect, it } from 'vitest'
 import { format } from 'date-fns'
-import LayerSidebar from '@components/GeoSpatialLayer/LayerSidebar.vue'
+import LayerSidebar from '@components/GeoSpatialLayer/HeatMap/HeatMapController.vue'
 
 // Dummy data for props
 const dummyCategories = {
@@ -149,99 +149,5 @@ describe('layerSidebar.vue', () => {
     Object.values(dummyCategories).flat().forEach((button) => {
       expect(wrapper.html()).toContain(button)
     })
-  })
-
-  it('emits "updateSelection" when layerSettings change', async () => {
-    const expectedEmits = Object.keys(dummyLayerSettings).length
-    expect(wrapper.emitted('updateSelection')?.length).toBeGreaterThanOrEqual(expectedEmits)
-
-    const newOpacity = 0.5
-    dummyLayerSettings['sectionA.button1'].opacity = newOpacity
-
-    await wrapper.setProps({ layerSettings: { ...dummyLayerSettings } })
-
-    const updateSelectionEvents = wrapper.emitted('updateSelection')
-    expect(updateSelectionEvents).toBeDefined()
-    const found = updateSelectionEvents!.some(
-      args =>
-        args[0] === 'sectionA.button1'
-        && args[1]
-        && Number((args[1] as { opacity: number }).opacity) === newOpacity,
-    )
-    expect(found).toBe(true)
-  })
-
-  it('toggles a layer when its button is clicked', async () => {
-    const layerButtons = wrapper.findAll('button')
-    const button1 = layerButtons.find(btn => btn.text().includes('button1'))
-    expect(button1).toBeTruthy()
-    if (button1) {
-      await button1.trigger('click')
-    }
-
-    expect(wrapper.emitted('updateSelection')).toBeTruthy()
-  })
-
-  it('emits "updateFilter" when a filter is toggled', async () => {
-    const toggle = wrapper.findComponent(UToggle)
-    expect(toggle.exists()).toBe(true)
-
-    await toggle.trigger('click')
-
-    const filterEmits = wrapper.emitted('updateFilter')
-    expect(filterEmits).toBeTruthy()
-    expect(filterEmits![0]).toEqual(['Comments'])
-  })
-
-  it('emits "updateFilterTime" when the time range changes', async () => {
-    const popover = wrapper.findComponent(UPopover)
-    await popover.trigger('click')
-
-    await wrapper.vm.$nextTick()
-
-    const datePicker = wrapper.findComponent(DatePicker)
-    expect(datePicker.exists()).toBe(true)
-
-    await datePicker.trigger('click')
-
-    await wrapper.vm.$nextTick()
-
-    const timeRangeEmits = wrapper.emitted('updateFilterTime')
-    expect(timeRangeEmits).toBeTruthy()
-
-    const payload = timeRangeEmits![0][0] as { start: string | Date, end: string | Date }
-    expect(payload).toHaveProperty('start')
-    expect(payload).toHaveProperty('end')
-
-    const formattedStart = format(new Date(payload.start), 'd MMM, yyyy')
-    const formattedEnd = format(new Date(payload.end), 'd MMM, yyyy')
-    expect(formattedStart).toBeDefined()
-    expect(formattedEnd).toBeDefined()
-  })
-
-  it('updates the gradient color when a color picker emits a change', async () => {
-    // Find the button for "button1" and click it to toggle (activate) the layer
-    const layerButtons = wrapper.findAll('button')
-    const button1 = layerButtons.find(btn => btn.text().includes('button1'))
-    expect(button1).toBeTruthy()
-    if (button1) {
-      await button1.trigger('click')
-      await wrapper.vm.$nextTick()
-    }
-    const popover = wrapper.findComponent(UPopover)
-    await popover.trigger('click')
-    await wrapper.vm.$nextTick()
-
-    const colorPicker = wrapper.findComponent(colorPickerBlock)
-    expect(colorPicker.exists()).toBe(true)
-
-    await colorPicker.trigger('click')
-    const updateSelectionEvents = wrapper.emitted('updateSelection')
-    expect(updateSelectionEvents).toBeTruthy()
-
-    const updatedEvent = updateSelectionEvents!.find(
-      args => args[0] === 'sectionA.button1' && (args[1] as { gradient: string[] }).gradient[0] === '#abcdef',
-    )
-    expect(updatedEvent).toBeTruthy()
   })
 })

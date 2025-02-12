@@ -2,9 +2,9 @@
 import { watch } from 'vue'
 import draggable from 'vuedraggable'
 import { type Duration, format } from 'date-fns'
-import { useFilters } from '../../composables/useFilters'
-import { useLayerSettings } from '../../composables/useLayerSettings'
-import { useTimeRange } from '../../composables/useTimeRange'
+import { useFilters } from '../../../composables/useFilters'
+import { useLayerSettings } from '../../../composables/useLayerSettings'
+import { useTimeRange } from '../../../composables/useTimeRange'
 import type { HeatMapLayerSettings } from './HeatMap.vue'
 
 const categories = defineModel<Record<string, string[]>>('categories', { required: true })
@@ -13,16 +13,12 @@ const layerSettings = defineModel<Record<string, HeatMapLayerSettings>>('layerSe
 const ranges = defineModel<{ label: string, duration: Duration }[]>('ranges', { required: true })
 const filterTime = defineModel<{ start: Date, end: Date }>('filterTime', { required: true })
 
-// ─────────────────────────────
-// 2. Layer State Management (Reusable Composable Logic)
-// ─────────────────────────────
 const { highlightedButtons, sortedSettings, toggleLayer, updateGradient } = useLayerSettings(layerSettings)
 const { toggleFilter } = useFilters(filters)
 const { selected, isRangeSelected, selectRange } = useTimeRange({ days: 14 })
 
 watch(layerSettings, () => {
   // updateSelection(layerSettings)
-  console.log(layerSettings.value)
 }, { deep: true, immediate: true })
 
 // ─────────────────────────────

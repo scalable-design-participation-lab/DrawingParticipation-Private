@@ -3,10 +3,10 @@ import { computed, reactive, watch } from "vue";
 import { useAllFeatureStore } from "../../../../base/app/stores/all-features";
 import GeoJSON from "ol/format/GeoJSON";
 import GeneralizedBackgroundMap from "@base/components/GeneralizedBackgroundMap.vue";
-import HeatMap, { type HeatMapLayerSettings } from "@base/components/GeoSpatialLayer/HeatMap.vue";
+import HeatMap, { type HeatMapLayerSettings } from "@base/components/GeoSpatialLayer/HeatMap/HeatMap.vue";
 import type { Feature, MapType } from "@base/stores/types/store";
 import { useMapStore } from "@base/stores/map";
-import LayerSidebar from "@base/components/GeoSpatialLayer/LayerSidebar.vue"
+import LayerSidebar from "@base/components/GeoSpatialLayer/HeatMap/HeatMapController.vue"
 
 // 🌍 Map Store
 const mapStore = useMapStore();
