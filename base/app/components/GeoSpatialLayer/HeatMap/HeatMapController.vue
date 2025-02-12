@@ -15,15 +15,8 @@ const filterTime = defineModel<{ start: Date, end: Date }>('filterTime', { requi
 
 const { highlightedButtons, sortedSettings, toggleLayer, updateGradient } = useLayerSettings(layerSettings)
 const { toggleFilter } = useFilters(filters)
-const { selected, isRangeSelected, selectRange } = useTimeRange({ days: 14 })
+const { selected, isRangeSelected, selectRange } = useTimeRange({ years: 1 })
 
-watch(layerSettings, () => {
-  // updateSelection(layerSettings)
-}, { deep: true, immediate: true })
-
-// ─────────────────────────────
-// 3. Filters & Time Range Logic
-// ─────────────────────────────
 function handleFilter(key: string) {
   toggleFilter(key)
 }
@@ -111,12 +104,11 @@ function getLayerKey(section: string, layer: string): string {
               <UButton
                 v-if="highlightedButtons.has(button)"
                 size="2xs"
-                class="mx-1 my-1 rounded-full capitalize flex text-white align-middle dark:text-white"
+                class="mx-1 my-1 rounded-full capitalize flex text-white align-middle dark:text-white mt-1"
                 :style="{ backgroundColor: layerColor(section, button) }"
                 @click="toggleLayer(button, section)"
               >
                 {{ button }}
-                <UIcon name="i-tabler:minus-vertical" class="p-0" />
                 <!-- Popover for layer settings -->
                 <UPopover
                   :popper="{ placement: 'auto' }"
@@ -125,7 +117,7 @@ function getLayerKey(section: string, layer: string): string {
                 >
                   <UIcon
                     name="i-heroicons-chevron-down-20-solid"
-                    class="hover:cursor-pointer hover:opacity-80 mt-1"
+                    class="hover:cursor-pointer hover:opacity-80 h-2 text-bold"
                   />
                   <template #panel>
                     <div class="p-5 bg-white shadow-lg border dark:bg-black dark:border-gray-700 rounded-2xl">
@@ -223,7 +215,7 @@ function getLayerKey(section: string, layer: string): string {
               <UButton
                 v-else
                 size="2xs"
-                class="mx-1 my-1 rounded-full capitalize"
+                class="mx-1 my-1 mt-1 rounded-full capitalize"
                 :class="[
                   highlightedButtons.has(button)
                     ? 'bg-black text-white dark:bg-green-500 hover:bg-black dark:hover:bg-green-600'

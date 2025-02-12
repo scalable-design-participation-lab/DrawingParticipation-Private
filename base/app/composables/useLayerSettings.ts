@@ -29,7 +29,7 @@ export function useLayerSettings(layerSettings: Ref<Record<string, LayerSettings
     }
     else {
       highlightedButtons.add(button)
-      if (!layerSettings[key]) {
+      if (!layerSettings.value[key]) {
         layerSettings.value[key] = {
           weight: 1,
           blur: 20,
