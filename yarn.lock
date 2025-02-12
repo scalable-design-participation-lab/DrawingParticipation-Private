@@ -3522,7 +3522,6 @@ __metadata:
     vitest: "npm:^2.1.4"
     vue-chart-3: "npm:^3.1.8"
     vue-chartjs: "npm:^5.3.1"
-    vue-router: "npm:^4.4.5"
     vue-virtual-scroll-list: "npm:^2.3.5"
     vue3-openlayers: "npm:^11.2.1"
     vuedraggable: "npm:^4.1.0"

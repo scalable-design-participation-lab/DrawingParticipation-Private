@@ -21,7 +21,6 @@
 
 <script setup>
 import { computed, ref } from 'vue'
-import { useRouter } from 'vue-router'
 import SupportModal from './SupportModal.vue'
 
 const router = useRouter()
