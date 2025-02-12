@@ -48,7 +48,7 @@ exports[`gridController.vue > render correctly 1`] = `
   <input
     class="w-full my-2"
     max="1"
-    min="0.1"
+    min="0.2"
     step="0.1"
     type="range"
   />
