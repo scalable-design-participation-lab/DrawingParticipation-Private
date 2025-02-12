@@ -111,7 +111,6 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue'
 import SubWindow from './SubWindow.vue'
-import { useRouter } from 'vue-router'
 import ThankYouModal from './ThankYouModal.vue'
 
 import dislikeIcon from '@/assets/icons/dislike.svg'

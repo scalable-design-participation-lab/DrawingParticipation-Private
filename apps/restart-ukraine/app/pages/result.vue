@@ -27,7 +27,6 @@
 
 <script setup lang="ts">
 import {  ref, computed, watch } from 'vue'
-import { useRoute } from 'vue-router'
 import MapIntroModal from '../components/MapIntroModal.vue'
 import { useMapStore } from '@base/stores/map'
 

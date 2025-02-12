@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import { click } from 'ol/events/condition'
-import { useRoute } from 'vue-router'
 import { useFeatureStore } from '../../stores/features'
 import { useSideBarStore } from '../../stores/sidebar'
 
