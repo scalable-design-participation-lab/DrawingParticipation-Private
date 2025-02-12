@@ -36,9 +36,13 @@ const rightItems = ref([
 const { featuresByCategory } = useAllFeatureStore();
 const geoJson = new GeoJSON();
 
-// 🌍 Reactive State=
-const filterTime = useState<{start: Date, end: Date}>("filterTime", () => ({ start: new Date(), end: new Date() }));
-
+// 🌍 Reactive State
+const filterTime = useState<{ start: Date; end: Date }>("filterTime", () => {
+  const end = new Date();
+  const start = new Date();
+  start.setFullYear(end.getFullYear() - 1); // Subtract 1 year from end
+  return { start, end };
+});
 // 📌 Function to Convert Features into OpenLayers GeoJSON Format
 const getGeoJsonFeature = (featureKey: string) => {
   let features = featuresByCategory[featureKey] ?? [];
