@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, reactive, watch } from "vue";
+import { computed, reactive } from "vue";
 import { useAllFeatureStore } from "../../../../base/app/stores/all-features";
 import GeoJSON from "ol/format/GeoJSON";
 import GeneralizedBackgroundMap from "@base/components/GeneralizedBackgroundMap.vue";
@@ -40,7 +40,7 @@ const geoJson = new GeoJSON();
 const filterTime = useState<{ start: Date; end: Date }>("filterTime", () => {
   const end = new Date();
   const start = new Date();
-  start.setFullYear(end.getFullYear() - 1); // Subtract 1 year from end
+  start.setFullYear(end.getFullYear() - 1); 
   return { start, end };
 });
 // 📌 Function to Convert Features into OpenLayers GeoJSON Format
