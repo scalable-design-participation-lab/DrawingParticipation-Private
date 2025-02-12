@@ -56,7 +56,6 @@
 
 <script setup lang="ts">
 import { ref, computed } from 'vue'
-import { useRoute } from 'vue-router'
 import CommentModal from './CommentModal.vue'
 import CommentDisplay from './CommentDisplay.vue'
 import { useFeatureStore } from '@base/stores/features'

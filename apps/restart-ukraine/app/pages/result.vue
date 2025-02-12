@@ -26,17 +26,11 @@
 
 
 <script setup lang="ts">
-import { onMounted, ref, computed, watch } from 'vue'
-import { useRoute } from 'vue-router'
+import {  ref, computed, watch } from 'vue'
 import MapIntroModal from '../components/MapIntroModal.vue'
-import { useFirestore } from 'vuefire'
-import { collection, getDocs } from 'firebase/firestore'
 import { useMapStore } from '@base/stores/map'
-import { useAllFeatureStore } from '@base/stores/all-features'
 
-const featureStore = useAllFeatureStore()
 const mapStore = useMapStore()
-const db = useFirestore()
 const route = useRoute()
 const showIntroModal = ref(false)
 
@@ -80,127 +74,6 @@ const rightItems = ref([
     },
   },
 ])
-
-onMounted(async () => {
-  if (featureStore.allFeatures.length != 0) return
-  const projectsCollection = collection(db, 'projects')
-  const querySnapshot = await getDocs(projectsCollection)
-
-  for (const doc of querySnapshot.docs) {
-    const projectData = doc.data()
-
-    // Process space data including prohibit points
-    if (Array.isArray(projectData.space.prohibit)) {
-      projectData.space.prohibit.forEach((point) => {
-        featureStore.addFeature({
-          type: 'Point',
-          coordinates: [point.lon, point.lat],
-          isProhibit: true,
-          comment: point.comment,
-          name: projectData.name,
-          timestamp: point.timestamp,
-        })
-      })
-    }
-
-    // Process other space data (excluding prohibit)
-    Object.keys(projectData.space).forEach((frequency) => {
-      if (
-        Array.isArray(projectData.space[frequency]) &&
-        frequency !== 'prohibit' &&
-        frequency !== 'recreational' &&
-        frequency !== 'restricted'
-      ) {
-        projectData.space[frequency].forEach((point) => {
-          featureStore.addFeature({
-            type: 'Point',
-            coordinates: [point.lon, point.lat],
-            frequency: frequency,
-            comment: point.comment,
-            name: projectData.name,
-            timestamp: point.timestamp,
-          })
-        })
-      }
-    })
-
-    // Process space.recreational data (Polygons)
-    if (Array.isArray(projectData.space.recreational)) {
-      projectData.space.recreational.forEach((polygon) => {
-        featureStore.addFeature({
-          type: 'Polygon',
-          coordinates: JSON.parse(polygon.geometry),
-          comment: polygon.comment,
-          name: projectData.name,
-          timestamp: polygon.timestamp,
-        })
-      })
-    }
-
-    // Process space.restricted data (LineStrings)
-    if (Array.isArray(projectData.space.restricted)) {
-      projectData.space.restricted.forEach((lineString) => {
-        featureStore.addFeature({
-          type: 'LineString',
-          coordinates: JSON.parse(lineString.geometry),
-          comment: lineString.comment,
-          name: projectData.name,
-          timestamp: lineString.timestamp,
-        })
-      })
-    }
-
-    // Process belonging data
-    Object.keys(projectData.belonging).forEach((key) => {
-      if (Array.isArray(projectData.belonging[key])) {
-        projectData.belonging[key].forEach((point) => {
-          featureStore.addFeature({
-            type: 'Point',
-            coordinates: [point.lon, point.lat],
-            iconName: key,
-            comment: point.comment,
-            name: projectData.name,
-            timestamp: point.timestamp,
-          })
-        })
-      }
-    })
-
-    // Process safety data
-    Object.keys(projectData.safety).forEach((key) => {
-      if (Array.isArray(projectData.safety[key])) {
-        projectData.safety[key].forEach((point) => {
-          featureStore.addFeature({
-            type: 'Point',
-            coordinates: [point.lon, point.lat],
-            iconName: key,
-            comment: point.comment,
-            name: projectData.name,
-            timestamp: point.timestamp,
-          })
-        })
-      }
-    })
-
-    // Process environment data
-    Object.keys(projectData.environment).forEach((key) => {
-      if (Array.isArray(projectData.environment[key])) {
-        projectData.environment[key].forEach((point) => {
-          featureStore.addFeature({
-            type: 'Point',
-            coordinates: [point.lon, point.lat],
-            iconName: key,
-            comment: point.comment,
-            name: projectData.name,
-            timestamp: point.timestamp,
-          })
-        })
-      }
-    })
-  }
-
-  console.log('All features have been loaded')
-})
 
 const showCommentDisplay = ref(false)
 const selectedFeature = ref(null)
