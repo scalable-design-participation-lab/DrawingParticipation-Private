@@ -6,8 +6,7 @@ import GeneralizedBackgroundMap from "@base/components/GeneralizedBackgroundMap.
 import HeatMap, { type HeatMapLayerSettings } from "@base/components/GeoSpatialLayer/HeatMap/HeatMap.vue";
 import type { Feature, MapType } from "@base/stores/types/store";
 import { useMapStore } from "@base/stores/map";
-import LayerSidebar from "@base/components/GeoSpatialLayer/HeatMap/HeatMapController.vue"
-
+import HeatMapController from "@base/components/GeoSpatialLayer/HeatMap/HeatMapController.vue";
 // 🌍 Map Store
 const mapStore = useMapStore();
 const { setMapType } = mapStore;
@@ -107,7 +106,7 @@ const ranges: { label: string; duration: Duration }[] = [
   />
 
   <!-- 📌 SIDEBAR -->
-  <LayerSidebar
+  <HeatMapController
    :ranges="ranges"
    v-model:layerSettings="layerSettings"
    v-model:filters="filters"
