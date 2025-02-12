@@ -38,7 +38,7 @@ const shape = defineModel<GridType>('shape', { required: true })
     <label class="block text-sm font-medium">Cell side: {{ cellSide }}</label>
     <input
       v-model="cellSide"
-      type="range" min="0.1" max="1"
+      type="range" min="0.2" max="1"
       step="0.1"
       class="w-full my-2"
     >
