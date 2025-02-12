@@ -53,7 +53,7 @@ describe('gridController.vue', () => {
   })
 
   it('updates cell side correctly', async () => {
-    const slider = wrapper.find('input[type="range"][min="0.1"][max="1"]')
+    const slider = wrapper.find('input[type="range"][min="0.2"][max="1"]')
     expect(slider.exists()).toBe(true)
 
     await slider.setValue('0.8')
