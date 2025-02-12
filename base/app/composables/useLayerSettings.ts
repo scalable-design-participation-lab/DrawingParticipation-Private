@@ -14,8 +14,7 @@ export interface LayerSettings {
   zIndex: number
 }
 
-export function useLayerSettings(initialSettings: Record<string, LayerSettings>) {
-  const layerSettings = reactive<Record<string, LayerSettings>>({ ...initialSettings })
+export function useLayerSettings(layerSettings: Ref<Record<string, LayerSettings>>) {
   const highlightedButtons = reactive(new Set<string>())
   const currentZIndex = ref(1)
 
@@ -23,15 +22,15 @@ export function useLayerSettings(initialSettings: Record<string, LayerSettings>)
     const key = `${section}.${button}`
     if (highlightedButtons.has(button)) {
       highlightedButtons.delete(button)
-      if (layerSettings[key]) {
-        layerSettings[key].visible = false
-        layerSettings[key].zIndex = 0
+      if (layerSettings.value[key]) {
+        layerSettings.value[key].visible = false
+        layerSettings.value[key].zIndex = 0
       }
     }
     else {
       highlightedButtons.add(button)
       if (!layerSettings[key]) {
-        layerSettings[key] = {
+        layerSettings.value[key] = {
           weight: 1,
           blur: 20,
           radius: 20,
@@ -49,8 +48,8 @@ export function useLayerSettings(initialSettings: Record<string, LayerSettings>)
         currentZIndex.value += 1
       }
       else {
-        layerSettings[key].visible = true
-        layerSettings[key].zIndex = currentZIndex.value
+        layerSettings.value[key].visible = true
+        layerSettings.value[key].zIndex = currentZIndex.value
       }
     }
   }
@@ -58,7 +57,7 @@ export function useLayerSettings(initialSettings: Record<string, LayerSettings>)
   // Sort and update layer order
   const sortedSettings = computed({
     get: () =>
-      Object.entries(layerSettings)
+      Object.entries(layerSettings.value)
         .filter(([_, settings]) => settings.visible)
         .map(([key, settings]) => {
           const [section, button] = key.split('.')
@@ -67,22 +66,21 @@ export function useLayerSettings(initialSettings: Record<string, LayerSettings>)
         .sort((a, b) => b.zIndex - a.zIndex),
     set: (newOrder) => {
       newOrder.forEach((item, index) => {
-        layerSettings[`${item.section}.${item.key}`].zIndex = newOrder.length - index
+        layerSettings.value[`${item.section}.${item.key}`].zIndex = newOrder.length - index
       })
     },
   })
 
   function updateGradient(section: string, button: string, index: number, color: string) {
     const key = `${section}.${button}`
-    if (layerSettings[key]) {
+    if (layerSettings.value[key]) {
       // Create a new array to trigger reactivity
-      layerSettings[key].gradient = [...layerSettings[key].gradient]
-      layerSettings[key].gradient[index] = color
+      layerSettings.value[key].gradient = [...layerSettings.value[key].gradient]
+      layerSettings.value[key].gradient[index] = color
     }
   }
 
   return {
-    layerSettings,
     highlightedButtons,
     sortedSettings,
     toggleLayer,

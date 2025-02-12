@@ -37,8 +37,8 @@ const rightItems = ref([
 const { featuresByCategory } = useAllFeatureStore();
 const geoJson = new GeoJSON();
 
-// 🌍 Reactive State
-const filterTime = useState<{start: Date, end: Date}>("isFilterTime", () => ({ start: new Date(), end: new Date() }));
+// 🌍 Reactive State=
+const filterTime = useState<{start: Date, end: Date}>("filterTime", () => ({ start: new Date(), end: new Date() }));
 
 // 📌 Function to Convert Features into OpenLayers GeoJSON Format
 const getGeoJsonFeature = (featureKey: string) => {
@@ -69,19 +69,6 @@ const features = computed(() =>
 );
 
 
-// 🎯 Handle Sidebar Updates (Selection + Layer Settings)
-const handleUpdateSelection = (key: string, settings: object) => {
-  layerSettings[key] = { ...layerSettings[key], ...settings};
-};
-
-// 🎯 Handle Comment Filter Toggle
-const handleUpdateFilter = (key: string) => {
-  filters[key] = !filters[key]
-};
-
-const handleUpdateFilterTime = (timeRange: {start: Date, end: Date}) => { 
-  filterTime.value = timeRange
-}
 // 📌 Compute Categories and Sections
 const categories = computed(() => {
   const grouped: Record<string, string[]> = {};
@@ -105,6 +92,7 @@ const ranges: { label: string; duration: Duration }[] = [
   { label: 'Last year', duration: { years: 1 } }
 ];
 
+
 </script>
 
 <template>
@@ -121,12 +109,11 @@ const ranges: { label: string; duration: Duration }[] = [
   <!-- 📌 SIDEBAR -->
   <LayerSidebar
    :ranges="ranges"
-   :layerSettings="layerSettings"
-   :filters="filters"
-   :categories="categories"
-   @update-selection="handleUpdateSelection"
-   @update-filter="handleUpdateFilter"
-   @update-filter-time="handleUpdateFilterTime" />
+   v-model:layerSettings="layerSettings"
+   v-model:filters="filters"
+   v-model:categories="categories"
+   v-model:filter-time="filterTime"
+   />
 
   <!-- 📌 MAP & LAYERS -->
   <GeneralizedBackgroundMap ref="baseMap">

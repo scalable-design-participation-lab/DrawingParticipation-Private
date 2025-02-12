@@ -2,48 +2,27 @@
 import { watch } from 'vue'
 import draggable from 'vuedraggable'
 import { type Duration, format } from 'date-fns'
-import { useLayerSidebarEmits } from '../../composables/useLayerSidebarEmits'
 import { useFilters } from '../../composables/useFilters'
 import { useLayerSettings } from '../../composables/useLayerSettings'
 import { useTimeRange } from '../../composables/useTimeRange'
 import type { HeatMapLayerSettings } from './HeatMap.vue'
 
-// ─────────────────────────────
-// 1. Define types & props
-// ─────────────────────────────
-
-// Define the emits interface
-// Client are able to sync with child component through these events
-// If not implement, replace with stub, the component will still function
-export interface LayerSidebarEmits {
-  (e: 'updateSelection', key: string, settings: HeatMapLayerSettings): void
-  (e: 'updateFilter', key: string): void
-  (e: 'updateFilterTime', timeRange: { start: Date, end: Date }): void
-}
-
-// To allow reusing this sidebar for any layer type,
-// pass in the available categories via props.
-const props = defineProps<{
-  categories: Record<string, string[]> // e.g. { sectionA: ['button1', 'button2'], ... }
-  filters: Record<string, boolean> // e.g { Comments: false }
-  layerSettings: Record<string, HeatMapLayerSettings> // e.g {"Trash": {...}}
-  ranges: { label: string, duration: Duration }[] // e.g {label: "", ...}
-}>()
-
-// Use defineEmits with the interface
-const emit = defineEmits<LayerSidebarEmits>()
+const categories = defineModel<Record<string, string[]>>('categories', { required: true })
+const filters = defineModel<Record<string, boolean>>('filters', { required: true })
+const layerSettings = defineModel<Record<string, HeatMapLayerSettings>>('layerSettings', { required: true })
+const ranges = defineModel<{ label: string, duration: Duration }[]>('ranges', { required: true })
+const filterTime = defineModel<{ start: Date, end: Date }>('filterTime', { required: true })
 
 // ─────────────────────────────
 // 2. Layer State Management (Reusable Composable Logic)
 // ─────────────────────────────
-const { layerSettings, highlightedButtons, sortedSettings, toggleLayer, updateGradient } = useLayerSettings(props.layerSettings)
-const { filters, toggleFilter } = useFilters(props.filters)
+const { highlightedButtons, sortedSettings, toggleLayer, updateGradient } = useLayerSettings(layerSettings)
+const { toggleFilter } = useFilters(filters)
 const { selected, isRangeSelected, selectRange } = useTimeRange({ days: 14 })
 
-const { updateSelection, updateFilter, updateFilterTime } = useLayerSidebarEmits(emit)
-
 watch(layerSettings, () => {
-  updateSelection(layerSettings)
+  // updateSelection(layerSettings)
+  console.log(layerSettings.value)
 }, { deep: true, immediate: true })
 
 // ─────────────────────────────
@@ -51,16 +30,15 @@ watch(layerSettings, () => {
 // ─────────────────────────────
 function handleFilter(key: string) {
   toggleFilter(key)
-  updateFilter(key)
 }
 
 watch(selected, (newRange) => {
-  updateFilterTime(newRange)
+  filterTime.value = newRange
 })
 
 // Helper to get the layer color
 function layerColor(section: string, layer: string) {
-  return layerSettings[getLayerKey(section, layer)]?.gradient?.[4] || 'transparent'
+  return layerSettings.value[getLayerKey(section, layer)]?.gradient?.[4] || 'transparent'
 }
 // Helper: Build a unique key for a layer
 function getLayerKey(section: string, layer: string): string {
