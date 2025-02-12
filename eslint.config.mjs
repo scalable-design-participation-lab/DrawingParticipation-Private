@@ -1,8 +1,6 @@
 // @ts-check
 import antfu from '@antfu/eslint-config'
 
-console.log('root config')
-
 export default antfu(
   {
     formatters: true,

@@ -1,7 +1,6 @@
 import type { VueWrapper } from '@vue/test-utils'
 import { config, mount } from '@vue/test-utils'
 import { describe, expect, it } from 'vitest'
-import { format } from 'date-fns'
 import LayerSidebar from '@components/GeoSpatialLayer/HeatMap/HeatMapController.vue'
 
 // Dummy data for props
@@ -127,6 +126,7 @@ describe('layerSidebar.vue', () => {
         filters: dummyFilters,
         layerSettings: dummyLayerSettings,
         ranges: dummyRanges,
+        filterTime: { start: new Date(), end: new Date() },
       },
       global: {
         components: {
