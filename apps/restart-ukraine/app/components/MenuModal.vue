@@ -21,7 +21,6 @@
 
 <script setup>
 import { computed, ref } from 'vue'
-import { useRouter } from 'vue-router'
 import SupportModal from './SupportModal.vue'
 
 const router = useRouter()
@@ -58,6 +57,10 @@ const menuItems = [
     label: 'Результати',
     action: 'results',
   },
+  {
+    label: 'Heat Map',
+    action: 'heatmap',
+  }
 ]
 
 const closeModal = () => {
@@ -77,6 +80,9 @@ const handleItemClick = (item) => {
       break
     case 'help':
       showSupportModal.value = true
+      break
+    case 'heatmap':
+      router.push('/heatmap')
       break
     case 'results':
       router.push('/result')

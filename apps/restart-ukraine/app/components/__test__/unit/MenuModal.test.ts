@@ -1,7 +1,6 @@
 import MenuModal from "@components/MenuModal.vue";
 import { config, mount, VueWrapper } from "@vue/test-utils";
 import { describe, beforeEach, vi, expect, it } from "vitest";
-import { useRouter } from "vue-router";
 const pushMock = vi.fn()
 
 vi.mock("vue-router", () => ({
