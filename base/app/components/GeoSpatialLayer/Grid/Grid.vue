@@ -4,6 +4,8 @@ import * as turf from '@turf/turf'
 import GeoJSON from 'ol/format/GeoJSON'
 import { Fill, Stroke, Style } from 'ol/style'
 import { toLonLat } from 'ol/proj'
+import type { Geometry, Point } from 'ol/geom'
+import type Feature from 'ol/Feature'
 
 /**
  * Grid Type
@@ -30,10 +32,10 @@ const props = withDefaults(defineProps<GridLayerProps>(), {
  */
 interface GridLayerProps {
   /**
-   * An array of point features used to compute the hex grid.
+   * An array of point features used to compute the grid.
    * Each point contains geographic coordinates in the format [longitude, latitude].
    */
-  points: PointFeature[]
+  features: Feature<Geometry>[]
 
   /**
    * The bounding box defining the spatial extent of the hex grid.
@@ -102,13 +104,6 @@ interface GridLayerProps {
   width?: number
 }
 
-/**
- * Point Feature Interface
- */
-export interface PointFeature {
-  coordinates: [number, number]
-}
-
 const layerId = computed(() => props.layerId)
 const geoJson = new GeoJSON()
 
@@ -165,14 +160,20 @@ function assignGridColors(grid: any) {
 
 /**
  * Computes grid features based on input points.
+ * Ensure inputs are in the provided shape
+ * Ensure colors are assigned to grid cells based on point density.
+ * @returns An array of OpenLayers features representing the grid with colors density.
  */
-const computedHexFeatures = computed(() => {
-  if (!props.points.length)
+const computedGridFeatures = computed(() => {
+  if (!props.features.length)
     return []
 
   const grid = createGrid()
   const dataPoints = turf.featureCollection(
-    props.points.map(({ coordinates }) => turf.point(toLonLat(coordinates, 'EPSG:3857'))),
+    props.features.map((feature) => {
+      const coordinates = (feature.getGeometry() as Point).getCoordinates()
+      return turf.point(toLonLat(coordinates))
+    }),
   )
 
   countPointsInGrid(grid, dataPoints)
@@ -197,7 +198,7 @@ function hexStyleFunction(feature: any) {
 
 <template>
   <ol-vector-layer :id="layerId" :z-index="zIndex" :visible="visible">
-    <ol-source-vector :features="computedHexFeatures" />
+    <ol-source-vector :features="computedGridFeatures" />
     <ol-style :override-style-function="hexStyleFunction" />
   </ol-vector-layer>
 </template>
