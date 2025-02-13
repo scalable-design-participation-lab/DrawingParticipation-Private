@@ -22,6 +22,7 @@ const props = withDefaults(defineProps<GridLayerProps>(), {
   shape: 'Hexagon',
   zIndex: 0,
   visible: false,
+  width: 1,
 })
 
 /**
@@ -93,6 +94,12 @@ interface GridLayerProps {
    * @default false
    */
   visible?: boolean
+  /**
+   * The width of the grid cell border.
+   *
+   * @default 1
+   */
+  width?: number
 }
 
 /**
@@ -183,7 +190,7 @@ const computedHexFeatures = computed(() => {
 function hexStyleFunction(feature: any) {
   return new Style({
     fill: new Fill({ color: feature.get('fillColor') || 'hsla(0, 0%, 0%, 0)' }),
-    stroke: new Stroke({ color: '#ffffff', width: 0.5 }),
+    stroke: new Stroke({ color: '#ffffff', width: props.width }),
   })
 }
 </script>

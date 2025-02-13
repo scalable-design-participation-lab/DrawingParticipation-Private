@@ -5,6 +5,7 @@ const visible = defineModel<boolean>('visible', { required: true })
 const baseHue = defineModel<number>('baseHue', { required: true })
 const cellSide = defineModel<number>('cellSide', { required: true })
 const shape = defineModel<GridType>('shape', { required: true })
+const width = defineModel<number>('width', { required: true })
 </script>
 
 <template>
@@ -24,6 +25,14 @@ const shape = defineModel<GridType>('shape', { required: true })
         off-icon="i-heroicons-x-mark-20-solid"
       />
     </div>
+    <!-- Width Slider -->
+    <label class="block text-sm font-medium">Line Width: {{ width }}</label>
+    <input
+      v-model="width"
+      type="range" min="0.1" max="5"
+      step="0.1"
+      class="w-full my-2"
+    >
 
     <!-- Base Hue Slider -->
     <label class="block text-sm font-medium">Base Hue: {{ baseHue }}</label>
