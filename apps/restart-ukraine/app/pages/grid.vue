@@ -8,6 +8,7 @@ const shape = ref<GridType>('Hexagon');
 const baseHue = ref<number>(0);
 const cellSide = ref<number>(0.2);
 const visible = ref<boolean>(true); 
+const width = ref<number>(1);
 
 </script>
 <template>
@@ -15,7 +16,8 @@ const visible = ref<boolean>(true);
    v-model:baseHue="baseHue"
    v-model:cellSide="cellSide"
    v-model:visible="visible"
-   v-model:shape="shape" /> 
+   v-model:shape="shape"
+   v-model:width="width" /> 
 
   <GeneralizedBackgroundMap>
     <template #layers>
@@ -26,7 +28,8 @@ const visible = ref<boolean>(true);
       layerId="hexLayer"
       :baseHue="baseHue" 
       :shape="shape"
-      :visible="visible"/>
+      :visible="visible"
+      :width="width"/>
     </template>
   </GeneralizedBackgroundMap>
 </template>
