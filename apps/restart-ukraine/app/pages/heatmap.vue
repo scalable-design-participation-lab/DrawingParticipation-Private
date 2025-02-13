@@ -1,13 +1,12 @@
 <script setup lang="ts">
-import { computed, reactive, watch } from "vue";
+import { computed, reactive } from "vue";
 import { useAllFeatureStore } from "../../../../base/app/stores/all-features";
 import GeoJSON from "ol/format/GeoJSON";
 import GeneralizedBackgroundMap from "@base/components/GeneralizedBackgroundMap.vue";
-import HeatMap, { type HeatMapLayerSettings } from "@base/components/GeoSpatialLayer/HeatMap.vue";
+import HeatMap, { type HeatMapLayerSettings } from "@base/components/GeoSpatialLayer/HeatMap/HeatMap.vue";
 import type { Feature, MapType } from "@base/stores/types/store";
 import { useMapStore } from "@base/stores/map";
-import LayerSidebar from "@base/components/GeoSpatialLayer/LayerSidebar.vue"
-
+import HeatMapController from "@base/components/GeoSpatialLayer/HeatMap/HeatMapController.vue";
 // 🌍 Map Store
 const mapStore = useMapStore();
 const { setMapType } = mapStore;
@@ -38,8 +37,12 @@ const { featuresByCategory } = useAllFeatureStore();
 const geoJson = new GeoJSON();
 
 // 🌍 Reactive State
-const filterTime = useState<{start: Date, end: Date}>("isFilterTime", () => ({ start: new Date(), end: new Date() }));
-
+const filterTime = useState<{ start: Date; end: Date }>("filterTime", () => {
+  const end = new Date();
+  const start = new Date();
+  start.setFullYear(end.getFullYear() - 1); 
+  return { start, end };
+});
 // 📌 Function to Convert Features into OpenLayers GeoJSON Format
 const getGeoJsonFeature = (featureKey: string) => {
   let features = featuresByCategory[featureKey] ?? [];
@@ -69,19 +72,6 @@ const features = computed(() =>
 );
 
 
-// 🎯 Handle Sidebar Updates (Selection + Layer Settings)
-const handleUpdateSelection = (key: string, settings: object) => {
-  layerSettings[key] = { ...layerSettings[key], ...settings};
-};
-
-// 🎯 Handle Comment Filter Toggle
-const handleUpdateFilter = (key: string) => {
-  filters[key] = !filters[key]
-};
-
-const handleUpdateFilterTime = (timeRange: {start: Date, end: Date}) => { 
-  filterTime.value = timeRange
-}
 // 📌 Compute Categories and Sections
 const categories = computed(() => {
   const grouped: Record<string, string[]> = {};
@@ -105,6 +95,7 @@ const ranges: { label: string; duration: Duration }[] = [
   { label: 'Last year', duration: { years: 1 } }
 ];
 
+
 </script>
 
 <template>
@@ -119,14 +110,13 @@ const ranges: { label: string; duration: Duration }[] = [
   />
 
   <!-- 📌 SIDEBAR -->
-  <LayerSidebar
+  <HeatMapController
    :ranges="ranges"
-   :layerSettings="layerSettings"
-   :filters="filters"
-   :categories="categories"
-   @update-selection="handleUpdateSelection"
-   @update-filter="handleUpdateFilter"
-   @update-filter-time="handleUpdateFilterTime" />
+   v-model:layerSettings="layerSettings"
+   v-model:filters="filters"
+   v-model:categories="categories"
+   v-model:filter-time="filterTime"
+   />
 
   <!-- 📌 MAP & LAYERS -->
   <GeneralizedBackgroundMap ref="baseMap">

@@ -1,4 +1,4 @@
-import HeatMap from '@components/GeoSpatialLayer/HeatMap.vue'
+import HeatMap from '@components/GeoSpatialLayer/HeatMap/HeatMap.vue'
 import { type VueWrapper, mount } from '@vue/test-utils'
 import GeoJSON from 'ol/format/GeoJSON'
 
