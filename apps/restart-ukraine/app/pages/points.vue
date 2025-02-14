@@ -3,10 +3,9 @@ import { computed } from 'vue';
 import * as turf from '@turf/turf';
 import GeoJSON from 'ol/format/GeoJSON';
 import Points from '@base/components/GeoSpatialLayer/Points/Points.vue';
-import smileIcon from '@/assets/icons/smile.svg';
-import { Icon } from 'ol/style';
 import { useAllFeatureStore } from '@base/stores/all-features';
 import { toLonLat } from 'ol/proj';
+import PointsController from '@base/components/GeoSpatialLayer/Points/PointsController.vue';
 
 const { featuresByType } = useAllFeatureStore();
 
@@ -30,20 +29,35 @@ const features = computed(() => {
     featureProjection: 'EPSG:3857',
   });
 });
-
-
-// Define Icon Style
-const icon = new Icon({
-  src: smileIcon,
-  scale: 1,
-  anchor: [0.5, 0.5],
-});
+const visible = ref(true);
+const zIndex = ref(1);
+const shapePoints = ref(3);
+const shapeRadius = ref(10);
+const shapeOpacity = ref(1);
+const shapeFillColor = ref('#ff0000');
 </script>
 
 <template>
+
+  <PointsController
+    v-model:visible="visible"
+    v-model:zIndex="zIndex"
+    v-model:shapePoints="shapePoints"
+    v-model:shapeRadius="shapeRadius"
+    v-model:shapeOpacity="shapeOpacity"
+    v-model:shapeFillColor="shapeFillColor"/>
+
   <GeneralizedBackgroundMap ref="baseMap" :min-zoom="0">
     <template #layers>
-      <Points :features="features" :visible="true" :icon="icon" />
+      <Points
+        :features="features" 
+        :visible="visible" 
+        :z-index="zIndex" 
+        :shapePoints="shapePoints" 
+        :shapeRadius="shapeRadius" 
+        :shapeOpacity="shapeOpacity" 
+        :shapeFillColor="shapeFillColor"
+      />
     </template>
   </GeneralizedBackgroundMap>
 </template>

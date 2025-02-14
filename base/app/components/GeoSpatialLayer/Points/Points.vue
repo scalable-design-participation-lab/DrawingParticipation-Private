@@ -1,54 +1,15 @@
 <script setup lang="ts">
+import { computed, ref, watch } from 'vue'
 import type Feature from 'ol/Feature'
 import type { Geometry } from 'ol/geom'
 
 export interface PointsLayerProps {
-  /**
-   * An array of OpenLayers `Feature` objects that define the data points to be visualized in the heatmap.
-   * Projection needs to be in EPSG:3857 becayse OpenLayers
-   * @default []
-   *
-   */
   features?: Feature<Geometry>[]
-
-  /**
-   * Visibility of the points layer
-   * @default false
-   */
   visible?: boolean
-
-  /**
-   * Z index of the points layers
-   * @default 1
-   */
   zIndex?: number
-
-  /**
-   * shape points for webgl style
-   * @default 10
-   *
-   */
   shapePoints?: number
-
-  /**
-   * shape radius for webgl style
-   * @default 10
-   *
-   */
   shapeRadius?: number
-
-  /**
-   * shape opacity for webgl style
-   * @default 1
-   *
-   */
   shapeOpacity?: number
-
-  /**
-   * shape fill color for webgl style
-   * @default 'red'
-   *
-   */
   shapeFillColor?: string
 }
 
@@ -62,16 +23,23 @@ const props = withDefaults(defineProps<PointsLayerProps>(), {
   shapeFillColor: 'red',
 })
 
-const webglPointStyle = {
+// Create a computed style object
+const webglPointStyle = computed(() => ({
   'shape-points': props.shapePoints,
   'shape-radius': props.shapeRadius,
   'shape-opacity': props.shapeOpacity,
   'shape-fill-color': props.shapeFillColor,
-}
+}))
 </script>
 
 <template>
-  <ol-webgl-vector-layer :styles="webglPointStyle" :z-index="zIndex" :visible="visible">
+  <!-- Force a reactivity using a key -->
+  <ol-webgl-vector-layer
+    :key="JSON.stringify(webglPointStyle)"
+    :styles="webglPointStyle"
+    :z-index="props.zIndex"
+    :visible="props.visible"
+  >
     <ol-source-vector :features="props.features" />
   </ol-webgl-vector-layer>
 </template>
