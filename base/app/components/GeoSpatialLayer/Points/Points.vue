@@ -1,15 +1,50 @@
 <script setup lang="ts">
-import { computed, ref, watch } from 'vue'
+import { computed } from 'vue'
 import type Feature from 'ol/Feature'
 import type { Geometry } from 'ol/geom'
 
 export interface PointsLayerProps {
+  /**
+   * An array of OpenLayers `Feature` objects that define the data points to be visualized in the heatmap.
+   * Projection needs to be in EPSG:3857 because OpenLayers
+   * @default []
+   */
   features?: Feature<Geometry>[]
+
+  /**
+   * Visibility of the points layer
+   * @default false
+   */
   visible?: boolean
+
+  /**
+   * Z index of the points layers
+   * @default 1
+   */
   zIndex?: number
+
+  /**
+   * shape points for webgl style
+   * @default 3
+   */
   shapePoints?: number
+
+  /**
+   * shape radius for webgl style
+   * @default 10
+   */
   shapeRadius?: number
+
+  /**
+   * shape opacity for webgl style
+   * @default 1
+   */
   shapeOpacity?: number
+
+  /**
+   * shape fill color for webgl style
+   * @default 'red'
+   */
   shapeFillColor?: string
 }
 
