@@ -1,9 +1,6 @@
 <script setup lang="ts">
 import type Feature from 'ol/Feature'
 import type { Geometry } from 'ol/geom'
-import Style from 'ol/style/Style'
-import Icon from 'ol/style/Icon'
-import redIcon from '@/assets/icons/red.svg'
 
 export interface PointsLayerProps {
   /**
@@ -27,35 +24,54 @@ export interface PointsLayerProps {
   zIndex?: number
 
   /**
-   * Style of the points layers
-   * @default new Icon({ src: redIcon, scale: 1, anchor: [0.5, 0.5],})
+   * shape points for webgl style
+   * @default 10
+   *
    */
-  icon?: Icon
+  shapePoints?: number
+
+  /**
+   * shape radius for webgl style
+   * @default 10
+   *
+   */
+  shapeRadius?: number
+
+  /**
+   * shape opacity for webgl style
+   * @default 1
+   *
+   */
+  shapeOpacity?: number
+
+  /**
+   * shape fill color for webgl style
+   * @default 'red'
+   *
+   */
+  shapeFillColor?: string
 }
 
 const props = withDefaults(defineProps<PointsLayerProps>(), {
   features: () => [],
   visible: false,
   zIndex: 1,
-  icon: () => new Icon({
-    src: redIcon,
-    scale: 1,
-    anchor: [0.5, 0.5],
-  }),
+  shapePoints: 3,
+  shapeRadius: 10,
+  shapeOpacity: 1,
+  shapeFillColor: 'red',
 })
 
-const styledFeatures = computed(() => {
-  return props.features.map((feature) => {
-    feature.setStyle(new Style({
-      image: props.icon,
-    }))
-    return feature
-  })
-})
+const webglPointStyle = {
+  'shape-points': props.shapePoints,
+  'shape-radius': props.shapeRadius,
+  'shape-opacity': props.shapeOpacity,
+  'shape-fill-color': props.shapeFillColor,
+}
 </script>
 
 <template>
-  <ol-vector-layer :z-index="zIndex" :visible="visible">
-    <ol-source-vector :features="styledFeatures" />
-  </ol-vector-layer>
+  <ol-webgl-vector-layer :styles="webglPointStyle" :z-index="zIndex" :visible="visible">
+    <ol-source-vector :features="props.features" />
+  </ol-webgl-vector-layer>
 </template>
