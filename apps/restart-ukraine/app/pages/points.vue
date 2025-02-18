@@ -47,7 +47,7 @@ const shapeFillColor = ref('#ff0000');
     v-model:shapeOpacity="shapeOpacity"
     v-model:shapeFillColor="shapeFillColor"/>
 
-  <GeneralizedBackgroundMap ref="baseMap" :min-zoom="0">
+  <GeneralizedBackgroundMap ref="baseMap">
     <template #layers>
       <Points
         :features="features" 
