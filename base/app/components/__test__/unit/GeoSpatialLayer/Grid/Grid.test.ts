@@ -1,5 +1,6 @@
 import Grid from '@components/GeoSpatialLayer/Grid/Grid.vue'
 import { type VueWrapper, mount } from '@vue/test-utils'
+import GeoJSON from 'ol/format/GeoJSON'
 import * as turf from '@turf/turf'
 import Nop from '@components/Nop.vue'
 
@@ -16,7 +17,7 @@ describe('grid.vue', () => {
         },
       },
       props: {
-        points: [],
+        features: [],
       },
     })
   })
@@ -26,11 +27,11 @@ describe('grid.vue', () => {
   })
 
   it('renders with provided props', () => {
-    expect(wrapper.props().points).toStrictEqual([])
+    expect(wrapper.props().features).toStrictEqual([])
   })
 
   it('renders with default props', () => {
-    wrapper = mount(Grid, { props: { points: [] } })
+    wrapper = mount(Grid, { props: { features: [] } })
     expect(wrapper.props().cellSide).toBe(1)
     expect(wrapper.props().baseHue).toBe(0)
     expect(wrapper.props().zIndex).toBe(0)
@@ -40,13 +41,14 @@ describe('grid.vue', () => {
   })
 
   it('computedHexFeatures should return empty array when no points are provided', async () => {
-    expect(wrapper.vm.computedHexFeatures).toStrictEqual([])
+    expect(wrapper.vm.computedGridFeatures).toStrictEqual([])
   })
 
-  it('computedHexFeatures should generate grid when points exist', async () => {
-    const points = [{ coordinates: [28.45, 49.22] }, { coordinates: [28.48, 49.23] }]
-    await wrapper.setProps({ points })
-    expect(wrapper.vm.computedHexFeatures.length).toBeGreaterThan(0)
+  it('computedGridFeatures should generate grid when points exist', async () => {
+    const points = [turf.point([28.45, 49.22]), turf.point([28.48, 49.23])]
+    const features = new GeoJSON().readFeatures(turf.featureCollection(points))
+    await wrapper.setProps({ features })
+    expect(wrapper.vm.computedGridFeatures.length).toBeGreaterThan(0)
   })
 
   it('createGrid should generate a valid grid', () => {
