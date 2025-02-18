@@ -21,6 +21,7 @@
 
 <script setup>
 import { computed, ref } from 'vue'
+import { useRouter } from 'nuxt/app'
 import SupportModal from './SupportModal.vue'
 
 const router = useRouter()
