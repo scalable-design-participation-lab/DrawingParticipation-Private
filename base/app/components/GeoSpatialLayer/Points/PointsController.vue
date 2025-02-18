@@ -22,47 +22,60 @@ const shapeFillColor = defineModel<string>('shapeFillColor', { type: String, req
     </div>
 
     <!-- Z Index Input -->
-    <span class="block mb-2 capitalize text-black font-semibold dark:text-white">Z Index</span>
-    <UInput
-      v-model.number="zIndex"
-      type="number"
-      class="w-full p-2 border rounded bg-white dark:bg-gray-800 text-black dark:text-white"
-    />
+    <div class="flex items-center justify-between">
+      <span class="block py-2 capitalize text-black font-semibold dark:text-white">Z-Index</span>
+      <UInput
+        id="z-index"
+        v-model.number="zIndex"
+        type="number"
+        class="w-20 px-1 bg-white dark:bg-gray-800 text-black dark:text-white"
+      />
+    </div>
 
     <!-- Shape Points Input -->
-    <span class="block mb-2 capitalize text-black font-semibold dark:text-white">Shape Points</span>
-    <UInput
-      v-model.number="shapePoints"
-      type="number"
-      class="w-full p-2 border rounded bg-white dark:bg-gray-800 text-black dark:text-white"
-    />
+
+    <div class="flex items-center justify-between">
+      <span class="block py-2 capitalize text-black font-semibold dark:text-white">Points</span>
+      <UInput
+        v-model.number="shapePoints"
+        type="number"
+        class="w-20 px-1 bg-white dark:bg-gray-800 text-black dark:text-white"
+      />
+    </div>
 
     <!-- Shape Radius Input -->
-    <span class="block mb-2 capitalize text-black font-semibold dark:text-white">Shape Radius</span>
-    <UInput
-      v-model.number="shapeRadius"
-      type="number"
-      class="w-full p-2 border rounded bg-white dark:bg-gray-800 text-black dark:text-white"
-    />
+
+    <div class="flex items-center justify-between">
+      <span class="block py-2 capitalize text-black font-semibold dark:text-white">Radius</span>
+      <UInput
+        v-model.number="shapeRadius"
+        type="number"
+        class="w-20 px-1 bg-white dark:bg-gray-800 text-black dark:text-white"
+      />
+    </div>
 
     <!-- Shape Opacity Slider -->
-    <span class="block mb-2 capitalize text-black font-semibold dark:text-white">Shape Opacity</span>
-    <!-- Using a slider for opacity (assuming USlider exists) -->
-    <UInput
-      v-model.number="shapeOpacity"
-      type="range"
-      :min="0"
-      :max="1"
-      :step="0.1"
-    />
-    <span class="text-sm text-gray-600 dark:text-gray-300 mt-1">Current: {{ shapeOpacity }}</span>
 
+    <div class="flex items-center justify-between">
+      <span class="block py-2 capitalize text-black font-semibold dark:text-white">Opacity</span>
+      <!-- Using a slider for opacity (assuming USlider exists) -->
+      <UInput
+        v-model.number="shapeOpacity"
+        type="range"
+        :min="0"
+        :max="1"
+        :step="0.1"
+      />
+    </div>
     <!-- Shape Fill Color -->
-    <span class="block mb-2 capitalize text-black font-semibold dark:text-white">Shape Fill Color</span>
-    <color-picker-block
-      v-model="shapeFillColor"
-      class="w-full h-10 rounded-lg overflow-hidden"
-      @change="shapeFillColor = $event.hex"
-    />
+
+    <div class="flex items-center justify-between">
+      <span class="block py-2 capitalize text-black font-semibold dark:text-white">Color</span>
+      <color-picker-block
+        v-model="shapeFillColor"
+        class="p-2 rounded-lg"
+        @change="shapeFillColor = $event.hex"
+      />
+    </div>
   </UCard>
 </template>
