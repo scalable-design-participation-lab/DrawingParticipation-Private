@@ -1,10 +1,10 @@
 <script setup lang="ts">
 const visible = defineModel<boolean>('visible', { type: Boolean, required: true })
 const zIndex = defineModel<number>('zIndex', { type: Number, required: true })
-const shapePoints = defineModel<number>('shapePoints', { type: Number, required: true })
-const shapeRadius = defineModel<number>('shapeRadius', { type: Number, required: true })
-const shapeOpacity = defineModel<number>('shapeOpacity', { type: Number, required: true })
-const shapeFillColor = defineModel<string>('shapeFillColor', { type: String, required: true })
+const shapePoints = defineModel<number>('shapePoints', { type: Number })
+const shapeRadius = defineModel<number>('shapeRadius', { type: Number })
+const shapeOpacity = defineModel<number>('shapeOpacity', { type: Number })
+const shapeFillColor = defineModel<string>('shapeFillColor', { type: String })
 </script>
 
 <template>
@@ -34,7 +34,7 @@ const shapeFillColor = defineModel<string>('shapeFillColor', { type: String, req
 
     <!-- Shape Points Input -->
 
-    <div class="flex items-center justify-between">
+    <div v-if="shapePoints" class="flex items-center justify-between">
       <span class="block py-2 capitalize text-black font-semibold dark:text-white">Points</span>
       <UInput
         v-model.number="shapePoints"
@@ -45,7 +45,7 @@ const shapeFillColor = defineModel<string>('shapeFillColor', { type: String, req
 
     <!-- Shape Radius Input -->
 
-    <div class="flex items-center justify-between">
+    <div v-if="shapeRadius" class="flex items-center justify-between">
       <span class="block py-2 capitalize text-black font-semibold dark:text-white">Radius</span>
       <UInput
         v-model.number="shapeRadius"
@@ -56,7 +56,7 @@ const shapeFillColor = defineModel<string>('shapeFillColor', { type: String, req
 
     <!-- Shape Opacity Slider -->
 
-    <div class="flex items-center justify-between">
+    <div v-if="shapeOpacity" class="flex items-center justify-between">
       <span class="block py-2 capitalize text-black font-semibold dark:text-white">Opacity</span>
       <!-- Using a slider for opacity (assuming USlider exists) -->
       <UInput
@@ -69,7 +69,7 @@ const shapeFillColor = defineModel<string>('shapeFillColor', { type: String, req
     </div>
     <!-- Shape Fill Color -->
 
-    <div class="flex items-center justify-between">
+    <div v-if="shapeFillColor" class="flex items-center justify-between">
       <span class="block py-2 capitalize text-black font-semibold dark:text-white">Color</span>
       <color-picker-block
         v-model="shapeFillColor"

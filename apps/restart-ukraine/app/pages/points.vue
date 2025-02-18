@@ -37,11 +37,6 @@ const shapePoints = ref(3);
 const shapeRadius = ref(10);
 const shapeOpacity = ref(1);
 const shapeFillColor = ref('#ff0000');
-const icon = new Icon({
-  src: smileIcon,
-  scale: 1,
-  anchor: [0.5, 0.5],
-});
 </script>
 
 <template>
@@ -49,10 +44,7 @@ const icon = new Icon({
   <PointsController
     v-model:visible="visible"
     v-model:zIndex="zIndex"
-    v-model:shapePoints="shapePoints"
-    v-model:shapeRadius="shapeRadius"
-    v-model:shapeOpacity="shapeOpacity"
-    v-model:shapeFillColor="shapeFillColor"/>
+  />
 
   <GeneralizedBackgroundMap ref="baseMap">
     <template #layers>
@@ -60,11 +52,7 @@ const icon = new Icon({
         :features="features" 
         :visible="visible" 
         :z-index="zIndex" 
-        :shapePoints="shapePoints" 
-        :shapeRadius="shapeRadius" 
-        :shapeOpacity="shapeOpacity" 
-        :shapeFillColor="shapeFillColor"
-        :icon="icon"
+        :icon="smileIcon"
       />
     </template>
   </GeneralizedBackgroundMap>
