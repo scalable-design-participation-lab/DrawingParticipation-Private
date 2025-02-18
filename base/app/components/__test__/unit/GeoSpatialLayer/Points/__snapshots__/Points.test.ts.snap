@@ -1,0 +1,20 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`points.vue > renders correctly 1`] = `
+<div
+  data-v-app=""
+>
+  
+  <!-- Force a reactivity using a key -->
+  <ol-webgl-vector-layer
+    styles="[object Object]"
+    visible="false"
+    z-index="1"
+  >
+    <ol-source-vector
+      features=""
+    />
+  </ol-webgl-vector-layer>
+  
+</div>
+`;
