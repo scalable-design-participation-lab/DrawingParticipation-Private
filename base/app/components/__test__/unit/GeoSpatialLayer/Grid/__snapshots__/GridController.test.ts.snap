@@ -26,6 +26,19 @@ exports[`gridController.vue > render correctly 1`] = `
       type="checkbox"
     />
   </div>
+  <!-- Width Slider -->
+  <label
+    class="block text-sm font-medium"
+  >
+    Line Width: 
+  </label>
+  <input
+    class="w-full my-2"
+    max="5"
+    min="0.1"
+    step="0.1"
+    type="range"
+  />
   <!-- Base Hue Slider -->
   <label
     class="block text-sm font-medium"
