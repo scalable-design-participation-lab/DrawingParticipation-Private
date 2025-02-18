@@ -63,6 +63,7 @@ import { useDrawingStore } from '@base/stores/drawing'
 import { useMapStore } from '@base/stores/map'
 import { useSideBarStore } from '@base/stores/sidebar'
 import { storeToRefs } from 'pinia'
+import { useRoute } from 'nuxt/app'
 
 const props = defineProps({
   showAllPlusIcons: {

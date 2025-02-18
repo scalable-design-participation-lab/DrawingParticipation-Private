@@ -55,6 +55,16 @@ exports[`MenuModal.vue > renders correctly 1`] = `
         Результати
         
       </button>
+      <button
+        block=""
+        class="dark:bg-black dark:text-white text-lg font-semibold rounded-full py-3 my-3"
+        color="white"
+        variant="solid"
+      >
+        
+        Heat Map
+        
+      </button>
       
       
     </div>
