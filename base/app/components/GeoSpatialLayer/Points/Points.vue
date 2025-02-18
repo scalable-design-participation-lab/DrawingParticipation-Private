@@ -2,6 +2,8 @@
 import { computed } from 'vue'
 import type Feature from 'ol/Feature'
 import type { Geometry } from 'ol/geom'
+import type { Icon } from 'ol/style'
+import Style from 'ol/style/Style'
 
 export interface PointsLayerProps {
   /**
@@ -46,6 +48,11 @@ export interface PointsLayerProps {
    * @default 'red'
    */
   shapeFillColor?: string
+  /**
+   * Style of the points layers
+   * @default new Icon({ src: redIcon, scale: 1, anchor: [0.5, 0.5],})
+   */
+  icon?: Icon
 }
 
 const props = withDefaults(defineProps<PointsLayerProps>(), {
@@ -65,11 +72,23 @@ const webglPointStyle = computed(() => ({
   'shape-opacity': props.shapeOpacity,
   'shape-fill-color': props.shapeFillColor,
 }))
+const styledFeatures = computed(() => {
+  return props.features.map((feature) => {
+    feature.setStyle(new Style({
+      image: props.icon,
+    }))
+    return feature
+  })
+})
 </script>
 
 <template>
   <!-- Force a reactivity using a key -->
+  <ol-vector-layer v-if="props.icon" :z-index="zIndex" :visible="visible">
+    <ol-source-vector :features="styledFeatures" />
+  </ol-vector-layer>
   <ol-webgl-vector-layer
+    v-else
     :key="JSON.stringify(webglPointStyle)"
     :styles="webglPointStyle"
     :z-index="props.zIndex"

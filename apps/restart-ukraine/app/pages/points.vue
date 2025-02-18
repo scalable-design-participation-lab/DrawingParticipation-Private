@@ -6,6 +6,8 @@ import Points from '@base/components/GeoSpatialLayer/Points/Points.vue';
 import { useAllFeatureStore } from '@base/stores/all-features';
 import { toLonLat } from 'ol/proj';
 import PointsController from '@base/components/GeoSpatialLayer/Points/PointsController.vue';
+import smileIcon from '@/assets/icons/smile.svg';
+import { Icon } from 'ol/style';
 
 const { featuresByType } = useAllFeatureStore();
 
@@ -35,6 +37,11 @@ const shapePoints = ref(3);
 const shapeRadius = ref(10);
 const shapeOpacity = ref(1);
 const shapeFillColor = ref('#ff0000');
+const icon = new Icon({
+  src: smileIcon,
+  scale: 1,
+  anchor: [0.5, 0.5],
+});
 </script>
 
 <template>
@@ -57,6 +64,7 @@ const shapeFillColor = ref('#ff0000');
         :shapeRadius="shapeRadius" 
         :shapeOpacity="shapeOpacity" 
         :shapeFillColor="shapeFillColor"
+        :icon="icon"
       />
     </template>
   </GeneralizedBackgroundMap>
