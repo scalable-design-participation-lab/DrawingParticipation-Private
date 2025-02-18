@@ -2,9 +2,9 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { config, mount, VueWrapper } from '@vue/test-utils';
 import BackgroundMap from '@components/BackgroundMap.vue';
 import { createPinia, setActivePinia } from 'pinia';
+import { useRoute } from 'nuxt/app';
 
-// Mock vue-router
-vi.mock('vue-router', () => ({
+vi.mock('nuxt/app', () => ({
   useRoute: vi.fn(() => ({ name: 'result' }))
 }));
 
