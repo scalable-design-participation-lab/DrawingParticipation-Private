@@ -57,7 +57,7 @@ describe('gridController.vue', () => {
     expect(slider.exists()).toBe(true)
 
     await slider.setValue('0.8')
-    await wrapper.vm.$nextTick() // Ensure reactivity updates
+    await wrapper.vm.$nextTick()
 
     expect(Number(wrapper.vm.cellSide)).toBe(0.8)
   })
@@ -67,8 +67,8 @@ describe('gridController.vue', () => {
     expect(radioSquare.exists()).toBe(true)
 
     await radioSquare.setValue()
-    await wrapper.vm.$nextTick() // Ensure reactivity updates
+    await wrapper.vm.$nextTick()
 
-    expect(wrapper.vm.shape).toBe('Square') // ✅ Check component's state, not props
+    expect(wrapper.vm.shape).toBe('Square')
   })
 })
