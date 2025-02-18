@@ -2,7 +2,7 @@
 import { computed } from 'vue'
 import type Feature from 'ol/Feature'
 import type { Geometry } from 'ol/geom'
-import type { Icon } from 'ol/style'
+import { Icon } from 'ol/style'
 import Style from 'ol/style/Style'
 
 export interface PointsLayerProps {
@@ -52,7 +52,7 @@ export interface PointsLayerProps {
    * Style of the points layers
    * @default new Icon({ src: redIcon, scale: 1, anchor: [0.5, 0.5],})
    */
-  icon?: Icon
+  icon?: string
 }
 
 const props = withDefaults(defineProps<PointsLayerProps>(), {
@@ -75,8 +75,13 @@ const webglPointStyle = computed(() => ({
 const styledFeatures = computed(() => {
   return props.features.map((feature) => {
     feature.setStyle(new Style({
-      image: props.icon,
-    }))
+      image: new Icon({
+        src: props.icon,
+        scale: 1,
+        anchor: [0.5, 0.5],
+      }),
+    }),
+    )
     return feature
   })
 })
