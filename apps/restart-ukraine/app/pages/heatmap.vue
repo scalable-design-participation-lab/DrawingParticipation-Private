@@ -1,5 +1,5 @@
-<script setup lang="ts">
 import { computed, reactive } from "vue";
+<script setup lang="ts">
 import { useAllFeatureStore } from "../../../../base/app/stores/all-features";
 import GeoJSON from "ol/format/GeoJSON";
 import GeneralizedBackgroundMap from "@base/components/GeneralizedBackgroundMap.vue";

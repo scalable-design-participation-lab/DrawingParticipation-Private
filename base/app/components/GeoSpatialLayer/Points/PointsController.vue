@@ -28,7 +28,7 @@ const shapeFillColor = defineModel<string>('shapeFillColor', { type: String })
         id="z-index"
         v-model.number="zIndex"
         type="number"
-        class="w-20 px-1 bg-white dark:bg-gray-800 text-black dark:text-white"
+        class="w-20 px-1 "
       />
     </div>
 
@@ -39,7 +39,7 @@ const shapeFillColor = defineModel<string>('shapeFillColor', { type: String })
       <UInput
         v-model.number="shapePoints"
         type="number"
-        class="w-20 px-1 bg-white dark:bg-gray-800 text-black dark:text-white"
+        class="w-20 px-1"
       />
     </div>
 
@@ -50,7 +50,7 @@ const shapeFillColor = defineModel<string>('shapeFillColor', { type: String })
       <UInput
         v-model.number="shapeRadius"
         type="number"
-        class="w-20 px-1 bg-white dark:bg-gray-800 text-black dark:text-white"
+        class="w-20 px-1"
       />
     </div>
 
