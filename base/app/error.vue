@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import type { NuxtError } from '#app'
 
-defineProps({
+const props = defineProps({
   error: {
     type: Object as PropType<NuxtError>,
     required: true,
@@ -18,6 +18,7 @@ useHead({
     lang: 'en',
   },
 })
+console.error(props.error)
 </script>
 
 <template>
