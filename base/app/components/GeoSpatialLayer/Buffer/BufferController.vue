@@ -27,11 +27,12 @@ const radius = defineModel<number>('radius', { type: Number, required: true })
         class="w-20 px-1 "
       />
     </div>
-    <div v-if="radius" class="flex items-center justify-between">
+    <div class="flex items-center justify-between">
       <span class="block py-2 capitalize text-black font-semibold dark:text-white">Radius</span>
       <UInput
         v-model.number="radius"
         type="number"
+        min="0"
         class="w-20 px-1 "
       />
     </div>
