@@ -2,7 +2,7 @@
 import * as turf from '@turf/turf'
 import GeoJSON from 'ol/format/GeoJSON'
 import { Fill, Stroke, Style } from 'ol/style'
-import { computed, watch } from 'vue'
+import { computed } from 'vue'
 import type { Feature } from 'ol'
 
 export interface VoronoiProps {
