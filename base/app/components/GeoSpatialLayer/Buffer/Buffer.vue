@@ -34,6 +34,9 @@ const bufferFeatures = computed(() => {
     const featureCollection = turf.featureCollection(buffers)
     const unioned = turf.union(featureCollection)
     buffers.length = 0
+    if (!unioned) {
+      return []
+    }
     buffers.push(unioned)
   }
 
