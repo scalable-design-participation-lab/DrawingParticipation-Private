@@ -153,7 +153,7 @@ exports[`layerSidebar.vue > renders correctly 1`] = `
             icon="i-heroicons-calendar-days-20-solid"
           >
             
-            18 Feb, 2024 - 18 Feb, 2025
+            20 Feb, 2024 - 20 Feb, 2025
             
           </button>
           

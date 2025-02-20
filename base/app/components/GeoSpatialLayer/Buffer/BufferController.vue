@@ -1,7 +1,10 @@
 <script setup lang="ts">
+import type { BufferMode } from './Buffer.vue'
+
 const visible = defineModel<boolean>('visible', { type: Boolean, required: true })
 const zIndex = defineModel<number>('zIndex', { type: Number, required: true })
 const radius = defineModel<number>('radius', { type: Number, required: true })
+const mode = defineModel<BufferMode>('mode', { type: String as PropType<BufferMode>, required: true })
 </script>
 
 <template>
@@ -15,6 +18,30 @@ const radius = defineModel<number>('radius', { type: Number, required: true })
         size="lg"
         on-icon="i-heroicons-check-20-solid"
         off-icon="i-heroicons-x-mark-20-solid"
+      />
+    </div>
+    <!-- Union Toggle -->
+    <div class="flex justify-between">
+      <span class="block mb-2 capitalize text-black font-semibold dark:text-white">Union</span>
+      <UToggle
+        :model-value="mode === 'union'"
+        color="green"
+        size="lg"
+        on-icon="i-heroicons-check-20-solid"
+        off-icon="i-heroicons-x-mark-20-solid"
+        @update:model-value="(value) => mode = value ? 'union' : 'none'"
+      />
+    </div>
+    <!-- Intersect Toggle -->
+    <div class="flex justify-between">
+      <span class="block mb-2 capitalize text-black font-semibold dark:text-white">Intersect</span>
+      <UToggle
+        :model-value="mode === 'intersect'"
+        color="green"
+        size="lg"
+        on-icon="i-heroicons-check-20-solid"
+        off-icon="i-heroicons-x-mark-20-solid"
+        @update:model-value="(value) => mode = value ? 'intersect' : 'none'"
       />
     </div>
     <!-- Z Index Input -->

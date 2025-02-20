@@ -10,16 +10,19 @@ const coordinates = computed(() => {
 const visible = ref(true);
 const zIndex = ref(1);
 const radius = ref(200);
+const mode = ref<'none' | 'union' | 'intersect'>('none');
 </script>
 <template>
     <BufferController
     v-model:visible="visible"
     v-model:zIndex="zIndex"
     v-model:radius="radius"
+    v-model:mode="mode"
     />
     <GeneralizedBackgroundMap ref="baseMap" :min-zoom="0"> 
         <template #layers> 
             <Buffer
+            :mode="mode"
             :coordinates="coordinates"
             :visible="visible"
             :z-index="zIndex"

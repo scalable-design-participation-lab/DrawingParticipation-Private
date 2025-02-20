@@ -11,6 +11,7 @@ describe('bufferController.vue', () => {
         visible: true,
         zIndex: 40,
         radius: 10,
+        mode: 'none',
       },
       global: {
         stubs: {
@@ -30,6 +31,7 @@ describe('bufferController.vue', () => {
     expect(wrapper.props().visible).toBe(true)
     expect(wrapper.props().zIndex).toBe(40)
     expect(wrapper.props().radius).toBe(10)
+    expect(wrapper.props().mode).toBe('none')
   })
 
   it('updates model values when inputs change', async () => {
@@ -41,5 +43,8 @@ describe('bufferController.vue', () => {
 
     await wrapper.setProps({ radius: 15 })
     expect(wrapper.props().radius).toBe(15)
+
+    await wrapper.setProps({ mode: 'intersect' })
+    expect(wrapper.props().mode).toBe('intersect')
   })
 })
