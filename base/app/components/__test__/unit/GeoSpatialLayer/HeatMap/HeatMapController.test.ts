@@ -118,6 +118,13 @@ config.global.stubs = {
 
 describe('layerSidebar.vue', () => {
   let wrapper: VueWrapper<any>
+  // Freeze time before any tests run
+  beforeAll(() => {
+  // Use fake timers and set the current date to a fixed point
+    vi.useFakeTimers()
+    vi.setSystemTime(new Date('2025-01-22T00:00:00Z'))
+  })
+
   beforeEach(() => {
     vi.clearAllMocks()
     wrapper = mount(LayerSidebar, {
@@ -134,6 +141,10 @@ describe('layerSidebar.vue', () => {
         },
       },
     })
+  })
+  // Restore real timers after all tests
+  afterAll(() => {
+    vi.useRealTimers()
   })
   it('renders correctly', () => {
     expect(wrapper.element).toMatchSnapshot()
