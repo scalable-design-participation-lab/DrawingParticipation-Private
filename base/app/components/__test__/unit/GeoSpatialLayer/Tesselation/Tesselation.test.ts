@@ -1,4 +1,4 @@
-import Voronoi from '@components/GeoSpatialLayer/Voronoi/Voronoi.vue'
+import Tesselation from '@components/GeoSpatialLayer/Tesselation/Tesselation.vue'
 import type { VueWrapper } from '@vue/test-utils'
 import { mount } from '@vue/test-utils'
 
@@ -6,7 +6,7 @@ describe('voronoi.vue', () => {
   let wrapper: VueWrapper<any>
 
   beforeEach(() => {
-    wrapper = mount(Voronoi, {
+    wrapper = mount(Tesselation, {
       props: {
         coordinates: [
           [28.5, 49.25],
@@ -49,7 +49,7 @@ describe('voronoi.vue', () => {
   })
 
   it('computes empty features and logs a warning when no coordinates are provided', () => {
-    wrapper = mount(Voronoi, {
+    wrapper = mount(Tesselation, {
       props: {
         coordinates: [],
       },
@@ -59,7 +59,7 @@ describe('voronoi.vue', () => {
   })
 
   it('renders with default props', () => {
-    wrapper = mount(Voronoi)
+    wrapper = mount(Tesselation)
     expect(wrapper.props().coordinates).toEqual([])
     expect(wrapper.props().bbox).toEqual([28.462271, 49.215576, 28.570271, 49.265576])
     expect(wrapper.props().visible).toBe(false)

@@ -1,6 +1,7 @@
 <script setup lang="ts">
 const visible = defineModel('visible', { type: Boolean, required: true })
 const zIndex = defineModel('zIndex', { type: Number, required: true })
+const type = defineModel('type', { type: String, required: true })
 </script>
 
 <template>
@@ -20,13 +21,23 @@ const zIndex = defineModel('zIndex', { type: Number, required: true })
 
     <!-- Z Index Input -->
     <div class="flex items-center justify-between">
-      <span class="block py-2 capitalize text-black font-semibold dark:text-white">Z-Index</span>
+      <span class="block py-2 capitalize text-black font-semibold dark:text-white">z-index</span>
       <UInput
         id="z-index"
         v-model.number="zIndex"
         type="number"
         class="w-20 px-1 "
       />
+    </div>
+    <!-- Type Selection (Radio Buttons) -->
+    <span class="block py-2 capitalize text-black font-semibold dark:text-white">Type</span>
+    <div class="flex space-x-4 mt-2">
+      <label>
+        <input v-model="type" type="radio" value="voronoi"> Voronoi
+      </label>
+      <label>
+        <input v-model="type" type="radio" value="tin"> TIN
+      </label>
     </div>
   </UCard>
 </template>

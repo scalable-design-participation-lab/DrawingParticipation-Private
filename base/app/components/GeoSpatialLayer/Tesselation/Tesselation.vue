@@ -5,38 +5,52 @@ import { Fill, Stroke, Style } from 'ol/style'
 import { computed } from 'vue'
 import type { Feature } from 'ol'
 
-export interface VoronoiProps {
+type TesselationType = 'voronoi' | 'tin'
+export interface TesselationProps {
   coordinates?: [number, number][]
   bbox?: number[]
   visible?: boolean
   zIndex?: number
+  type?: TesselationType
 }
 
-const props = withDefaults(defineProps<VoronoiProps>(), {
+const props = withDefaults(defineProps<TesselationProps>(), {
   coordinates: () => [],
   bbox: () => [28.462271, 49.215576, 28.570271, 49.265576],
   visible: false,
   zIndex: 0,
+  type: 'tin',
 })
 
 const geoJson = new GeoJSON()
 
 const features = computed(() => {
   if (!props.coordinates.length) {
-    console.warn('No coordinates provided for Voronoi computation.')
+    console.warn('No coordinates provided for Tesselation computation.')
+    return []
+  }
+  // Filter points within the bbox
+  const [minX, minY, maxX, maxY] = props.bbox
+  const filteredCoordinates = props.coordinates.filter(([x, y]) =>
+    x >= minX && x <= maxX && y >= minY && y <= maxY,
+  )
+
+  if (!filteredCoordinates.length) {
+    console.warn('No valid coordinates inside the bounding box for Tesselation.')
     return []
   }
 
-  const points = props.coordinates.map(coord => turf.point(coord))
+  const points = filteredCoordinates.map(coord => turf.point(coord))
   const collections = turf.featureCollection(points)
-  console.log('Voronoi collections:', collections)
-  const voronoiPolygons = turf.voronoi(collections, { bbox: props.bbox })
+  const polygons = props.type === 'tin'
+    ? turf.tin(collections)
+    : turf.voronoi(collections, { bbox: props.bbox })
 
   // Filter out features with invalid geometry
-  // Turf’s Voronoi function can sometimes return features without a valid geometry. This can happen if the algorithm can’t compute a proper polygon for certain points—often due to edge cases like points being too close together, lying on the boundary, or duplicate points.
+  // Turf’s Voronoi/tin function can sometimes return features without a valid geometry. This can happen if the algorithm can’t compute a proper polygon for certain points—often due to edge cases like points being too close together, lying on the boundary, or duplicate points.
   const validPolygons = {
-    ...voronoiPolygons,
-    features: voronoiPolygons.features.filter(feature => feature.geometry),
+    ...polygons,
+    features: polygons.features.filter(feature => feature.geometry),
   }
 
   const features = geoJson.readFeatures(validPolygons, {
