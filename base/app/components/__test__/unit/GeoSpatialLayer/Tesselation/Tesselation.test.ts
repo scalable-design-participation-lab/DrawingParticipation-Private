@@ -2,7 +2,7 @@ import Tesselation from '@components/GeoSpatialLayer/Tesselation/Tesselation.vue
 import type { VueWrapper } from '@vue/test-utils'
 import { mount } from '@vue/test-utils'
 
-describe('voronoi.vue', () => {
+describe('tesselation.vue', () => {
   let wrapper: VueWrapper<any>
 
   beforeEach(() => {

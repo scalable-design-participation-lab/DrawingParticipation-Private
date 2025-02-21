@@ -2,7 +2,7 @@ import TesselationController from '@components/GeoSpatialLayer/Tesselation/Tesse
 import type { VueWrapper } from '@vue/test-utils'
 import { mount } from '@vue/test-utils'
 
-describe('voronoiController.vue', () => {
+describe('tesselationController.vue', () => {
   let wrapper: VueWrapper<any>
 
   beforeEach(() => {
