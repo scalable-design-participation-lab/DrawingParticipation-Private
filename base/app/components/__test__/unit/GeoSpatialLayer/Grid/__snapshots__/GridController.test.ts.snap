@@ -1,0 +1,104 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`gridController.vue > render correctly 1`] = `
+<ucard
+  class="fixed right-6 top-24 w-96 md:w-80 max-h-[calc(100vh-11rem)] z-40 shadow-xl dark:bg-black flex flex-col overflow-hidden"
+>
+  <div
+    class="text-lg font-semibold mb-4"
+  >
+     Grid Settings 
+  </div>
+  <!-- Visible -->
+  <div
+    class="flex justify-between my-2"
+  >
+    <span
+      class="my-1 capitalize text-black font-semibold dark:text-white"
+    >
+       Visibility 
+    </span>
+    <input
+      class="my-1"
+      color="green"
+      modelvalue="true"
+      off-icon="i-heroicons-x-mark-20-solid"
+      type="checkbox"
+    />
+  </div>
+  <!-- Width Slider -->
+  <label
+    class="block text-sm font-medium"
+  >
+    Line Width: 
+  </label>
+  <input
+    class="w-full my-2"
+    max="5"
+    min="0.1"
+    step="0.1"
+    type="range"
+  />
+  <!-- Base Hue Slider -->
+  <label
+    class="block text-sm font-medium"
+  >
+    Base Hue: 180
+  </label>
+  <input
+    class="w-full my-2"
+    max="360"
+    min="0"
+    step="1"
+    type="range"
+  />
+  <!-- Cell side Slider -->
+  <label
+    class="block text-sm font-medium"
+  >
+    Cell side: 0.5
+  </label>
+  <input
+    class="w-full my-2"
+    max="1"
+    min="0.2"
+    step="0.1"
+    type="range"
+  />
+  <!-- Shape Selection (Radio Buttons) -->
+  <div
+    class="mt-4"
+  >
+    <label
+      class="block text-sm font-medium"
+    >
+      Shape
+    </label>
+    <div
+      class="flex space-x-4 mt-2"
+    >
+      <label>
+        <input
+          type="radio"
+          value="Hexagon"
+        />
+         Hexagon 
+      </label>
+      <label>
+        <input
+          type="radio"
+          value="Square"
+        />
+         Square 
+      </label>
+      <label>
+        <input
+          type="radio"
+          value="Triangle"
+        />
+         Triangle 
+      </label>
+    </div>
+  </div>
+</ucard>
+`;

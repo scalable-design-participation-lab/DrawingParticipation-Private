@@ -56,7 +56,6 @@
 
 <script setup lang="ts">
 import { ref, computed } from 'vue'
-import { useRoute } from 'vue-router'
 import CommentModal from './CommentModal.vue'
 import CommentDisplay from './CommentDisplay.vue'
 import { useFeatureStore } from '@base/stores/features'
@@ -64,6 +63,7 @@ import { useDrawingStore } from '@base/stores/drawing'
 import { useMapStore } from '@base/stores/map'
 import { useSideBarStore } from '@base/stores/sidebar'
 import { storeToRefs } from 'pinia'
+import { useRoute } from 'nuxt/app'
 
 const props = defineProps({
   showAllPlusIcons: {

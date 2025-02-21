@@ -2,65 +2,32 @@
 import { watch } from 'vue'
 import draggable from 'vuedraggable'
 import { type Duration, format } from 'date-fns'
-import { useLayerSidebarEmits } from '../../composables/useLayerSideBarEmits'
-import { useFilters } from '../../composables/useFilters'
-import { useLayerSettings } from '../../composables/useLayerSettings'
-import { useTimeRange } from '../../composables/useTimeRange'
+import { useFilters } from '../../../composables/useFilters'
+import { useLayerSettings } from '../../../composables/useLayerSettings'
+import { useTimeRange } from '../../../composables/useTimeRange'
 import type { HeatMapLayerSettings } from './HeatMap.vue'
 
-// ─────────────────────────────
-// 1. Define types & props
-// ─────────────────────────────
+const categories = defineModel<Record<string, string[]>>('categories', { required: true })
+const filters = defineModel<Record<string, boolean>>('filters', { required: true })
+const layerSettings = defineModel<Record<string, HeatMapLayerSettings>>('layerSettings', { required: true })
+const ranges = defineModel<{ label: string, duration: Duration }[]>('ranges', { required: true })
+const filterTime = defineModel<{ start: Date, end: Date }>('filterTime', { required: true })
 
-// Define the emits interface
-// Client are able to sync with child component through these events
-// If not implement, replace with stub, the component will still function
-export interface LayerSidebarEmits {
-  (e: 'updateSelection', key: string, settings: HeatMapLayerSettings): void
-  (e: 'updateFilter', key: string): void
-  (e: 'updateFilterTime', timeRange: { start: Date, end: Date }): void
-}
+const { highlightedButtons, sortedSettings, toggleLayer, updateGradient } = useLayerSettings(layerSettings)
+const { toggleFilter } = useFilters(filters)
+const { selected, isRangeSelected, selectRange } = useTimeRange({ years: 1 })
 
-// To allow reusing this sidebar for any layer type,
-// pass in the available categories via props.
-const props = defineProps<{
-  categories: Record<string, string[]> // e.g. { sectionA: ['button1', 'button2'], ... }
-  filters: Record<string, boolean> // e.g { Comments: false }
-  layerSettings: Record<string, HeatMapLayerSettings> // e.g {"Trash": {...}}
-  ranges: { label: string, duration: Duration }[] // e.g {label: "", ...}
-}>()
-
-// Use defineEmits with the interface
-const emit = defineEmits<LayerSidebarEmits>()
-
-// ─────────────────────────────
-// 2. Layer State Management (Reusable Composable Logic)
-// ─────────────────────────────
-const { layerSettings, highlightedButtons, sortedSettings, toggleLayer, updateGradient } = useLayerSettings(props.layerSettings)
-const { filters, toggleFilter } = useFilters(props.filters)
-const { selected, isRangeSelected, selectRange } = useTimeRange({ days: 14 })
-
-const { updateSelection, updateFilter, updateFilterTime } = useLayerSidebarEmits(emit)
-
-watch(layerSettings, () => {
-  updateSelection(layerSettings)
-}, { deep: true, immediate: true })
-
-// ─────────────────────────────
-// 3. Filters & Time Range Logic
-// ─────────────────────────────
 function handleFilter(key: string) {
   toggleFilter(key)
-  updateFilter(key)
 }
 
 watch(selected, (newRange) => {
-  updateFilterTime(newRange)
+  filterTime.value = newRange
 })
 
 // Helper to get the layer color
 function layerColor(section: string, layer: string) {
-  return layerSettings[getLayerKey(section, layer)]?.gradient?.[4] || 'transparent'
+  return layerSettings.value[getLayerKey(section, layer)]?.gradient?.[4] || 'transparent'
 }
 // Helper: Build a unique key for a layer
 function getLayerKey(section: string, layer: string): string {
@@ -137,12 +104,11 @@ function getLayerKey(section: string, layer: string): string {
               <UButton
                 v-if="highlightedButtons.has(button)"
                 size="2xs"
-                class="mx-1 my-1 rounded-full capitalize flex text-white align-middle dark:text-white"
+                class="mx-1 my-1 rounded-full capitalize flex text-white align-middle dark:text-white mt-1"
                 :style="{ backgroundColor: layerColor(section, button) }"
                 @click="toggleLayer(button, section)"
               >
                 {{ button }}
-                <UIcon name="i-tabler:minus-vertical" class="p-0" />
                 <!-- Popover for layer settings -->
                 <UPopover
                   :popper="{ placement: 'auto' }"
@@ -151,7 +117,7 @@ function getLayerKey(section: string, layer: string): string {
                 >
                   <UIcon
                     name="i-heroicons-chevron-down-20-solid"
-                    class="hover:cursor-pointer hover:opacity-80 mt-1"
+                    class="hover:cursor-pointer hover:opacity-80 h-2 text-bold"
                   />
                   <template #panel>
                     <div class="p-5 bg-white shadow-lg border dark:bg-black dark:border-gray-700 rounded-2xl">
@@ -249,7 +215,7 @@ function getLayerKey(section: string, layer: string): string {
               <UButton
                 v-else
                 size="2xs"
-                class="mx-1 my-1 rounded-full capitalize"
+                class="mx-1 my-1 mt-1 rounded-full capitalize"
                 :class="[
                   highlightedButtons.has(button)
                     ? 'bg-black text-white dark:bg-green-500 hover:bg-black dark:hover:bg-green-600'
