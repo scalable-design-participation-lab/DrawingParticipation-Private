@@ -1,15 +1,12 @@
 import MenuModal from "@components/MenuModal.vue";
 import { config, mount, VueWrapper } from "@vue/test-utils";
 import { describe, beforeEach, vi, expect, it } from "vitest";
-import { useRouter } from "vue-router";
+import { useRouter } from "nuxt/app";
 const pushMock = vi.fn()
 
-vi.mock("vue-router", () => ({
+vi.mock('nuxt/app', () => ({
   useRouter: vi.fn(() => ({
     push: pushMock,
-    currentRoute: {
-      value: { path: "/" },
-    },
   })),
 }));
 
@@ -64,7 +61,7 @@ describe("MenuModal.vue", () => {
 
   it("displays all menu items", () => {
     const buttons = wrapper.findAllComponents(UButton);
-    const menuItems = ["Головна", "Про нас", "Підтримка", "Результати"];
+    const menuItems = ["Головна", "Про нас", "Підтримка", "Результати", "Heat Map"];
     buttons.forEach((button, index) => {
       expect(button.text()).toBe(menuItems[index]);
     });

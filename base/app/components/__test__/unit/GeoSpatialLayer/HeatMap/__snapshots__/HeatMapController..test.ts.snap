@@ -1,0 +1,223 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`layerSidebar.vue > renders correctly 1`] = `
+<div
+  class="fixed right-6 top-24 w-96 md:w-80 max-h-[calc(100vh-11rem)] z-40 shadow-xl dark:bg-black flex flex-col overflow-hidden"
+>
+  
+  <div
+    class="flex-1 overflow-auto max-h-[calc(100vh-13rem)] px-1"
+  >
+    <div>
+      <!-- ── Layers Header & Draggable List ── -->
+      <div
+        class="flex justify-between items-center mb-2"
+      >
+        <span
+          class="my-1 capitalize text-black font-semibold dark:text-white"
+        >
+          Layers
+        </span>
+        <div
+          popper="[object Object]"
+          ui="[object Object]"
+        >
+          
+          <button
+            class="bg-gray-100 mx-1 my-1 text-black rounded-full hover:bg-green-500 hover:text-white dark:bg-white dark:hover:bg-green-500"
+            size="2xs"
+            trailing-icon="i-heroicons-chevron-down-20-solid"
+          >
+            
+             Edit Layers 
+            
+          </button>
+          
+          
+          <div
+            class="w-64 py-2 px-5 dark:bg-black h-48 overflow-scroll"
+          >
+            <div
+              class="my-1 capitalize text-black font-semibold dark:text-white"
+            >
+               Drag to reorder layers 
+            </div>
+            <div
+              class="space-y-1"
+              drag-class="cursor-grabbing"
+              ghost-class="opacity-50"
+              handle=".drag-handle"
+              item-key="key"
+              modelvalue="[object Object],[object Object],[object Object]"
+            >
+              
+              
+            </div>
+            <!--v-if-->
+          </div>
+          
+        </div>
+      </div>
+      <!-- ── Category Sections & Buttons ── -->
+      
+      <div
+        class="my-2"
+      >
+        <span
+          class="my-1 capitalize text-black font-semibold dark:text-white"
+        >
+          sectionA
+        </span>
+        <div
+          class="flex flex-wrap"
+        >
+          
+          
+          <!-- Button when layer is active (highlighted) -->
+          
+          <!-- Button when layer is not yet active -->
+          <button
+            class="mx-1 my-1 mt-1 rounded-full capitalize bg-gray-100 text-black dark:bg-gray-100 dark:text-black hover:bg-green-500 dark:hover:bg-green-500 hover:text-white"
+            size="2xs"
+          >
+            
+            button1
+            
+          </button>
+          
+          
+          
+          <!-- Button when layer is active (highlighted) -->
+          
+          <!-- Button when layer is not yet active -->
+          <button
+            class="mx-1 my-1 mt-1 rounded-full capitalize bg-gray-100 text-black dark:bg-gray-100 dark:text-black hover:bg-green-500 dark:hover:bg-green-500 hover:text-white"
+            size="2xs"
+          >
+            
+            button2
+            
+          </button>
+          
+          
+          
+        </div>
+      </div>
+      <div
+        class="my-2"
+      >
+        <span
+          class="my-1 capitalize text-black font-semibold dark:text-white"
+        >
+          sectionB
+        </span>
+        <div
+          class="flex flex-wrap"
+        >
+          
+          
+          <!-- Button when layer is active (highlighted) -->
+          
+          <!-- Button when layer is not yet active -->
+          <button
+            class="mx-1 my-1 mt-1 rounded-full capitalize bg-gray-100 text-black dark:bg-gray-100 dark:text-black hover:bg-green-500 dark:hover:bg-green-500 hover:text-white"
+            size="2xs"
+          >
+            
+            button3
+            
+          </button>
+          
+          
+          
+        </div>
+      </div>
+      
+      <!-- ── Time Range Picker ── -->
+      <div
+        class="flex-auto"
+      >
+        <span
+          class="my-1 capitalize text-black font-semibold dark:text-white"
+        >
+           Time 
+        </span>
+        <div
+          class="px-5 py-2"
+          popper="[object Object]"
+        >
+          
+          <button
+            class=""
+            color="green"
+            icon="i-heroicons-calendar-days-20-solid"
+          >
+            
+            18 Feb, 2024 - 18 Feb, 2025
+            
+          </button>
+          
+          
+          <div
+            class="flex flex-grow items-center sm:divide-x divide-gray-200 dark:divide-gray-800"
+          >
+            <div
+              class="hidden sm:flex flex-col py-4"
+            >
+              
+              <button
+                class="rounded-none px-6 hover:bg-gray-50 dark:hover:bg-gray-800/50"
+                color="gray"
+                label="Last 7 Days"
+                truncate=""
+                variant="ghost"
+              >
+                
+                
+              </button>
+              <button
+                class="rounded-none px-6 hover:bg-gray-50 dark:hover:bg-gray-800/50"
+                color="gray"
+                label="Last 14 Days"
+                truncate=""
+                variant="ghost"
+              >
+                
+                
+              </button>
+              
+            </div>
+            <div
+              class="date-picker-stub"
+              modelvalue="[object Object]"
+            >
+              DatePicker
+            </div>
+          </div>
+          
+        </div>
+      </div>
+      <!-- ── Filters ── -->
+      
+      <div
+        class="flex justify-between"
+      >
+        <span
+          class="my-1 capitalize text-black font-semibold dark:text-white"
+        >
+          Comments
+        </span>
+        <button
+          class="my-1"
+          color="green"
+          size="lg"
+        >
+          false
+        </button>
+      </div>
+      
+    </div>
+  </div>
+  
+</div>
+`;

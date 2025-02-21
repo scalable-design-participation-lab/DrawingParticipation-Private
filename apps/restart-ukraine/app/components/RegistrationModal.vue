@@ -1,9 +1,34 @@
-<script setup>
+<script setup lang="ts">
 import { ref, reactive, watch } from 'vue'
 import { getAuth, signInAnonymously } from 'firebase/auth'
 import { useFirestore } from 'vuefire'
 import { collection, addDoc, query, where, getDocs } from 'firebase/firestore'
 import { useUserStore } from '@base/stores/user'
+import { number, object, string, type InferType } from 'yup'
+
+// https://ui.nuxt.com/components/form
+const schema = object({
+  lastname: string().required('Прізвище є обов’язковим'),
+  firstname: string().required('Ім’я є обов’язковим'),
+  age: number()
+    .required('Вік є обов’язковим')
+    .typeError('Вік має бути числом')
+    .positive('Вік має бути позитивним числом')
+    .integer('Вік має бути цілим числом'),
+  gender: string()
+    .required('Стать є обов’язковою')
+    .oneOf(['male', 'female', 'other'], 'Оберіть коректну стать'),
+  educationLevel: string()
+    .required('Рівень освіти є обов’язковим')
+    .oneOf(['average', 'incomplete_higher', 'higher'], 'Оберіть коректний рівень освіти'),
+  residentSince: string()
+    .required('Тривалість проживання у Вінниці є обов’язковою')
+    .oneOf(['less_than_1_year', '1_5_years', '5_10_years', 'more_than_10_years'], 'Оберіть коректний варіант'),
+  residentNearRiverSince: string()
+    .required('Це питання є обов’язковим')
+    .oneOf(['yes', 'no', 'unfamiliar'], 'Оберіть коректний варіант'),
+})
+type Schema = InferType<typeof schema>
 
 const auth = getAuth()
 const props = defineProps({
