@@ -64,7 +64,7 @@ const gridFeatures = computed(() => {
   // Convert input points to a FeatureCollection with properties
   const points = turf.featureCollection(
     props.points.map(({ coordinates, value }) =>
-      turf.point(coordinates, { [props.property]: value }),
+      turf.point(coordinates, { [props.property]: value, bbox: props.bbox }),
     ),
   )
 
