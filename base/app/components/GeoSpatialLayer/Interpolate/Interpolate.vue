@@ -11,7 +11,7 @@ interface InterpolationProps {
    * A collection of input points as a Turf.js FeatureCollection.
    * Must include a property for interpolation.
    */
-  points: any // needs to be a FeatureCollection but turf doesn't have types for that
+  points: [number, number][]
 
   /**
    * The name of the property to interpolate.
@@ -42,6 +42,10 @@ interface InterpolationProps {
    * The z-index of the layer.
    */
   zIndex?: number
+  /**
+   * bbox
+   */
+  bbox?: number[]
 }
 
 const props = withDefaults(defineProps<InterpolationProps>(), {
@@ -50,6 +54,7 @@ const props = withDefaults(defineProps<InterpolationProps>(), {
   units: 'miles',
   visible: true,
   zIndex: 1,
+  bbox: () => [-180, -90, 180, 90],
 })
 
 const gridFeatures = computed(() => {
@@ -62,7 +67,8 @@ const gridFeatures = computed(() => {
     units: props.units,
   }
 
-  const interpolatedGrid = turf.interpolate(props.points, props.gridPoints, options)
+  const points = turf.featureCollection(props.points.map(point => turf.point(point)))
+  const interpolatedGrid = turf.interpolate(points, props.gridPoints, options)
   const geoJson = new GeoJSON()
 
   return geoJson.readFeatures(interpolatedGrid, {

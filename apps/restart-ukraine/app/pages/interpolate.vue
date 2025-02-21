@@ -1,11 +1,19 @@
 <script setup lang="ts"> 
 import GeneralizedBackgroundMap from "@base/components/GeneralizedBackgroundMap.vue";
-import Interpolate from "@base/components/GeoSpatialLayer/Interpolate.vue";
+import Interpolate from "@base/components/GeoSpatialLayer/Interpolate/Interpolate.vue";
 import * as turf from "@turf/turf"
-var points = turf.randomPoint(100, { bbox: [50, 30, 70, 50] });
-turf.featureEach(points, function (point) {
-  point.properties.solRad = Math.random() * 50;
-});
+const bbox = [-180, -90, 180, 90]
+const points: [number, number][] = [
+  [0,0],
+  [0, 45],
+  [0, 90],
+  [45, 0],
+  [45, 45],
+  [45, 90],
+  [90, 0],
+  [90, 45],
+  [90, 90]
+]
 </script>
 
 
@@ -14,6 +22,7 @@ turf.featureEach(points, function (point) {
     <template #layers> 
         <Interpolate 
         :points="points" 
+        :bbox="bbox"
         :property="'solRad'"
         :gridType="'points'"
         :units="'miles'"
