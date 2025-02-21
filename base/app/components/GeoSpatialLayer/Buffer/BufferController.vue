@@ -5,6 +5,7 @@ const visible = defineModel<boolean>('visible', { type: Boolean, required: true 
 const zIndex = defineModel<number>('zIndex', { type: Number, required: true })
 const radius = defineModel<number>('radius', { type: Number, required: true })
 const mode = defineModel<BufferMode>('mode', { type: String as PropType<BufferMode>, required: true })
+const units = defineModel<'meters' | 'kilometers' | 'miles'>('units', { type: String as PropType<'meters' | 'kilometers' | 'miles'>, required: true })
 </script>
 
 <template>
@@ -55,13 +56,28 @@ const mode = defineModel<BufferMode>('mode', { type: String as PropType<BufferMo
       />
     </div>
     <div class="flex items-center justify-between">
-      <span class="block py-2 capitalize text-black font-semibold dark:text-white">Radius</span>
+      <span class="block py-2 capitalize text-black font-semibold dark:text-white">Radius ({{ units }}) </span>
       <UInput
         v-model.number="radius"
         type="number"
         min="0"
+        step="1"
         class="w-20 px-1 "
       />
     </div>
+
+    <!-- Units Selection (Radio Buttons) -->
+    <!-- <span class="block py-2 capitalize text-black font-semibold dark:text-white">Units</span>
+      <div class="flex space-x-4 mt-2">
+        <label>
+          <input v-model="units" type="radio" value="miles"> Miles
+        </label>
+        <label>
+          <input v-model="units" type="radio" value="kilometers"> Kilometers
+        </label>
+        <label>
+          <input v-model="units" type="radio" value="meters"> Meters
+        </label>
+      </div> -->
   </UCard>
 </template>
