@@ -11,6 +11,7 @@ const visible = ref(true);
 const zIndex = ref(1);
 const radius = ref(200);
 const mode = ref<'none' | 'union' | 'intersect'>('none');
+const units = ref<'meters' | 'kilometers' | 'miles'>('meters');
 </script>
 <template>
     <BufferController
@@ -18,10 +19,12 @@ const mode = ref<'none' | 'union' | 'intersect'>('none');
     v-model:zIndex="zIndex"
     v-model:radius="radius"
     v-model:mode="mode"
+    v-model:units="units"
     />
     <GeneralizedBackgroundMap ref="baseMap" :min-zoom="0"> 
         <template #layers> 
             <Buffer
+            :units="units"
             :mode="mode"
             :coordinates="coordinates"
             :visible="visible"

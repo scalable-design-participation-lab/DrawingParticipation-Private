@@ -10,6 +10,7 @@ export interface BufferProps {
   visible?: boolean
   radius?: number
   mode?: BufferMode
+  units?: 'meters' | 'kilometers' | 'miles'
 }
 
 const props = withDefaults(defineProps<BufferProps>(), {
@@ -17,17 +18,19 @@ const props = withDefaults(defineProps<BufferProps>(), {
   zIndex: 1,
   visible: true,
   radius: 200,
+  mode: 'none',
+  units: 'meters',
 })
 
 const geoJson = new GeoJSON()
 
 const bufferFeatures = computed(() => {
-  if (!props.coordinates.length) {
+  if (!props.coordinates.length || props.radius <= 0) {
     return []
   }
 
   const buffers = props.coordinates.map(coord =>
-    turf.buffer(turf.point(coord), props.radius, { units: 'meters' }),
+    turf.buffer(turf.point(coord), props.radius, { units: props.units }),
   )
 
   if (props.mode === 'union') {
