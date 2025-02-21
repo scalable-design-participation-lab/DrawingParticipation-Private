@@ -11,7 +11,7 @@ interface InterpolationProps {
    * A collection of input points as a Turf.js FeatureCollection.
    * Must include a property for interpolation.
    */
-  points: [number, number][]
+  points: { coordinates: [number, number], value: number }[]
 
   /**
    * The name of the property to interpolate.
@@ -31,7 +31,7 @@ interface InterpolationProps {
   /**
    * The measurement units for grid spacing.
    */
-  units?: 'miles' | 'kilometers'
+  units?: 'miles' | 'kilometers' | 'radians' | 'degrees'
 
   /**
    * Visibility of the interpolation layer.
@@ -58,16 +58,24 @@ const props = withDefaults(defineProps<InterpolationProps>(), {
 })
 
 const gridFeatures = computed(() => {
-  if (!props.points)
+  if (!props.points || !props.points.length)
     return []
 
+  // Convert input points to a FeatureCollection with properties
+  const points = turf.featureCollection(
+    props.points.map(({ coordinates, value }) =>
+      turf.point(coordinates, { [props.property]: value }),
+    ),
+  )
+
+  // Interpolation options
   const options = {
     gridType: props.gridType,
     property: props.property,
     units: props.units,
   }
 
-  const points = turf.featureCollection(props.points.map(point => turf.point(point)))
+  // Perform interpolation
   const interpolatedGrid = turf.interpolate(points, props.gridPoints, options)
   const geoJson = new GeoJSON()
 
