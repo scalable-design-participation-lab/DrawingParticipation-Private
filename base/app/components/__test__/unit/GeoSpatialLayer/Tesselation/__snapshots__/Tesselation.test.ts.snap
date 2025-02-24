@@ -1,5 +1,27 @@
 // Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
+exports[`tesselation.vue > renders correctly 1`] = `
+<ol-vector-layer
+  visible="true"
+  z-index="5"
+>
+  <ol-source-vector
+    features=""
+  />
+  <ol-style
+    override-style-function="function hexStyleFunction(feature) {
+      return new __vite_ssr_import_3__.Style({
+        fill: new __vite_ssr_import_3__.Fill({
+          color: feature.get("fillColor") || "rgba(0, 0, 0, 0.1)"
+          // Fallback color
+        }),
+        stroke: new __vite_ssr_import_3__.Stroke({ color: "#ffffff", width: props.width })
+      });
+    }"
+  />
+</ol-vector-layer>
+`;
+
 exports[`voronoi.vue > renders correctly 1`] = `
 <ol-vector-layer
   visible="true"

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import Tesselation from "@base/components/GeoSpatialLayer/Tesselation/Tesselation.vue";
+import Tesselation, { type TesselationType } from "@base/components/GeoSpatialLayer/Tesselation/Tesselation.vue";
 import TesselationController from "@base/components/GeoSpatialLayer/Tesselation/TesselationController.vue";
 import { useAllFeatureStore } from "@base/stores/all-features";
 import { toLonLat } from "ol/proj";
@@ -10,17 +10,19 @@ const coordinates = computed(() => {
 })
 const visible = ref<boolean>(true);
 const zIndex = ref<number>(0);
-const type = ref<string>('voronoi');  
+const type = ref<TesselationType>('voronoi');  
+const opacity = ref<number>(0.5);
 
 </script>
 
 <template>
-  <TesselationController v-model:visible="visible" v-model:zIndex="zIndex"
+  <TesselationController v-model:opacity="opacity" v-model:visible="visible" v-model:zIndex="zIndex"
   v-model:type="type" />
   <GeneralizedBackgroundMap ref="baseMap">
     <template #layers>
         <Tesselation 
         :type="type"
+        :opacity="opacity"
         :coordinates="coordinates" :visible="visible" :z-index="zIndex" />
     </template>
   </GeneralizedBackgroundMap>

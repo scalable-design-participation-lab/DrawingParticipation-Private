@@ -2,6 +2,7 @@
 const visible = defineModel('visible', { type: Boolean, required: true })
 const zIndex = defineModel('zIndex', { type: Number, required: true })
 const type = defineModel('type', { type: String, required: true })
+const opacity = defineModel('opacity', { type: Number, required: true })
 </script>
 
 <template>
@@ -25,6 +26,19 @@ const type = defineModel('type', { type: String, required: true })
       <UInput
         id="z-index"
         v-model.number="zIndex"
+        type="number"
+        class="w-20 px-1 "
+      />
+    </div>
+    <!--  Opacity Input -->
+    <div class="flex items-center justify-between">
+      <span class="block py-2 capitalize text-black font-semibold dark:text-white">Opacity</span>
+      <UInput
+        id="opacity"
+        v-model.number="opacity"
+        min="0"
+        step="0.1"
+        max="1"
         type="number"
         class="w-20 px-1 "
       />
