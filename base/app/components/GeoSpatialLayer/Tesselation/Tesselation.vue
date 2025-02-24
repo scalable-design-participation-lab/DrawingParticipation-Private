@@ -5,13 +5,15 @@ import { Fill, Stroke, Style } from 'ol/style'
 import { computed } from 'vue'
 import type { Feature } from 'ol'
 
-type TesselationType = 'voronoi' | 'tin'
+export type TesselationType = 'voronoi' | 'tin'
 export interface TesselationProps {
   coordinates?: [number, number][]
   bbox?: number[]
   visible?: boolean
   zIndex?: number
   type?: TesselationType
+  width?: number
+  opacity?: number
 }
 
 const props = withDefaults(defineProps<TesselationProps>(), {
@@ -20,6 +22,8 @@ const props = withDefaults(defineProps<TesselationProps>(), {
   visible: false,
   zIndex: 0,
   type: 'tin',
+  width: 1,
+  opacity: 0.5,
 })
 
 const geoJson = new GeoJSON()
@@ -47,7 +51,9 @@ const features = computed(() => {
     : turf.voronoi(collections, { bbox: props.bbox })
 
   // Filter out features with invalid geometry
-  // Turf’s Voronoi/tin function can sometimes return features without a valid geometry. This can happen if the algorithm can’t compute a proper polygon for certain points—often due to edge cases like points being too close together, lying on the boundary, or duplicate points.
+  // Turf’s Voronoi/tin function can sometimes return features without a valid geometry.
+  // This can happen if the algorithm can’t compute a proper polygon for certain points—often due
+  // to edge cases like points being too close together, lying on the boundary, or duplicate points.
   const validPolygons = {
     ...polygons,
     features: polygons.features.filter(feature => feature.geometry),
@@ -67,7 +73,7 @@ const features = computed(() => {
 function randomColor() {
   return `rgba(${Math.floor(Math.random() * 256)}, ${Math.floor(
     Math.random() * 256,
-  )}, ${Math.floor(Math.random() * 256)}, 0.6)`
+  )}, ${Math.floor(Math.random() * 256)}, ${props.opacity})`
 }
 
 /**
@@ -78,7 +84,7 @@ function hexStyleFunction(feature: Feature) {
     fill: new Fill({
       color: feature.get('fillColor') || 'rgba(0, 0, 0, 0.1)', // Fallback color
     }),
-    stroke: new Stroke({ color: '#ffffff', width: 1 }),
+    stroke: new Stroke({ color: '#ffffff', width: props.width }),
   })
 }
 </script>

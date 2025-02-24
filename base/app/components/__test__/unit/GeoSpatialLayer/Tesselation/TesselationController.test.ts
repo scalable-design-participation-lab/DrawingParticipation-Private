@@ -11,6 +11,7 @@ describe('tesselationController.vue', () => {
         visible: true,
         zIndex: 40,
         type: 'voronoi',
+        opacity: 0.5,
       },
       global: {
         stubs: ['UCard', 'UToggle', 'UInput'],
