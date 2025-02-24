@@ -14,6 +14,7 @@ export interface TesselationProps {
   type?: TesselationType
   width?: number
   opacity?: number
+  colorFunction?: (opacity: number) => string
 }
 
 const props = withDefaults(defineProps<TesselationProps>(), {
@@ -24,6 +25,7 @@ const props = withDefaults(defineProps<TesselationProps>(), {
   type: 'tin',
   width: 1,
   opacity: 0.5,
+  colorFunction: undefined, // Allow user to override coloring function
 })
 
 const geoJson = new GeoJSON()
@@ -64,16 +66,18 @@ const features = computed(() => {
     featureProjection: 'EPSG:3857',
   })
   features.forEach((feature) => {
-    feature.set('fillColor', randomColor())
+    feature.set('fillColor', props.colorFunction ? props.colorFunction(props.opacity) : randomColor(props.opacity))
   })
   return features
 })
 
-// Function to generate a random color
-function randomColor() {
+/**
+ * Function to generate a random color with the given opacity.
+ */
+function randomColor(opacity: number) {
   return `rgba(${Math.floor(Math.random() * 256)}, ${Math.floor(
     Math.random() * 256,
-  )}, ${Math.floor(Math.random() * 256)}, ${props.opacity})`
+  )}, ${Math.floor(Math.random() * 256)}, ${opacity})`
 }
 
 /**
