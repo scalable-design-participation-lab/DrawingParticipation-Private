@@ -6,6 +6,7 @@ import { computed } from 'vue'
 import type { Feature } from 'ol'
 
 export type TesselationType = 'voronoi' | 'tin'
+export type OpacityMode = 'larger' | 'smaller'
 export interface TesselationProps {
   coordinates?: [number, number][]
   bbox?: number[]
@@ -14,6 +15,7 @@ export interface TesselationProps {
   type?: TesselationType
   width?: number
   opacity?: number
+  opacityMode?: OpacityMode
   colorFunction?: (opacity: number) => string
 }
 
@@ -25,6 +27,7 @@ const props = withDefaults(defineProps<TesselationProps>(), {
   type: 'tin',
   width: 1,
   opacity: 0.5,
+  opacityMode: 'larger', // 'larger' means larger cells are more opaque; 'smaller' reverses that.
   colorFunction: undefined, // Allow user to override coloring function
 })
 
@@ -53,23 +56,43 @@ const features = computed(() => {
     : turf.voronoi(collections, { bbox: props.bbox })
 
   // Filter out features with invalid geometry
-  // Turf’s Voronoi/tin function can sometimes return features without a valid geometry.
-  // This can happen if the algorithm can’t compute a proper polygon for certain points—often due
-  // to edge cases like points being too close together, lying on the boundary, or duplicate points.
   const validPolygons = {
     ...polygons,
     features: polygons.features.filter(feature => feature.geometry),
   }
+  // Calculate areas and normalize to set opacity
+  const areas = validPolygons.features.map(feature => turf.area(feature))
+  const minArea = Math.min(...areas)
+  const maxArea = Math.max(...areas)
 
   const features = geoJson.readFeatures(validPolygons, {
     dataProjection: 'EPSG:4326',
     featureProjection: 'EPSG:3857',
   })
-  features.forEach((feature) => {
-    feature.set('fillColor', props.colorFunction ? props.colorFunction(props.opacity) : randomColor(props.opacity))
+  features.forEach((feature, index) => {
+    const area = areas[index]
+    const normalizedOpacity = normalizeOpacity(area, minArea, maxArea)
+    feature.set('fillColor', props.colorFunction
+      ? props.colorFunction(normalizedOpacity)
+      : randomColor(normalizedOpacity))
   })
   return features
 })
+
+/**
+ * Normalize area values to opacity range (0.1 to props.opacity).
+ * If `opacityMode` is 'larger', larger areas get higher opacity.
+ * If `opacityMode` is 'smaller', smaller areas get higher opacity.
+ */
+function normalizeOpacity(area: number, minArea: number, maxArea: number) {
+  if (minArea === maxArea)
+    return props.opacity
+  const scale = (area - minArea) / (maxArea - minArea)
+  if (props.opacityMode === 'smaller') {
+    return (1 - scale) * (props.opacity - 0.1)
+  }
+  return scale * (props.opacity - 0.1)
+}
 
 /**
  * Function to generate a random color with the given opacity.
