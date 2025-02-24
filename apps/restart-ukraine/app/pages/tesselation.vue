@@ -23,7 +23,14 @@ const opacity = ref<number>(0.5);
         <Tesselation 
         :type="type"
         :opacity="opacity"
-        :coordinates="coordinates" :visible="visible" :z-index="zIndex" />
+        :coordinates="coordinates" :visible="visible" :z-index="zIndex"
+        />
+        <!-- <Tesselation 
+        :type="type"
+        :opacity="opacity"
+        :coordinates="coordinates" :visible="visible" :z-index="zIndex"
+        :colorFunction="(opacity) => `rgba(0, 0, 0, ${opacity})`"
+        /> -->
     </template>
   </GeneralizedBackgroundMap>
 </template>
