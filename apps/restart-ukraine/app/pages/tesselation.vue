@@ -14,8 +14,8 @@ const type = ref<TesselationType>('voronoi');
 const opacity = ref<number>(0.5);
 const opacityMode = ref<'larger' | 'smaller'>('larger');
 const clusterCount = ref<number>(1);
-const primaryColor = ref<string>('red')
-const secondaryColor = ref<string>('purple')
+const primaryColor = ref<string>('#ff0000'); 
+const secondaryColor = ref<string>('#800080'); 
 </script>
 
 <template>
@@ -26,8 +26,8 @@ const secondaryColor = ref<string>('purple')
   v-model:type="type"
   v-model:opacity-mode="opacityMode" 
   v-model:cluster-count="clusterCount"
-  v-model:primary-color="primaryColor"
-  v-model:secondary-color="secondaryColor"
+  v-model:primaryColor="primaryColor"
+  v-model:secondaryColor="secondaryColor"
   />
   <GeneralizedBackgroundMap ref="baseMap">
     <template #layers>

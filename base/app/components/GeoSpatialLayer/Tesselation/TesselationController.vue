@@ -4,8 +4,8 @@ const zIndex = defineModel('zIndex', { type: Number, required: true })
 const type = defineModel('type', { type: String, required: true })
 const opacity = defineModel('opacity', { type: Number, required: true })
 const clusterCount = defineModel('clusterCount', { type: Number, required: true })
-const primaryColor = defineModel('primaryColor', { type: String, required: true })
-const secondaryColor = defineModel('secondaryColor', { type: String, required: true })
+const primaryColor = defineModel('primaryColor', { type: String, required: true, default: '#ff0000' })
+const secondaryColor = defineModel('secondaryColor', { type: String, required: true, default: '#800080' })
 </script>
 
 <template>
@@ -74,7 +74,7 @@ const secondaryColor = defineModel('secondaryColor', { type: String, required: t
       <color-picker-block
         v-model="primaryColor"
         class="w-full h-10 rounded-lg overflow-hidden"
-        @change="primaryColor = $event.hex"
+        @change="(e) => primaryColor = e.hex"
       />
     </div>
     <div class="space-y-1">
@@ -82,7 +82,7 @@ const secondaryColor = defineModel('secondaryColor', { type: String, required: t
       <color-picker-block
         v-model="secondaryColor"
         class="w-full h-10 rounded-lg overflow-hidden"
-        @change="secondaryColor = $event.hex"
+        @change="(e) => secondaryColor = e.hex"
       />
     </div>
   </UCard>
