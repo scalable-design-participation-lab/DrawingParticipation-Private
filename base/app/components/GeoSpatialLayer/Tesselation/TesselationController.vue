@@ -2,8 +2,8 @@
 const visible = defineModel('visible', { type: Boolean, required: true })
 const zIndex = defineModel('zIndex', { type: Number, required: true })
 const type = defineModel('type', { type: String, required: true })
-const opacityMode = defineModel('opacityMode', { type: String, required: true })
 const opacity = defineModel('opacity', { type: Number, required: true })
+const clusterCount = defineModel('clusterCount', { type: Number, required: true })
 </script>
 
 <template>
@@ -21,6 +21,18 @@ const opacity = defineModel('opacity', { type: Number, required: true })
       />
     </div>
 
+    <!-- Cluster Input -->
+    <div class="flex items-center justify-between">
+      <span class="block py-2 capitalize text-black font-semibold dark:text-white">Cluster Count</span>
+      <UInput
+        id="clusterCount"
+        v-model.number="clusterCount"
+        min="1"
+        step="1"
+        type="number"
+        class="w-20 px-1 "
+      />
+    </div>
     <!-- Z Index Input -->
     <div class="flex items-center justify-between">
       <span class="block py-2 capitalize text-black font-semibold dark:text-white">z-index</span>
@@ -52,17 +64,6 @@ const opacity = defineModel('opacity', { type: Number, required: true })
       </label>
       <label>
         <input v-model="type" type="radio" value="tin"> TIN
-      </label>
-    </div>
-
-    <!-- Opacity Type Selection (Radio Buttons) -->
-    <span class="block py-2 capitalize text-black font-semibold dark:text-white">Opacity Mode</span>
-    <div class="flex space-x-4 mt-2">
-      <label>
-        <input v-model="opacityMode" type="radio" value="larger"> Larger
-      </label>
-      <label>
-        <input v-model="opacityMode" type="radio" value="smaller"> Smaller
       </label>
     </div>
   </UCard>

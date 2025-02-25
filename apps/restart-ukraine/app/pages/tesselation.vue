@@ -13,25 +13,22 @@ const zIndex = ref<number>(0);
 const type = ref<TesselationType>('voronoi');  
 const opacity = ref<number>(0.5);
 const opacityMode = ref<'larger' | 'smaller'>('larger');
-
+const clusterCount = ref<number>(1);
 </script>
 
 <template>
   <TesselationController v-model:opacity="opacity" v-model:visible="visible" v-model:zIndex="zIndex"
-  v-model:type="type" v-model:opacity-mode="opacityMode"/>
+  v-model:type="type" v-model:opacity-mode="opacityMode" v-model:cluster-count="clusterCount"/>
   <GeneralizedBackgroundMap ref="baseMap">
     <template #layers>
-        <!-- <Tesselation 
-        :type="type"
-        :opacity="opacity"
-        :coordinates="coordinates" :visible="visible" :z-index="zIndex"
-        /> -->
         <Tesselation 
         :type="type"
         :opacity="opacity"
         :opacityMode="opacityMode"
-        :coordinates="coordinates" :visible="visible" :z-index="zIndex"
-        :colorFunction="(opacity) => `rgba(255, 0, 0, ${opacity})`"
+        :coordinates="coordinates"
+        :visible="visible"
+        :z-index="zIndex"
+        :clusterCount="clusterCount"
         />
     </template>
   </GeneralizedBackgroundMap>
