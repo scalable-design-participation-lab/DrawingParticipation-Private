@@ -4,6 +4,8 @@ const zIndex = defineModel('zIndex', { type: Number, required: true })
 const type = defineModel('type', { type: String, required: true })
 const opacity = defineModel('opacity', { type: Number, required: true })
 const clusterCount = defineModel('clusterCount', { type: Number, required: true })
+const primaryColor = defineModel('primaryColor', { type: String, required: true })
+const secondaryColor = defineModel('secondaryColor', { type: String, required: true })
 </script>
 
 <template>
@@ -65,6 +67,23 @@ const clusterCount = defineModel('clusterCount', { type: Number, required: true 
       <label>
         <input v-model="type" type="radio" value="tin"> TIN
       </label>
+    </div>
+    <!-- Color Pickers -->
+    <div class="space-y-1">
+      <span class="block py-2 capitalize text-black font-semibold dark:text-white">Primary Color</span>
+      <color-picker-block
+        v-model="primaryColor"
+        class="w-full h-10 rounded-lg overflow-hidden"
+        @change="primaryColor = $event.hex"
+      />
+    </div>
+    <div class="space-y-1">
+      <span class="block py-2 capitalize text-black font-semibold dark:text-white">Secondary Color</span>
+      <color-picker-block
+        v-model="secondaryColor"
+        class="w-full h-10 rounded-lg overflow-hidden"
+        @change="secondaryColor = $event.hex"
+      />
     </div>
   </UCard>
 </template>

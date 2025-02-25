@@ -161,7 +161,7 @@ const features = computed(() => {
 function hexStyleFunction(feature: Feature) {
   return new Style({
     fill: new Fill({
-      color: feature.get('fillColor') || 'rgba(0, 0, 0, 0.1)', // Fallback color
+      color: feature.get('fillColor') || 'rgba(0, 0, 0, 0)', // Fallback color
     }),
     stroke: new Stroke({ color: '#ffffff', width: props.width }),
   })
