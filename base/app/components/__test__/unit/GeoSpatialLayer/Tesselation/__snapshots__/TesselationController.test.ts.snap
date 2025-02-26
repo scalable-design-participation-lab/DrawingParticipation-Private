@@ -120,32 +120,43 @@ exports[`tesselationController.vue > renders correctly 1`] = `
        TIN 
     </label>
   </div>
-  <!-- Color Pickers -->
+  <!-- Primary Color Section with Minimized Button -->
   <div
-    class="space-y-1"
+    class="flex justify-between mt-4"
   >
     <span
       class="block py-2 capitalize text-black font-semibold dark:text-white"
     >
       Primary Color
     </span>
-    <color-picker-block
-      class="w-full h-10 rounded-lg overflow-hidden"
-      modelvalue="#00000"
-    />
+    <!-- Popup for color picker -->
+    <upopover
+      popper="[object Object]"
+      ui="[object Object]"
+    >
+      <button
+        class="w-8 h-8 rounded-full border border-gray-300"
+      />
+    </upopover>
   </div>
+  <!-- Secondary Color Section with Minimized Button -->
   <div
-    class="space-y-1"
+    class="flex justify-between mt-4"
   >
     <span
       class="block py-2 capitalize text-black font-semibold dark:text-white"
     >
       Secondary Color
     </span>
-    <color-picker-block
-      class="w-full h-10 rounded-lg overflow-hidden"
-      modelvalue="#00000"
-    />
+    <!-- Popup for color picker -->
+    <upopover
+      popper="[object Object]"
+      ui="[object Object]"
+    >
+      <button
+        class="w-8 h-8 rounded-full border border-gray-300"
+      />
+    </upopover>
   </div>
 </ucard>
 `;

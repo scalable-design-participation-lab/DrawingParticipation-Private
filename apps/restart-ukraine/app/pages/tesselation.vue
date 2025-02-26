@@ -12,7 +12,7 @@ const testData = [
   [28.547047915257,49.255967695851],
 ]
 const coordinates = computed(() => {
-  const feat = featuresByCategory['belonging.love'] ?? featuresByType.Point
+  const feat = featuresByType.Point
   let coord = feat.map(feature => toLonLat(feature.coordinates as [number, number])) as [number, number][];
   return coord 
   return testData

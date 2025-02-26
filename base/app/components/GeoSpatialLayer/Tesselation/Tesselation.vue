@@ -41,9 +41,20 @@ const features = computed(() => {
     console.warn('No coordinates provided for Tesselation computation.')
     return []
   }
-  // Filter points within the bbox
+
+  const seen = new Set<string>()
+  const uniqueCoordinates: [number, number][] = []
+  for (const coord of props.coordinates) {
+    const key = coord.join(',')
+    if (!seen.has(key)) {
+      seen.add(key)
+      uniqueCoordinates.push(coord)
+    }
+  }
+
+  // Filter points within the bbox using unique coordinates
   const [minX, minY, maxX, maxY] = props.bbox
-  const filteredCoordinates = props.coordinates.filter(([x, y]) =>
+  const filteredCoordinates = uniqueCoordinates.filter(([x, y]) =>
     x >= minX && x <= maxX && y >= minY && y <= maxY,
   )
 
@@ -65,7 +76,7 @@ const features = computed(() => {
     numberOfClusters: clusterCount,
   })
 
-  //  Compute centroid for each cluster
+  // Compute centroids for each cluster
   const clusterCentroids = []
   for (let c = 0; c < clusterCount; c++) {
     const clusterPts = clusteredPoints.features.filter(
