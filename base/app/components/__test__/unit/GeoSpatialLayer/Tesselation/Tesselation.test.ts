@@ -68,7 +68,7 @@ describe('tesselation.vue', () => {
     expect(computedFeatures).toEqual([])
   })
 
-  it('4 coodinates return 2 cells feature in TIN', () => {
+  it('return 2 cells feature when inputing 4 coordinates in TIN', () => {
     wrapper = mount(Tesselation, {
       props: {
         coordinates: [

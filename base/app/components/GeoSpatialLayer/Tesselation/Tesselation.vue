@@ -97,8 +97,10 @@ const features = computed(() => {
   // For each polygon, find the nearest cluster centroid and store:
   //    - cluster ID
   //    - distance to that centroid
+  //    - area of the polygon
   validPolygons.features.forEach((feature) => {
     const cellCentroid = turf.centroid(feature)
+    const area = turf.area(feature)
     let minDist = Infinity
     let clusterId = -1
 
@@ -114,7 +116,7 @@ const features = computed(() => {
     feature.properties = feature.properties || {}
     feature.properties.cluster = clusterId
     feature.properties.distance = minDist
-    feature.properties.area = turf.area(feature)
+    feature.properties.area = area
   })
 
   // Group polygons by cluster so we can compute a local min/max distance
@@ -150,14 +152,14 @@ const features = computed(() => {
     const [minDist, maxDist] = distanceRanges[clusterId] || [0, 1]
     const [minArea, maxArea] = areaRanges[clusterId] || [0, 1]
     clusterPolys.forEach((p) => {
-      const d = p.properties.distance
+      const distance = p.properties.distance
       const area = p.properties.area
       // Normalize distance for that cluster
-      const distance = (d - minDist) / (maxDist - minDist || 1)
+      const normDist = (distance - minDist) / (maxDist - minDist || 1)
       // Interpolate from red (center) to purple (edge)
       p.properties.fillColor = props.area
         ? d3.scaleSequential(d3.interpolateRgb(props.secondaryColor, props.primaryColor)).domain([minArea, maxArea])(area)
-        : d3.interpolateRgb(props.primaryColor, props.secondaryColor)(distance)
+        : d3.interpolateRgb(props.primaryColor, props.secondaryColor)(normDist)
     })
   })
 
