@@ -2,10 +2,12 @@
 import * as turf from '@turf/turf'
 import GeoJSON from 'ol/format/GeoJSON'
 import { computed, defineProps, withDefaults } from 'vue'
+import type { FeatureCollection, Geometry } from 'geojson'
 
 export type BufferMode = 'none' | 'union' | 'intersect'
+
 export interface BufferProps {
-  coordinates?: [number, number][]
+  coordinates?: FeatureCollection<Geometry>
   zIndex?: number
   visible?: boolean
   radius?: number
@@ -14,7 +16,7 @@ export interface BufferProps {
 }
 
 const props = withDefaults(defineProps<BufferProps>(), {
-  coordinates: () => [],
+  coordinates: () => ({ type: 'FeatureCollection', features: [] }) as FeatureCollection<Geometry>,
   zIndex: 1,
   visible: true,
   radius: 200,
@@ -25,17 +27,17 @@ const props = withDefaults(defineProps<BufferProps>(), {
 const geoJson = new GeoJSON()
 
 const bufferFeatures = computed(() => {
-  if (!props.coordinates.length || props.radius <= 0) {
+  if (!props.coordinates || !props.coordinates.features?.length || props.radius <= 0) {
+    console.warn('No features available for buffering or invalid radius.')
     return []
   }
-
-  const buffers = props.coordinates.map(coord =>
-    turf.buffer(turf.point(coord), props.radius, { units: props.units }),
-  )
+  const buffers = props.coordinates.features.map((feature) => {
+    return turf.buffer(feature, props.radius, { units: props.units })
+  })
+  const collection = turf.featureCollection(buffers)
 
   if (props.mode === 'union') {
-    const featureCollection = turf.featureCollection(buffers)
-    const unioned = turf.union(featureCollection)
+    const unioned = turf.union(collection)
     buffers.length = 0
     if (!unioned) {
       return []
@@ -44,8 +46,7 @@ const bufferFeatures = computed(() => {
   }
 
   if (props.mode === 'intersect') {
-    const featureCollection = turf.featureCollection(buffers)
-    const intersected = turf.intersect(featureCollection)
+    const intersected = turf.intersect(collection)
     buffers.length = 0
     if (!intersected) {
       return []
