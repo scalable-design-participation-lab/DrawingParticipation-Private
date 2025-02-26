@@ -12,6 +12,9 @@ describe('tesselationController.vue', () => {
         zIndex: 40,
         type: 'voronoi',
         opacity: 0.5,
+        clusterCount: 2,
+        primaryColor: '#00000',
+        secondaryColor: '#00000',
       },
       global: {
         stubs: ['UCard', 'UToggle', 'UInput'],
@@ -25,7 +28,7 @@ describe('tesselationController.vue', () => {
 
   it('renders with provided props', () => {
     expect(wrapper.props().visible).toBe(true)
-    expect(wrapper.props().type).toBe('voronoi')
     expect(wrapper.props().zIndex).toBe(40)
+    expect(wrapper.props().opacity).toBe(0.5)
   })
 })

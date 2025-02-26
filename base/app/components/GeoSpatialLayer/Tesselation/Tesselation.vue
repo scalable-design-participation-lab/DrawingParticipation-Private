@@ -18,6 +18,7 @@ export interface TesselationProps {
   clusterCount?: number
   primaryColor?: string
   secondaryColor?: string
+  area?: boolean
 }
 
 const props = withDefaults(defineProps<TesselationProps>(), {
@@ -30,6 +31,7 @@ const props = withDefaults(defineProps<TesselationProps>(), {
   clusterCount: 2, // Number of clusters to find
   primaryColor: 'red',
   secondaryColor: 'purple',
+  area: true,
 })
 
 const geoJson = new GeoJSON()
@@ -112,6 +114,7 @@ const features = computed(() => {
     feature.properties = feature.properties || {}
     feature.properties.cluster = clusterId
     feature.properties.distance = minDist
+    feature.properties.area = turf.area(feature)
   })
 
   // Group polygons by cluster so we can compute a local min/max distance
@@ -133,17 +136,28 @@ const features = computed(() => {
     const ds = clusterPolys.map(cp => cp.properties.distance)
     return [Math.min(...ds), Math.max(...ds)]
   })
+  // Calculate areas
+  const areaRanges: [number, number][] = polygonsByCluster.map((clusterPolys) => {
+    if (!clusterPolys.length)
+      return [0, 1]
+    const areas = clusterPolys.map(feature => turf.area(feature))
+    return [Math.min(...areas), Math.max(...areas)]
+  })
 
   //  Color each polygon: center = red, edges = purple
   //  We do a local color scale for each cluster so each cluster’s center is bright red.
   polygonsByCluster.forEach((clusterPolys, clusterId) => {
     const [minDist, maxDist] = distanceRanges[clusterId] || [0, 1]
+    const [minArea, maxArea] = areaRanges[clusterId] || [0, 1]
     clusterPolys.forEach((p) => {
       const d = p.properties.distance
+      const area = p.properties.area
       // Normalize distance for that cluster
       const distance = (d - minDist) / (maxDist - minDist || 1)
       // Interpolate from red (center) to purple (edge)
-      p.properties.fillColor = d3.interpolateRgb(props.primaryColor, props.secondaryColor)(distance)
+      p.properties.fillColor = props.area
+        ? d3.scaleSequential(d3.interpolateRgb(props.secondaryColor, props.primaryColor)).domain([minArea, maxArea])(area)
+        : d3.interpolateRgb(props.primaryColor, props.secondaryColor)(distance)
     })
   })
 
