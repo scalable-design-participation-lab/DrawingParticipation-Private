@@ -2,11 +2,13 @@
 import GeneralizedBackgroundMap from "@base/components/GeneralizedBackgroundMap.vue";
 import Interpolate from "@base/components/GeoSpatialLayer/Interpolate/Interpolate.vue";
 import InterpolateController from "@base/components/GeoSpatialLayer/Interpolate/InterpolateController.vue";
+import * as turf from "@turf/turf"
 const bbox = [0, 0, 90, 90]
-const points: { coordinates: [number, number]; value: number }[] = [
-  { coordinates: [0, 45], value: Math.random() * 100 },
-  { coordinates: [45, 0], value: Math.random() * 100 },
+const points = [
+  turf.point([0, 45], { value: Math.random() * 100 }),
+  turf.point([45, 0], { value: Math.random() * 100 }),
 ];
+const features = turf.featureCollection(points)
 const visible = ref(true);
 const zIndex = ref(1);
 const gridPoints = ref(100);
@@ -25,11 +27,11 @@ const units = ref<'miles' | 'kilometers' | 'radians' | 'degrees'>('miles');
 <GeneralizedBackgroundMap ref="baseMap" :min-zoom="0">
     <template #layers> 
         <Interpolate 
-        :points="points" 
+        :features="features" 
+        :z-index="zIndex"
         :bbox="bbox"
-        :property="'solRad'"
+        :property="'value'"
         :visible="visible"
-        :zIndex="zIndex"
         :gridPoints="gridPoints"
         :gridType="gridType"
         :units="units"
