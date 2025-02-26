@@ -41,6 +41,17 @@ const features = computed(() => {
     console.warn('No coordinates provided for Tesselation computation.')
     return []
   }
+  if (!Array.isArray(props.coordinates)) {
+    throw new TypeError('Invalid format: coordinates must be an array of [number, number] pairs.')
+  }
+
+  // Validate that each coordinate is a valid [number, number] pair
+  for (const coord of props.coordinates) {
+    if (!Array.isArray(coord) || coord.length !== 2
+      || typeof coord[0] !== 'number' || typeof coord[1] !== 'number') {
+      throw new Error(`Invalid coordinate format: ${JSON.stringify(coord)}. Each coordinate must be [number, number].`)
+    }
+  }
 
   const seen = new Set<string>()
   const uniqueCoordinates: [number, number][] = []
