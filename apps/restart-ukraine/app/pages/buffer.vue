@@ -8,7 +8,7 @@ import { computed, ref } from 'vue';
 
 const { featuresByType } = useAllFeatureStore();
 
-const coordinates = computed(() => {
+const features = computed(() => {
     if (!featuresByType.Point || !Array.isArray(featuresByType.Point)) {
         console.error("Invalid feature data:", featuresByType.Point);
         return turf.featureCollection([]);
@@ -41,7 +41,7 @@ const units = ref<'meters' | 'kilometers' | 'miles'>('meters');
             <Buffer
                 :units="units"
                 :mode="mode"
-                :coordinates="coordinates"
+                :features="features"
                 :visible="visible"
                 :z-index="zIndex"
                 :radius="radius"
