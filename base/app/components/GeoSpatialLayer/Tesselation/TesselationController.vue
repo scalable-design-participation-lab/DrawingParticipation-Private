@@ -48,7 +48,7 @@ const area = defineModel('area', { type: Boolean, required: true })
         step="1"
         max="1000"
         type="number"
-        class="w-20 px-1 "
+        class="w-20"
       />
     </div>
     <!-- Z Index Input -->
@@ -58,7 +58,7 @@ const area = defineModel('area', { type: Boolean, required: true })
         id="z-index"
         v-model.number="zIndex"
         type="number"
-        class="w-20 px-1 "
+        class="w-20"
       />
     </div>
     <!--  Opacity Input -->
@@ -71,7 +71,7 @@ const area = defineModel('area', { type: Boolean, required: true })
         step="0.1"
         max="1"
         type="number"
-        class="w-20 px-1 "
+        class="w-20"
       />
     </div>
     <!-- Type Selection (Radio Buttons) -->

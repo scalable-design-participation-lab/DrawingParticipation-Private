@@ -5,11 +5,12 @@ import { Fill, Stroke, Style } from 'ol/style'
 import { computed } from 'vue'
 import type { Feature } from 'ol'
 import * as d3 from 'd3'
+import type { FeatureCollection, Geometry } from 'geojson'
 
 export type TesselationType = 'voronoi' | 'tin'
 
 export interface TesselationProps {
-  coordinates?: [number, number][]
+  coordinates?: FeatureCollection<Geometry>
   bbox?: number[]
   visible?: boolean
   zIndex?: number
@@ -22,7 +23,10 @@ export interface TesselationProps {
 }
 
 const props = withDefaults(defineProps<TesselationProps>(), {
-  coordinates: () => [],
+  coordinates: () => ({
+    type: 'FeatureCollection',
+    features: [],
+  }),
   bbox: () => [28.462271, 49.215576, 28.570271, 49.265576],
   visible: false,
   zIndex: 0,
@@ -37,29 +41,22 @@ const props = withDefaults(defineProps<TesselationProps>(), {
 const geoJson = new GeoJSON()
 
 const features = computed(() => {
-  if (!props.coordinates.length) {
+  if (!props.coordinates.features) {
     console.warn('No coordinates provided for Tesselation computation.')
     return []
   }
-  if (!Array.isArray(props.coordinates)) {
+  if (!Array.isArray(props.coordinates.features)) {
     throw new TypeError('Invalid format: coordinates must be an array of [number, number] pairs.')
-  }
-
-  // Validate that each coordinate is a valid [number, number] pair
-  for (const coord of props.coordinates) {
-    if (!Array.isArray(coord) || coord.length !== 2
-      || typeof coord[0] !== 'number' || typeof coord[1] !== 'number') {
-      throw new Error(`Invalid coordinate format: ${JSON.stringify(coord)}. Each coordinate must be [number, number].`)
-    }
   }
 
   const seen = new Set<string>()
   const uniqueCoordinates: [number, number][] = []
-  for (const coord of props.coordinates) {
-    const key = coord.join(',')
+  for (const coord of props.coordinates.features) {
+    const coordinates = coord.geometry.coordinates
+    const key = coordinates.join(',')
     if (!seen.has(key)) {
       seen.add(key)
-      uniqueCoordinates.push(coord)
+      uniqueCoordinates.push(coordinates)
     }
   }
 

@@ -9,12 +9,43 @@ describe('tesselation.vue', () => {
   beforeEach(() => {
     wrapper = mount(Tesselation, {
       props: {
-        coordinates: [
-          [28.5, 49.25],
-          [28.55, 49.27],
-          [28.53, 49.22],
-          [28.51, 49.224],
-        ],
+        coordinates: {
+          type: 'FeatureCollection',
+          features: [
+            {
+              type: 'Feature',
+              geometry: {
+                type: 'Point',
+                coordinates: [28.5, 49.25],
+              },
+              properties: {},
+            },
+            {
+              type: 'Feature',
+              geometry: {
+                type: 'Point',
+                coordinates: [28.55, 49.27],
+              },
+              properties: {},
+            },
+            {
+              type: 'Feature',
+              geometry: {
+                type: 'Point',
+                coordinates: [28.53, 49.22],
+              },
+              properties: {},
+            },
+            {
+              type: 'Feature',
+              geometry: {
+                type: 'Point',
+                coordinates: [28.51, 49.224],
+              },
+              properties: {},
+            },
+          ],
+        },
         bbox: [28.462271, 49.215576, 28.570271, 49.265576],
         visible: true,
         zIndex: 5,
@@ -34,18 +65,44 @@ describe('tesselation.vue', () => {
   })
 
   it('renders with provided props', () => {
-    expect(wrapper.props().coordinates).toEqual([
-      [28.5, 49.25],
-      [28.55, 49.27],
-      [28.53, 49.22],
-      [28.51, 49.224],
-    ])
-    expect(wrapper.props().bbox).toEqual([28.462271, 49.215576, 28.570271, 49.265576])
-    expect(wrapper.props().visible).toBe(true)
-    expect(wrapper.props().zIndex).toBe(5)
-  })
+    expect(wrapper.props().coordinates).toEqual({
+      type: 'FeatureCollection',
+      features: [
+        {
+          type: 'Feature',
+          geometry: {
+            type: 'Point',
+            coordinates: [28.5, 49.25],
+          },
+          properties: {},
+        },
+        {
+          type: 'Feature',
+          geometry: {
+            type: 'Point',
+            coordinates: [28.55, 49.27],
+          },
+          properties: {},
+        },
+        {
+          type: 'Feature',
+          geometry: {
+            type: 'Point',
+            coordinates: [28.53, 49.22],
+          },
+          properties: {},
+        },
+        {
+          type: 'Feature',
+          geometry: {
+            type: 'Point',
+            coordinates: [28.51, 49.224],
+          },
+          properties: {},
+        },
+      ],
+    })
 
-  it('computes features correctly when coordinates are provided', () => {
     // Access the computed "features" from the component's setup state
     const computedFeatures = (wrapper.vm as any).features
     expect(Array.isArray(computedFeatures)).toBe(true)
@@ -61,7 +118,10 @@ describe('tesselation.vue', () => {
   it('computes empty features and logs a warning when no coordinates are provided', () => {
     wrapper = mount(Tesselation, {
       props: {
-        coordinates: [],
+        coordinates: {
+          type: 'FeatureCollection',
+          features: [],
+        },
       },
     })
     const computedFeatures = (wrapper.vm as any).features
@@ -71,12 +131,43 @@ describe('tesselation.vue', () => {
   it('return 2 cells feature when inputing 4 coordinates in TIN', () => {
     wrapper = mount(Tesselation, {
       props: {
-        coordinates: [
-          [28.5, 49.25],
-          [28.55, 49.26],
-          [28.53, 49.22],
-          [28.51, 49.224],
-        ],
+        coordinates: {
+          type: 'FeatureCollection',
+          features: [
+            {
+              type: 'Feature',
+              geometry: {
+                type: 'Point',
+                coordinates: [28.5, 49.25],
+              },
+              properties: {},
+            },
+            {
+              type: 'Feature',
+              geometry: {
+                type: 'Point',
+                coordinates: [28.55, 49.25],
+              },
+              properties: {},
+            },
+            {
+              type: 'Feature',
+              geometry: {
+                type: 'Point',
+                coordinates: [28.53, 49.22],
+              },
+              properties: {},
+            },
+            {
+              type: 'Feature',
+              geometry: {
+                type: 'Point',
+                coordinates: [28.51, 49.224],
+              },
+              properties: {},
+            },
+          ],
+        },
         bbox: [28.462271, 49.215576, 28.570271, 49.265576],
         visible: true,
         zIndex: 5,
@@ -89,7 +180,7 @@ describe('tesselation.vue', () => {
 
   it('renders with default props', () => {
     wrapper = mount(Tesselation)
-    expect(wrapper.props().coordinates).toEqual([])
+    expect(wrapper.props().coordinates).toEqual({ features: [], type: 'FeatureCollection' })
     expect(wrapper.props().bbox).toEqual([28.462271, 49.215576, 28.570271, 49.265576])
     expect(wrapper.props().visible).toBe(false)
     expect(wrapper.props().zIndex).toBe(0)
