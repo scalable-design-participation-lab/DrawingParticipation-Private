@@ -2,6 +2,7 @@
 import { computed } from 'vue'
 import * as turf from '@turf/turf'
 import GeoJSON from 'ol/format/GeoJSON'
+import type { FeatureCollection, Geometry } from 'geojson'
 
 /**
  * Props for configuring interpolation.
@@ -11,7 +12,7 @@ interface InterpolationProps {
    * A collection of input points as a Turf.js FeatureCollection.
    * Must include a property for interpolation.
    */
-  points: { coordinates: [number, number], value: number }[]
+  features: FeatureCollection<Geometry>
 
   /**
    * The name of the property to interpolate.
@@ -58,13 +59,13 @@ const props = withDefaults(defineProps<InterpolationProps>(), {
 })
 
 const gridFeatures = computed(() => {
-  if (!props.points || !props.points.length)
+  if (!props.features || !props.features.features.length)
     return []
 
   // Convert input points to a FeatureCollection with properties
   const points = turf.featureCollection(
-    props.points.map(({ coordinates, value }) =>
-      turf.point(coordinates, { [props.property]: value, bbox: props.bbox }),
+    props.features.features.map(feature =>
+      turf.point((feature.geometry as any).coordinates, { [props.property]: feature.properties[props.property], bbox: props.bbox }),
     ),
   )
 
