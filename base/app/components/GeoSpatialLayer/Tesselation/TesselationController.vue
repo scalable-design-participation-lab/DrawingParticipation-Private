@@ -84,22 +84,47 @@ const area = defineModel('area', { type: Boolean, required: true })
         <input v-model="type" type="radio" value="tin"> TIN
       </label>
     </div>
-    <!-- Color Pickers -->
-    <div class="space-y-1">
+    <!-- Primary Color Section with Minimized Button -->
+    <div class="flex justify-between  mt-4">
       <span class="block py-2 capitalize text-black font-semibold dark:text-white">Primary Color</span>
-      <color-picker-block
-        v-model="primaryColor"
-        class="w-full h-10 rounded-lg overflow-hidden"
-        @change="(e) => primaryColor = e.hex"
-      />
+      <!-- Popup for color picker -->
+      <UPopover
+        :popper="{ placement: 'bottom-end', strategy: 'absolute' }"
+        :ui="{ base: 'overflow-visible', rounded: 'rounded-lg', ring: 'ring-1 ring-gray-200 dark:ring-gray-800' }"
+      >
+        <button
+          class="w-8 h-8 rounded-full border border-gray-300"
+          :style="{ backgroundColor: primaryColor }"
+        />
+        <template #panel>
+          <color-picker-block
+            v-model="primaryColor"
+            class="w-full h-10 rounded-lg overflow-hidden"
+            @change="(e) => primaryColor = e.hex"
+          />
+        </template>
+      </UPopover>
     </div>
-    <div class="space-y-1">
+    <!-- Secondary Color Section with Minimized Button -->
+    <div class="flex justify-between mt-4">
       <span class="block py-2 capitalize text-black font-semibold dark:text-white">Secondary Color</span>
-      <color-picker-block
-        v-model="secondaryColor"
-        class="w-full h-10 rounded-lg overflow-hidden"
-        @change="(e) => secondaryColor = e.hex"
-      />
+      <!-- Popup for color picker -->
+      <UPopover
+        :popper="{ placement: 'bottom-end', strategy: 'absolute' }"
+        :ui="{ base: 'overflow-visible', rounded: 'rounded-lg', ring: 'ring-1 ring-gray-200 dark:ring-gray-800' }"
+      >
+        <button
+          class="w-8 h-8 rounded-full border border-gray-300"
+          :style="{ backgroundColor: secondaryColor }"
+        />
+        <template #panel>
+          <color-picker-block
+            v-model="secondaryColor"
+            class="w-full h-10 rounded-lg overflow-hidden"
+            @change="(e) => secondaryColor = e.hex"
+          />
+        </template>
+      </UPopover>
     </div>
   </UCard>
 </template>
