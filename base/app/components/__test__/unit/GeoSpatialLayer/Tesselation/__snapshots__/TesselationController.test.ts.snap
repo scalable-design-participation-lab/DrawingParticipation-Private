@@ -1,7 +1,151 @@
 // Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
 exports[`tesselationController.vue > renders correctly 1`] = `
-<u-card-stub
+<ucard
   class="fixed right-6 top-24 w-96 md:w-80 max-h-[calc(100vh-11rem)] z-40 shadow-xl dark:bg-black flex flex-col overflow-scroll"
-/>
+>
+  <!-- Visible -->
+  <div
+    class="flex justify-between my-2"
+  >
+    <span
+      class="my-1 capitalize text-black font-semibold dark:text-white"
+    >
+       Visibility 
+    </span>
+    <utoggle
+      class="my-1"
+      color="green"
+      modelvalue="true"
+      off-icon="i-heroicons-x-mark-20-solid"
+      size="lg"
+    />
+  </div>
+  <!-- Area -->
+  <div
+    class="flex justify-between my-2"
+  >
+    <span
+      class="my-1 capitalize text-black font-semibold dark:text-white"
+    >
+       Area 
+    </span>
+    <utoggle
+      class="my-1"
+      color="green"
+      modelvalue="true"
+      off-icon="i-heroicons-x-mark-20-solid"
+      size="lg"
+    />
+  </div>
+  <!-- Cluster Input -->
+  <div
+    class="flex items-center justify-between"
+  >
+    <span
+      class="block py-2 capitalize text-black font-semibold dark:text-white"
+    >
+      Cluster Count
+    </span>
+    <uinput
+      class="w-20 px-1"
+      disabled="true"
+      id="clusterCount"
+      max="1000"
+      min="1"
+      modelmodifiers="[object Object]"
+      modelvalue="2"
+      step="1"
+      type="number"
+    />
+  </div>
+  <!-- Z Index Input -->
+  <div
+    class="flex items-center justify-between"
+  >
+    <span
+      class="block py-2 capitalize text-black font-semibold dark:text-white"
+    >
+      z-index
+    </span>
+    <uinput
+      class="w-20 px-1"
+      id="z-index"
+      modelmodifiers="[object Object]"
+      modelvalue="40"
+      type="number"
+    />
+  </div>
+  <!--  Opacity Input -->
+  <div
+    class="flex items-center justify-between"
+  >
+    <span
+      class="block py-2 capitalize text-black font-semibold dark:text-white"
+    >
+      Opacity
+    </span>
+    <uinput
+      class="w-20 px-1"
+      id="opacity"
+      max="1"
+      min="0"
+      modelmodifiers="[object Object]"
+      modelvalue="0.5"
+      step="0.1"
+      type="number"
+    />
+  </div>
+  <!-- Type Selection (Radio Buttons) -->
+  <span
+    class="block py-2 capitalize text-black font-semibold dark:text-white"
+  >
+    Tesselation Mode
+  </span>
+  <div
+    class="flex space-x-4 mt-2"
+  >
+    <label>
+      <input
+        type="radio"
+        value="voronoi"
+      />
+       Voronoi 
+    </label>
+    <label>
+      <input
+        type="radio"
+        value="tin"
+      />
+       TIN 
+    </label>
+  </div>
+  <!-- Color Pickers -->
+  <div
+    class="space-y-1"
+  >
+    <span
+      class="block py-2 capitalize text-black font-semibold dark:text-white"
+    >
+      Primary Color
+    </span>
+    <color-picker-block
+      class="w-full h-10 rounded-lg overflow-hidden"
+      modelvalue="#00000"
+    />
+  </div>
+  <div
+    class="space-y-1"
+  >
+    <span
+      class="block py-2 capitalize text-black font-semibold dark:text-white"
+    >
+      Secondary Color
+    </span>
+    <color-picker-block
+      class="w-full h-10 rounded-lg overflow-hidden"
+      modelvalue="#00000"
+    />
+  </div>
+</ucard>
 `;

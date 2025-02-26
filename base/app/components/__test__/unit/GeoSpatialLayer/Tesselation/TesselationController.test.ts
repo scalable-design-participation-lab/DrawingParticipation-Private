@@ -15,9 +15,7 @@ describe('tesselationController.vue', () => {
         clusterCount: 2,
         primaryColor: '#00000',
         secondaryColor: '#00000',
-      },
-      global: {
-        stubs: ['UCard', 'UToggle', 'UInput'],
+        area: true,
       },
     })
   })
