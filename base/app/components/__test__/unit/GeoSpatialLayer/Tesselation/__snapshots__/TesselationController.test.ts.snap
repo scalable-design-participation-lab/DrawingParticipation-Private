@@ -48,7 +48,7 @@ exports[`tesselationController.vue > renders correctly 1`] = `
       Cluster Count
     </span>
     <uinput
-      class="w-20 px-1"
+      class="w-20"
       disabled="true"
       id="clusterCount"
       max="1000"
@@ -69,7 +69,7 @@ exports[`tesselationController.vue > renders correctly 1`] = `
       z-index
     </span>
     <uinput
-      class="w-20 px-1"
+      class="w-20"
       id="z-index"
       modelmodifiers="[object Object]"
       modelvalue="40"
@@ -86,7 +86,7 @@ exports[`tesselationController.vue > renders correctly 1`] = `
       Opacity
     </span>
     <uinput
-      class="w-20 px-1"
+      class="w-20"
       id="opacity"
       max="1"
       min="0"

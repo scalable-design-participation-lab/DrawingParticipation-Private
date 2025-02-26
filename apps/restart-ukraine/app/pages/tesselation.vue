@@ -3,6 +3,7 @@ import Tesselation, { type TesselationType } from "@base/components/GeoSpatialLa
 import TesselationController from "@base/components/GeoSpatialLayer/Tesselation/TesselationController.vue";
 import { useAllFeatureStore } from "@base/stores/all-features";
 import { toLonLat } from "ol/proj";
+import * as turf from "@turf/turf"
 
 const {featuresByType, featuresByCategory} = useAllFeatureStore();
 const testData = [
@@ -12,10 +13,16 @@ const testData = [
   [28.547047915257,49.255967695851],
 ]
 const coordinates = computed(() => {
-  const feat = featuresByType.Point
-  let coord = feat.map(feature => toLonLat(feature.coordinates as [number, number])) as [number, number][];
-  return coord 
-  return testData
+ if (!featuresByType.Point || !Array.isArray(featuresByType.Point)) {
+        console.error("Invalid feature data:", featuresByType.Point);
+        return turf.featureCollection([]);
+  }
+  const points = featuresByType.Point.map(feature => {
+        const lonLat = toLonLat(feature.coordinates as [number, number]);
+        return turf.point(lonLat);
+  })
+
+  return turf.featureCollection(points);
 })
 
 const visible = ref<boolean>(true);
