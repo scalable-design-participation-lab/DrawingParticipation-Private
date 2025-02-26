@@ -1,6 +1,7 @@
 import Tesselation from '@components/GeoSpatialLayer/Tesselation/Tesselation.vue'
 import type { VueWrapper } from '@vue/test-utils'
 import { mount } from '@vue/test-utils'
+import Nop from '@components/Nop.vue'
 
 describe('tesselation.vue', () => {
   let wrapper: VueWrapper<any>
@@ -12,10 +13,18 @@ describe('tesselation.vue', () => {
           [28.5, 49.25],
           [28.55, 49.27],
           [28.53, 49.22],
+          [28.51, 49.224],
         ],
         bbox: [28.462271, 49.215576, 28.570271, 49.265576],
         visible: true,
         zIndex: 5,
+      },
+      global: {
+        stubs: {
+          'ol-vector-layer': Nop,
+          'ol-source-vector': Nop,
+          'ol-style': Nop,
+        },
       },
     })
   })
@@ -29,6 +38,7 @@ describe('tesselation.vue', () => {
       [28.5, 49.25],
       [28.55, 49.27],
       [28.53, 49.22],
+      [28.51, 49.224],
     ])
     expect(wrapper.props().bbox).toEqual([28.462271, 49.215576, 28.570271, 49.265576])
     expect(wrapper.props().visible).toBe(true)
@@ -56,6 +66,25 @@ describe('tesselation.vue', () => {
     })
     const computedFeatures = (wrapper.vm as any).features
     expect(computedFeatures).toEqual([])
+  })
+
+  it('4 coodinates return 2 cells feature in TIN', () => {
+    wrapper = mount(Tesselation, {
+      props: {
+        coordinates: [
+          [28.5, 49.25],
+          [28.55, 49.26],
+          [28.53, 49.22],
+          [28.51, 49.224],
+        ],
+        bbox: [28.462271, 49.215576, 28.570271, 49.265576],
+        visible: true,
+        zIndex: 5,
+        type: 'tin',
+      },
+    })
+
+    expect(wrapper.vm.features.length).toBe(2)
   })
 
   it('renders with default props', () => {

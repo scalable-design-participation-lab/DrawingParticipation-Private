@@ -6,10 +6,11 @@ const opacity = defineModel('opacity', { type: Number, required: true })
 const clusterCount = defineModel('clusterCount', { type: Number, required: true })
 const primaryColor = defineModel('primaryColor', { type: String, required: true, default: '#ff0000' })
 const secondaryColor = defineModel('secondaryColor', { type: String, required: true, default: '#800080' })
+const area = defineModel('area', { type: Boolean, required: true })
 </script>
 
 <template>
-  <UCard class="fixed right-6 top-24 w-96 md:w-80 max-h-[calc(100vh-11rem)] z-40 shadow-xl dark:bg-black flex flex-col overflow-hidden">
+  <UCard class="fixed right-6 top-24 w-96 md:w-80 max-h-[calc(100vh-11rem)] z-40 shadow-xl dark:bg-black flex flex-col overflow-scroll">
     <!-- Visible -->
     <div class="flex justify-between my-2">
       <span class="my-1 capitalize text-black font-semibold dark:text-white"> Visibility </span>
@@ -22,6 +23,19 @@ const secondaryColor = defineModel('secondaryColor', { type: String, required: t
         off-icon="i-heroicons-x-mark-20-solid"
       />
     </div>
+    <!-- Area -->
+    <div class="flex justify-between my-2">
+      <span class="my-1 capitalize text-black font-semibold dark:text-white"> Area </span>
+      <UToggle
+        v-model="area"
+        class="my-1"
+        color="green"
+        size="lg"
+        on-icon="i-heroicons-check-20-solid"
+        off-icon="i-heroicons-x-mark-20-solid"
+        @change="clusterCount = 1"
+      />
+    </div>
 
     <!-- Cluster Input -->
     <div class="flex items-center justify-between">
@@ -29,8 +43,10 @@ const secondaryColor = defineModel('secondaryColor', { type: String, required: t
       <UInput
         id="clusterCount"
         v-model.number="clusterCount"
+        :disabled="area"
         min="1"
         step="1"
+        max="1000"
         type="number"
         class="w-20 px-1 "
       />
