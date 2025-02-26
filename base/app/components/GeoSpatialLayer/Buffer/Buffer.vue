@@ -7,7 +7,7 @@ import type { FeatureCollection, Geometry } from 'geojson'
 export type BufferMode = 'none' | 'union' | 'intersect'
 
 export interface BufferProps {
-  coordinates?: FeatureCollection<Geometry>
+  features?: FeatureCollection<Geometry>
   zIndex?: number
   visible?: boolean
   radius?: number
@@ -16,22 +16,22 @@ export interface BufferProps {
 }
 
 const props = withDefaults(defineProps<BufferProps>(), {
-  coordinates: () => ({ type: 'FeatureCollection', features: [] }) as FeatureCollection<Geometry>,
+  features: () => ({ type: 'FeatureCollection', features: [] }) as FeatureCollection<Geometry>,
   zIndex: 1,
   visible: true,
   radius: 200,
   mode: 'none',
-  units: 'meters',
+  units: 'miles',
 })
 
 const geoJson = new GeoJSON()
 
 const bufferFeatures = computed(() => {
-  if (!props.coordinates || !props.coordinates.features?.length || props.radius <= 0) {
+  if (!props.features || !props.features.features?.length || props.radius <= 0) {
     console.warn('No features available for buffering or invalid radius.')
     return []
   }
-  const buffers = props.coordinates.features.map((feature) => {
+  const buffers = props.features.features.map((feature) => {
     return turf.buffer(feature, props.radius, { units: props.units })
   })
   const collection = turf.featureCollection(buffers)

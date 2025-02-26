@@ -44,7 +44,7 @@ describe('buffer.vue', () => {
   beforeEach(() => {
     wrapper = mount(Buffer, {
       props: {
-        coordinates: {
+        features: {
           type: 'FeatureCollection',
           features: [
             {
