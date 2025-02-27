@@ -1,12 +1,13 @@
 <script setup lang="ts">
 import { computed, reactive } from "vue";
 import { useAllFeatureStore } from "../../../../base/app/stores/all-features";
-import GeoJSON from "ol/format/GeoJSON";
+import * as turf from '@turf/turf'
 import GeneralizedBackgroundMap from "@base/components/GeneralizedBackgroundMap.vue";
 import HeatMap, { type HeatMapLayerSettings } from "@base/components/GeoSpatialLayer/HeatMap/HeatMap.vue";
-import type { Feature, MapType } from "@base/stores/types/store";
+import type {  MapType } from "@base/stores/types/store";
 import { useMapStore } from "@base/stores/map";
 import HeatMapController from "@base/components/GeoSpatialLayer/HeatMap/HeatMapController.vue";
+import { toLonLat } from "ol/proj";
 // 🌍 Map Store
 const mapStore = useMapStore();
 const { setMapType } = mapStore;
@@ -34,7 +35,6 @@ const rightItems = ref([
 
 // 🗺 Feature Store & GeoJSON Processor
 const { featuresByCategory } = useAllFeatureStore();
-const geoJson = new GeoJSON();
 
 // 🌍 Reactive State
 const filterTime = useState<{ start: Date; end: Date }>("filterTime", () => {
@@ -43,34 +43,63 @@ const filterTime = useState<{ start: Date; end: Date }>("filterTime", () => {
   start.setFullYear(end.getFullYear() - 1); 
   return { start, end };
 });
-// 📌 Function to Convert Features into OpenLayers GeoJSON Format
 const getGeoJsonFeature = (featureKey: string) => {
   let features = featuresByCategory[featureKey] ?? [];
-  if (filters["Comments"]) {
-    features = features.filter((feat: Feature) => feat.comment.length > 0);
+
+  console.log(`Processing featureKey: ${featureKey}, Initial features:`, features);
+
+  // 🔍 Ensure features exist
+  if (!Array.isArray(features) || features.length === 0) {
+    console.warn(`No valid features found for key: ${featureKey}`);
+    return turf.featureCollection([]);
   }
-  if (filterTime.value) { 
-    features = features.filter((feat: Feature) => {
-      const featureCurrentTime = new Date(feat.timestamp as string);
-      return featureCurrentTime >= filterTime.value.start && featureCurrentTime <= filterTime.value.end
+
+  // 🔍 Filter by "Comments" if enabled
+  if (filters["Comments"]) {
+    features = features.filter(feat => feat.comment && feat.comment.length > 0);
+  }
+
+  // ⏳ Filter by Time Range
+  if (filterTime.value) {
+    features = features.filter(feat => {
+      if (!feat.timestamp) {
+        console.warn(`Feature missing timestamp:`, feat);
+        return false;
+      }
+      const featureCurrentTime = new Date(feat.timestamp);
+      return featureCurrentTime >= filterTime.value.start && featureCurrentTime <= filterTime.value.end;
     });
   }
-  return geoJson.readFeatures({
-    type: "FeatureCollection",
-    features: features.map(({ type, coordinates }) => ({
-      type: "Feature",
-      geometry: { type, coordinates },
-    })),
-  });
+
+  // 🔍 Validate Coordinates
+  features = features.map(feat => {
+    if (
+      !feat.coordinates || // Must exist
+      !Array.isArray(feat.coordinates) || // Must be an array
+      feat.coordinates.length !== 2 || // Must have exactly 2 elements
+      typeof feat.coordinates[0] !== "number" || // First element must be a number (longitude)
+      typeof feat.coordinates[1] !== "number" // Second element must be a number (latitude)
+    ) {
+      console.warn("Invalid coordinates, skipping feature:", feat);
+      return null;
+    }
+    return turf.point(toLonLat(feat.coordinates)); // Preserve properties
+  }).filter(Boolean); // Remove invalid features
+
+  const featureCollection = turf.featureCollection(features);
+  console.log(`Final GeoJSON for ${featureKey}:`, featureCollection);
+
+  return featureCollection;
 };
-
 // 🔥 Computed Features for Each Category
-const features = computed(() =>
-  Object.fromEntries(
-    Object.keys(featuresByCategory).map((key) => [key, getGeoJsonFeature(key)])
-  )
-);
-
+const features = computed(() => {
+  const entries = Object.entries(featuresByCategory).map(([key, value]) => {
+    const geoJson = getGeoJsonFeature(key);
+    console.log(`Computed GeoJSON for ${key}:`, geoJson);
+    return [key, geoJson];
+  });
+  return Object.fromEntries(entries);
+});
 
 // 📌 Compute Categories and Sections
 const categories = computed(() => {
