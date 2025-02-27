@@ -22,6 +22,7 @@ describe('gridController.vue', () => {
         baseHue: 180,
         cellSide: 0.5,
         shape: 'Hexagon',
+        width: 100,
       },
     })
   })
