@@ -12,7 +12,7 @@ const testData = [
   [28.54277047915257,49.2535967695851],
   [28.547047915257,49.255967695851],
 ]
-const coordinates = computed(() => {
+const features = computed(() => {
  if (!featuresByType.Point || !Array.isArray(featuresByType.Point)) {
         console.error("Invalid feature data:", featuresByType.Point);
         return turf.featureCollection([]);
@@ -54,7 +54,7 @@ const area = ref<boolean>(true)
         :type="type"
         :opacity="opacity"
         :opacityMode="opacityMode"
-        :coordinates="coordinates"
+        :features="features"
         :visible="visible"
         :z-index="zIndex"
         :clusterCount="clusterCount"
