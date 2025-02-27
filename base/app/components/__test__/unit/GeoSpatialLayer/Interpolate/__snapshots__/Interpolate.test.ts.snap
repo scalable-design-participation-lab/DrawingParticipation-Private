@@ -1,0 +1,12 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`interpolate.vue > renders correctly 1`] = `
+<ol-vector-layer
+  visible="true"
+  z-index="1"
+>
+  <ol-source-vector
+    features=""
+  />
+</ol-vector-layer>
+`;
