@@ -271,7 +271,7 @@ describe('tesselation.vue', () => {
     expect(featuresDup.length).toEqual(featuresUnique.length)
   })
   it('computes features correctly when valid coordinates are provided', () => {
-    const computedFeatures = (wrapper.vm as any).features
+    const computedFeatures = (wrapper.vm as any).computedFeatures
     expect(Array.isArray(computedFeatures)).toBe(true)
     if (computedFeatures.length > 0) {
       computedFeatures.forEach((feature: any) => {
