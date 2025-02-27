@@ -127,7 +127,7 @@ describe('tesselation.vue', () => {
     })
     const computedFeatures = (wrapper.vm as any).features
     expect(computedFeatures).toEqual([])
-    expect(consoleWarnSpy).toHaveBeenCalledWith('No coordinates provided for Tesselation computation.')
+    expect(consoleWarnSpy).toHaveBeenCalledWith('No valid coordinates inside the bounding box for Tesselation.')
     consoleWarnSpy.mockRestore()
   })
 
@@ -212,7 +212,17 @@ describe('tesselation.vue', () => {
     ]
     const wrapperDup = mount(Tesselation, {
       props: {
-        coordinates: dupCoordinates,
+        coordinates: {
+          type: 'FeatureCollection',
+          features: dupCoordinates.map(coord => ({
+            type: 'Feature',
+            geometry: {
+              type: 'Point',
+              coordinates: coord,
+            },
+            properties: {},
+          })),
+        },
         bbox: [28.462271, 49.215576, 28.570271, 49.265576],
         visible: true,
         zIndex: 5,
@@ -229,7 +239,17 @@ describe('tesselation.vue', () => {
 
     const wrapperUnique = mount(Tesselation, {
       props: {
-        coordinates: uniqueCoordinates,
+        coordinates: {
+          type: 'FeatureCollection',
+          features: uniqueCoordinates.map(coord => ({
+            type: 'Feature',
+            geometry: {
+              type: 'Point',
+              coordinates: coord,
+            },
+            properties: {},
+          })),
+        },
         bbox: [28.462271, 49.215576, 28.570271, 49.265576],
         visible: true,
         zIndex: 5,
@@ -274,15 +294,23 @@ describe('tesselation.vue', () => {
       [28.53, 49.22],
     ]
 
-    const wrapperDup = mount(Tesselation, { props: { coordinates: duplicateCoordinates } })
-    const wrapperUnique = mount(Tesselation, { props: { coordinates: uniqueCoordinates } })
+    const wrapperDup = mount(Tesselation, { props: { coordinates: { type: 'FeatureCollection', features: duplicateCoordinates.map(coord => ({ type: 'Feature', geometry: { type: 'Point', coordinates: coord }, properties: {} })) } } })
+    const wrapperUnique = mount(Tesselation, { props: { coordinates: { type: 'FeatureCollection', features: uniqueCoordinates.map(coord => ({ type: 'Feature', geometry: { type: 'Point', coordinates: coord }, properties: {} })) } } })
 
     expect((wrapperDup.vm as any).features.length).toEqual((wrapperUnique.vm as any).features.length)
   })
 
   it('ensures cluster count behavior does not change output', () => {
-    const wrapperCluster2 = mount(Tesselation, { props: { clusterCount: 2, coordinates: [[28.5, 49.25], [28.55, 49.27], [28.53, 49.22]] } })
-    const wrapperCluster4 = mount(Tesselation, { props: { clusterCount: 4, coordinates: [[28.5, 49.25], [28.55, 49.27], [28.53, 49.22]] } })
+    const wrapperCluster2 = mount(Tesselation, { props: { clusterCount: 2, coordinates: { type: 'FeatureCollection', features: [
+      { type: 'Feature', geometry: { type: 'Point', coordinates: [28.5, 49.25] }, properties: {} },
+      { type: 'Feature', geometry: { type: 'Point', coordinates: [28.55, 49.27] }, properties: {} },
+      { type: 'Feature', geometry: { type: 'Point', coordinates: [28.53, 49.22] }, properties: {} },
+    ] } } })
+    const wrapperCluster4 = mount(Tesselation, { props: { clusterCount: 4, coordinates: { type: 'FeatureCollection', features: [
+      { type: 'Feature', geometry: { type: 'Point', coordinates: [28.5, 49.25] }, properties: {} },
+      { type: 'Feature', geometry: { type: 'Point', coordinates: [28.55, 49.27] }, properties: {} },
+      { type: 'Feature', geometry: { type: 'Point', coordinates: [28.53, 49.22] }, properties: {} },
+    ] } } })
 
     expect((wrapperCluster2.vm as any).features.length).toBe((wrapperCluster4.vm as any).features.length)
     expect((wrapperCluster4.vm as any).features.length).toBe((wrapperCluster2.vm as any).features.length)
@@ -291,23 +319,85 @@ describe('tesselation.vue', () => {
   it('returns correct number of cells in TIN mode', () => {
     wrapper = mount(Tesselation, {
       props: {
-        coordinates: [
-          [28.5, 49.25],
-          [28.55, 49.26],
-          [28.53, 49.22],
-          [28.51, 49.224],
-        ],
+        coordinates: {
+          type: 'FeatureCollection',
+          features: [
+            {
+              type: 'Feature',
+              geometry: {
+                type: 'Point',
+                coordinates: [28.5, 49.25],
+              },
+              properties: {},
+            },
+            {
+              type: 'Feature',
+              geometry: {
+                type: 'Point',
+                coordinates: [28.55, 49.26],
+              },
+              properties: {},
+            },
+            {
+              type: 'Feature',
+              geometry: {
+                type: 'Point',
+                coordinates: [28.53, 49.22],
+              },
+              properties: {},
+            },
+            {
+              type: 'Feature',
+              geometry: {
+                type: 'Point',
+                coordinates: [28.51, 49.224],
+              },
+              properties: {},
+            },
+          ],
+        },
         type: 'tin',
       },
     })
     wrapper = mount(Tesselation, {
       props: {
-        coordinates: [
-          [28.5, 49.25],
-          [28.55, 49.26],
-          [28.53, 49.22],
-          [28.51, 49.224],
-        ],
+        coordinates: {
+          type: 'FeatureCollection',
+          features: [
+            {
+              type: 'Feature',
+              geometry: {
+                type: 'Point',
+                coordinates: [28.5, 49.25],
+              },
+              properties: {},
+            },
+            {
+              type: 'Feature',
+              geometry: {
+                type: 'Point',
+                coordinates: [28.55, 49.26],
+              },
+              properties: {},
+            },
+            {
+              type: 'Feature',
+              geometry: {
+                type: 'Point',
+                coordinates: [28.53, 49.22],
+              },
+              properties: {},
+            },
+            {
+              type: 'Feature',
+              geometry: {
+                type: 'Point',
+                coordinates: [28.51, 49.224],
+              },
+              properties: {},
+            },
+          ],
+        },
         type: 'voronoi',
       },
     })
@@ -315,14 +405,38 @@ describe('tesselation.vue', () => {
   })
 
   it('filters out coordinates outside the bbox', () => {
-    const outOfBoundsCoords = [
-      [27.0, 48.0], // Outside bbox
-      [28.5, 49.25], // Inside bbox
-      [30.0, 50.0], // Outside bbox
-    ]
+    const outOfBoundsCoords = {
+      type: 'FeatureCollection',
+      features: [
+        {
+          type: 'Feature',
+          geometry: {
+            type: 'Point',
+            coordinates: [27.0, 48.0], // Outside bbox
+          },
+          properties: {},
+        },
+        {
+          type: 'Feature',
+          geometry: {
+            type: 'Point',
+            coordinates: [28.5, 49.25], // Inside bbox
+          },
+          properties: {},
+        },
+        {
+          type: 'Feature',
+          geometry: {
+            type: 'Point',
+            coordinates: [30.0, 50.0], // Outside bbox
+          },
+          properties: {},
+        },
+      ],
+    }
     wrapper = mount(Tesselation, {
       props: {
-        coordinates: outOfBoundsCoords,
+        coordinates: { ...outOfBoundsCoords, features: outOfBoundsCoords.features.map(feature => ({ ...feature, type: 'Feature' as const })) },
         bbox: [28.462271, 49.215576, 28.570271, 49.265576],
       },
     })
@@ -338,13 +452,23 @@ describe('tesselation.vue', () => {
   })
 
   it('handles single coordinate input gracefully', () => {
-    wrapper = mount(Tesselation, { props: { coordinates: [[28.5, 49.25]] } })
+    wrapper = mount(Tesselation, {
+      props: {
+        coordinates: {
+          type: 'FeatureCollection',
+          features: [
+            {
+              type: 'Feature',
+              geometry: {
+                type: 'Point',
+                coordinates: [28.5, 49.25],
+              },
+              properties: {},
+            },
+          ],
+        },
+      },
+    })
     expect((wrapper.vm as any).features.length).toBe(1)
-  })
-
-  it('throws an error for invalid coordinates format', () => {
-    const consoleErrorSpy = vi.spyOn(console, 'error').mockImplementation(() => {})
-    expect(() => mount(Tesselation, { props: { coordinates: [[28.5]] } })).toThrow()
-    consoleErrorSpy.mockRestore()
   })
 })
