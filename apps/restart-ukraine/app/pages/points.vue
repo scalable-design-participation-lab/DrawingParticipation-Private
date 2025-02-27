@@ -15,7 +15,7 @@ const { featuresByType } = useAllFeatureStore();
 const pointFeatures = computed(() => featuresByType.Point);
 
 // Convert raw points to Turf FeatureCollection
-const dataPoints = computed(() => {
+const features = computed(() => {
   const points = pointFeatures.value.map(({ coordinates }) => {
     // Convert from EPSG:3857 to EPSG:4326
     return turf.point(toLonLat(coordinates as [number, number]));
@@ -23,14 +23,6 @@ const dataPoints = computed(() => {
   return turf.featureCollection(points);
 });
 
-// Convert Turf features to OpenLayers features
-const geoJson = new GeoJSON();
-const features = computed(() => {
-  return geoJson.readFeatures(dataPoints.value, {
-    dataProjection: 'EPSG:4326',
-    featureProjection: 'EPSG:3857',
-  });
-});
 const visible = ref(true);
 const zIndex = ref(1);
 const shapePoints = ref(3);
@@ -52,7 +44,6 @@ const shapeFillColor = ref('#ff0000');
         :features="features" 
         :visible="visible" 
         :z-index="zIndex" 
-        :icon="smileIcon"
       />
     </template>
   </GeneralizedBackgroundMap>
