@@ -10,7 +10,10 @@ describe('heatMap.vue', () => {
         blur: 30,
         radius: 10,
         format: new GeoJSON(),
-        features: [],
+        features: {
+          type: 'FeatureCollection',
+          features: [],
+        },
       },
     })
   })
@@ -20,12 +23,18 @@ describe('heatMap.vue', () => {
   it('renders with provided props', () => {
     expect(wrapper.props().blur).toBe(30)
     expect(wrapper.props().radius).toBe(10)
-    expect(wrapper.props().features).toStrictEqual([])
+    expect(wrapper.props().features).toStrictEqual({
+      features: [],
+      type: 'FeatureCollection',
+    })
   })
   it('renders with default props', () => {
     wrapper = mount(HeatMap)
     expect(wrapper.props().blur).toBe(20)
     expect(wrapper.props().radius).toBe(20)
-    expect(wrapper.props().features).toStrictEqual([])
+    expect(wrapper.props().features).toStrictEqual({
+      features: [],
+      type: 'FeatureCollection',
+    })
   })
 })
