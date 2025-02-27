@@ -50,6 +50,10 @@ interface InterpolationProps {
 }
 
 const props = withDefaults(defineProps<InterpolationProps>(), {
+  features: () => ({
+    type: 'FeatureCollection',
+    features: [],
+  }),
   gridPoints: 100,
   gridType: 'points',
   units: 'miles',
