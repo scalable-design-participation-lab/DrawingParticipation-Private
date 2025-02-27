@@ -9,16 +9,38 @@ import { computed, ref } from 'vue';
 const { featuresByType } = useAllFeatureStore();
 
 const features = computed(() => {
-    if (!featuresByType.Point || !Array.isArray(featuresByType.Point)) {
+    if (!featuresByType.LineString|| !Array.isArray(featuresByType.Point)) {
         console.error("Invalid feature data:", featuresByType.Point);
         return turf.featureCollection([]);
     }
-    const points = featuresByType.Point.map(feature => {
-        const lonLat = toLonLat(feature.coordinates as [number, number]);
-        return turf.point(lonLat);
-    })
+    // Points
+    // const features = featuresByType.Point.map(feature => {
+    //     const lonLat = toLonLat(feature.coordinates as [number, number]);
+    //     return turf.point(lonLat);
+    // })
 
-    return turf.featureCollection(points);
+    // Line String
+    const features = featuresByType.LineString.map(feature => {
+        const coords = feature.coordinates.map(coord => toLonLat(coord));
+        return turf.lineString(coords);
+    });
+
+    //Polygons
+    // var features = [turf.polygon(
+    // [
+    //     [
+    //     [-5, 52],
+    //     [-4, 56],
+    //     [-7, 54],
+    //     [-5, 53],
+    //     [-5, 52],
+    //     ],
+    // ],
+    // { name: "poly1" },
+    // )];
+
+   
+    return turf.featureCollection(features);
 });
 
 const visible = ref(true);
