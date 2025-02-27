@@ -10,7 +10,7 @@ import type { FeatureCollection, Geometry } from 'geojson'
 export type TesselationType = 'voronoi' | 'tin'
 
 export interface TesselationProps {
-  coordinates?: FeatureCollection<Geometry>
+  features?: FeatureCollection<Geometry>
   bbox?: number[]
   visible?: boolean
   zIndex?: number
@@ -23,7 +23,7 @@ export interface TesselationProps {
 }
 
 const props = withDefaults(defineProps<TesselationProps>(), {
-  coordinates: () => ({
+  features: () => ({
     type: 'FeatureCollection',
     features: [],
   }),
@@ -41,33 +41,33 @@ const props = withDefaults(defineProps<TesselationProps>(), {
 const geoJson = new GeoJSON()
 
 const features = computed(() => {
-  if (!props.coordinates.features) {
-    console.warn('No coordinates provided for Tesselation computation.')
+  if (!props.features.features) {
+    console.warn('No features provided for Tesselation computation.')
     return []
   }
-  if (!Array.isArray(props.coordinates.features)) {
-    throw new TypeError('Invalid format: coordinates must be an array of [number, number] pairs.')
+  if (!Array.isArray(props.features.features)) {
+    throw new TypeError('Invalid format: features must be an array of [number, number] pairs.')
   }
 
   const seen = new Set<string>()
   const uniqueCoordinates: [number, number][] = []
-  for (const coord of props.coordinates.features) {
-    const coordinates = coord.geometry.coordinates
-    const key = coordinates.join(',')
+  for (const coord of props.features.features) {
+    const features = coord.geometry.coordinates
+    const key = features.join(',')
     if (!seen.has(key)) {
       seen.add(key)
-      uniqueCoordinates.push(coordinates)
+      uniqueCoordinates.push(features)
     }
   }
 
-  // Filter points within the bbox using unique coordinates
+  // Filter points within the bbox using unique features
   const [minX, minY, maxX, maxY] = props.bbox
   const filteredCoordinates = uniqueCoordinates.filter(([x, y]) =>
     x >= minX && x <= maxX && y >= minY && y <= maxY,
   )
 
   if (!filteredCoordinates.length) {
-    console.warn('No valid coordinates inside the bounding box for Tesselation.')
+    console.warn('No valid features inside the bounding box for Tesselation.')
     return []
   }
 
