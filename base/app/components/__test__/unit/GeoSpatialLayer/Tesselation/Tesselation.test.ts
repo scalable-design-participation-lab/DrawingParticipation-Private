@@ -104,7 +104,7 @@ describe('tesselation.vue', () => {
     })
 
     // Access the computed "features" from the component's setup state
-    const computedFeatures = (wrapper.vm as any).features
+    const computedFeatures = (wrapper.vm as any).computedFeatures
     expect(Array.isArray(computedFeatures)).toBe(true)
     // When coordinates are provided, Turf should generate one or more features
     if (computedFeatures.length > 0) {
@@ -125,9 +125,9 @@ describe('tesselation.vue', () => {
         },
       },
     })
-    const computedFeatures = (wrapper.vm as any).features
+    const computedFeatures = (wrapper.vm as any).computedFeatures
     expect(computedFeatures).toEqual([])
-    expect(consoleWarnSpy).toHaveBeenCalledWith('No valid features inside the bounding box for Tesselation.')
+    expect(consoleWarnSpy).toHaveBeenCalledWith('No valid coordinates inside the bounding box for Tesselation.')
     consoleWarnSpy.mockRestore()
   })
 
@@ -185,7 +185,7 @@ describe('tesselation.vue', () => {
       },
     })
 
-    expect(wrapper.vm.features.length).toBe(2)
+    expect(wrapper.vm.computedFeatures.length).toBe(2)
   })
 
   it('renders with default props', () => {
@@ -401,7 +401,7 @@ describe('tesselation.vue', () => {
         type: 'voronoi',
       },
     })
-    expect((wrapper.vm as any).features.length).toBe(4)
+    expect((wrapper.vm as any).computedFeatures.length).toBe(4)
   })
 
   it('filters out features outside the bbox', () => {
@@ -436,15 +436,15 @@ describe('tesselation.vue', () => {
     }
     wrapper = mount(Tesselation, {
       props: {
-        features: { ...outOfBoundsCoords, features: outOfBoundsCoords.features.map(feature => ({ ...feature, type: 'Feature' as const })) as[] },
+        features: { ...outOfBoundsCoords, features: outOfBoundsCoords.features.map(feature => ({ ...feature, type: 'Feature' as const })) as [] },
         bbox: [28.462271, 49.215576, 28.570271, 49.265576],
       },
     })
-    expect((wrapper.vm as any).features.length).toBe(1)
+    expect((wrapper.vm as any).computedFeatures.length).toBe(1)
   })
 
   it('ensures each feature has a valid color assignment', () => {
-    const computedFeatures = (wrapper.vm as any).features
+    const computedFeatures = (wrapper.vm as any).computedFeatures
     computedFeatures.forEach((feature: any) => {
       expect(typeof feature.get('fillColor')).toBe('string')
       expect(feature.get('fillColor')).toMatch(/^rgb|^#/) // Should be a valid color
@@ -469,6 +469,6 @@ describe('tesselation.vue', () => {
         },
       },
     })
-    expect((wrapper.vm as any).features.length).toBe(1)
+    expect((wrapper.vm as any).computedFeatures.length).toBe(1)
   })
 })

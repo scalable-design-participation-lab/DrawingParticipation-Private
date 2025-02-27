@@ -40,34 +40,34 @@ const props = withDefaults(defineProps<TesselationProps>(), {
 
 const geoJson = new GeoJSON()
 
-const features = computed(() => {
+const computedFeatures = computed(() => {
   if (!props.features.features) {
-    console.warn('No features provided for Tesselation computation.')
+    console.warn('No coordinates provided for Tesselation computation.')
     return []
   }
   if (!Array.isArray(props.features.features)) {
-    throw new TypeError('Invalid format: features must be an array of [number, number] pairs.')
+    throw new TypeError('Invalid format: coordinates must be an array of [number, number] pairs.')
   }
 
   const seen = new Set<string>()
   const uniqueCoordinates: [number, number][] = []
   for (const coord of props.features.features) {
-    const features = coord.geometry.coordinates
-    const key = features.join(',')
+    const coordinates = coord.geometry.coordinates
+    const key = coordinates.join(',')
     if (!seen.has(key)) {
       seen.add(key)
-      uniqueCoordinates.push(features)
+      uniqueCoordinates.push(coordinates)
     }
   }
 
-  // Filter points within the bbox using unique features
+  // Filter points within the bbox using unique coordinates
   const [minX, minY, maxX, maxY] = props.bbox
   const filteredCoordinates = uniqueCoordinates.filter(([x, y]) =>
     x >= minX && x <= maxX && y >= minY && y <= maxY,
   )
 
   if (!filteredCoordinates.length) {
-    console.warn('No valid features inside the bounding box for Tesselation.')
+    console.warn('No valid coordinates inside the bounding box for Tesselation.')
     return []
   }
 
@@ -205,7 +205,7 @@ function hexStyleFunction(feature: Feature) {
 
 <template>
   <ol-vector-layer :visible="props.visible" :z-index="props.zIndex">
-    <ol-source-vector :features="features" />
+    <ol-source-vector :features="computedFeatures" />
     <ol-style :override-style-function="hexStyleFunction" />
   </ol-vector-layer>
 </template>
