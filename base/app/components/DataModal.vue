@@ -1,8 +1,10 @@
 <script setup>
 import { ref } from 'vue'
+import { useDataStore } from '../stores/data'
 
 const tabs = ['Load Files', 'Load Map using URL']
 const activeTab = ref(tabs[0])
+const dataStore = useDataStore()
 
 function selectTab(tab) {
   activeTab.value = tab
@@ -67,17 +69,7 @@ function onDrop(event) {
 
 function parseGeoJSON(file) {
   const reader = new FileReader()
-  reader.onload = (event) => {
-    try {
-      const geojsonData = JSON.parse(event.target.result)
-      console.log('Parsed GeoJSON:', geojsonData)
-      // Optionally: process or store geojsonData in your state
-      // For example: geoJSONData.value = geojsonData;
-    }
-    catch (err) {
-      console.error('Failed to parse GeoJSON:', err)
-    }
-  }
+  dataStore.processGeoJSONFile(file)
   reader.readAsText(file)
   droppedFiles.value.push(file)
 }
