@@ -9,6 +9,18 @@ const dataStore = useDataStore()
 function selectTab(tab) {
   activeTab.value = tab
 }
+const url = ref('') // To store the URL entered by the user
+
+// Handle URL submission
+function fetchMapData() {
+  if (url.value) {
+    dataStore.fetchData(url.value)
+    console.log(dataStore.data)
+  }
+  else {
+    alert('Please enter a valid URL')
+  }
+}
 
 /** Keep track of files for demonstration. */
 const droppedFiles = ref([])
@@ -106,11 +118,11 @@ function handleFiles(fileList) {
            w-[600px] z-40 shadow-xl dark:bg-black flex flex-col overflow-hidden
            bg-white p-4 rounded-md"
   >
-    <!-- Remove any inner max-width or width classes that could conflict -->
     <div class="p-4 font-sans">
       <h1 class="text-2xl pb-3">
         Add Data to Map
       </h1>
+
       <!-- Tabs -->
       <ul class="flex space-x-4 border-b border-gray-200 mb-4">
         <li v-for="tab in tabs" :key="tab">
@@ -126,9 +138,8 @@ function handleFiles(fileList) {
         </li>
       </ul>
 
-      <!-- Use v-show so inactive tab content stays in the DOM -->
+      <!-- Tab Content: Load Files -->
       <div v-show="activeTab === 'Load Files'">
-        <!-- Tab Content: Load Files -->
         <div class="text-center">
           <h3 class="text-xl font-semibold">
             Upload CSV, JSON, GeoJSON, Arrow, Parquet or saved map JSON
@@ -174,15 +185,10 @@ function handleFiles(fileList) {
           </p>
 
           <!-- Hidden File Input -->
-          <input
-            ref="fileInput"
-            type="file"
-            multiple
-            class="hidden"
-            @change="onFileSelect"
-          >
+          <input ref="fileInput" type="file" multiple class="hidden" @change="onFileSelect">
         </div>
-        <!-- Show list of dropped files, if any -->
+
+        <!-- Processed Files List -->
         <div v-if="droppedFiles.length" class="mt-4">
           <h4 class="text-sm font-semibold mb-2">
             Processed Files:
@@ -195,11 +201,40 @@ function handleFiles(fileList) {
         </div>
       </div>
 
+      <!-- Tab Content: Load Map using URL -->
       <div v-show="activeTab === 'Load Map using URL'" class="text-center">
-        <p>URL content...</p>
-      </div>
+        <h3 class="text-xl font-semibold">
+          Load Map Data from URL
+        </h3>
+        <p class="text-sm text-gray-500">
+          Enter a URL pointing to a GeoJSON file.
+        </p>
 
-      <!-- Add any additional tab content here, using v-show -->
+        <!-- URL Input -->
+        <input
+          v-model="url"
+          type="url"
+          placeholder="Enter GeoJSON URL"
+          class="mt-4 p-2 border rounded-md w-full"
+        >
+
+        <button
+          class="mt-2 px-6 py-2 bg-blue-600 text-white rounded-md"
+          @click="fetchMapData"
+        >
+          Load Map
+        </button>
+
+        <!-- Error Message -->
+        <div v-if="dataStore.error" class="mt-2 text-red-500 text-sm">
+          {{ dataStore.error }}
+        </div>
+
+        <!-- Loading Spinner -->
+        <div v-if="dataStore.isLoading" class="mt-2">
+          <div class="animate-spin rounded-full h-10 w-10 border-t-4 border-b-4 border-blue-500 mx-auto" />
+        </div>
+      </div>
     </div>
   </Ucard>
 </template>
