@@ -18,7 +18,7 @@ function fetchMapData() {
     console.log(dataStore.data)
   }
   else {
-    alert('Please enter a valid URL')
+    dataStore.error = 'Please enter a valid URL'
   }
 }
 
