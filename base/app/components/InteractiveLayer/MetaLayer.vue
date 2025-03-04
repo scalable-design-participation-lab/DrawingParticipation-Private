@@ -101,7 +101,14 @@ function handleClick(event) {
 
     // Update state
     pinnedCoordinate.value = coordinates
-    popupContent.value = feature.getProperties()
+    const properties = feature.getProperties()
+
+    // Remove OpenLayers-specific metadata
+    const excludedKeys = ['geometry'] // Add more OpenLayers keys if needed
+    const filteredProperties = Object.fromEntries(
+      Object.entries(properties).filter(([key]) => !excludedKeys.includes(key)),
+    )
+    popupContent.value = filteredProperties
 
     // Position and show popup
     updatePopupPosition(coordinates)
@@ -111,7 +118,6 @@ function handleClick(event) {
   else {
     pinnedPopupVisible.value = false
     pinnedCoordinate.value = null
-    popupCoordinate.value = null
     popupX.value = 0
     popupY.value = 0
   }
@@ -132,6 +138,15 @@ function handleHoverSelect(event) {
 
     hoverCoordinate.value = coordinates
     popupContent.value = feature.getProperties()
+
+    const properties = feature.getProperties()
+
+    // Remove OpenLayers-specific metadata
+    const excludedKeys = ['geometry']
+    const filteredProperties = Object.fromEntries(
+      Object.entries(properties).filter(([key]) => !excludedKeys.includes(key)),
+    )
+    popupContent.value = filteredProperties
 
     updatePopupPosition(coordinates)
     hoverPopupVisible.value = true
@@ -157,7 +172,6 @@ onMounted(() => {
 
     // Add map move listener to update popup positions
     mapInstance.value.on('postrender', () => {
-      // Prioritize pinned coordinate, then use last known coordinate
       if (pinnedCoordinate.value) {
         updatePopupPosition(pinnedCoordinate.value)
       }
@@ -258,7 +272,12 @@ onMounted(() => {
       }"
     >
       <slot name="hover-popup" :content="popupContent">
-        <strong>{{ popupContent.name }}</strong>
+        <div class="relative">
+          <div v-for="key in Object.keys(popupContent)" :key="key">
+            <strong class="capitalize">{{ key }}: </strong>
+            <span>{{ popupContent[key] }}</span>
+          </div>
+        </div>
       </slot>
     </div>
 
@@ -275,7 +294,10 @@ onMounted(() => {
     >
       <slot name="pinned-popup" :content="popupContent" :close="closePopup">
         <div class="relative">
-          <strong>{{ popupContent.name }}</strong>
+          <div v-for="key in Object.keys(popupContent)" :key="key">
+            <strong class="capitalize">{{ key }}: </strong>
+            <span>{{ popupContent[key] }}</span>
+          </div>
         </div>
       </slot>
     </div>
