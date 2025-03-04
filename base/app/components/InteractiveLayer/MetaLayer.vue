@@ -260,9 +260,9 @@ onMounted(() => {
       </ol-vector-layer>
     </ol-map>
 
-    <!-- Hover Popup -->
+    <!-- Popup -->
     <div
-      v-if="hoverPopupVisible && !pinnedPopupVisible"
+      v-if="hoverPopupVisible && !pinnedPopupVisible || pinnedPopupVisible"
       class="absolute transition-opacity duration-150 pointer-events-auto"
       :class="[popupClass, hoverPopupClass]"
       :style="{
@@ -272,27 +272,6 @@ onMounted(() => {
       }"
     >
       <slot name="hover-popup" :content="popupContent">
-        <div class="relative">
-          <div v-for="key in Object.keys(popupContent)" :key="key">
-            <strong class="capitalize">{{ key }}: </strong>
-            <span>{{ popupContent[key] }}</span>
-          </div>
-        </div>
-      </slot>
-    </div>
-
-    <!-- Pinned Popup -->
-    <div
-      v-if="pinnedPopupVisible"
-      class="absolute transition-opacity duration-150 pointer-events-auto"
-      :class="popupClass"
-      :style="{
-        left: `${popupX}px`,
-        top: `${popupY}px`,
-        transform: 'translate(-50%, -120%)',
-      }"
-    >
-      <slot name="pinned-popup" :content="popupContent" :close="closePopup">
         <div class="relative">
           <div v-for="key in Object.keys(popupContent)" :key="key">
             <strong class="capitalize">{{ key }}: </strong>
