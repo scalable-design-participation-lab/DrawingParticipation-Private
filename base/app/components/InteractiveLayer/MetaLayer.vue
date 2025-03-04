@@ -1,5 +1,5 @@
 <script setup>
-import { ref } from 'vue'
+import { onMounted, ref } from 'vue'
 import GeoJSON from 'ol/format/GeoJSON'
 import { click, pointerMove } from 'ol/events/condition'
 import { transform } from 'ol/proj'
@@ -46,12 +46,16 @@ const props = defineProps({
   },
 })
 
-const geoJson = new GeoJSON()
+// Coordinate system constants
+const sourceProjection = 'EPSG:4326'
+const viewProjection = 'EPSG:3857'
+
+// References and reactive state
 const mapRef = ref(null)
+const mapInstance = ref(null)
 const hoverCoordinate = ref(null)
 const pinnedCoordinate = ref(null)
 const currentHoverFeature = ref(null)
-const viewProjection = 'EPSG:3857'
 
 // Popup States
 const hoverPopupVisible = ref(false)
@@ -61,63 +65,108 @@ const popupX = ref(0)
 const popupY = ref(0)
 
 // Convert initial center to view projection
-const initialCenter = transform(props.center, 'EPSG:4326', viewProjection)
+const initialCenter = transform(props.center, sourceProjection, viewProjection)
 
+// GeoJSON format for parsing features
+const geoJson = new GeoJSON()
+
+// Determine if a feature is interactive
 function isInteractive(feature) {
   return feature.get('name') !== undefined
 }
 
+// Update popup position based on map coordinates
+function updatePopupPosition(coordinate) {
+  if (!mapInstance.value)
+    return
+
+  const pixel = mapInstance.value.getPixelFromCoordinate(coordinate)
+  if (pixel) {
+    popupX.value = pixel[0]
+    popupY.value = pixel[1]
+  }
+}
+
+// Handle feature click
 function handleClick(event) {
-  // Always clear previous selection first
+  // Clear any existing popup
   pinnedPopupVisible.value = false
-  popupX.value = 0
-  popupY.value = 0
 
   if (event.selected.length > 0) {
     const feature = event.selected[0]
-    const geometry = feature.getGeometry()
-    pinnedCoordinate.value = geometry.getCoordinates()
 
+    // Transform coordinates to view projection
+    const geometry = feature.getGeometry()
+    const coordinates = geometry.getCoordinates()
+
+    // Update state
+    pinnedCoordinate.value = coordinates
     popupContent.value = feature.getProperties()
-    updatePopupPosition(pinnedCoordinate.value)
+
+    // Position and show popup
+    updatePopupPosition(coordinates)
     pinnedPopupVisible.value = true
+    hoverPopupVisible.value = false
+  }
+  else {
+    pinnedPopupVisible.value = false
+    pinnedCoordinate.value = null
+    popupCoordinate.value = null
+    popupX.value = 0
+    popupY.value = 0
   }
 }
 
+// Handle hover interactions
 function handleHoverSelect(event) {
-  if (event.selected.length > 0 && !pinnedPopupVisible.value) {
+  // Ignore hover if a feature is already pinned
+  if (pinnedPopupVisible.value)
+    return
+
+  if (event.selected.length > 0) {
     const feature = event.selected[0]
     currentHoverFeature.value = feature
-    const geometry = feature.getGeometry()
-    hoverCoordinate.value = geometry.getCoordinates()
 
+    const geometry = feature.getGeometry()
+    const coordinates = geometry.getCoordinates()
+
+    hoverCoordinate.value = coordinates
     popupContent.value = feature.getProperties()
-    updatePopupPosition(hoverCoordinate.value)
+
+    updatePopupPosition(coordinates)
     hoverPopupVisible.value = true
   }
   else {
-    // No feature is hovered over, hide the hover popup
     hoverPopupVisible.value = false
     currentHoverFeature.value = null
+    pinnedPopupVisible.value = false
   }
 }
 
-function handleHoverDeselect() {
-  hoverPopupVisible.value = false
-  currentHoverFeature.value = null
-}
-
-function updatePopupPosition(coordinate) {
-  const map = mapRef.value.map
-  const pixel = map.getPixelFromCoordinate(coordinate)
-  popupX.value = pixel[0]
-  popupY.value = pixel[1]
-}
-
+// Close pinned popup
 function closePopup() {
   pinnedPopupVisible.value = false
   pinnedCoordinate.value = null
+  popupCoordinate.value = null
 }
+
+// Set up map listeners after mounting
+onMounted(() => {
+  if (mapRef.value) {
+    mapInstance.value = mapRef.value.map
+
+    // Add map move listener to update popup positions
+    mapInstance.value.on('postrender', () => {
+      // Prioritize pinned coordinate, then use last known coordinate
+      if (pinnedCoordinate.value) {
+        updatePopupPosition(pinnedCoordinate.value)
+      }
+      else if (hoverCoordinate.value) {
+        updatePopupPosition(hoverCoordinate.value)
+      }
+    })
+  }
+})
 </script>
 
 <template>
@@ -128,7 +177,11 @@ function closePopup() {
       :load-tiles-while-interacting="true"
       class="h-full"
     >
-      <ol-view :center="initialCenter" :zoom="zoom" :projection="viewProjection" />
+      <ol-view
+        :center="initialCenter"
+        :zoom="zoom"
+        :projection="viewProjection"
+      />
 
       <ol-tile-layer>
         <ol-source-osm />
@@ -138,7 +191,7 @@ function closePopup() {
         <ol-source-vector
           :url="geoJsonUrl"
           :format="geoJson"
-          data-projection="EPSG:4326"
+          :data-projection="sourceProjection"
           :projection="viewProjection"
         />
         <ol-style>
@@ -150,58 +203,59 @@ function closePopup() {
             />
           </ol-style-circle>
         </ol-style>
+        <ol-vector-layer>
+          <!-- Hover Interaction -->
+          <ol-interaction-select
+            :condition="pointerMove"
+            :filter="isInteractive"
+            :toggle-condition="false"
+            :hit-tolerance="clickTolerance"
+            @select="handleHoverSelect"
+          >
+            <ol-style>
+              <ol-style-circle :radius="pointStyle.radius">
+                <ol-style-fill :color="pointStyle.fill" />
+                <ol-style-stroke
+                  :color="pointStyle.stroke.color"
+                  :width="pointStyle.stroke.width"
+                />
+              </ol-style-circle>
+            </ol-style>
+          </ol-interaction-select>
+
+          <!-- Click Interaction -->
+          <ol-interaction-select
+            :condition="click"
+            :filter="isInteractive"
+            :toggle-condition="false"
+            :multi="false"
+            :hit-tolerance="clickTolerance"
+            @select="handleClick"
+          >
+            <ol-style>
+              <ol-style-circle :radius="pointStyle.radius">
+                <ol-style-fill :color="pointStyle.fill" />
+                <ol-style-stroke
+                  :color="pointStyle.stroke.color"
+                  :width="pointStyle.stroke.width"
+                />
+              </ol-style-circle>
+            </ol-style>
+          </ol-interaction-select>
+        </ol-vector-layer>
       </ol-vector-layer>
-
-      <ol-interaction-select
-        :condition="pointerMove"
-        :filter="isInteractive"
-        :toggle-condition="false"
-        :hit-tolerance="props.clickTolerance"
-        @select="handleHoverSelect"
-        @deselect="handleHoverDeselect"
-      >
-        <ol-style>
-          <ol-style-circle :radius="pointStyle.radius">
-            <ol-style-fill :color="pointStyle.fill" />
-            <ol-style-stroke
-              :color="pointStyle.stroke.color"
-              :width="pointStyle.stroke.width"
-            />
-          </ol-style-circle>
-        </ol-style>
-      </ol-interaction-select>
-
-      <ol-interaction-select
-        :condition="click"
-        :filter="isInteractive"
-        :toggle-condition="false"
-        :multi="false"
-        :hit-tolerance="props.clickTolerance"
-        @select="handleClick"
-      >
-        <ol-style>
-          <ol-style-circle :radius="pointStyle.radius">
-            <ol-style-fill :color="pointStyle.fill" />
-            <ol-style-stroke
-              :color="pointStyle.stroke.color"
-              :width="pointStyle.stroke.width"
-            />
-          </ol-style-circle>
-        </ol-style>
-      </ol-interaction-select>
     </ol-map>
 
     <!-- Hover Popup -->
     <div
       v-if="hoverPopupVisible && !pinnedPopupVisible"
       class="absolute transition-opacity duration-150 pointer-events-auto"
-      :class="[props.popupClass, props.hoverPopupClass]"
+      :class="[popupClass, hoverPopupClass]"
       :style="{
         left: `${popupX}px`,
         top: `${popupY}px`,
         transform: 'translate(-50%, -120%)',
       }"
-      @mouseleave="handlePopupMouseLeave"
     >
       <slot name="hover-popup" :content="popupContent">
         <strong>{{ popupContent.name }}</strong>
@@ -212,7 +266,7 @@ function closePopup() {
     <div
       v-if="pinnedPopupVisible"
       class="absolute transition-opacity duration-150 pointer-events-auto"
-      :class="props.popupClass"
+      :class="popupClass"
       :style="{
         left: `${popupX}px`,
         top: `${popupY}px`,
