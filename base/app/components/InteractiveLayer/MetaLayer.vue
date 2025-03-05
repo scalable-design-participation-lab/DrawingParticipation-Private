@@ -28,10 +28,6 @@ const props = defineProps({
       },
     }),
   },
-  hoverDebounce: {
-    type: Number,
-    default: 150,
-  },
   clickTolerance: {
     type: Number,
     default: 10,
@@ -162,7 +158,6 @@ function handleHoverSelect(event) {
 onMounted(() => {
   if (mapRef.value) {
     mapInstance.value = mapRef.value.map
-
     // Add map move listener to update popup positions
     mapInstance.value.on('postrender', () => {
       if (pinnedCoordinate.value) {
