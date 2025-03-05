@@ -158,13 +158,6 @@ function handleHoverSelect(event) {
   }
 }
 
-// Close pinned popup
-function closePopup() {
-  pinnedPopupVisible.value = false
-  pinnedCoordinate.value = null
-  popupCoordinate.value = null
-}
-
 // Set up map listeners after mounting
 onMounted(() => {
   if (mapRef.value) {
