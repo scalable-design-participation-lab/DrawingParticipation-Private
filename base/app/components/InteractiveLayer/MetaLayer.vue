@@ -168,9 +168,6 @@ onMounted(() => {
       if (pinnedCoordinate.value) {
         updatePopupPosition(pinnedCoordinate.value)
       }
-      else if (hoverCoordinate.value) {
-        updatePopupPosition(hoverCoordinate.value)
-      }
     })
   }
 })
