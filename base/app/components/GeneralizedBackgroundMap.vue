@@ -146,6 +146,7 @@ onMounted(() => {
       <slot name="overlays" />
     </ol-map>
   </client-only>
+  <div id="map-overlays" class="absolute inset-0 pointer-events-none" />
 </template>
 
 <style>
