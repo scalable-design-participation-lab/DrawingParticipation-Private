@@ -1,13 +1,17 @@
 <script setup lang="ts">
-import { ref } from 'vue'
 import GeoJSON from 'ol/format/GeoJSON'
 import { click, pointerMove } from 'ol/events/condition'
 import { Circle as CircleStyle, Fill, Stroke, Style } from 'ol/style'
+import type { FeatureCollection, Geometry } from 'geojson'
+import type { Map } from 'ol'
 
 const props = defineProps({
-  geoJsonUrl: {
-    type: String,
-    default: 'https://raw.githubusercontent.com/alpers/Turkey-Maps-GeoJSON/master/tr-cities-airports.json',
+  mapInstance: {
+    type: Object as PropType<Map | null>, // Accept null initially
+  },
+  data: {
+    type: Object as PropType<FeatureCollection<Geometry>>,
+    default: () => ({}),
   },
   pointStyle: {
     type: Object,
@@ -32,21 +36,15 @@ const props = defineProps({
     type: String,
     default: 'bg-gray-50 border-gray-300',
   },
-  sourceProjection: {
+  dataProjection: {
     type: String,
     default: 'EPSG:4326',
   },
-  viewProjection: {
+  featuresProjection: {
     type: String,
     default: 'EPSG:3857',
   },
-  mapInstance: {
-    type: Object,
-    required: true,
-  },
 })
-
-const mapInstance = ref(props.mapInstance)
 
 const hoverCoordinate = ref(null)
 const pinnedCoordinate = ref(null)
@@ -57,11 +55,31 @@ const selectedFeature = ref(null)
 const popupContent = ref({})
 const popupX = ref(0)
 const popupY = ref(0)
+const mapInstance = ref<Map | null>(null)
+
+watch(() => props.mapInstance, (newInstance) => {
+  if (newInstance) {
+    mapInstance.value = newInstance
+
+    // Ensure that postrender is set only when a valid instance exists
+    mapInstance.value.on('postrender', () => {
+      if (pinnedCoordinate.value) {
+        updatePopupPosition(pinnedCoordinate.value)
+      }
+    })
+  }
+}, { immediate: true }) // This ensures it runs when the component is mounted
 
 const geoJson = new GeoJSON()
+const features = computed(() => {
+  return geoJson.readFeatures(props.data, {
+    dataProjection: props.dataProjection,
+    featureProjection: props.featuresProjection,
+  })
+})
 
 function isInteractive(feature) {
-  return feature.get('name') !== undefined
+  return true
 }
 const highlightedStyle = new Style({
   image: new CircleStyle({
@@ -72,8 +90,10 @@ const highlightedStyle = new Style({
 })
 
 function updatePopupPosition(coordinate) {
-  if (!mapInstance.value)
+  if (!mapInstance.value) {
+    console.warn('Map instance is not available yet.')
     return
+  }
 
   const pixel = mapInstance.value.getPixelFromCoordinate(coordinate)
   popupX.value = pixel[0]
@@ -156,26 +176,14 @@ function handleHoverSelect(event) {
     selectedFeature.value = null
   }
 }
-watch(() => props.mapInstance, (newInstance) => {
-  if (newInstance) {
-    mapInstance.value = newInstance
-    mapInstance.value.on('postrender', () => {
-      if (pinnedCoordinate.value) {
-        updatePopupPosition(pinnedCoordinate.value)
-      }
-    })
-  }
-})
 </script>
 
 <template>
   <!-- Vector Layer with Interactions -->
   <ol-vector-layer>
     <ol-source-vector
-      :url="geoJsonUrl"
+      :features="features"
       :format="geoJson"
-      :data-projection="sourceProjection"
-      :projection="viewProjection"
     />
 
     <ol-style>
