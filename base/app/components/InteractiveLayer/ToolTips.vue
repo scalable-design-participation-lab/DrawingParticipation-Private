@@ -250,6 +250,8 @@ function handleHoverSelect(event) {
     />
 
     <ol-style>
+      <!-- // Transparent fill for polygon hit condition -->
+      <ol-style-fill color="rgba(0, 0, 0, 0)" />
       <ol-style-stroke color="green" :width="10" />
       <ol-style-circle :radius="pointStyle.radius">
         <ol-style-fill :color="pointStyle.fill" />
@@ -269,6 +271,8 @@ function handleHoverSelect(event) {
       @select="handleHoverSelect"
     >
       <ol-style>
+        <!-- // Transparent fill for polygon hit condition -->
+        <ol-style-fill color="rgba(0, 0, 0, 0)" />
         <ol-style-stroke color="green" :width="10" />
         <ol-style-circle :radius="pointStyle.radius">
           <ol-style-fill :color="pointStyle.fill" />
@@ -288,6 +292,8 @@ function handleHoverSelect(event) {
       @select="handleClick"
     >
       <ol-style>
+        <!-- // Transparent fill for polygon hit condition -->
+        <ol-style-fill color="rgba(0, 0, 0, 0)" />
         <ol-style-stroke color="green" :width="10" />
         <ol-style-circle :radius="pointStyle.radius">
           <ol-style-fill :color="pointStyle.fill" />
