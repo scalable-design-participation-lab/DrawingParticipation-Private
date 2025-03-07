@@ -15,7 +15,7 @@ const mapInstance = computed(() => {
   return mapRef.value ? mapRef.value.mapInstance : null
 }) 
 const dataStore = useDataStore()
-await dataStore.fetchData('https://raw.githubusercontent.com/openlayers/openlayers/refs/heads/main/examples/data/geojson/polygon-samples.geojson')
+await dataStore.fetchData('https://raw.githubusercontent.com/alpers/Turkey-Maps-GeoJSON/master/tr-cities-airports.json')
 const data = dataStore.data 
 
 

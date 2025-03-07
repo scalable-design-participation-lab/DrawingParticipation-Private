@@ -65,6 +65,9 @@ watch(() => props.mapInstance, (newInstance) => {
       if (pinnedCoordinate.value) {
         updatePopupPosition(pinnedCoordinate.value)
       }
+      else if (hoverCoordinate.value) {
+        updatePopupPosition(hoverCoordinate.value)
+      }
     })
   }
 }, { immediate: true }) // This ensures it runs when the component is mounted
