@@ -5,45 +5,43 @@ import { Circle as CircleStyle, Fill, Stroke, Style } from 'ol/style'
 import type { FeatureCollection, Geometry } from 'geojson'
 import type { Map } from 'ol'
 
-const props = defineProps({
-  mapInstance: {
-    type: Object as PropType<Map | null>, // Accept null initially
-  },
-  data: {
-    type: Object as PropType<FeatureCollection<Geometry>>,
-    default: () => ({}),
-  },
-  pointStyle: {
-    type: Object,
-    default: () => ({
-      radius: 6,
-      fill: 'rgba(0, 100, 255, 0.8)',
-      stroke: {
-        color: 'white',
-        width: 2,
-      },
-    }),
-  },
-  clickTolerance: {
-    type: Number,
-    default: 10,
-  },
-  popupClass: {
-    type: String,
-    default: 'bg-white p-3 rounded-lg shadow-lg border border-gray-200 max-w-[300px]',
-  },
-  hoverPopupClass: {
-    type: String,
-    default: 'bg-gray-50 border-gray-300',
-  },
-  dataProjection: {
-    type: String,
-    default: 'EPSG:4326',
-  },
-  featuresProjection: {
-    type: String,
-    default: 'EPSG:3857',
-  },
+// Define the props type
+interface ToolTipsProps {
+  mapInstance?: Map | null
+  data?: FeatureCollection<Geometry>
+  pointStyle?: {
+    radius: number
+    fill: string
+    stroke: {
+      color: string
+      width: number
+    }
+  }
+  clickTolerance?: number
+  popupClass?: string
+  hoverPopupClass?: string
+  dataProjection?: string
+  featuresProjection?: string
+}
+
+// Use withDefaults to set default values
+const props = withDefaults(defineProps<ToolTipsProps>(), {
+  mapInstance: null,
+  data: () => ({} as FeatureCollection<Geometry>),
+  pointStyle: () => ({
+    radius: 6,
+    fill: 'rgba(0, 100, 255, 0.8)',
+    stroke: {
+      color: 'white',
+      width: 2,
+    },
+  }),
+  clickTolerance: 10,
+  popupClass:
+    'bg-white p-3 rounded-lg shadow-lg border border-gray-200 max-w-[300px]',
+  hoverPopupClass: 'bg-gray-50 border-gray-300',
+  dataProjection: 'EPSG:4326',
+  featuresProjection: 'EPSG:3857',
 })
 
 const hoverCoordinate = ref(null)
