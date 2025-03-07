@@ -15,8 +15,9 @@ const mapInstance = computed(() => {
   return mapRef.value ? mapRef.value.mapInstance : null
 }) 
 const dataStore = useDataStore()
-await dataStore.fetchData('https://dataworks.calderdale.gov.uk/download/v834m/vmm/Museums%202021.geojson')
+await dataStore.fetchData('https://raw.githubusercontent.com/openlayers/openlayers/refs/heads/main/examples/data/geojson/polygon-samples.geojson')
 const data = dataStore.data 
+
 
 </script>
 
@@ -26,4 +27,5 @@ const data = dataStore.data
     <ToolTips :mapInstance="mapInstance" :data="data"/> 
     </template>
   </GeneralizedBackgroundMap>
+ 
 </template>

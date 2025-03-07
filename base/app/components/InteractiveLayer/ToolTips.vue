@@ -4,6 +4,7 @@ import { click, pointerMove } from 'ol/events/condition'
 import { Circle as CircleStyle, Fill, Stroke, Style } from 'ol/style'
 import type { FeatureCollection, Geometry } from 'geojson'
 import type { Map } from 'ol'
+import * as turf from '@turf/turf'
 
 // Define the props type
 interface ToolTipsProps {
@@ -77,15 +78,42 @@ const features = computed(() => {
 })
 
 function isInteractive(feature) {
-  return true
+  return feature
 }
-const highlightedStyle = new Style({
-  image: new CircleStyle({
-    radius: 8, // Increase size
-    fill: new Fill({ color: 'rgba(255, 0, 0, 0.8)' }), // Red fill
-    stroke: new Stroke({ color: 'yellow', width: 3 }), // Yellow border
-  }),
-})
+function highlightedStyle(feature) {
+  const geomType = feature.getGeometry().getType()
+  const styles = []
+
+  // Style for polygons
+  if (geomType === 'Polygon') {
+    styles.push(
+      new Style({
+        stroke: new Stroke({
+          color: 'yellow', // Highlight color for polygon borders
+          width: 3, // Thicker stroke on hover
+        }),
+        fill: new Fill({
+          color: 'rgba(255, 255, 0, 0.3)', // Optional: Add a fill highlight
+        }),
+      }),
+    )
+  }
+
+  // Style for points (existing circle style)
+  if (geomType === 'Point') {
+    styles.push(
+      new Style({
+        image: new CircleStyle({
+          radius: 8,
+          fill: new Fill({ color: 'rgba(255, 0, 0, 0.8)' }),
+          stroke: new Stroke({ color: 'yellow', width: 3 }),
+        }),
+      }),
+    )
+  }
+
+  return styles
+}
 
 function updatePopupPosition(coordinate) {
   if (!mapInstance.value) {
@@ -109,6 +137,18 @@ function handleClick(event) {
     // Transform coordinates to view projection
     const geometry = feature.getGeometry()
     const coordinates = geometry.getCoordinates()
+    try {
+      // centroid
+      if (geometry.getType() === 'Polygon') {
+        const centroid = turf.centroid(turf.polygon(coordinates))
+        const centroidCoords = centroid.geometry.coordinates
+        coordinates[0] = centroidCoords[0]
+        coordinates[1] = centroidCoords[1]
+      }
+    }
+    catch (error) {
+      console.log('Error:', error)
+    }
 
     // Update state
     pinnedCoordinate.value = coordinates
@@ -134,44 +174,66 @@ function handleClick(event) {
   }
 }
 
-// Handle hover interactions
 function handleHoverSelect(event) {
-  // Ignore hover if a feature is already pinned
   if (pinnedPopupVisible.value)
     return
-  if (selectedFeature.value) {
-    selectedFeature.value.setStyle(null) // Reset previous feature style
-  }
 
-  if (event.selected.length > 0) {
-    const feature = event.selected[0]
-    selectedFeature.value = feature
-    selectedFeature.value.setStyle(highlightedStyle)
-    currentHoverFeature.value = feature
+  const feature = event.selected.length > 0 ? event.selected[0] : null
+
+  if (feature) {
+    // Check if the feature has changed
+    if (selectedFeature.value !== feature) {
+      // Reset previous feature's style
+      if (selectedFeature.value) {
+        selectedFeature.value.setStyle(null)
+      }
+      // Apply highlight to new feature
+      selectedFeature.value = feature
+      selectedFeature.value.setStyle(highlightedStyle)
+    }
 
     const geometry = feature.getGeometry()
-    const coordinates = geometry.getCoordinates()
+    let popupCoords
 
-    hoverCoordinate.value = coordinates
-    popupContent.value = feature.getProperties()
+    // Calculate centroid without modifying the original geometry
+    try {
+      if (geometry.getType() === 'Polygon') {
+        // Use Turf to compute centroid
+        const polygon = turf.polygon(geometry.getCoordinates())
+        const centroid = turf.centroid(polygon)
+        popupCoords = centroid.geometry.coordinates
+      }
+      else {
+        // Use existing coordinates for non-polygons
+        popupCoords = geometry.getCoordinates()
+      }
+    }
+    catch (error) {
+      console.error('Centroid calculation failed:', error)
+      popupCoords = geometry.getCoordinates()
+    }
 
+    // Update popup position and content
+    hoverCoordinate.value = popupCoords
     const properties = feature.getProperties()
-
-    // Remove OpenLayers-specific metadata
     const excludedKeys = ['geometry']
     const filteredProperties = Object.fromEntries(
       Object.entries(properties).filter(([key]) => !excludedKeys.includes(key)),
     )
     popupContent.value = filteredProperties
 
-    updatePopupPosition(coordinates)
+    updatePopupPosition(popupCoords)
     hoverPopupVisible.value = true
   }
   else {
+    // Cleanup when no feature is hovered
     hoverPopupVisible.value = false
     currentHoverFeature.value = null
     pinnedPopupVisible.value = false
-    selectedFeature.value = null
+    if (selectedFeature.value) {
+      selectedFeature.value.setStyle(null)
+      selectedFeature.value = null
+    }
   }
 }
 </script>
@@ -185,6 +247,7 @@ function handleHoverSelect(event) {
     />
 
     <ol-style>
+      <ol-style-stroke color="green" :width="10" />
       <ol-style-circle :radius="pointStyle.radius">
         <ol-style-fill :color="pointStyle.fill" />
         <ol-style-stroke
@@ -198,11 +261,12 @@ function handleHoverSelect(event) {
     <ol-interaction-select
       :condition="pointerMove"
       :filter="isInteractive"
-      :toggle-condition="false"
+      :toggle-condition="true"
       :hit-tolerance="clickTolerance"
       @select="handleHoverSelect"
     >
       <ol-style>
+        <ol-style-stroke color="green" :width="10" />
         <ol-style-circle :radius="pointStyle.radius">
           <ol-style-fill :color="pointStyle.fill" />
           <ol-style-stroke
@@ -221,6 +285,7 @@ function handleHoverSelect(event) {
       @select="handleClick"
     >
       <ol-style>
+        <ol-style-stroke color="green" :width="10" />
         <ol-style-circle :radius="pointStyle.radius">
           <ol-style-fill :color="pointStyle.fill" />
           <ol-style-stroke
