@@ -1,12 +1,8 @@
 <script setup lang="ts">
-import { toLonLat, transform } from 'ol/proj'
-import {ref, onMounted } from 'vue'
+import {ref} from 'vue'
 import GeoJSON from 'ol/format/GeoJSON'
-import { click, pointerMove } from 'ol/events/condition'
 import ToolTips from '@base/components/InteractiveLayer/ToolTips.vue'
 import { useDataStore } from '@base/stores/data'
-import * as turf from '@turf/turf'
-import { useAllFeatureStore } from '@base/stores/all-features'
 
 // References and reactive state
 // Define a ref to hold the reference to the child component
