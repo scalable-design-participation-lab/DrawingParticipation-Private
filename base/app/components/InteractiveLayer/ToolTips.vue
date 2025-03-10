@@ -1,23 +1,30 @@
 <script setup lang="ts">
-import GeoJSON from 'ol/format/GeoJSON'
 import { click, pointerMove } from 'ol/events/condition'
 import { Circle as CircleStyle, Fill, Stroke, Style } from 'ol/style'
-import type { FeatureCollection, Geometry } from 'geojson'
-import type { Map } from 'ol'
+import type { Feature, Map } from 'ol'
 import * as turf from '@turf/turf'
 
-// Define the props type
+// Define TypeScript types
+interface PopupState {
+  coordinate: number[] | null
+  feature: Feature | null
+  content: Record<string, any>
+  visible: boolean
+  position: { x: number, y: number }
+}
+
+interface StyleOptions {
+  radius: number
+  fill: string
+  stroke: {
+    color: string
+    width: number
+  }
+}
+
 interface ToolTipsProps {
   mapInstance?: Map | null
-  data?: FeatureCollection<Geometry>
-  pointStyle?: {
-    radius: number
-    fill: string
-    stroke: {
-      color: string
-      width: number
-    }
-  }
+  pointStyle?: StyleOptions
   clickTolerance?: number
   popupClass?: string
   hoverPopupClass?: string
@@ -25,10 +32,9 @@ interface ToolTipsProps {
   featuresProjection?: string
 }
 
-// Use withDefaults to set default values
+// Props with defaults
 const props = withDefaults(defineProps<ToolTipsProps>(), {
   mapInstance: null,
-  data: () => ({} as FeatureCollection<Geometry>),
   pointStyle: () => ({
     radius: 6,
     fill: 'rgba(0, 100, 255, 0.8)',
@@ -38,71 +44,103 @@ const props = withDefaults(defineProps<ToolTipsProps>(), {
     },
   }),
   clickTolerance: 10,
-  popupClass:
-    'bg-white p-3 rounded-lg shadow-lg border border-gray-200 max-w-[300px]',
+  popupClass: 'bg-white p-3 rounded-lg shadow-lg border border-gray-200 max-w-[300px]',
   hoverPopupClass: 'bg-gray-50 border-gray-300',
   dataProjection: 'EPSG:4326',
   featuresProjection: 'EPSG:3857',
 })
 
-const hoverCoordinate = ref(null)
-const pinnedCoordinate = ref(null)
-const currentHoverFeature = ref(null)
-const hoverPopupVisible = ref(false)
-const pinnedPopupVisible = ref(false)
-const selectedFeature = ref(null)
-const popupContent = ref({})
-const popupX = ref(0)
-const popupY = ref(0)
-const mapInstance = ref<Map | null>(null)
-
-watch(() => props.mapInstance, (newInstance) => {
-  if (newInstance) {
-    mapInstance.value = newInstance
-
-    // Ensure that postrender is set only when a valid instance exists
-    mapInstance.value.on('postrender', () => {
-      if (pinnedCoordinate.value) {
-        updatePopupPosition(pinnedCoordinate.value)
-      }
-      else if (hoverCoordinate.value) {
-        updatePopupPosition(hoverCoordinate.value)
-      }
-    })
-  }
-}, { immediate: true }) // This ensures it runs when the component is mounted
-
-const geoJson = new GeoJSON()
-const features = computed(() => {
-  return geoJson.readFeatures(props.data, {
-    dataProjection: props.dataProjection,
-    featureProjection: props.featuresProjection,
+// Setup state management using composable pattern
+function usePopupState() {
+  const state = reactive<PopupState>({
+    coordinate: null,
+    feature: null,
+    content: {},
+    visible: false,
+    position: { x: 0, y: 0 },
   })
-})
 
-function isInteractive(feature) {
-  return feature
+  const reset = () => {
+    state.coordinate = null
+    state.feature = null
+    state.content = {}
+    state.visible = false
+    state.position = { x: 0, y: 0 }
+  }
+
+  const update = (feature: Feature | null, coordinates: number[] | null) => {
+    if (!feature || !coordinates) {
+      reset()
+      return
+    }
+
+    state.coordinate = coordinates
+    state.feature = feature
+
+    // Extract properties
+    const properties = feature.getProperties()
+    const excludedKeys = ['geometry']
+    state.content = Object.fromEntries(
+      Object.entries(properties).filter(([key]) => !excludedKeys.includes(key)),
+    )
+
+    state.visible = true
+  }
+
+  return {
+    state,
+    reset,
+    update,
+  }
 }
-function highlightedStyle(feature) {
-  const geomType = feature.getGeometry().getType()
+
+// Create separate states for hover and pinned popups
+const hoverPopup = usePopupState()
+const pinnedPopup = usePopupState()
+
+// Store map instance and setup features
+const mapInstance = ref<Map | null>(null)
+function createHighlightStyle(feature: Feature) {
+  const geomType = feature.getGeometry()?.getType()
   const styles = []
 
-  // Style for polygons
   if (geomType === 'Polygon') {
     styles.push(
       new Style({
         stroke: new Stroke({
-          color: 'yellow', // Highlight color for polygon borders
-          width: 3, // Thicker stroke on hover
+          color: 'yellow',
+          width: 3,
         }),
         fill: new Fill({
-          color: 'rgba(255, 255, 0, 0.3)', // Optional: Add a fill highlight
+          color: 'rgba(255, 255, 0, 0.3)',
+        }),
+      }),
+    )
+  }
+  if (geomType === 'MultiPolygon') {
+    styles.push(
+      new Style({
+        stroke: new Stroke({
+          color: 'yellow',
+          width: 3,
+        }),
+        fill: new Fill({
+          color: 'rgba(255, 255, 0, 0.3)',
+        }),
+      }),
+    )
+  }
+  if (geomType === 'LineString') {
+    styles.push(
+      new Style({
+        stroke: new Stroke({
+          color: 'yellow',
+          width: 3,
         }),
       }),
     )
   }
 
-  // Style for points (existing circle style)
   if (geomType === 'Point') {
     styles.push(
       new Style({
@@ -118,139 +156,142 @@ function highlightedStyle(feature) {
   return styles
 }
 
-function updatePopupPosition(coordinate) {
-  if (!mapInstance.value) {
-    console.warn('Map instance is not available yet.')
-    return
-  }
+// Helper functions
+const isInteractive = (feature: Feature) => Boolean(feature)
 
-  const pixel = mapInstance.value.getPixelFromCoordinate(coordinate)
-  popupX.value = pixel[0]
-  popupY.value = pixel[1]
+function getFeatureCentroid(feature: Feature): number[] | null {
+  if (!feature)
+    return null
+
+  const geometry = feature.getGeometry()
+  if (!geometry)
+    return null
+
+  const geomType = geometry.getType()
+  const coordinates = geometry.getCoordinates()
+
+  try {
+    if (geomType === 'Polygon') {
+      const polygon = turf.polygon(coordinates)
+      const centroid = turf.centroid(polygon)
+      return centroid.geometry.coordinates
+    }
+    if (geomType === 'MultiPolygon') {
+      const multiPolygon = turf.multiPolygon(coordinates)
+      const centroid = turf.centroid(multiPolygon)
+      return centroid.geometry.coordinates
+    }
+    if (geomType === 'LineString') {
+      const line = turf.lineString(coordinates)
+      const centroid = turf.centroid(line)
+      return centroid.geometry.coordinates
+    }
+    return coordinates
+  }
+  catch (error) {
+    console.error('Error calculating centroid:', error)
+    return coordinates
+  }
 }
 
-// Handle feature click
-function handleClick(event) {
-  // Clear any existing popup
-  pinnedPopupVisible.value = false
+function updatePopupPosition(coordinate: number[]) {
+  if (!mapInstance.value || !coordinate)
+    return
+
+  const pixel = mapInstance.value.getPixelFromCoordinate(coordinate)
+
+  // Update both popup states with the calculated position
+  if (pinnedPopup.state.visible) {
+    pinnedPopup.state.position = { x: pixel[0], y: pixel[1] }
+  }
+  else if (hoverPopup.state.visible) {
+    hoverPopup.state.position = { x: pixel[0], y: pixel[1] }
+  }
+}
+
+// Event handlers
+function handleClick(event: { selected: Feature[] }) {
+  // Clear any existing hover popup
+  hoverPopup.reset()
 
   if (event.selected.length > 0) {
     const feature = event.selected[0]
+    const coordinates = getFeatureCentroid(feature)
 
-    // Transform coordinates to view projection
-    const geometry = feature.getGeometry()
-    const coordinates = geometry.getCoordinates()
-    try {
-      // centroid
-      if (geometry.getType() === 'Polygon') {
-        const centroid = turf.centroid(turf.polygon(coordinates))
-        const centroidCoords = centroid.geometry.coordinates
-        coordinates[0] = centroidCoords[0]
-        coordinates[1] = centroidCoords[1]
-      }
+    if (coordinates) {
+      pinnedPopup.update(feature, coordinates)
+      updatePopupPosition(coordinates)
     }
-    catch (error) {
-      console.log('Error:', error)
-    }
-
-    // Update state
-    pinnedCoordinate.value = coordinates
-    const properties = feature.getProperties()
-
-    // Remove OpenLayers-specific metadata
-    const excludedKeys = ['geometry'] // Add more OpenLayers keys if needed
-    const filteredProperties = Object.fromEntries(
-      Object.entries(properties).filter(([key]) => !excludedKeys.includes(key)),
-    )
-    popupContent.value = filteredProperties
-
-    // Position and show popup
-    updatePopupPosition(coordinates)
-    pinnedPopupVisible.value = true
-    hoverPopupVisible.value = false
   }
   else {
-    pinnedPopupVisible.value = false
-    pinnedCoordinate.value = null
-    popupX.value = 0
-    popupY.value = 0
+    pinnedPopup.reset()
   }
 }
 
-function handleHoverSelect(event) {
-  if (pinnedPopupVisible.value)
+function handleHoverSelect(event: { selected: Feature[] }) {
+  // Don't process hover when pinned popup is visible
+  if (pinnedPopup.state.visible)
     return
 
   const feature = event.selected.length > 0 ? event.selected[0] : null
 
   if (feature) {
-    // Check if the feature has changed
-    if (selectedFeature.value !== feature) {
-      // Reset previous feature's style
-      if (selectedFeature.value) {
-        selectedFeature.value.setStyle(null)
-      }
-      // Apply highlight to new feature
-      selectedFeature.value = feature
-      selectedFeature.value.setStyle(highlightedStyle)
+    // Apply highlight styling
+    feature.setStyle(createHighlightStyle(feature))
+
+    const coordinates = getFeatureCentroid(feature)
+    if (coordinates) {
+      hoverPopup.update(feature, coordinates)
+      updatePopupPosition(coordinates)
     }
-
-    const geometry = feature.getGeometry()
-    let popupCoords
-
-    // Calculate centroid without modifying the original geometry
-    try {
-      if (geometry.getType() === 'Polygon') {
-        // Use Turf to compute centroid
-        const polygon = turf.polygon(geometry.getCoordinates())
-        const centroid = turf.centroid(polygon)
-        popupCoords = centroid.geometry.coordinates
-      }
-      else {
-        // Use existing coordinates for non-polygons
-        popupCoords = geometry.getCoordinates()
-      }
-    }
-    catch (error) {
-      console.error('Centroid calculation failed:', error)
-      popupCoords = geometry.getCoordinates()
-    }
-
-    // Update popup position and content
-    hoverCoordinate.value = popupCoords
-    const properties = feature.getProperties()
-    const excludedKeys = ['geometry']
-    const filteredProperties = Object.fromEntries(
-      Object.entries(properties).filter(([key]) => !excludedKeys.includes(key)),
-    )
-    popupContent.value = filteredProperties
-
-    updatePopupPosition(popupCoords)
-    hoverPopupVisible.value = true
   }
   else {
-    // Cleanup when no feature is hovered
-    hoverPopupVisible.value = false
-    currentHoverFeature.value = null
-    pinnedPopupVisible.value = false
-    if (selectedFeature.value) {
-      selectedFeature.value.setStyle(null)
-      selectedFeature.value = null
+    // Reset hover state
+    if (hoverPopup.state.feature) {
+      hoverPopup.state.feature.setStyle(null)
     }
+    hoverPopup.reset()
   }
 }
+
+// Setup map instance and listeners
+watch(() => props.mapInstance, (newInstance) => {
+  if (newInstance) {
+    mapInstance.value = newInstance
+
+    // Add postrender event to update popup positions
+    mapInstance.value.on('postrender', () => {
+      if (pinnedPopup.state.visible && pinnedPopup.state.coordinate) {
+        updatePopupPosition(pinnedPopup.state.coordinate)
+      }
+      else if (hoverPopup.state.visible && hoverPopup.state.coordinate) {
+        updatePopupPosition(hoverPopup.state.coordinate)
+      }
+    })
+  }
+}, { immediate: true })
+
+// Calculate active popup content and position
+const activePopup = computed(() => {
+  return pinnedPopup.state.visible ? pinnedPopup.state : hoverPopup.state
+})
+
+const isPopupVisible = computed(() => {
+  return pinnedPopup.state.visible || hoverPopup.state.visible
+})
 </script>
 
 <template>
-  <!-- Vector Layer with Interactions -->
-  <ol-vector-layer>
-    <ol-source-vector
-      :features="features"
-      :format="geoJson"
-    />
+  <slot />
 
+  <!-- Hover Interaction -->
+  <ol-interaction-select
+    v-if="!pinnedPopup.state.visible"
+    :condition="pointerMove"
+    :filter="isInteractive"
+    @select="handleHoverSelect"
+  >
     <ol-style>
-      <!-- // Transparent fill for polygon hit condition -->
       <ol-style-fill color="rgba(0, 0, 0, 0)" />
       <ol-style-stroke color="green" :width="10" />
       <ol-style-circle :radius="pointStyle.radius">
@@ -261,63 +302,43 @@ function handleHoverSelect(event) {
         />
       </ol-style-circle>
     </ol-style>
+  </ol-interaction-select>
 
-    <!-- Interactions -->
-    <ol-interaction-select
-      :condition="pointerMove"
-      :filter="isInteractive"
-      :toggle-condition="true"
-      :hit-tolerance="clickTolerance"
-      @select="handleHoverSelect"
-    >
-      <ol-style>
-        <!-- // Transparent fill for polygon hit condition -->
-        <ol-style-fill color="rgba(0, 0, 0, 0)" />
-        <ol-style-stroke color="green" :width="10" />
-        <ol-style-circle :radius="pointStyle.radius">
-          <ol-style-fill :color="pointStyle.fill" />
-          <ol-style-stroke
-            :color="pointStyle.stroke.color"
-            :width="pointStyle.stroke.width"
-          />
-        </ol-style-circle>
-      </ol-style>
-    </ol-interaction-select>
+  <!-- Click Interaction -->
+  <ol-interaction-select
+    :condition="click"
+    :filter="isInteractive"
+    @select="handleClick"
+  >
+    <ol-style>
+      <ol-style-fill color="rgba(0, 0, 0, 0)" />
+      <ol-style-stroke color="green" :width="10" />
+      <ol-style-circle :radius="pointStyle.radius">
+        <ol-style-fill :color="pointStyle.fill" />
+        <ol-style-stroke
+          :color="pointStyle.stroke.color"
+          :width="pointStyle.stroke.width"
+        />
+      </ol-style-circle>
+    </ol-style>
+  </ol-interaction-select>
 
-    <ol-interaction-select
-      :condition="click"
-      :filter="isInteractive"
-      :toggle-condition="false"
-      :hit-tolerance="clickTolerance"
-      @select="handleClick"
-    >
-      <ol-style>
-        <!-- // Transparent fill for polygon hit condition -->
-        <ol-style-fill color="rgba(0, 0, 0, 0)" />
-        <ol-style-stroke color="green" :width="10" />
-        <ol-style-circle :radius="pointStyle.radius">
-          <ol-style-fill :color="pointStyle.fill" />
-          <ol-style-stroke
-            :color="pointStyle.stroke.color"
-            :width="pointStyle.stroke.width"
-          />
-        </ol-style-circle>
-      </ol-style>
-    </ol-interaction-select>
-  </ol-vector-layer>
-
-  <!-- Popup part -->
+  <!-- Unified Popup Component -->
   <Teleport to="#map-overlays">
     <div
-      v-if="hoverPopupVisible && !pinnedPopupVisible || pinnedPopupVisible"
-      class="absolute z-[1000] bg-white p-4 rounded-lg shadow-lg"
+      v-if="isPopupVisible"
+      class="absolute z-[1000]"
+      :class="[
+        popupClass,
+        pinnedPopup.state.visible ? '' : hoverPopupClass,
+      ]"
       :style="{
-        left: `${popupX}px`,
-        top: `${popupY}px`,
+        left: `${activePopup.position.x}px`,
+        top: `${activePopup.position.y}px`,
         transform: 'translate(-50%, -120%)',
       }"
     >
-      <div v-for="(value, key) in popupContent" :key="key">
+      <div v-for="(value, key) in activePopup.content" :key="key">
         <strong class="capitalize">{{ key }}:</strong> {{ value }}
       </div>
     </div>
