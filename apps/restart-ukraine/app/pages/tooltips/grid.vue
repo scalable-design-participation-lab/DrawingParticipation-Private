@@ -1,8 +1,7 @@
 <script setup lang="ts">
-import { toLonLat, transform } from 'ol/proj'
-import {ref, onMounted } from 'vue'
+import { toLonLat } from 'ol/proj'
+import {ref } from 'vue'
 import GeoJSON from 'ol/format/GeoJSON'
-import { click, pointerMove } from 'ol/events/condition'
 import ToolTips from '@base/components/InteractiveLayer/ToolTips.vue'
 import { useDataStore } from '@base/stores/data'
 import * as turf from '@turf/turf'
@@ -37,7 +36,6 @@ const features = computed(() => {
     featureProjection: 'EPSG:3857',
   });
 });
-const data = dataStore.data 
 const shape = ref<GridType>('Hexagon');
 const baseHue = ref<number>(0);
 const cellSide = ref<number>(0.2);
