@@ -30,8 +30,21 @@ const dataPoints = computed(() => {
   });
   return turf.featureCollection(points);
 })
+// remove same dataPoints 
+const dataPointsFiltered = computed(() => {
+  const seen = new Set();
+  return turf.featureCollection(dataPoints.value.features.filter((feature) => {
+    const coordString = feature.geometry.coordinates.toString();
+    if (seen.has(coordString)) {
+      return false;
+    }
+    seen.add(coordString);
+    return true;
+  }));
+});
+
 const features = computed(() => {
-  return geoJson.readFeatures(dataPoints.value, {
+  return geoJson.readFeatures(dataPointsFiltered.value, {
     dataProjection: 'EPSG:4326',
     featureProjection: 'EPSG:3857',
   });
@@ -43,6 +56,14 @@ const visible = ref<boolean>(true);
 const width = ref<number>(1);
 
 
+const pointStyle = {
+    radius: 6,
+    fill: 'rgba(0, 100, 255, 0.8)',
+    stroke: {
+      color: 'white',
+      width: 2,
+    },
+  }
 </script>
 
 <template>
@@ -63,6 +84,25 @@ const width = ref<number>(1);
           :visible="visible"
           :width="width"
           />
+ <!-- Vector Layer with Interactions -->
+            <ol-vector-layer>
+              <ol-source-vector
+                :features="features"
+                :format="new GeoJSON()"
+              />
+              <!-- Default Style -->
+              <ol-style>
+                <ol-style-fill color="rgba(0, 0, 0, 0)" />
+                <ol-style-stroke color="green" :width="10" />
+                <ol-style-circle :radius="pointStyle.radius">
+                  <ol-style-fill :color="pointStyle.fill" />
+                  <ol-style-stroke
+                    :color="pointStyle.stroke.color"
+                    :width="pointStyle.stroke.width"
+                  />
+                </ol-style-circle>
+              </ol-style>
+            </ol-vector-layer>
       </ToolTips> 
     </template>
   </GeneralizedBackgroundMap>
