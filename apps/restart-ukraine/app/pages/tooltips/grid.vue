@@ -2,7 +2,7 @@
 import { toLonLat } from 'ol/proj'
 import {ref } from 'vue'
 import GeoJSON from 'ol/format/GeoJSON'
-import ToolTips from '@base/components/InteractiveLayer/ToolTips.vue'
+import ToolTips from '@base/components/Tools/ToolTips.vue'
 import { useDataStore } from '@base/stores/data'
 import * as turf from '@turf/turf'
 import { useAllFeatureStore } from '@base/stores/all-features'
@@ -75,7 +75,6 @@ const pointStyle = {
    v-model:width="width" /> 
   <GeneralizedBackgroundMap ref="mapRef" :min-zoom="0">
     <template #layers> 
-      <ToolTips :mapInstance="mapInstance">
           <Grid
           :features="features" 
           :shape="shape"
@@ -103,8 +102,9 @@ const pointStyle = {
                 </ol-style-circle>
               </ol-style>
             </ol-vector-layer>
-      </ToolTips> 
+    </template>
+    <template #overlays>
+      <ToolTips :mapInstance="mapInstance" :filterKeys="['fillColor']"/>
     </template>
   </GeneralizedBackgroundMap>
- 
 </template>

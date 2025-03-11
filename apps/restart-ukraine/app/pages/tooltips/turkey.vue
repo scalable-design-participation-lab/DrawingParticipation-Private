@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import {ref} from 'vue'
 import GeoJSON from 'ol/format/GeoJSON'
-import ToolTips from '@base/components/InteractiveLayer/ToolTips.vue'
+import ToolTips from '@base/components/Tools/ToolTips.vue'
 import { useDataStore } from '@base/stores/data'
 
 // References and reactive state
