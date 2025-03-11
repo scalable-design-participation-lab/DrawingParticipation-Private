@@ -36,27 +36,28 @@ const features = computed(() => {
 <template>
   <GeneralizedBackgroundMap ref="mapRef" :min-zoom="0">
     <template #layers> 
-          <ToolTips :mapInstance="mapInstance" >
-            <!-- Vector Layer with Interactions -->
-            <ol-vector-layer>
-              <ol-source-vector
-                :features="features"
-                :format="new GeoJSON()"
+        <!-- Vector Layer with Interactions -->
+        <ol-vector-layer>
+          <ol-source-vector
+            :features="features"
+            :format="new GeoJSON()"
+          />
+          <!-- Default Style -->
+          <ol-style>
+            <ol-style-fill color="rgba(0, 0, 0, 0)" />
+            <ol-style-stroke color="green" :width="10" />
+            <ol-style-circle :radius="pointStyle.radius">
+              <ol-style-fill :color="pointStyle.fill" />
+              <ol-style-stroke
+                :color="pointStyle.stroke.color"
+                :width="pointStyle.stroke.width"
               />
-              <!-- Default Style -->
-              <ol-style>
-                <ol-style-fill color="rgba(0, 0, 0, 0)" />
-                <ol-style-stroke color="green" :width="10" />
-                <ol-style-circle :radius="pointStyle.radius">
-                  <ol-style-fill :color="pointStyle.fill" />
-                  <ol-style-stroke
-                    :color="pointStyle.stroke.color"
-                    :width="pointStyle.stroke.width"
-                  />
-                </ol-style-circle>
-              </ol-style>
-            </ol-vector-layer>
-          </ToolTips> 
+            </ol-style-circle>
+          </ol-style>
+        </ol-vector-layer>
+    </template>
+    <template #overlays> 
+        <ToolTips :mapInstance="mapInstance" />
     </template>
   </GeneralizedBackgroundMap>
  
