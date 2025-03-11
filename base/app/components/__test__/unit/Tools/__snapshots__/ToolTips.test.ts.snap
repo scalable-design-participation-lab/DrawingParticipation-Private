@@ -1,0 +1,69 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`toolTips.vue > renders properly 1`] = `
+<div
+  data-v-app=""
+>
+  
+  <!-- Hover Interaction -->
+  <ol-interaction-select
+    condition="function (mapBrowserEvent) {
+  return mapBrowserEvent.type == 'pointermove';
+}"
+    filter="(feature) => Boolean(feature)"
+  >
+    <ol-style>
+      <ol-style-fill
+        color="rgba(0, 0, 0, 0)"
+      />
+      <ol-style-stroke
+        color="green"
+        width="10"
+      />
+      <ol-style-circle
+        radius="6"
+      >
+        <ol-style-fill
+          color="rgba(0, 100, 255, 0.8)"
+        />
+        <ol-style-stroke
+          color="white"
+          width="2"
+        />
+      </ol-style-circle>
+    </ol-style>
+  </ol-interaction-select>
+  <!-- Click Interaction -->
+  <ol-interaction-select
+    condition="function (mapBrowserEvent) {
+  return mapBrowserEvent.type == MapBrowserEventType.CLICK;
+}"
+    filter="(feature) => Boolean(feature)"
+  >
+    <ol-style>
+      <ol-style-fill
+        color="rgba(0, 0, 0, 0)"
+      />
+      <ol-style-stroke
+        color="green"
+        width="10"
+      />
+      <ol-style-circle
+        radius="6"
+      >
+        <ol-style-fill
+          color="rgba(0, 100, 255, 0.8)"
+        />
+        <ol-style-stroke
+          color="white"
+          width="2"
+        />
+      </ol-style-circle>
+    </ol-style>
+  </ol-interaction-select>
+  <!-- Unified Popup Component -->
+  <!--teleport start-->
+  <!--teleport end-->
+  
+</div>
+`;
