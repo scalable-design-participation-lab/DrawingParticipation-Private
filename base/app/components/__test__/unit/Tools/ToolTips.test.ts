@@ -3,7 +3,6 @@ import { beforeEach, describe, expect, it, vi } from 'vitest'
 import ToolTips from '@components/Tools/ToolTips.vue'
 import { Feature, Map } from 'ol'
 import { Point } from 'ol/geom'
-import { nextTick } from 'vue'
 
 describe('toolTips.vue', () => {
   let wrapper: any
@@ -58,7 +57,6 @@ describe('toolTips.vue', () => {
   })
 
   it('shows hover popup when feature is hovered', async () => {
-    await nextTick()
     await wrapper.vm.handleHoverSelect({ selected: [feature] })
 
     expect(wrapper.vm.hoverPopup.state.visible).toBe(true)
@@ -66,7 +64,6 @@ describe('toolTips.vue', () => {
   })
 
   it('shows pinned popup when feature is clicked', async () => {
-    await nextTick()
     await wrapper.vm.handleClick({ selected: [feature] })
 
     expect(wrapper.vm.pinnedPopup.state.visible).toBe(true)
@@ -74,7 +71,6 @@ describe('toolTips.vue', () => {
   })
 
   it('hides hover popup when pinned popup is active', async () => {
-    await nextTick()
     await wrapper.vm.handleClick({ selected: [feature] })
     await wrapper.vm.handleHoverSelect({ selected: [feature] })
 
@@ -82,7 +78,6 @@ describe('toolTips.vue', () => {
   })
 
   it('resets pinned popup on second click', async () => {
-    await nextTick()
     await wrapper.vm.handleClick({ selected: [feature] })
     await wrapper.vm.handleClick({ selected: [] })
 
@@ -90,7 +85,6 @@ describe('toolTips.vue', () => {
   })
 
   it('updates popup position on feature selection', async () => {
-    await nextTick()
     const getPixelFromCoordinateMock = vi
       .fn()
       .mockReturnValue([100, 200])
