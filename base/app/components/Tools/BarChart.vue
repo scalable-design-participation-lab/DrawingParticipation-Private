@@ -6,7 +6,7 @@ const props = defineProps({
   data: Array as () => { name: string, value: number, color: string }[],
   width: { type: Number, default: 500 },
   height: { type: Number, default: 300 },
-  margin: { type: Object, default: () => ({ top: 30, right: 20, bottom: 50, left: 40 }) },
+  margin: { type: Object, default: () => ({ top: 20, right: 10, bottom: 10, left: 10 }) },
 })
 
 const chart = ref<HTMLElement | null>(null)

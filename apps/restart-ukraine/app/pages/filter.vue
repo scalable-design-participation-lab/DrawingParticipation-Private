@@ -59,5 +59,5 @@ const chartData = [
 
 <template>
   <RangeBrush class="w-[1000px]" />
-  <BarChart :data="chartData" :width="600" :height="400" :bins="1" />
+  <BarChart :data="chartData" :width="100" :height="50" />
 </template>
