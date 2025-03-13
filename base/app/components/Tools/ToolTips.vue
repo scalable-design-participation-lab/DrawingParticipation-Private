@@ -96,6 +96,32 @@ function usePopupState() {
 // Create separate states for hover and pinned popups
 const hoverPopup = usePopupState()
 const pinnedPopup = usePopupState()
+// Pagination state
+
+// Calculate active popup content and position
+const activePopup = computed(() => {
+  return pinnedPopup.state.visible ? pinnedPopup.state : hoverPopup.state
+})
+
+const isPopupVisible = computed(() => {
+  return pinnedPopup.state.visible || hoverPopup.state.visible
+})
+// State for pagination
+const currentPage = ref(1)
+const itemsPerPage = 5
+
+// Compute the number of pages
+const totalPages = computed(() => {
+  return Math.ceil(Object.keys(activePopup.value.content).length / itemsPerPage)
+})
+
+// Paginate the keys
+const paginatedKeys = computed(() => {
+  const keys = Object.keys(activePopup.value.content)
+  const start = (currentPage.value - 1) * itemsPerPage
+  const end = start + itemsPerPage
+  return keys.slice(start, end)
+})
 
 // Store map instance and setup features
 const mapInstance = ref<Map | null>(null)
@@ -151,6 +177,16 @@ function createHighlightStyle(feature: Feature) {
       }),
     )
   }
+  if (geomType === 'MultiLineString') {
+    styles.push(
+      new Style({
+        stroke: new Stroke({
+          color: 'yellow',
+          width: 3,
+        }),
+      }),
+    )
+  }
 
   return styles
 }
@@ -185,6 +221,14 @@ function getFeatureCentroid(feature: Feature): number[] | null {
       const centroid = turf.centroid(line)
       return centroid.geometry.coordinates
     }
+    if (geomType === 'MultiLineString') {
+      const multiLine = turf.multiLineString(coordinates)
+      const centroid = turf.centroid(multiLine)
+      return centroid.geometry.coordinates
+    }
+    else {
+      console.log(geomType)
+    }
     return coordinates
   }
   catch (error) {
@@ -212,6 +256,7 @@ function updatePopupPosition(coordinate: number[]) {
 function handleClick(event: { selected: Feature[] }) {
   // Clear any existing hover popup
   hoverPopup.reset()
+  currentPage.value = 1
 
   if (event.selected.length > 0) {
     const feature = event.selected[0]
@@ -277,15 +322,20 @@ onUnmounted(() => {
     mapInstance.value.un('postrender', postRenderHandler)
   }
 })
+// Navigate to next page
+function nextPage() {
+  if (currentPage.value < totalPages.value) {
+    currentPage.value++
+    console.log('Hello world')
+  }
+}
 
-// Calculate active popup content and position
-const activePopup = computed(() => {
-  return pinnedPopup.state.visible ? pinnedPopup.state : hoverPopup.state
-})
-
-const isPopupVisible = computed(() => {
-  return pinnedPopup.state.visible || hoverPopup.state.visible
-})
+// Navigate to previous page
+function prevPage() {
+  if (currentPage.value > 1) {
+    currentPage.value--
+  }
+}
 </script>
 
 <template>
@@ -332,15 +382,38 @@ const isPopupVisible = computed(() => {
   <Teleport to="#map-overlays">
     <div
       v-if="isPopupVisible"
-      class="absolute z-[1000] bg-white p-3 rounded-xl border border-black dark:text-white dark:border-white"
+      class="absolute z-[2000] bg-white p-3 rounded-xl border border-black dark:bg-black dark:text-white dark:border-white"
       :style="{
         left: `${activePopup.position.x}px`,
         top: `${activePopup.position.y}px`,
         transform: 'translate(-50%, -120%)',
+        pointerEvents: 'auto',
       }"
     >
-      <div v-for="(value, key) in activePopup.content" :key="key">
-        <strong class="capitalize">{{ key }}:</strong> {{ value }}
+      <strong class="capitalize">Geometry: </strong> {{ activePopup.feature?.getGeometry()?.getType() }}
+      <hr>
+      <!-- Display paginated keys -->
+      <div v-for="key in paginatedKeys" :key="key">
+        <strong class="capitalize">{{ key }}:</strong> {{ activePopup.content[key] }}
+      </div>
+
+      <!-- Pagination Controls -->
+      <div class="mt-2 !pointer-events-auto relative flex justify-center items-center">
+        <button
+          class="px-4 py-2 bg-blue-500 text-white rounded"
+          :disabled="currentPage === 1"
+          @click="prevPage"
+        >
+          Previous
+        </button>
+        <span class="mx-2">Page {{ currentPage }} of {{ totalPages }}</span>
+        <button
+          class="px-4 py-2 bg-blue-500 text-white rounded"
+          :disabled="currentPage === totalPages"
+          @click="nextPage"
+        >
+          Next
+        </button>
       </div>
     </div>
   </Teleport>
