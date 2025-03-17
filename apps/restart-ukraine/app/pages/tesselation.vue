@@ -4,6 +4,7 @@ import TesselationController from "@base/components/GeoSpatialLayer/Tesselation/
 import { useAllFeatureStore } from "@base/stores/all-features";
 import { toLonLat } from "ol/proj";
 import * as turf from "@turf/turf"
+import ToolTips from "@base/components/Tools/ToolTips.vue";
 
 const {featuresByType, featuresByCategory} = useAllFeatureStore();
 const testData = [
@@ -34,6 +35,14 @@ const clusterCount = ref<number>(1);
 const primaryColor = ref<string>('#ff0000'); 
 const secondaryColor = ref<string>('#800080'); 
 const area = ref<boolean>(true)
+// References and reactive state
+// Define a ref to hold the reference to the child component
+const mapRef = ref(null)
+
+// Use a computed prop to access the exposed `mapInstance` from the child component
+const mapInstance = computed(() => {
+  return mapRef.value ? mapRef.value.mapInstance : null
+}) 
 </script>
 
 <template>
@@ -48,7 +57,7 @@ const area = ref<boolean>(true)
   v-model:secondaryColor="secondaryColor"
   v-model:area="area"
   />
-  <GeneralizedBackgroundMap ref="baseMap">
+  <GeneralizedBackgroundMap ref="mapRef">
     <template #layers>
         <Tesselation 
         :type="type"
@@ -62,6 +71,9 @@ const area = ref<boolean>(true)
         :secondary-color="secondaryColor"
         :area="area"
         />
+    </template>
+    <template #overlays>
+      <ToolTips :map-instance="mapInstance" :filter-keys="['fillColor']"/>
     </template>
   </GeneralizedBackgroundMap>
 </template>
