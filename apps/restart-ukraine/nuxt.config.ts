@@ -2,7 +2,7 @@
 import { defineNuxtConfig } from 'nuxt/config';
 import path from 'path';
 export default defineNuxtConfig({
-  extends: ['../../base', '@nuxt/ui-pro'],
+  extends: ['../../base'], 
   devtools: {
     enabled: true
   },
@@ -23,8 +23,6 @@ export default defineNuxtConfig({
   },
 
   modules: [
-    '@pinia/nuxt',
-    '@nuxt/ui',
     'nuxt-vuefire',
     'nuxt-color-picker'
   ],
