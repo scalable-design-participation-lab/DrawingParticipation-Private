@@ -13,7 +13,7 @@ const mapInstance = computed(() => {
   return mapRef.value ? mapRef.value.mapInstance : null
 }) 
 const dataStore = useDataStore()
-await dataStore.fetchData('https://raw.githubusercontent.com/alpers/Turkey-Maps-GeoJSON/master/tr-cities-airports.json')
+await dataStore.fetchData('https://dataworks.calderdale.gov.uk/download/epwyy/egm/schools-list.geojson')
 
 const data = dataStore.data 
 const pointStyle = {

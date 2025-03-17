@@ -30,6 +30,7 @@ interface ToolTipsProps {
   dataProjection?: string
   featuresProjection?: string
   filterKeys?: string[]
+  itemsPerPage?: number
 }
 
 // Props with defaults
@@ -47,6 +48,8 @@ const props = withDefaults(defineProps<ToolTipsProps>(), {
   clickTolerance: 10,
   dataProjection: 'EPSG:4326',
   featuresProjection: 'EPSG:3857',
+  itemsPerPage: 5,
+
 })
 
 // Setup state management using composable pattern
@@ -107,20 +110,18 @@ const isPopupVisible = computed(() => {
   return pinnedPopup.state.visible || hoverPopup.state.visible
 })
 // State for pagination
-const currentPage = ref(1)
-const itemsPerPage = 5
+const itemsPerPage = props.itemsPerPage
 
-// Compute the number of pages
-const totalPages = computed(() => {
-  return Math.ceil(Object.keys(activePopup.value.content).length / itemsPerPage)
-})
-
+const page = ref(1)
 // Paginate the keys
 const paginatedKeys = computed(() => {
   const keys = Object.keys(activePopup.value.content)
-  const start = (currentPage.value - 1) * itemsPerPage
+  const start = (page.value - 1) * itemsPerPage
   const end = start + itemsPerPage
   return keys.slice(start, end)
+})
+const totalLength = computed(() => {
+  return Object.keys(activePopup.value.content).length
 })
 
 // Store map instance and setup features
@@ -256,7 +257,7 @@ function updatePopupPosition(coordinate: number[]) {
 function handleClick(event: { selected: Feature[] }) {
   // Clear any existing hover popup
   hoverPopup.reset()
-  currentPage.value = 1
+  page.value = 1
 
   if (event.selected.length > 0) {
     const feature = event.selected[0]
@@ -322,20 +323,6 @@ onUnmounted(() => {
     mapInstance.value.un('postrender', postRenderHandler)
   }
 })
-// Navigate to next page
-function nextPage() {
-  if (currentPage.value < totalPages.value) {
-    currentPage.value++
-    console.log('Hello world')
-  }
-}
-
-// Navigate to previous page
-function prevPage() {
-  if (currentPage.value > 1) {
-    currentPage.value--
-  }
-}
 </script>
 
 <template>
@@ -393,27 +380,19 @@ function prevPage() {
       <strong class="capitalize">Geometry: </strong> {{ activePopup.feature?.getGeometry()?.getType() }}
       <hr>
       <!-- Display paginated keys -->
-      <div v-for="key in paginatedKeys" :key="key">
-        <strong class="capitalize">{{ key }}:</strong> {{ activePopup.content[key] }}
+      <div class="mt-2">
+        <div v-for="key in paginatedKeys" :key="key">
+          <strong class="capitalize">{{ key }}:</strong> {{ activePopup.content[key] }}
+        </div>
       </div>
 
       <!-- Pagination Controls -->
-      <div class="mt-2 !pointer-events-auto relative flex justify-center items-center">
-        <button
-          class="px-4 py-2 bg-blue-500 text-white rounded"
-          :disabled="currentPage === 1"
-          @click="prevPage"
-        >
-          Previous
-        </button>
-        <span class="mx-2">Page {{ currentPage }} of {{ totalPages }}</span>
-        <button
-          class="px-4 py-2 bg-blue-500 text-white rounded"
-          :disabled="currentPage === totalPages"
-          @click="nextPage"
-        >
-          Next
-        </button>
+      <div class="mt-2 !pointer-events-auto relative flex justify-center items-center pt-4">
+        <UPagination
+          v-model="page"
+          :total="totalLength"
+          :page-count="Math.ceil(totalLength / itemsPerPage)"
+        />
       </div>
     </div>
   </Teleport>
