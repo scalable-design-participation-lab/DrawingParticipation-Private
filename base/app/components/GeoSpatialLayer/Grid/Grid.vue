@@ -4,8 +4,7 @@ import * as turf from '@turf/turf'
 import GeoJSON from 'ol/format/GeoJSON'
 import { Fill, Stroke, Style } from 'ol/style'
 import { toLonLat } from 'ol/proj'
-import type { Geometry, Point } from 'ol/geom'
-import type Feature from 'ol/Feature'
+import type { FeatureCollection, Geometry } from 'geojson'
 
 /**
  * Grid Type
@@ -16,7 +15,10 @@ export type GridType = 'Hexagon' | 'Triangle' | 'Square'
  * Default Props
  */
 const props = withDefaults(defineProps<GridLayerProps>(), {
-  points: () => [],
+  points: () => ({
+    type: 'FeatureCollection',
+    features: [],
+  }),
   bbox: () => [28.422271, 49.200576, 28.582271, 49.285576],
   cellSide: 1,
   layerId: 'gridLayer',
@@ -35,7 +37,7 @@ interface GridLayerProps {
    * An array of point features used to compute the grid.
    * Each point contains geographic coordinates in the format [longitude, latitude].
    */
-  features: Feature<Geometry>[]
+  features: FeatureCollection<Geometry>
 
   /**
    * The bounding box defining the spatial extent of the hex grid.
@@ -165,14 +167,14 @@ function assignGridColors(grid: any) {
  * @returns An array of OpenLayers features representing the grid with colors density.
  */
 const computedGridFeatures = computed(() => {
-  if (!props.features.length)
+  if (!props.features.features.length)
     return []
 
   const grid = createGrid()
   const dataPoints = turf.featureCollection(
-    props.features.map((feature) => {
-      const coordinates = (feature.getGeometry() as Point).getCoordinates()
-      return turf.point(toLonLat(coordinates))
+    props.features.features.map((feature) => {
+      const coordinates = (feature.geometry as any).coordinates
+      return turf.point(coordinates)
     }),
   )
 

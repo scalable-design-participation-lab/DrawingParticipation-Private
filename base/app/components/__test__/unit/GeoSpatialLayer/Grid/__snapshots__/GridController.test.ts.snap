@@ -30,7 +30,7 @@ exports[`gridController.vue > render correctly 1`] = `
   <label
     class="block text-sm font-medium"
   >
-    Line Width: 
+    Line Width: 100
   </label>
   <input
     class="w-full my-2"
