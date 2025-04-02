@@ -1,0 +1,98 @@
+<script setup lang="ts">
+import { computed } from 'vue'
+import * as turf from '@turf/turf'
+import GeoJSON from 'ol/format/GeoJSON'
+import type { FeatureCollection, Geometry } from 'geojson'
+
+/**
+ * Props for configuring interpolation.
+ */
+interface InterpolationProps {
+  /**
+   * A collection of input points as a Turf.js FeatureCollection.
+   * Must include a property for interpolation.
+   */
+  features: FeatureCollection<Geometry>
+
+  /**
+   * The name of the property to interpolate.
+   */
+  property: string
+
+  /**
+   * The number of grid points to generate.
+   */
+  gridSize?: number
+
+  /**
+   * The type of grid for interpolation (default is "points").
+   */
+  gridType?: 'point' | 'hex' | 'square' | 'triangle'
+
+  /**
+   * The measurement units for grid spacing.
+   */
+  units?: 'miles' | 'kilometers' | 'radians' | 'degrees'
+
+  /**
+   * Visibility of the interpolation layer.
+   */
+  visible?: boolean
+
+  /**
+   * The z-index of the layer.
+   */
+  zIndex?: number
+  /**
+   * bbox
+   */
+  bbox?: number[]
+}
+
+const props = withDefaults(defineProps<InterpolationProps>(), {
+  features: () => ({
+    type: 'FeatureCollection',
+    features: [],
+  }),
+  gridSize: 100,
+  gridType: 'point',
+  units: 'miles',
+  visible: true,
+  zIndex: 1,
+  bbox: () => [-180, -90, 180, 90],
+})
+
+const gridFeatures = computed(() => {
+  if (!props.features || !props.features.features.length)
+    return []
+
+  // Convert input points to a FeatureCollection with properties
+  const points = turf.featureCollection(
+    props.features.features.map(feature =>
+      turf.point((feature.geometry as any).coordinates, { [props.property]: feature.properties[props.property], bbox: props.bbox }),
+    ),
+  )
+
+  // Interpolation options
+  const options = {
+    gridType: props.gridType,
+    property: props.property,
+    units: props.units,
+  }
+
+  // Perform interpolation
+  const interpolatedGrid = turf.interpolate(points, props.gridSize, options)
+  const geoJson = new GeoJSON()
+
+  return geoJson.readFeatures(interpolatedGrid, {
+    dataProjection: 'EPSG:4326',
+    featureProjection: 'EPSG:3857',
+  })
+})
+</script>
+
+<template>
+  <ol-vector-layer :z-index="zIndex" :visible="visible">
+    <ol-source-vector :features="gridFeatures" />
+  </ol-vector-layer>
+</template>
