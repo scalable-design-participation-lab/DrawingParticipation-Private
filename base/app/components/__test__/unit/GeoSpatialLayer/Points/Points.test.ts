@@ -6,7 +6,10 @@ describe('points.vue', () => {
   beforeEach(() => {
     wrapper = mount(Points, {
       props: {
-        features: [],
+        features: {
+          type: 'FeatureCollection',
+          features: [],
+        },
       },
     })
   })
@@ -14,10 +17,16 @@ describe('points.vue', () => {
     expect(wrapper.element).toMatchSnapshot()
   })
   it('renders with provided props', () => {
-    expect(wrapper.props().features).toStrictEqual([])
+    expect(wrapper.props().features).toStrictEqual({
+      type: 'FeatureCollection',
+      features: [],
+    })
   })
   it('renders with default props', () => {
     wrapper = mount(Points)
-    expect(wrapper.props().features).toStrictEqual([])
+    expect(wrapper.props().features).toStrictEqual({
+      type: 'FeatureCollection',
+      features: [],
+    })
   })
 })
