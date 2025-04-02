@@ -1,9 +1,9 @@
 <script setup lang="ts">
 import { computed } from 'vue'
-import type Feature from 'ol/Feature'
-import type { Geometry } from 'ol/geom'
 import { Icon } from 'ol/style'
+import GeoJSON from 'ol/format/GeoJSON'
 import Style from 'ol/style/Style'
+import type { FeatureCollection, Geometry } from 'geojson'
 
 export interface PointsLayerProps {
   /**
@@ -11,7 +11,7 @@ export interface PointsLayerProps {
    * Projection needs to be in EPSG:3857 because OpenLayers
    * @default []
    */
-  features?: Feature<Geometry>[]
+  features?: FeatureCollection<Geometry>
 
   /**
    * Visibility of the points layer
@@ -56,7 +56,10 @@ export interface PointsLayerProps {
 }
 
 const props = withDefaults(defineProps<PointsLayerProps>(), {
-  features: () => [],
+  features: () => ({
+    type: 'FeatureCollection',
+    features: [],
+  }),
   visible: false,
   zIndex: 1,
   shapePoints: 3,
@@ -72,8 +75,15 @@ const webglPointStyle = computed(() => ({
   'shape-opacity': props.shapeOpacity,
   'shape-fill-color': props.shapeFillColor,
 }))
+const geoJson = new GeoJSON()
+const features = computed(() => {
+  return geoJson.readFeatures(props.features, {
+    dataProjection: 'EPSG:4326',
+    featureProjection: 'EPSG:3857',
+  })
+})
 const styledFeatures = computed(() => {
-  return props.features.map((feature) => {
+  return features.value.map((feature) => {
     feature.setStyle(new Style({
       image: new Icon({
         src: props.icon,
@@ -99,6 +109,6 @@ const styledFeatures = computed(() => {
     :z-index="props.zIndex"
     :visible="props.visible"
   >
-    <ol-source-vector :features="props.features" />
+    <ol-source-vector :features="features" />
   </ol-webgl-vector-layer>
 </template>
