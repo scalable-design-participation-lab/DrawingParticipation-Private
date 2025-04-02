@@ -59,6 +59,7 @@ const emit = defineEmits(['map-click'])
 const config = useRuntimeConfig()
 const { mapType } = storeToRefs(useMapStore())
 const mapInstance = ref(null)
+const mapRef = ref(null)
 
 const colorMode = useColorMode()
 const isDark = computed(() => colorMode.value === 'dark')
@@ -89,12 +90,19 @@ function handleMapClick(event) {
 defineExpose({
   mapInstance,
 })
+onMounted(() => {
+  nextTick(() => {
+    if (mapRef.value) {
+      mapInstance.value = mapRef.value.map
+    }
+  })
+})
 </script>
 
 <template>
   <client-only>
     <ol-map
-      ref="mapInstance"
+      ref="mapRef"
       :load-tiles-while-animating="true"
       :load-tiles-while-interacting="true"
       :controls="[]"
@@ -138,6 +146,7 @@ defineExpose({
       <slot name="overlays" />
     </ol-map>
   </client-only>
+  <div id="map-overlays" class="absolute inset-0 pointer-events-none" />
 </template>
 
 <style>
