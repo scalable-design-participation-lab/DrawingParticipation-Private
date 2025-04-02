@@ -22,12 +22,12 @@ interface InterpolationProps {
   /**
    * The number of grid points to generate.
    */
-  gridPoints?: number
+  gridSize?: number
 
   /**
    * The type of grid for interpolation (default is "points").
    */
-  gridType?: 'points' | 'hex' | 'square' | 'triangle'
+  gridType?: 'point' | 'hex' | 'square' | 'triangle'
 
   /**
    * The measurement units for grid spacing.
@@ -54,8 +54,8 @@ const props = withDefaults(defineProps<InterpolationProps>(), {
     type: 'FeatureCollection',
     features: [],
   }),
-  gridPoints: 100,
-  gridType: 'points',
+  gridSize: 100,
+  gridType: 'point',
   units: 'miles',
   visible: true,
   zIndex: 1,
@@ -81,7 +81,7 @@ const gridFeatures = computed(() => {
   }
 
   // Perform interpolation
-  const interpolatedGrid = turf.interpolate(points, props.gridPoints, options)
+  const interpolatedGrid = turf.interpolate(points, props.gridSize, options)
   const geoJson = new GeoJSON()
 
   return geoJson.readFeatures(interpolatedGrid, {

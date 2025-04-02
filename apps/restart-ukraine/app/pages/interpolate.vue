@@ -11,8 +11,8 @@ const points = [
 const features = turf.featureCollection(points)
 const visible = ref(true);
 const zIndex = ref(1);
-const gridPoints = ref(100);
-const gridType = ref<'points' | 'hex' | 'square' | 'triangle'>('points');
+const gridSize = ref(100);
+const gridType = ref<'point' | 'hex' | 'square' | 'triangle'>('point');
 const units = ref<'miles' | 'kilometers' | 'radians' | 'degrees'>('miles');
 </script>
 
@@ -21,7 +21,7 @@ const units = ref<'miles' | 'kilometers' | 'radians' | 'degrees'>('miles');
 <InterpolateController 
     v-model:visible="visible" 
     v-model:zIndex="zIndex" 
-    v-model:gridPoints="gridPoints" 
+    v-model:gridSize="gridSize" 
     v-model:gridType="gridType" 
     v-model:units="units"/>
 <GeneralizedBackgroundMap ref="baseMap" :min-zoom="0">
@@ -32,7 +32,7 @@ const units = ref<'miles' | 'kilometers' | 'radians' | 'degrees'>('miles');
         :bbox="bbox"
         :property="'value'"
         :visible="visible"
-        :gridPoints="gridPoints"
+        :gridSize="gridSize"
         :gridType="gridType"
         :units="units"
          />

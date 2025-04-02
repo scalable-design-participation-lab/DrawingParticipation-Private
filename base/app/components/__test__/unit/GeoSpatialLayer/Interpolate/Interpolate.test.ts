@@ -12,8 +12,8 @@ describe('interpolate.vue', () => {
                 features: [],
               },
               property: 'Solrad',
-              gridPoints: 2,
-              gridType: 'points',
+              gridSize: 2,
+              gridType: 'point',
               units: 'miles',
               visible: true,
               zIndex: 1,
@@ -33,7 +33,7 @@ describe('interpolate.vue', () => {
       },
     )
     expect(wrapper.props().property).toBe('Solrad')
-    expect(wrapper.props().gridType).toBe('points')
+    expect(wrapper.props().gridType).toBe('point')
     expect(wrapper.props().units).toBe('miles')
     expect(wrapper.props().visible).toBe(true)
     expect(wrapper.props().zIndex).toBe(1)
@@ -46,7 +46,7 @@ describe('interpolate.vue', () => {
       features: [],
     })
     expect(wrapper.props().property).toBe(undefined)
-    expect(wrapper.props().gridPoints).toBe(100)
+    expect(wrapper.props().gridSize).toBe(100)
     expect(wrapper.props().units).toBe('miles')
     expect(wrapper.props().visible).toBe(true)
     expect(wrapper.props().zIndex).toBe(1)
