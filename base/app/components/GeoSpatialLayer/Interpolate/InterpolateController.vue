@@ -1,7 +1,7 @@
 <script setup lang="ts">
 const visible = defineModel<boolean>('visible', { required: true })
 const zIndex = defineModel<number>('zIndex', { type: Number, required: true })
-const gridPoints = defineModel<number>('gridPoints', { type: Number })
+const gridSize = defineModel<number>('gridSize', { type: Number })
 const gridType = defineModel<string>('gridType', { required: true })
 const units = defineModel<string>('units', { required: true })
 </script>
@@ -30,10 +30,10 @@ const units = defineModel<string>('units', { required: true })
       />
     </div>
     <div class="flex items-center justify-between">
-      <span class="block py-2 capitalize text-black font-semibold dark:text-white">Grid Points</span>
+      <span class="block py-2 capitalize text-black font-semibold dark:text-white">Grid Size</span>
       <UInput
         id="grid-points"
-        v-model.number="gridPoints"
+        v-model.number="gridSize"
         type="number"
         class="w-20 px-1"
       />
@@ -42,7 +42,7 @@ const units = defineModel<string>('units', { required: true })
     <span class="block py-2 capitalize text-black font-semibold dark:text-white">Grid Type</span>
     <div class="grid grid-cols-2 gap-2 mt-2">
       <label>
-        <input v-model="gridType" type="radio" value="points"> Points
+        <input v-model="gridType" type="radio" value="point"> Point
       </label>
       <label>
         <input v-model="gridType" type="radio" value="hex"> Hexagon
