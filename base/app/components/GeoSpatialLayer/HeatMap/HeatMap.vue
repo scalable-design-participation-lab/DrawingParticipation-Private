@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import type Feature from 'ol/Feature'
 import GeoJSON from 'ol/format/GeoJSON'
-import type { Geometry } from 'ol/geom'
+import type { FeatureCollection, Geometry } from 'geojson'
+import { computed } from 'vue'
 
 export interface HeatMapLayerSettings {
   weight: number
@@ -41,7 +41,7 @@ export interface HeatmapLayerProps {
    * An array of OpenLayers `Feature` objects that define the data points to be visualized in the heatmap.
    * @default []
    */
-  features?: Feature<Geometry>[]
+  features?: FeatureCollection<Geometry>
 
   /**
    * The color gradient of the heatmap, specified as an array of CSS color strings.
@@ -93,25 +93,33 @@ export interface HeatmapLayerProps {
 /**
  * Define props with default values.
  */
-withDefaults(defineProps<HeatmapLayerProps>(), {
+const props = withDefaults(defineProps<HeatmapLayerProps>(), {
   blur: 20,
   radius: 20,
   visible: false,
   zIndex: 1,
   weight: () => 1,
   format: () => new GeoJSON(),
-  features: () => [],
+  features: () => ({ type: 'FeatureCollection', features: [] }),
   featuresloadstart: () => console.log('features load start'),
   featuresloadend: () => console.log('features load end'),
   featuresloaderror: () => console.log('features load error'),
   gradient: () => ['#00f', '#0ff', '#0f0', '#ff0', '#f00'],
+})
+const geoJson = new GeoJSON()
+const computedFeatures = computed(() => {
+  const parsedFeatures = geoJson.readFeatures(props.features, {
+    dataProjection: 'EPSG:4326',
+    featureProjection: 'EPSG:3857',
+  })
+  return parsedFeatures
 })
 </script>
 
 <template>
   <ol-heatmap-layer title="heatmap" :blur="blur" :radius="radius" :z-index="zIndex" :gradient="gradient" :visible="visible" :weight="weight">
     <ol-source-vector
-      :features="features"
+      :features="computedFeatures"
       :format="format"
       @featuresloadstart="featuresloadstart"
       @featuresloadend="featuresloadend"
