@@ -2,10 +2,10 @@
 import type { GridType } from './Grid.vue'
 
 const visible = defineModel<boolean>('visible', { required: true })
-const baseHue = defineModel<number>('baseHue', { required: true })
-const cellSide = defineModel<number>('cellSide', { required: true })
+const baseHue = defineModel<number>('baseHue', { type: Number, required: true })
+const cellSide = defineModel<number>('cellSide', { type: Number, required: true })
 const shape = defineModel<GridType>('shape', { required: true })
-const width = defineModel<number>('width', { required: true })
+const width = defineModel<number>('width', { type: Number, required: true })
 </script>
 
 <template>
@@ -28,7 +28,7 @@ const width = defineModel<number>('width', { required: true })
     <!-- Width Slider -->
     <label class="block text-sm font-medium">Line Width: {{ width }}</label>
     <input
-      v-model="width"
+      v-model.number="width"
       type="range" min="0.1" max="5"
       step="0.1"
       class="w-full my-2"
@@ -37,7 +37,7 @@ const width = defineModel<number>('width', { required: true })
     <!-- Base Hue Slider -->
     <label class="block text-sm font-medium">Base Hue: {{ baseHue }}</label>
     <input
-      v-model="baseHue"
+      v-model.number="baseHue"
       type="range" min="0" max="360"
       step="1"
       class="w-full my-2"
@@ -46,7 +46,7 @@ const width = defineModel<number>('width', { required: true })
     <!-- Cell side Slider -->
     <label class="block text-sm font-medium">Cell side: {{ cellSide }}</label>
     <input
-      v-model="cellSide"
+      v-model.number="cellSide"
       type="range" min="0.2" max="1"
       step="0.1"
       class="w-full my-2"

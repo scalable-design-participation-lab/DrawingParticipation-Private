@@ -3,24 +3,17 @@ import { useAllFeatureStore } from '@base/stores/all-features';
 import * as turf from '@turf/turf'; 
 import Grid, { type GridType } from '@base/components/GeoSpatialLayer/Grid/Grid.vue';
 import GridController from '@base/components/GeoSpatialLayer/Grid/GridController.vue';
-import GeoJSON from 'ol/format/GeoJSON'
 import { toLonLat } from 'ol/proj';
 
 const { featuresByType } = useAllFeatureStore();
-const geoJson = new GeoJSON();
 const pointFeatures = computed(() => featuresByType.Point);
-const dataPoints = computed(() => {
+const features = computed(() => {
   const points = pointFeatures.value.map(({ coordinates }) => {
     return turf.point(toLonLat(coordinates as [number, number]));
   });
   return turf.featureCollection(points);
 })
-const features = computed(() => {
-  return geoJson.readFeatures(dataPoints.value, {
-    dataProjection: 'EPSG:4326',
-    featureProjection: 'EPSG:3857',
-  });
-});
+
 const shape = ref<GridType>('Hexagon');
 const baseHue = ref<number>(0);
 const cellSide = ref<number>(0.2);
