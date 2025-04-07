@@ -1,8 +1,7 @@
 <script setup lang="ts">
 </script>
 <template>
-    <div class="fixed inset-0 flex justify-center items-center">
-        <div class="w-[85%] h-[73vh] max-w-[1800px] flex flex-col gap-5 overflow-hidden rounded-lg">
+    <div class="fixed inset-0 left-1/2 top-1/2 w-[60%] max-w-[1800px] flex flex-col gap-5 overflow-hidden rounded-lg bg-transparent z-10 -translate-x-1/2 -translate-y-1/2">
             <UCard class="flex-shrink-0 bg-white rounded-lg shadow-md hover:shadow-lg">
                 <template #header>
                     <div class="flex flex-col md:flex-row justify-between gap-8">
@@ -40,22 +39,25 @@
                 </template>
             </UCard>
 
-            <div class="flex-grow overflow-y-auto">
-                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-                    <div v-for="(item, index) in ['Points', 'Grid/Bin', 'Heatmap', 'Tesselation', 'Buffer', 'Interpolation']"
+            <div class="flex-grow overflow-y-auto h-fit">
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 gap-6">
+                    <div v-for="(item, index) in ['points', 'grid', 'heatmap', 'tesselation', 'buffer', 'interpolate']"
                         :key="index"
-                        class="px-3 py-3 bg-neutral-50 rounded-lg flex flex-col justify-start items-start gap-3 shadow-md">
+                        class="px-3 py-3 bg-neutral-50 rounded-lg flex flex-col justify-start items-start gap-3 shadow-md hover:shadow-lg">
                         <div class="w-full flex justify-between items-center">
                             <div class="h-4 flex justify-start items-center gap-1.5">
-                                <div class="text-black text-base font-medium">{{ item }}</div>
+                                <div class="text-black text-base font-medium capitalize">{{ item }}</div>
                             </div>
-                            <div class="w-6 h-5 text-right text-black text-base font-medium">↗</div>
+                            <div class="w-6 h-5 text-right text-black text-base font-medium">
+                                <NuxtLink :to="`/${item}`">
+                                    ↗
+                                </NuxtLink></div>
                         </div>
                         <img class="w-full h-40 rounded-[5px] object-cover" src="https://placehold.co/329x237" />
                     </div>
                 </div>
             </div>
         </div>
-    </div>
+    <GeneralizedBackgroundMap ref="baseMap" /> 
 
 </template>
