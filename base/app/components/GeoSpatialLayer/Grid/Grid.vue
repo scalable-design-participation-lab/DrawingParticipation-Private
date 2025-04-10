@@ -3,7 +3,6 @@ import { computed } from 'vue'
 import * as turf from '@turf/turf'
 import GeoJSON from 'ol/format/GeoJSON'
 import { Fill, Stroke, Style } from 'ol/style'
-import { toLonLat } from 'ol/proj'
 import type { FeatureCollection, Geometry } from 'geojson'
 
 /**

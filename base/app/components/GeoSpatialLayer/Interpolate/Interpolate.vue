@@ -62,15 +62,19 @@ const props = withDefaults(defineProps<InterpolationProps>(), {
   bbox: () => [-180, -90, 180, 90],
 })
 
+const bbox = computed(() => turf.bbox(props.features))
 const gridFeatures = computed(() => {
   if (!props.features || !props.features.features.length)
     return []
 
   // Convert input points to a FeatureCollection with properties
   const points = turf.featureCollection(
-    props.features.features.map(feature =>
-      turf.point((feature.geometry as any).coordinates, { [props.property]: feature.properties[props.property], bbox: props.bbox }),
-    ),
+    props.features.features
+      .filter(f => f.properties?.[props.property] !== undefined)
+      .map(feature => turf.point((feature.geometry as any).coordinates, {
+        [props.property]: feature.properties![props.property],
+        bbox: bbox.value,
+      })),
   )
 
   // Interpolation options

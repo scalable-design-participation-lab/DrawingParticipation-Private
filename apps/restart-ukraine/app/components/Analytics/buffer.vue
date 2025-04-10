@@ -51,15 +51,13 @@ const units = ref<'meters' | 'kilometers' | 'miles'>('meters');
 </script>
 
 <template>
-    <BufferController
+    <!-- <BufferController
         v-model:visible="visible"
         v-model:zIndex="zIndex"
         v-model:radius="radius"
         v-model:mode="mode"
         v-model:units="units"
-    />
-    <GeneralizedBackgroundMap ref="baseMap" :min-zoom="0"> 
-        <template #layers> 
+    /> -->
             <Buffer
                 :units="units"
                 :mode="mode"
@@ -68,6 +66,4 @@ const units = ref<'meters' | 'kilometers' | 'miles'>('meters');
                 :z-index="zIndex"
                 :radius="radius"
             />
-        </template>
-    </GeneralizedBackgroundMap>
 </template>

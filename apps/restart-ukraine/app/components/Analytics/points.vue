@@ -33,18 +33,14 @@ const shapeFillColor = ref('#ff0000');
 
 <template>
 
-  <PointsController
+  <!-- <PointsController
     v-model:visible="visible"
     v-model:zIndex="zIndex"
-  />
+  /> -->
 
-  <GeneralizedBackgroundMap ref="baseMap">
-    <template #layers>
       <Points
         :features="features" 
         :visible="visible" 
         :z-index="zIndex" 
       />
-    </template>
-  </GeneralizedBackgroundMap>
 </template>
