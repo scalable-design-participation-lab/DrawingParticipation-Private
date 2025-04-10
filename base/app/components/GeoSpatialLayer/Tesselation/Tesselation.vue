@@ -61,7 +61,7 @@ const computedFeatures = computed(() => {
   }
 
   // Filter points within the bbox using unique coordinates
-  const [minX, minY, maxX, maxY] = props.bbox
+  const [minX, minY, maxX, maxY] = turf.bbox(props.features)
   const filteredCoordinates = uniqueCoordinates.filter(([x, y]) =>
     x >= minX && x <= maxX && y >= minY && y <= maxY,
   )

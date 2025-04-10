@@ -59,8 +59,8 @@ const menuItems = [
     action: 'results',
   },
   {
-    label: 'Heat Map',
-    action: 'heatmap',
+    label: 'приладова панель',
+    action: 'dashboard',
   }
 ]
 
@@ -82,8 +82,8 @@ const handleItemClick = (item) => {
     case 'help':
       showSupportModal.value = true
       break
-    case 'heatmap':
-      router.push('/heatmap')
+    case 'dashboard':
+      router.push('/dashboard')
       break
     case 'results':
       router.push('/result')
