@@ -63,7 +63,7 @@ const leftItems = ref([
 ]);
 
 const rightItems = ref([]);
-if(!import.meta.client) {
+if(import.meta.client) {
     rightItems.value = [ {
     icon: computed(() =>
       currentMapType.value === 'vector'
