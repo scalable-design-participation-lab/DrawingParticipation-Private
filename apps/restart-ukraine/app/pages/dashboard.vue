@@ -62,25 +62,24 @@ const leftItems = ref([
   { label: 'Гуртомá', color: 'black', to: '/about/' },
 ]);
 
-const rightItems = ref([
-  {
-    icon: computed(() =>
-      currentMapType.value === 'vector'
-        ? 'i-heroicons:map'
-        : 'i-heroicons:globe-americas-20-solid'
-    ),
-    onClick: () => {
-      currentMapType.value = currentMapType.value === 'vector' ? 'satellite' : 'vector';
-      setMapType(currentMapType.value);
+const rightItems = ref([])
+
+if (!import.meta.client) {
+  rightItems.value = [
+    {
+      icon: computed(() =>
+        currentMapType.value === 'vector'
+          ? 'i-heroicons:map'
+          : 'i-heroicons:globe-americas-20-solid',
+      ),
+      onClick: () => {
+        currentMapType.value =
+          currentMapType.value === 'vector' ? 'satellite' : 'vector'
+        setMapType(currentMapType.value as MapType)
+      },
     },
-  },
-  {
-    icon: computed(() => 'i-ix:analyze'),
-    onClick: () => {
-      show.value = !show.value;
-    },
-  },
-]);
+  ]
+}
 const metaData = {
     'Geometric Type': numberOfType,
     'Categories': numberOfCategories,
