@@ -1,0 +1,51 @@
+---
+description: 
+globs: 
+alwaysApply: false
+---
+# Base Components Guide
+
+The `base` directory contains shared components and utilities used across all applications.
+
+## Integration
+
+To use base components in an app:
+
+1. Add the following to `nuxt.config.ts`:
+```ts
+import path from "path"
+vite: {
+  resolve: {
+    alias: {
+      '@base': path.resolve(__dirname, '../../base/app'),
+    },
+  },
+}
+```
+
+2. Add the following to `tsconfig.json`:
+```ts
+{
+  "compilerOptions": {
+    "paths": {
+      "@base/*": [
+        "../../base/app/*"
+      ]
+    }
+  }
+}
+```
+
+## Base Structure
+
+- **[base/app/](mdc:DrawingParticipation-Private/base/app)**: Contains the shared components and utilities
+- **[base/layers/](mdc:DrawingParticipation-Private/base/layers)**: Contains additional feature layers
+- **[base/plugins/](mdc:DrawingParticipation-Private/base/plugins)**: Contains shared plugins
+
+## Usage Example
+
+Import base components using the `@base` alias:
+
+```ts
+import BaseComponent from '@base/components/BaseComponent.vue'
+```

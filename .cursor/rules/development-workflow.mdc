@@ -1,0 +1,55 @@
+---
+description: 
+globs: 
+alwaysApply: false
+---
+# Development Workflow
+
+## Setup
+
+1. Install dependencies:
+```bash
+yarn install
+```
+
+2. Start a specific app:
+```bash
+cd apps/app-name
+yarn dev
+```
+
+## Project Testing
+
+1. Run tests:
+```bash
+# For a specific app
+cd apps/app-name
+yarn test
+
+# For the entire project
+yarn test
+```
+
+2. Run test coverage:
+```bash
+yarn coverage
+```
+
+## Using Base Components
+
+To use shared components from the base package:
+
+1. Import them using the `@base` alias:
+```ts
+import BaseComponent from '@base/components/BaseComponent.vue'
+```
+
+2. Ensure your app's `nuxt.config.ts` and `tsconfig.json` are properly configured as described in the [Base Components](mdc:DrawingParticipation-Private/.cursor/rules/base-components.mdc) guide.
+
+## Layers
+
+The project uses a layered architecture with shared functionality in the `base/layers` directory. Follow these principles:
+
+1. Layer-specific functionality should be placed in `base/layers/[layer-name]/`
+2. Layers can be imported and used across different apps
+3. Common UI components should be in the base package instead of duplicated in apps

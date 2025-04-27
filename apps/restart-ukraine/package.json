@@ -9,7 +9,6 @@
     "dev": "nuxt dev",
     "generate": "nuxt generate",
     "preview": "nuxt preview",
-    "postinstall": "nuxt prepare",
     "backup": "dotenv -e .env ts-node scripts/backupProjects.ts",
     "update-coordinates": "dotenv -e .env ts-node scripts/updateCoordinates.ts",
     "validate-coordinates": "dotenv -e .env ts-node scripts/validateCoordinates.ts",

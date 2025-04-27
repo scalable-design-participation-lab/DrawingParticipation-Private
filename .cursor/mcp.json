@@ -1,0 +1,13 @@
+{
+  "mcpServers": {
+    "browsermcp": {
+      "command": "npx",
+      "args": [
+        "@browsermcp/mcp@latest"
+      ]
+    },
+    "nuxt": {
+      "url": "http://localhost:3000/__mcp/sse"
+    }
+  }
+}

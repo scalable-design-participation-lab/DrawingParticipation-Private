@@ -1,0 +1,31 @@
+---
+description: 
+globs: 
+alwaysApply: false
+---
+# Project Structure Guide
+
+This is a monorepo project with multiple applications and a shared base package.
+
+## Repository Structure
+
+- **[base/](mdc:DrawingParticipation-Private/base)**: Contains shared components, layouts, and utilities used across apps
+- **[apps/](mdc:DrawingParticipation-Private/apps)**: Contains individual applications:
+  - **[drawing-participation/](mdc:DrawingParticipation-Private/apps/drawing-participation)**: Main drawing participation app
+  - **[restart-ukraine/](mdc:DrawingParticipation-Private/apps/restart-ukraine)**: Restart Ukraine application
+  - **[template/](mdc:DrawingParticipation-Private/apps/template)**: Template for new applications
+  - **[urkrian/](mdc:DrawingParticipation-Private/apps/urkrian)**: Urkrian application
+
+## Package Management
+
+The project uses Yarn workspaces as defined in [package.json](mdc:DrawingParticipation-Private/package.json). The workspaces include:
+- `base`
+- `base/layers/*`
+- `apps/*`
+
+## Testing
+
+Testing is done with Vitest and follows a specific structure:
+- Test files should be placed in `__test__/` folders
+- Component tests should be in `__test__/unit/` with a similar structure to the components
+- See [README.md](mdc:DrawingParticipation-Private/README.md) for more details about testing practices

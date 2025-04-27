@@ -1,0 +1,73 @@
+---
+description: 
+globs: 
+alwaysApply: false
+---
+# Testing Guide
+
+## Testing Structure
+
+Tests should be organized as follows:
+- Place test files in a `__test__/` folder adjacent to the code being tested
+- Component tests go in `__test__/unit/` with structure mirroring components
+- Integration tests go in `__test__/integration/`
+
+Example structure:
+```
+app/
+└───components/
+    └───HelloWorld/
+        │   HelloWorld.vue
+    └───__test__/
+        └───unit/
+            └───HelloWorld/
+                │   HelloWorld.test.ts
+        └───integration/
+```
+
+## Configuration
+
+1. Add to `tsconfig.json`:
+```json
+{
+  "compilerOptions": {
+    "paths": {
+      "@components/*": [
+        "app/components/*"
+      ]
+    }
+  }
+}
+```
+
+2. Add to `vitest.config.mjs`:
+```js
+resolve: {
+  alias: {
+    '@components': '/app/components',
+    '#ui': path.resolve(
+      __dirname,
+      './node_modules/@nuxt/ui/dist/runtime/ui.mjs',
+    ),
+  },
+},
+```
+
+## Running Tests
+
+1. Run tests for a specific app:
+```bash
+cd apps/app-name/
+yarn run test
+```
+
+2. Run all tests from root:
+```bash
+yarn run test
+```
+
+## Core Testing Packages
+
+- `vitest`: Testing framework
+- `@vue/test-utils`: Core testing utilities for Vue components
+- `jsdom`/`happy-dom`: DOM environment for tests

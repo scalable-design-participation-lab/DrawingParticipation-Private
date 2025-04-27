@@ -49,5 +49,10 @@ export default defineNuxtConfig({
     },
   },
 
-  compatibilityDate: '2024-07-11',
+  // compatibilityDate: '2024-07-11',
+
+  // Add experimental configuration with proper array
+  experimental: {
+    extraPageMetaExtractionKeys: [],
+  },
 })
