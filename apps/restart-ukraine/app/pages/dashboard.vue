@@ -97,9 +97,9 @@ const metaData = {
     <GeneralizedHeader class="z-20" :left-items="leftItems" :right-items="rightItems" logo-src="/restart-logo-icon.svg"
         logo-alt="Restart Agency Logo" logo-link="https://www.restartfuture.org/" />
 
-    <div class="p-0 m-0" v-if="showDataModal">
+    <!-- <div class="p-0 m-0" v-if="showDataModal">
         <DataModal v-model:showModal="showDataModal"/>
-    </div>
+    </div> -->
 
     <div v-if="showDashboard && !showDataModal"
         class="fixed inset-0 left-1/2 top-1/2 w-[60%] max-w-[1800px] flex flex-col gap-5 overflow-hidden rounded-lg bg-transparent z-10 -translate-x-1/2 -translate-y-1/2">
