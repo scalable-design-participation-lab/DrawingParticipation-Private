@@ -116,12 +116,12 @@ const metaData = {
                             Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor
                             incididunt ut labore et dolore magna aliqua.
                         </div>
-                        <div class="w-full text-black text-xs font-medium pt-2">
+                        <!-- <div class="w-full text-black text-xs font-medium pt-2">
                             <UButton loading-auto @click="() => showDataModal = !showDataModal" class="flex flex-row justify-start items-center gap-2">
                                 <UIcon name="i-heroicons:map" class="w-4 h-4 text-black text-base" />
                                 <span class="text-black text-base font-medium">Upload Data</span>
                             </UButton>
-                        </div>
+                        </div> -->
                     </div>
 
                     <!-- Right Column -->
