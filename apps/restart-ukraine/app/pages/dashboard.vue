@@ -17,6 +17,10 @@ import Interpolate from '../components/Analytics/interpolate.vue';
 import Points from '../components/Analytics/points.vue';
 import Tesselation from '../components/Analytics/tesselation.vue';
 
+
+// Data Modal
+import DataModal from '@base/components/DataModal.vue';
+
 // Utilities & Store
 import ToolTips from '@base/components/Tools/ToolTips.vue';
 import { useAllFeatureStore } from '@base/stores/all-features';
@@ -33,7 +37,8 @@ const numberOfCategories = computed(() => Object.keys(allFeatureStore.featuresBy
 const numberOfType = computed(() => Object.keys(allFeatureStore.featuresByType).length);
 
 const currentMapType = ref<MapType>('vector');
-const show = ref(true);
+const showDashboard = ref(true);
+const showDataModal = ref(false)
 const layers = ref<string[]>([]);
 const mapRef = ref(null);
 
@@ -62,9 +67,8 @@ const leftItems = ref([
   { label: 'Гуртомá', color: 'black', to: '/about/' },
 ]);
 
-const rightItems = ref([]);
-if(import.meta.client) {
-    rightItems.value = [ {
+const rightItems = ref([
+  {
     icon: computed(() =>
       currentMapType.value === 'vector'
         ? 'i-heroicons:map'
@@ -78,10 +82,10 @@ if(import.meta.client) {
   {
     icon: computed(() => 'i-ix:analyze'),
     onClick: () => {
-      show.value = !show.value;
+      showDashboard.value = !showDashboard.value;
     },
-  },]
-}
+  },
+]);
 const metaData = {
     'Geometric Type': numberOfType,
     'Categories': numberOfCategories,
@@ -93,7 +97,11 @@ const metaData = {
     <GeneralizedHeader class="z-20" :left-items="leftItems" :right-items="rightItems" logo-src="/restart-logo-icon.svg"
         logo-alt="Restart Agency Logo" logo-link="https://www.restartfuture.org/" />
 
-    <div v-if="show"
+    <div class="p-0 m-0" v-if="showDataModal">
+        <DataModal v-model:showModal="showDataModal"/>
+    </div>
+
+    <div v-if="showDashboard && !showDataModal"
         class="fixed inset-0 left-1/2 top-1/2 w-[60%] max-w-[1800px] flex flex-col gap-5 overflow-hidden rounded-lg bg-transparent z-10 -translate-x-1/2 -translate-y-1/2">
         <UCard class="flex-shrink-0 bg-white rounded-lg shadow-md hover:shadow-lg">
             <template #header>
@@ -108,8 +116,11 @@ const metaData = {
                             Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor
                             incididunt ut labore et dolore magna aliqua.
                         </div>
-                        <div class="w-full text-black text-xs font-medium">
-                            → Upload Data<br />→ Switch Project
+                        <div class="w-full text-black text-xs font-medium pt-2">
+                            <UButton loading-auto @click="() => showDataModal = !showDataModal" class="flex flex-row justify-start items-center gap-2">
+                                <UIcon name="i-heroicons:map" class="w-4 h-4 text-black text-base" />
+                                <span class="text-black text-base font-medium">Upload Data</span>
+                            </UButton>
                         </div>
                     </div>
 
@@ -131,6 +142,7 @@ const metaData = {
                 </div>
             </template>
         </UCard>
+
 
         <div class="flex-grow overflow-y-scroll h-fit">
             <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 gap-6">

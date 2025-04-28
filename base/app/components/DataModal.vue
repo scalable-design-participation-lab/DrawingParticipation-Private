@@ -1,7 +1,8 @@
-<script setup>
+<script setup lang="ts">
 import { ref } from 'vue'
 import { useDataStore } from '../stores/data'
 
+const showModal = defineModel<boolean>('showModal', { required: true })
 const tabs = ['Load Files', 'Load Map using URL']
 const activeTab = ref(tabs[0])
 const dataStore = useDataStore()
@@ -87,7 +88,7 @@ function parseGeoJSON(file) {
 }
 
 /** Process the dropped or selected files. */
-function handleFiles(fileList) {
+function handleFiles(fileList: FileList) {
   // Show spinner (simulate some loading)
   isLoading.value = true
 
@@ -236,6 +237,9 @@ function handleFiles(fileList) {
         </div>
       </div>
     </div>
+    <UButton @click="showModal = false">
+      Close
+    </UButton>
   </Ucard>
 </template>
 
