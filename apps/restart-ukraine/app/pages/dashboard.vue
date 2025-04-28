@@ -166,7 +166,14 @@ const metaData = {
             </div>
             <div class="flex flex-row justify-end items-center gap-2">
               <UIcon
+                v-if="!layers.includes(item)"
                 name="i-ix:add-circle"
+                class="w-6 h-5 text-black dark:text-white text-base cursor-pointer"
+                @click="() => handleAddingLayer(item)"
+              />
+              <UIcon
+                v-if="layers.includes(item)"
+                name="i-material-symbols:cancel-rounded"
                 class="w-6 h-5 text-black dark:text-white text-base cursor-pointer"
                 @click="() => handleAddingLayer(item)"
               />
@@ -174,7 +181,7 @@ const metaData = {
           </div>
 
           <div
-            class="w-full h-40 rounded-[5px] flex justify-center items-center bg-[url(/assets/images/street.png)] bg-cover bg-center bg-no-repeat"
+            class="w-full h-40 rounded-[5px] flex justify-center items-center bg-[url(/assets/images/street.png)] bg-cover bg-center bg-no-repeat dark:invert"
           >
             <component :is="items[item].icon" />
           </div>
