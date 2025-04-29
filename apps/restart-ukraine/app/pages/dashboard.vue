@@ -102,7 +102,7 @@ const metaData = {
   </div> -->
 
     <div v-if="showDashboard && !showDataModal"
-        class="fixed inset-0 left-1/2 top-1/2 w-[60%] max-w-[1800px] flex flex-col gap-5 overflow-hidden rounded-lg bg-transparent z-10 -translate-x-1/2 -translate-y-1/2">
+        class="fixed left-1/2 top-1/2 w-[60%] h-[70%] max-w-[1800px] flex flex-col gap-5 overflow-hidden rounded-lg bg-transparent z-10 -translate-x-1/2 -translate-y-1/2">
         <UCard class="flex-shrink-0 bg-white dark:bg-neutral-900 rounded-lg shadow-md hover:shadow-lg">
             <template #header>
 
