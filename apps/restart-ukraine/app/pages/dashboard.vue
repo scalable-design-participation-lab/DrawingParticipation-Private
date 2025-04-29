@@ -56,7 +56,8 @@ function handleAddingLayer(item: string) {
     layers.value = layers.value.filter(l => l !== item);
   } else {
     layers.value.push(item);
-  }
+}
+  showDashboard.value = false
 }
 
 const mapInstance = computed(() => mapRef.value?.mapInstance ?? null);
@@ -106,11 +107,9 @@ const metaData = {
         <UCard class="flex-shrink-0 bg-white dark:bg-neutral-900 rounded-lg shadow-md hover:shadow-lg">
             <template #header>
 
-            <UIcon
-                    name="i-material-symbols:cancel-rounded"
+                <UIcon name="i-material-symbols:cancel-rounded"
                     class="absolute top-2 left-2 w-5 h-6 text-black dark:text-white cursor-pointer z-10 hover:opacity-70 hover:bg-red-500 darK:hover:bg-red-500"
-                    @click="() => showDashboard = false"
-                />
+                    @click="() => showDashboard = false" />
 
                 <div class="flex flex-col md:flex-row justify-between gap-6 md:gap-10 p-7">
                     <!-- Left Column -->
