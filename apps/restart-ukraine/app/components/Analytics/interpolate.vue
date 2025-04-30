@@ -16,38 +16,14 @@ const allFeaturesStore = useAllFeatureStore()
 
 const allFeaturesPoints = allFeaturesStore.featuresByType.Point
 
-const boundingBox = [28.456993,49.122306,28.617418,49.547638];
+const boundingBox = [28.462271, 49.215576, 28.570271, 49.265576];
 
-const isInsideBox = ([lng, lat]) =>
-  lng >= boundingBox[0] &&
-  lat >= boundingBox[1] &&
-  lng <= boundingBox[2] &&
-  lat <= boundingBox[3];
-
-const validPoints = allFeaturesPoints.filter(t =>{
-  const p = toLonLat(t.coordinates as [number, number])
-  return Array.isArray(p) &&
-  p.length === 2 &&
-  typeof p[0] === 'number' &&
-  typeof p[1] === 'number' &&
-   isInsideBox(p as [number, number])
-}
-);
-
-const filteredPoints = validPoints.filter((point, index, self) =>
-  index === self.findIndex(p =>
-    p.coordinates[0] === point.coordinates[0] &&
-    p.coordinates[1] === point.coordinates[1]
-  )
-);
-
-const points = filteredPoints.map((feature) => {
+const points = allFeaturesPoints.map((feature) => {
   const lonLat = turf.point(toLonLat(feature.coordinates as [number, number]), { value: Math.random() * 100 });
   return lonLat;
 });
 
 const features = turf.featureCollection(points)
-const bbox = turf.bbox(features);
 
 </script>
 
@@ -63,7 +39,7 @@ const bbox = turf.bbox(features);
         :features="features" 
         :z-index="zIndex"
         :property="'value'"
-        :bbox="bbox"
+        :bbox="boundingBox"
         :visible="visible"
         :gridSize="gridSize"
         :gridType="gridType"
