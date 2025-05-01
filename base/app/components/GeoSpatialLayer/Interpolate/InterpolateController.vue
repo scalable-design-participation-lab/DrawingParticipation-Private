@@ -7,7 +7,7 @@ const units = defineModel<string>('units', { required: true })
 </script>
 
 <template>
-  <UCard class="fixed right-6 top-24 w-96 md:w-80 max-h-[calc(100vh-11rem)] z-40 shadow-xl dark:bg-black flex flex-col overflow-hidden">
+  <UCard class=" z-40 shadow-xl dark:bg-black flex flex-col overflow-hidden">
     <!-- Visible -->
     <div class="flex justify-between my-2">
       <span class="my-1 capitalize text-black font-semibold dark:text-white"> Visibility </span>
@@ -36,6 +36,9 @@ const units = defineModel<string>('units', { required: true })
         v-model.number="gridSize"
         type="number"
         class="w-20 px-1"
+        min="0.2"
+        max="1"
+        step="0.2"
       />
     </div>
 

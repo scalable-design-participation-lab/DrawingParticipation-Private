@@ -10,7 +10,7 @@ const area = defineModel('area', { type: Boolean, required: true })
 </script>
 
 <template>
-  <UCard class="fixed right-6 top-24 w-96 md:w-80 max-h-[calc(100vh-11rem)] z-40 shadow-xl dark:bg-black flex flex-col overflow-scroll">
+  <UCard class="z-40 shadow-xl dark:bg-black flex flex-col overflow-scroll">
     <!-- Visible -->
     <div class="flex justify-between my-2">
       <span class="my-1 capitalize text-black font-semibold dark:text-white"> Visibility </span>
