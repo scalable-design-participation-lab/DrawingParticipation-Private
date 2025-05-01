@@ -55,7 +55,8 @@ export const layerDefinitions = {
         gridSize: 0.4,
         gridType: 'square',
         units: 'kilometers',
-        bbox: [28.462271, 49.215576, 28.570271, 49.265576]
+        bbox: [28.462271, 49.215576, 28.570271, 49.265576],
+        property: 'value',
     }
   },
   points: {
