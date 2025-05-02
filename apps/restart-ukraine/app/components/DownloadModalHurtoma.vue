@@ -286,6 +286,7 @@ const convertToCSV = (data: any, dataType: string) => {
 
 const handleDownload = async () => {
   if (!isFormValid.value) return
+  if (!import.meta.client) return
 
   isLoading.value = true
   try {

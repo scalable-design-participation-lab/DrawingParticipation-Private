@@ -46,19 +46,6 @@ const mapInstance = computed(() => {
 </script>
 
 <template>
-  <TesselationController 
-  v-model:opacity="opacity"
-  v-model:visible="visible"
-  v-model:zIndex="zIndex"
-  v-model:type="type"
-  v-model:opacity-mode="opacityMode" 
-  v-model:cluster-count="clusterCount"
-  v-model:primaryColor="primaryColor"
-  v-model:secondaryColor="secondaryColor"
-  v-model:area="area"
-  />
-  <GeneralizedBackgroundMap ref="mapRef">
-    <template #layers>
         <Tesselation 
         :type="type"
         :opacity="opacity"
@@ -71,9 +58,4 @@ const mapInstance = computed(() => {
         :secondary-color="secondaryColor"
         :area="area"
         />
-    </template>
-    <template #overlays>
-      <ToolTips :map-instance="mapInstance" :filter-keys="['fillColor']"/>
-    </template>
-  </GeneralizedBackgroundMap>
 </template>

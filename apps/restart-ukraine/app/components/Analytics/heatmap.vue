@@ -1,38 +1,9 @@
-import { computed, reactive } from "vue";
 <script setup lang="ts">
-import { useAllFeatureStore } from "../../../../base/app/stores/all-features";
 import * as turf from '@turf/turf'
-import GeneralizedBackgroundMap from "@base/components/GeneralizedBackgroundMap.vue";
 import HeatMap, { type HeatMapLayerSettings } from "@base/components/GeoSpatialLayer/HeatMap/HeatMap.vue";
-import type {  MapType } from "@base/stores/types/store";
-import { useMapStore } from "@base/stores/map";
 import HeatMapController from "@base/components/GeoSpatialLayer/HeatMap/HeatMapController.vue";
 import { toLonLat } from "ol/proj";
-// 🌍 Map Store
-const mapStore = useMapStore();
-const { setMapType } = mapStore;
-const currentMapType = ref<MapType>("vector");
-
-// 🌍 UI Navigation Items
-const leftItems = ref([
-  { label: "Drawing Participation", color: "black", to: "/about/" },
-  { label: "Гуртомá", color: "black", to: "/about/" },
-]);
-
-const rightItems = ref([
-  {
-    icon: computed(() =>
-      currentMapType.value === "vector"
-        ? "i-heroicons:map"
-        : "i-heroicons:globe-americas-20-solid"
-    ),
-    onClick: () => {
-      currentMapType.value = currentMapType.value === "vector" ? "satellite" : "vector";
-      setMapType(currentMapType.value);
-    },
-  },
-]);
-
+import { useAllFeatureStore } from '@base/stores/all-features';
 // 🗺 Feature Store & GeoJSON Processor
 const { featuresByCategory } = useAllFeatureStore();
 
@@ -95,7 +66,6 @@ const getGeoJsonFeature = (featureKey: string) => {
 const features = computed(() => {
   const entries = Object.entries(featuresByCategory).map(([key, value]) => {
     const geoJson = getGeoJsonFeature(key);
-    console.log(`Computed GeoJSON for ${key}:`, geoJson);
     return [key, geoJson];
   });
   return Object.fromEntries(entries);
@@ -128,14 +98,20 @@ const ranges: { label: string; duration: Duration }[] = [
 </script>
 
 <template>
-  <!-- 📌 HEADER -->
-  <GeneralizedHeader
-    class="z-20"
-    :left-items="leftItems"
-    :right-items="rightItems"
-    logo-src="/restart-logo-icon.svg"
-    logo-alt="Restart Agency Logo"
-    logo-link="https://www.restartfuture.org/"
+
+
+  <!-- 📌 MAP & LAYERS -->
+  <HeatMap
+    v-for="key in Object.keys(features)"
+    :key="key"
+    :features="features[key]"
+    :visible="layerSettings[key]?.visible"
+    :weight="() => layerSettings[key]?.weight"
+    :gradient="layerSettings[key]?.gradient"
+    :blur="layerSettings[key]?.blur"
+    :radius="layerSettings[key]?.radius"
+    :opacity="layerSettings[key]?.opacity"
+    :z-index="layerSettings[key]?.zIndex"
   />
 
   <!-- 📌 SIDEBAR -->
@@ -146,22 +122,4 @@ const ranges: { label: string; duration: Duration }[] = [
    v-model:categories="categories"
    v-model:filter-time="filterTime"
    />
-
-  <!-- 📌 MAP & LAYERS -->
-  <GeneralizedBackgroundMap ref="baseMap">
-    <template #layers>
-      <HeatMap
-        v-for="key in Object.keys(features)"
-        :key="key"
-        :features="features[key]"
-        :visible="layerSettings[key]?.visible"
-        :weight="() => layerSettings[key]?.weight"
-        :gradient="layerSettings[key]?.gradient"
-        :blur="layerSettings[key]?.blur"
-        :radius="layerSettings[key]?.radius"
-        :opacity="layerSettings[key]?.opacity"
-        :z-index="layerSettings[key]?.zIndex"
-      />
-    </template>
-  </GeneralizedBackgroundMap>
 </template>

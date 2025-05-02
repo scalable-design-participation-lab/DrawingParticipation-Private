@@ -22,15 +22,13 @@ const width = ref<number>(1);
 
 </script>
 <template>
-  <GridController
+  <!-- <GridController
    v-model:baseHue="baseHue"
    v-model:cellSide="cellSide"
    v-model:visible="visible"
    v-model:shape="shape"
-   v-model:width="width" /> 
+   v-model:width="width" />  -->
 
-  <GeneralizedBackgroundMap>
-    <template #layers>
       <Grid 
       :features="features" 
       :bbox="[28.462271, 49.215576, 28.570271, 49.265576]"
@@ -40,7 +38,5 @@ const width = ref<number>(1);
       :shape="shape"
       :visible="visible"
       :width="width"/>
-    </template>
-  </GeneralizedBackgroundMap>
 </template>
 
