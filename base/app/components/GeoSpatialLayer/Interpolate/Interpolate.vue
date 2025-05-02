@@ -3,6 +3,7 @@ import { computed } from 'vue'
 import * as turf from '@turf/turf'
 import GeoJSON from 'ol/format/GeoJSON'
 import type { FeatureCollection, Geometry } from 'geojson'
+import { toLonLat } from 'ol/proj'
 
 /**
  * Props for configuring interpolation.
@@ -62,29 +63,56 @@ const props = withDefaults(defineProps<InterpolationProps>(), {
   bbox: () => [-180, -90, 180, 90],
 })
 
+const pointCollection = computed(() => {
+  const seen = new Set<string>()
+  const raw = props.features!.features ?? []
+
+  const pts = raw
+    // only features that actually have the property
+    .filter(f => f.properties?.[props.property] != null)
+    // extract coords & value
+    .map((f) => {
+      const coords = (f.geometry as any).coordinates as [number, number]
+      return {
+        lonlat: coords, // ← use coords directly
+        value: f.properties![props.property] as number,
+      }
+    })
+    // clip to bbox (now in the same [lon,lat] space)
+    .filter(({ lonlat: [lng, lat] }) => {
+      const [minX, minY, maxX, maxY] = props.bbox!
+      return lng >= minX && lat >= minY && lng <= maxX && lat <= maxY
+    })
+    // dedupe
+    .filter(({ lonlat }) => {
+      const key = lonlat.join(',')
+      if (seen.has(key))
+        return false
+      seen.add(key)
+      return true
+    })
+    // make Turf points
+    .map(({ lonlat, value }) =>
+      turf.point(lonlat, { [props.property]: value }),
+    )
+
+  return turf.featureCollection(pts)
+})
 const gridFeatures = computed(() => {
-  if (!props.features || !props.features.features.length)
+  if (!pointCollection.value.features.length)
     return []
 
-  // Convert input points to a FeatureCollection with properties
-  const points = turf.featureCollection(
-    props.features.features.map(feature =>
-      turf.point((feature.geometry as any).coordinates, { [props.property]: feature.properties[props.property], bbox: props.bbox }),
-    ),
+  const interpolated = turf.interpolate(
+    pointCollection.value,
+    props.gridSize!,
+    {
+      gridType: props.gridType!,
+      property: props.property,
+      units: props.units!,
+    },
   )
 
-  // Interpolation options
-  const options = {
-    gridType: props.gridType,
-    property: props.property,
-    units: props.units,
-  }
-
-  // Perform interpolation
-  const interpolatedGrid = turf.interpolate(points, props.gridSize, options)
-  const geoJson = new GeoJSON()
-
-  return geoJson.readFeatures(interpolatedGrid, {
+  return new GeoJSON().readFeatures(interpolated, {
     dataProjection: 'EPSG:4326',
     featureProjection: 'EPSG:3857',
   })

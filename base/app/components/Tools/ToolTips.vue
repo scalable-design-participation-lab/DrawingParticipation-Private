@@ -107,7 +107,7 @@ const activePopup = computed(() => {
 })
 
 const isPopupVisible = computed(() => {
-  return pinnedPopup.state.visible || hoverPopup.state.visible
+  return (pinnedPopup.state.visible || hoverPopup.state.visible) && (hoverPopup.state.content.length !== 0 || pinnedPopup.state.content.length !== 0)
 })
 // State for pagination
 const itemsPerPage = props.itemsPerPage
@@ -369,7 +369,7 @@ onUnmounted(() => {
   <Teleport to="#map-overlays">
     <div
       v-if="isPopupVisible"
-      class="absolute z-[2000] bg-white p-3 rounded-xl border border-black dark:bg-black dark:text-white dark:border-white"
+      class="absolute bg-white p-3 rounded-xl border border-black dark:bg-black dark:text-white dark:border-white"
       :style="{
         left: `${activePopup.position.x}px`,
         top: `${activePopup.position.y}px`,
@@ -377,8 +377,9 @@ onUnmounted(() => {
         pointerEvents: 'auto',
       }"
     >
-      <strong class="capitalize">Geometry: </strong> {{ activePopup.feature?.getGeometry()?.getType() }}
-      <hr>
+      <div class="underline">
+        <strong class="capitalize">Geometry: </strong> {{ activePopup.feature?.getGeometry()?.getType() }}
+      </div>
       <!-- Display paginated keys -->
       <div class="mt-2">
         <div v-for="key in paginatedKeys" :key="key">

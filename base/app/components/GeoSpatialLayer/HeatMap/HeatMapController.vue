@@ -36,7 +36,10 @@ function getLayerKey(section: string, layer: string): string {
 </script>
 
 <template>
-  <UCard class="fixed right-6 top-24 w-96 md:w-80 max-h-[calc(100vh-11rem)] z-40 shadow-xl dark:bg-black flex flex-col overflow-hidden">
+  <UCard class="w-96 md:w-80 max-h-[calc(100vh-11rem)] z-40 shadow-xl dark:bg-black flex flex-col overflow-hidden">
+    <div class="text-lg font-semibold mb-4">
+      Heat Map Settings
+    </div>
     <div class="flex-1 overflow-auto max-h-[calc(100vh-13rem)] px-1">
       <div v-if="Object.keys(categories).length">
         <!-- ── Layers Header & Draggable List ── -->
