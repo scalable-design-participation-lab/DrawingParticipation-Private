@@ -309,7 +309,7 @@ const ranges: { label: string; duration: Duration }[] = [
         <div v-for="layer in layers" :key="layer.id" class="mb-4 overflow-scroll">
             <!-- Accordion Header -->
             <div @click="toggleController(layer.id)"
-                class="w-80 flex justify-between items-center cursor-pointer px-2 py-1">
+                class="w-[340px] flex justify-between items-center cursor-pointer">
                 <span class="capitalize text-gray-800 dark:text-gray-200">{{ layer.type }}</span>
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
                     class="w-4 h-4 transition-transform duration-200 ease-in-out"
