@@ -11,6 +11,9 @@ const area = defineModel('area', { type: Boolean, required: true })
 
 <template>
   <UCard class="z-40 shadow-xl dark:bg-black flex flex-col overflow-scroll">
+    <div class="text-lg font-semibold mb-4">
+      Tesselation Settings
+    </div>
     <!-- Visible -->
     <div class="flex justify-between my-2">
       <span class="my-1 capitalize text-black font-semibold dark:text-white"> Visibility </span>
