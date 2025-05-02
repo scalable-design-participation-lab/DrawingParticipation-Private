@@ -8,6 +8,9 @@ const units = defineModel<string>('units', { required: true })
 
 <template>
   <UCard class=" z-40 shadow-xl dark:bg-black flex flex-col overflow-hidden">
+    <div class="text-lg font-semibold mb-4">
+      Interpolate Settings
+    </div>
     <!-- Visible -->
     <div class="flex justify-between my-2">
       <span class="my-1 capitalize text-black font-semibold dark:text-white"> Visibility </span>

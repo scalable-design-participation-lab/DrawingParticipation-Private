@@ -4,7 +4,6 @@ import { click, pointerMove } from 'ol/events/condition'
 import { Circle as CircleStyle, Fill, Stroke, Style } from 'ol/style'
 import type { Feature, Map } from 'ol'
 import * as turf from '@turf/turf'
-import { parseConfigFileTextToJson } from 'typescript'
 
 // Define TypeScript types
 interface PopupState {
@@ -378,8 +377,9 @@ onUnmounted(() => {
         pointerEvents: 'auto',
       }"
     >
-      <strong class="capitalize">Geometry: </strong> {{ activePopup.feature?.getGeometry()?.getType() }}
-      <hr v-if="paginatedKeys.length !== 0">
+      <div class="underline">
+        <strong class="capitalize">Geometry: </strong> {{ activePopup.feature?.getGeometry()?.getType() }}
+      </div>
       <!-- Display paginated keys -->
       <div class="mt-2">
         <div v-for="key in paginatedKeys" :key="key">
