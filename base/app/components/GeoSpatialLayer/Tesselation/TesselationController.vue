@@ -10,7 +10,7 @@ const area = defineModel('area', { type: Boolean, required: true })
 </script>
 
 <template>
-  <UCard class="z-40 shadow-xl dark:bg-black flex flex-col overflow-scroll">
+  <UCard class="w-80 z-40 shadow-xl dark:bg-black flex flex-col overflow-scroll">
     <div class="text-lg font-semibold mb-4">
       Tesselation Settings
     </div>

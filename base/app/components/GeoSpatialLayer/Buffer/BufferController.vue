@@ -9,7 +9,7 @@ const units = defineModel<'meters' | 'kilometers' | 'miles'>('units', { type: St
 </script>
 
 <template>
-  <UCard class="z-40 shadow-xl dark:bg-black flex flex-col overflow-hidden">
+  <UCard class="w-80 z-40 shadow-xl dark:bg-black flex flex-col overflow-hidden">
     <div class="text-lg font-semibold mb-4">
       Buffer Settings
     </div>
