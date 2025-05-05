@@ -9,12 +9,12 @@ const width = defineModel<number>('width', { type: Number, required: true })
 </script>
 
 <template>
-  <UCard class=" z-40 shadow-xl dark:bg-black flex flex-col overflow-hidden">
+  <UCard class="w-80 z-40 shadow-xl dark:bg-black flex flex-col overflow-hidden">
     <div class="text-lg font-semibold mb-4">
       Grid Settings
     </div>
     <!-- Visible -->
-    <div class="flex justify-between my-2">
+    <div class="flex justify-between ">
       <span class="my-1 capitalize text-black font-semibold dark:text-white"> Visibility </span>
       <UToggle
         v-model="visible"

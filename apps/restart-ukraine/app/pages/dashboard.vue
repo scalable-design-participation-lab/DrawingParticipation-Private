@@ -83,8 +83,9 @@ function resetHeatMapState() {
   filters.Comments = false
 
   // Reset time to default last year
-  const end = new Date()
+  const end   = new Date()
   const start = new Date()
+
   start.setFullYear(end.getFullYear() - 1)
   filterTime.value = { start, end }
 
@@ -153,7 +154,7 @@ function toggleController(layerId: number) {
 // --- Heatmap Features & Settings ---
 
 const filterTime = useState<{ start: Date; end: Date }>("filterTime", () => {
-  const end = new Date();
+  const end   = new Date();
   const start = new Date();
   start.setFullYear(end.getFullYear() - 1); 
   return { start, end };
@@ -188,7 +189,7 @@ const getGeoJsonFeature = (featureKey: string) => {
     if (
       !feat.coordinates || // Must exist
       !Array.isArray(feat.coordinates) || // Must be an array
-      feat.coordinates.length !== 2 || // Must have exactly 2 elements
+      feat.coordinates.length    !== 2 || // Must have exactly 2 elements
       typeof feat.coordinates[0] !== "number" || // First element must be a number (longitude)
       typeof feat.coordinates[1] !== "number" // Second element must be a number (latitude)
     ) {
@@ -203,7 +204,7 @@ const getGeoJsonFeature = (featureKey: string) => {
 };
 // 🔥 Computed Features for Each Category
 const heatmapFeatures = computed(() => {
-  const entries = Object.entries(featuresByCategory).map(([key, value]) => {
+    const entries = Object.entries(featuresByCategory).map(([key, value]) => {
     const geoJson = getGeoJsonFeature(key);
     return [key, geoJson];
   });
@@ -301,14 +302,14 @@ const ranges: { label: string; duration: Duration }[] = [
     </div>
 
     <!-- Active Layers: Accordion Controllers -->
-    <div v-if="layers.length > 0"
+    <div v-if="layers.length > 0 && !showDashboard"
         class="fixed right-7 top-20 z-30 bg-white dark:bg-neutral-900 rounded-lg shadow-lg p-4
          max-h-[calc(100vh-5rem)] overflow-y-auto overflow-x-hidden">
         <h2 class="text-lg font-semibold mb-3 text-black dark:text-white">Layer Controls</h2>
         <div v-for="layer in layers" :key="layer.id" class="mb-4 overflow-scroll">
             <!-- Accordion Header -->
             <div @click="toggleController(layer.id)"
-                class="w-80 flex justify-between items-center cursor-pointer px-2 py-1">
+                class="w-[340px] flex justify-between items-center cursor-pointer">
                 <span class="capitalize text-gray-800 dark:text-gray-200">{{ layer.type }}</span>
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
                     class="w-4 h-4 transition-transform duration-200 ease-in-out"
