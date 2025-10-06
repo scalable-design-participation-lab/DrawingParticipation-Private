@@ -1,0 +1,3 @@
+<svg data-testid="chart-svg" ...>
+  <!-- D3 渲染的内容 -->
+</svg>

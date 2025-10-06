@@ -1,0 +1,18 @@
+{
+  "extends": "../../base/.nuxt/tsconfig.json",
+  "compilerOptions": {
+    "moduleResolution": "node",
+    "esModuleInterop": true,
+    "types": ["@types/node"],
+    "strict": true,
+    "paths": {
+      "@base/*": ["../../base/app/*"],
+      "~/*": ["./*"],
+      "@/*": ["./*"]
+    }
+  },
+  "include": [
+    "**/*",
+    "knexfile.js"
+  ]
+}
