@@ -24,14 +24,14 @@
         class="flex-shrink-0 bg-white rounded-lg shadow-md hover:shadow-lg"
       >
         <template #header>
-          <DashboardHeader
+          <GenericDashboardHeader
             title="Sensor Overview"
             :badge-text="`Updated: ${lastUpdated}`"
             badge-color="gray"
             @close="closeDashboard"
           />
         </template>
-        <OverviewContent
+        <GenericOverviewContent
           :description="overviewDescription"
           :stats="overviewStats"
         />
@@ -41,15 +41,19 @@
         <div
           class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6"
         >
-          <SensorTile
+          <GenericDataTile
             v-for="sensor in sensors"
             :key="sensor.moduleid"
-            :sensor="formatSensorData(sensor)"
-            :show-details="true"
-            :custom-colors="customColors"
+            :data="formatSensorData(sensor)"
+            title-field="location"
+            status-field="status"
             :display-fields="displayFields"
+            :custom-colors="customColors"
+            :formatters="valueFormatters"
+            :show-action="true"
+            action-label="Details"
             class="w-full h-full"
-            @open-details="openSensorDetail"
+            @action="openSensorDetail"
           />
         </div>
       </div>
@@ -62,9 +66,6 @@ import { ref, computed, onMounted } from 'vue'
 import { storeToRefs } from 'pinia'
 import { useSensorDetailStore } from '../../stores/sensorDetail'
 import { useDashboardStore } from '../../stores/dashboard'
-import SensorTile from './SensorTile.vue'
-import OverviewContent from './OverviewContent.vue'
-import DashboardHeader from './DashboardHeader.vue'
 
 /**
  * Sensor Detail store instance
@@ -181,9 +182,19 @@ const customColors = {
 const displayFields = ref([
   'temperature',
   'humidity',
-  'airQuality',
-  'soilMoisture',
+  'voc',
+  'pm25',
 ])
+
+/**
+ * Value formatters for data fields
+ */
+const valueFormatters = {
+  temperature: (val: number) => `${Number(val).toFixed(1)}°C`,
+  humidity: (val: number) => `${Number(val).toFixed(1)}%`,
+  voc: (val: number) => `${Number(val).toFixed(0)}`,
+  pm25: (val: number) => `${Number(val).toFixed(1)}`,
+}
 
 const closeDashboard = () => {
   dashboardStore.toggleDashboard()
