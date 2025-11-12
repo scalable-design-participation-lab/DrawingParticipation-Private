@@ -75,6 +75,11 @@ const menuItems = [
   {
     label: 'Heat Map',
     action: 'heatmap',
+  },
+  {
+    label: 'Profile',
+    action: 'profile',
+    icon: 'i-heroicons-user-circle'
   }
 ]
 
@@ -84,7 +89,6 @@ const closeModal = () => {
 
 const handleItemClick = (item) => {
   closeModal()
-
 
   switch (item.action) {
     case 'home':
@@ -101,6 +105,9 @@ const handleItemClick = (item) => {
       break
     case 'results':
       router.push('/result')
+      break
+    case 'profile':
+      router.push('/profile')
       break
   }
 
