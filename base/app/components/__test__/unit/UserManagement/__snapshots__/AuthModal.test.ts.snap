@@ -1,0 +1,12 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`AuthModal.vue > renders correctly 1`] = `
+<div
+  data-v-df31dbeb=""
+>
+  <!-- Welcome Back Modal -->
+  <!--v-if-->
+  <!-- Main Auth Modal -->
+  <!--v-if-->
+</div>
+`;
