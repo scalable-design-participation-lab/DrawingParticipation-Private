@@ -126,11 +126,16 @@ import prohibitIcon from '@/assets/icons/prohibit.svg'
 import { useSideBarStore } from '@base/stores/sidebar'
 import { useDrawingStore } from '@base/stores/drawing'
 import { useDb } from "../stores/db"
+import { useUserStore } from '@base/stores/user'
+import { useFirebaseAuth } from '../../../../base/app/composables/useFirebaseAuth'
+import { getAuth } from 'firebase/auth'
 import type { IconType } from '@base/stores/types/store'
 
 const drawingStore = useDrawingStore()
 const sidebarStore = useSideBarStore()
 const dbStore = useDb()
+const userStore = useUserStore()
+const { getUserData } = useFirebaseAuth()
 
 const spaceSubwindow = computed(() => sidebarStore.spaceSubwindow)
 const belongingSubwindow = computed(() => sidebarStore.belongingSubwindow)
@@ -403,7 +408,20 @@ const showThankYouModal = ref(false)
 async function saveData() {
   isSaving.value = true
   try {
-    await dbStore.saveDataToDatabase()
+    // Get the current user
+    const auth = getAuth()
+    const currentUser = auth.currentUser
+    if (!currentUser) {
+      showErrorNotification('User not authenticated')
+      isSaving.value = false
+      return
+    }
+
+    // Fetch user data from Firestore
+    const userData = await getUserData(currentUser.uid)
+    console.log('Fetched userData from Firestore:', userData)
+
+    await dbStore.saveDataToDatabase(userData)
     showThankYouModal.value = true
   } catch (error) {
     console.error('Error submitting data to database:', error)
