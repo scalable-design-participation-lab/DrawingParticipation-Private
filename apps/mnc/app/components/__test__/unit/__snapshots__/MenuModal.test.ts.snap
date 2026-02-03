@@ -1,0 +1,78 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`MenuModal.vue > renders correctly 1`] = `
+<div
+  data-v-app=""
+>
+  
+  <div
+    modelvalue="true"
+    ui="[object Object]"
+  >
+    
+    <div
+      class="p-6 dark:bg-black"
+    >
+      
+      
+      <button
+        block=""
+        class="dark:bg-black dark:text-white text-lg font-semibold rounded-full py-3 my-3"
+        color="white"
+        variant="solid"
+      >
+        
+        Головна
+        
+      </button>
+      <button
+        block=""
+        class="dark:bg-black dark:text-white text-lg font-semibold rounded-full py-3 my-3"
+        color="white"
+        variant="solid"
+      >
+        
+        Про нас
+        
+      </button>
+      <button
+        block=""
+        class="dark:bg-black dark:text-white text-lg font-semibold rounded-full py-3 my-3"
+        color="white"
+        variant="solid"
+      >
+        
+        Підтримка
+        
+      </button>
+      <button
+        block=""
+        class="dark:bg-black dark:text-white text-lg font-semibold rounded-full py-3 my-3"
+        color="white"
+        variant="solid"
+      >
+        
+        Результати
+        
+      </button>
+      <button
+        block=""
+        class="dark:bg-black dark:text-white text-lg font-semibold rounded-full py-3 my-3"
+        color="white"
+        variant="solid"
+      >
+        
+        Heat Map
+        
+      </button>
+      
+      
+    </div>
+    
+  </div>
+  <div
+    modelvalue="false"
+  />
+  
+</div>
+`;

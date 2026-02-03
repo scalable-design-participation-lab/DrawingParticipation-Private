@@ -1,0 +1,95 @@
+<template>
+  <UModal v-model="isOpen" :ui="{ width: 'w-96' }">
+    <UCard class="p-6 dark:bg-black">
+      <UButton
+        v-for="(item, index) in menuItems"
+        :key="index"
+        block
+        color="white"
+        variant="solid"
+        :icon="item.icon"
+        class="dark:bg-black dark:text-white text-lg font-semibold rounded-full py-3 my-3"
+        @click="handleItemClick(item)"
+      >
+        {{ item.label }}
+      </UButton>
+    </UCard>
+  </UModal>
+
+  <SupportModal v-model="showSupportModal" />
+</template>
+
+<script setup>
+import { computed, ref } from 'vue'
+import { useRouter } from 'nuxt/app'
+import SupportModal from './SupportModal.vue'
+
+const router = useRouter()
+const showSupportModal = ref(false)
+
+const props = defineProps({
+  modelValue: {
+    type: Boolean,
+    required: true,
+  },
+})
+
+const emit = defineEmits(['update:modelValue', 'select'])
+
+const isOpen = computed({
+  get: () => props.modelValue,
+  set: (value) => emit('update:modelValue', value),
+})
+
+const menuItems = [
+  {
+    label: 'Home',
+    action: 'home',
+  },
+  {
+    label: 'About Us',
+    action: 'about',
+  },
+  {
+    label: 'Support',
+    action: 'help',
+  },
+  {
+    label: 'Results',
+    action: 'results',
+  },
+  {
+    label: 'Dashboard',
+    action: 'dashboard',
+  }
+]
+
+const closeModal = () => {
+  isOpen.value = false
+}
+
+const handleItemClick = (item) => {
+  closeModal()
+
+
+  switch (item.action) {
+    case 'home':
+        router.push('/')
+      break
+    case 'about':
+        router.push('/about')
+      break
+    case 'help':
+      showSupportModal.value = true
+      break
+    case 'dashboard':
+      router.push('/dashboard')
+      break
+    case 'results':
+      router.push('/result')
+      break
+  }
+
+  emit('select', item.action)
+}
+</script>
