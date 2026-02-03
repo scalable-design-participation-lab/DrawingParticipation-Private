@@ -5,13 +5,13 @@
   >
     <template #header>
       <h3 class="text-xl md:text-2xl font-semibold text-center">
-        Welcome to Hurtoma!
+        Welcome to __!
       </h3>
     </template>
 
     <div class="space-y-8 px-6">
       <p class="leading-tight">
-        Hurtoma is a platform that helps improve Ukrainian cities.
+        __ is a platform that __.
       </p>
 
       <div class="space-y-3 leading-tight">
@@ -21,7 +21,7 @@
             class="flex-shrink-0 w-6 h-6 text-blue-500"
           />
           <p>
-            Explore the map and share your thoughts about places around the Tyazhylivka River
+            Explore the map and __
           </p>
         </div>
 
