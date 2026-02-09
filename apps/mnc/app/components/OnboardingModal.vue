@@ -51,7 +51,7 @@
       <UButton
         color="black"
         class="px-6 py-3 rounded-full hover:bg-gray-300 hover:text-black dark:hover:bg-zinc-700 dark:hover:text-white"
-        @click="handleSignup"
+        @click="emit('close')"
       >
         Get Started
       </UButton>
@@ -73,9 +73,5 @@ const props = defineProps({
   },
 })
 
-const emit = defineEmits(['showRegistration'])
-
-const handleSignup = () => {
-  emit('showRegistration')
-}
+const emit = defineEmits(['close'])
 </script>

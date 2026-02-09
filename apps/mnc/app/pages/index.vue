@@ -1,13 +1,13 @@
 <script setup lang="ts">
 import { computed, onMounted, ref } from 'vue'
-//import { useUserStore } from '@base/stores/user'
-//import { useMapStore } from '@base/stores/map'
-//import type { MapType } from '@base/stores/types/store'
+import { useUserStore } from '@base/stores/user'
+import { useMapStore } from '@base/stores/map'
+import type { MapType } from '@base/stores/types/store'
 
 // Map store
-//const userStore = useUserStore()
-//const mapStore = useMapStore()
-//const { setMapType } = mapStore
+const userStore = useUserStore()
+const mapStore = useMapStore()
+const { setMapType } = mapStore
 const currentMapType = ref('vector')
 const isLoading = ref(true)
 
@@ -18,7 +18,7 @@ const leftItems = ref([
     to: '/about/',
   },
   {
-    label: 'Гуртомá',
+    label: 'Mobile Networked Creativity',
     color: 'black',
     to: '/about/',
   },
@@ -38,16 +38,13 @@ const rightItems = ref([
     onClick: () => {
       currentMapType.value
         = currentMapType.value === 'vector' ? 'satellite' : 'vector' 
-      //setMapType(currentMapType.value as MapType)
+      setMapType(currentMapType.value as MapType)
     },
   },
 ])
 
-//const isMapBlurred = computed(() => userStore.showRegistration)
-
 const showDownloadModal = ref(false)
 const showOnboarding = ref(true)
-const showRegistration = ref(false)
 
 async function handleDownload(options: {
   dataType: string
@@ -96,16 +93,9 @@ function convertToCSV(data: any) {
   // Implement CSV conversion logic here
   return 'data,in,csv,format'
 }
-
-function handleShowRegistration() {
+function handleCloseOnboarding() {
   showOnboarding.value = false
-  showRegistration.value = true
 }
-
-function handleCloseRegistration() {
-  showRegistration.value = false
-}
-
 // Initialize app
 async function initializeApp() {
   try {
@@ -132,9 +122,8 @@ onMounted(() => {
 
     <!-- Main Content -->
     <div v-show="!isLoading">
-      <SideBar class="z-30" />
       <BackgroundMap
-        :class="{ 'filter blur-md': false }"
+        :class="{ 'filter blur-md': showOnboarding }"
         :show-all-plus-icons="true"
         :show-comment-icons="false"
       />
@@ -142,19 +131,16 @@ onMounted(() => {
         class="z-20"
         :left-items="leftItems"
         :right-items="rightItems"
-        logo-src="/restart-logo-icon.svg"
-        logo-alt="Restart Agency Logo"
-        logo-link="https://www.restartfuture.org/"
       />
       <GeneralizedFooter class="z-20" />
       <OnboardingModal
         :is-visible="showOnboarding"
-        @show-registration="handleShowRegistration"
+        @close="handleCloseOnboarding"
       />
-      <RegistrationModal
-        :is-visible="showRegistration"
-        @close="handleCloseRegistration"
-      />
+      <div
+        class="absolute inset-0 bg-black bg-opacity-50 z-40"
+        :class="{ 'hidden': !showOnboarding }"
+      ></div>
       <Teleport to="body">
         <!-- <DownloadModalHurtoma
           v-model="showDownloadModal"

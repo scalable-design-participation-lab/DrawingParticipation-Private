@@ -113,13 +113,4 @@ const ranges: { label: string; duration: Duration }[] = [
     :opacity="layerSettings[key]?.opacity"
     :z-index="layerSettings[key]?.zIndex"
   />
-
-  <!-- 📌 SIDEBAR -->
-  <HeatMapController
-   :ranges="ranges"
-   v-model:layerSettings="layerSettings"
-   v-model:filters="filters"
-   v-model:categories="categories"
-   v-model:filter-time="filterTime"
-   />
 </template>
