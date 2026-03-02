@@ -11,7 +11,39 @@ import type { ProjectData } from "./types/store"
  */
 export const useDb = defineStore('db', () => {
   const { currentUser, userData } = useUserStore()
-  const { features } = useFeatureStore()
+  const { features, addFeature } = useFeatureStore()
+
+  /**
+   * Loads feature data into state.
+   */
+
+  async function loadDataIntoFeatures(): Promise<void> {
+    try {
+      // Import the mncData.json file
+      const mncData = await import('../../content/mncData.json')
+      const data = mncData.default || mncData
+
+      // Loop through each entry and create features
+      data.forEach((entry: any) => {
+        const lon = parseFloat(entry.Longitude)
+        const lat = parseFloat(entry.Latitude)
+        
+        // Create a new feature
+        addFeature({
+          type: 'Point',
+          coordinates: [lon, lat],
+          comment: entry.Title || '',
+          timestamp: new Date().toISOString(),
+        })
+      })
+
+      console.log(`Loaded ${data.length} features from mncData.json`)
+    }
+    catch (error) {
+      console.error('Error loading data into features:', error)
+      throw error
+    }
+  }
 
   /**
    * Saves user and feature data to the Firestore database.
@@ -151,6 +183,7 @@ export const useDb = defineStore('db', () => {
 
   return {
     saveDataToDatabase,
+    loadDataIntoFeatures,
   }
 })
 
