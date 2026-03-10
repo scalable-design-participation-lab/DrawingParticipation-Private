@@ -31,6 +31,7 @@ export const useDb = defineStore('db', () => {
         // Create a new feature
         addFeature({
           type: 'Point',
+          iconName: 'heart',
           coordinates: [lon, lat],
           comment: entry.Title || '',
           timestamp: new Date().toISOString(),

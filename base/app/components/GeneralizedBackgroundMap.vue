@@ -6,7 +6,7 @@ import { useRuntimeConfig } from '#app'
 const props = defineProps({
   center: {
     type: Array,
-    default: () => [3172858.2941718884, 6317486.347640147],
+    default: () => [0, 0],
   },
   zoom: {
     type: Number,
