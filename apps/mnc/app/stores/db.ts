@@ -3,6 +3,7 @@ import { defineStore } from 'pinia'
 import { fromLonLat } from 'ol/proj'
 import { useFeatureStore } from '@base/stores/features'
 import { useUserStore } from '@base/stores/user'
+import { Properties } from "./types/store"
 import type { ProjectData } from "./types/store"
 
 
@@ -39,6 +40,15 @@ export const useDb = defineStore('db', () => {
           coordinates: coordinates,
           comment: entry.Title || '',
           timestamp: new Date().toISOString(),
+          properties: new Properties(
+            entry.Location,
+            String(entry.Date),
+            entry["Short Description"],
+            entry.Description,
+            entry["Connection to Mobile Networked Creativity"],
+            entry["Media Captions"],
+            entry.Links
+          )
         })
       })
 
