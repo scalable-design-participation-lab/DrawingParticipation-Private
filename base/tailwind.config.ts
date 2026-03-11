@@ -7,6 +7,11 @@ export default <Partial<Config>>{
       fontFamily: {
         sans: ['DM Sans', ...defaultTheme.fontFamily.sans],
       },
+      colors: {
+        primary: 'var(--color-primary)',
+        background: 'var(--color-background)',
+        'background-dark': 'var(--color-background-dark)',
+      },
     },
   },
 }

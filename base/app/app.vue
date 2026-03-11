@@ -1,5 +1,6 @@
 <script setup lang="ts">
 const colorMode = useColorMode()
+const { theme } = useAppConfig()
 
 const color = computed(() => colorMode.value === 'dark' ? '#111827' : 'white')
 
@@ -32,7 +33,13 @@ useSeoMeta({
 </script>
 
 <template>
-  <div>
+  <div
+    :style="{
+      '--color-primary': theme.colors.primary,
+      '--color-background': theme.colors.background,
+      '--color-background-dark': theme.colors['background-dark'],
+    }"
+  >
     <NuxtLoadingIndicator />
 
     <NuxtLayout>
