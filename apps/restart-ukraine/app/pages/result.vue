@@ -29,9 +29,11 @@
 import {  ref, computed, watch } from 'vue'
 import MapIntroModal from '../components/MapIntroModal.vue'
 import { useMapStore } from '@base/stores/map'
+import { useAllFeatureStore } from '@base/stores/all-features'
 
 const mapStore = useMapStore()
 const route = useRoute()
+const allFeatureStore = useAllFeatureStore()
 const showIntroModal = ref(false)
 
 // Watch for route changes and query parameters
@@ -40,6 +42,19 @@ watch(
   (newValue) => {
     if (newValue === 'true') {
       showIntroModal.value = true
+    }
+  },
+  { immediate: true },
+)
+
+// Fetch features depending on uid query
+watch(
+  () => route.query.uid,
+  async (uid) => {
+    if (typeof uid === 'string' && uid.length > 0) {
+      await allFeatureStore.fetchFeaturesForUser(uid)
+    } else {
+      await allFeatureStore.fetchAllFeature()
     }
   },
   { immediate: true },
