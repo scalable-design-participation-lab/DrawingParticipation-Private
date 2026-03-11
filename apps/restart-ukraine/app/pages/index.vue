@@ -1,12 +1,18 @@
 <script setup lang="ts">
-import { computed, onMounted, ref } from 'vue'
+import { computed, onMounted, ref, watch } from 'vue'
 import { useUserStore } from '@base/stores/user'
 import { useMapStore } from '@base/stores/map'
+import { useAllFeatureStore } from '@base/stores/all-features'
+import { useFeatureStore } from '@base/stores/features'
+import { getAuth } from 'firebase/auth'
 import type { MapType } from '@base/stores/types/store'
 
 // Map store
 const userStore = useUserStore()
 const mapStore = useMapStore()
+const allFeatureStore = useAllFeatureStore()
+const featureStore = useFeatureStore()
+const auth = getAuth()
 const { setMapType } = mapStore
 const currentMapType = ref('vector')
 const isLoading = ref(true)
@@ -47,7 +53,6 @@ const isMapBlurred = computed(() => userStore.showRegistration)
 
 const showDownloadModal = ref(false)
 const showOnboarding = ref(true)
-const showRegistration = ref(false)
 
 async function handleDownload(options: {
   dataType: string
@@ -99,11 +104,11 @@ function convertToCSV(data: any) {
 
 function handleShowRegistration() {
   showOnboarding.value = false
-  showRegistration.value = true
+  userStore.showRegistration = true
 }
 
 function handleCloseRegistration() {
-  showRegistration.value = false
+  userStore.showRegistration = false
 }
 
 // Initialize app
@@ -111,6 +116,25 @@ async function initializeApp() {
   try {
     // Simulate loading time for map initialization
     await new Promise(resolve => setTimeout(resolve, 2000))
+    
+    // Check if user is logged in on app start
+    if (!userStore.currentUser) {
+      // If no user, show onboarding first
+      showOnboarding.value = true
+    } else {
+      // If user is logged in, don't show any modals
+      showOnboarding.value = false
+      userStore.showRegistration = false
+      
+      // Load current user's features for editing
+      const currentUser = auth.currentUser
+      if (currentUser?.uid) {
+        await allFeatureStore.fetchFeaturesForUser(currentUser.uid)
+        // Copy to feature store for the main map
+        featureStore.features.splice(0, featureStore.features.length, ...allFeatureStore.allFeatures)
+      }
+    }
+    
     isLoading.value = false
   }
   catch (error) {
@@ -123,6 +147,21 @@ async function initializeApp() {
 onMounted(() => {
   initializeApp()
 })
+
+// React to auth/user changes: clear or reload features
+watch(
+  () => userStore.currentUser,
+  async (uid) => {
+    if (!uid) {
+      // user logged out: clear editable features
+      featureStore.features.splice(0, featureStore.features.length)
+      return
+    }
+    // user logged in/switched: fetch only their features
+    await allFeatureStore.fetchFeaturesForUser(uid as string)
+    featureStore.features.splice(0, featureStore.features.length, ...allFeatureStore.allFeatures)
+  },
+)
 </script>
 
 <template>
@@ -152,7 +191,7 @@ onMounted(() => {
         @show-registration="handleShowRegistration"
       />
       <RegistrationModal
-        :is-visible="showRegistration"
+        :is-visible="userStore.showRegistration"
         @close="handleCloseRegistration"
       />
       <div
