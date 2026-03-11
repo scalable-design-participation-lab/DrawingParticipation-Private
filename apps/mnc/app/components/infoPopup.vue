@@ -35,8 +35,9 @@
           <!-- Image Box -->
           <div class="w-52 h-44 bg-teal-100 rounded-2xl flex items-center justify-center flex-shrink-0">
             <img v-if="image" :src="image" :alt="title" class="w-full h-full object-cover rounded-2xl" />
-            <span v-else class="text-teal-300 text-2xl">Image</span>
+            <span v-else class="text-teal-300 text-sm">{{caption}}</span>
           </div>
+
         </div>
 
         <!-- Description Section -->
@@ -118,6 +119,7 @@ interface Props {
   datePublished?: string
   location?: string
   image?: string
+  caption?: string
   description?: string
   connection?: string
   links?: Link[]
@@ -128,6 +130,7 @@ withDefaults(defineProps<Props>(), {
   datePublished: '',
   location: '',
   image: '',
+  caption: '',
   description: 'Text (50 words)',
   connection: 'Text (50 words)',
   links: () => [
