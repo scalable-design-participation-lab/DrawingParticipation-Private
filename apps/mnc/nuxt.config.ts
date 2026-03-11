@@ -26,8 +26,7 @@ export default defineNuxtConfig({
     '@pinia/nuxt',
     '@nuxt/ui',
     'nuxt-vuefire',
-    'nuxt-color-picker',
-    '@nuxt/content'
+    'nuxt-color-picker'
   ],
 
   vuefire: {
