@@ -1,9 +1,12 @@
 import { useFirestore } from 'vuefire'
-import { collection, getDocs } from 'firebase/firestore'
+import { collection, getDocs, query, where } from 'firebase/firestore'
+import { useRoute } from 'nuxt/app'
 import type { Category } from '../../../apps/restart-ukraine/app/stores/types/store'
 import type { DrawType, Feature, FrequencyType } from './types/store'
 
 export const useAllFeatureStore = defineStore('all-features', () => {
+  const route = useRoute()
+
   /**
    * List of geospatial features.
    */
@@ -61,115 +64,258 @@ export const useAllFeatureStore = defineStore('all-features', () => {
     Object.assign(featuresByType, {})
     Object.assign(featuresByCategory, {})
 
-    const db = useFirestore()
-    const projectsCollection = collection(db, 'projects')
-    const querySnapshot = await getDocs(projectsCollection)
+    // Ensure Firebase app is initialized before accessing Firestore
+    const { getFirebaseApp } = await import('../../layers/firebase/app/utils')
+    getFirebaseApp()
 
-    for (const doc of querySnapshot.docs) {
-      const projectData = doc.data()
+    try {
+      const db = useFirestore()
+      const projectsCollection = collection(db, 'projects')
+      const querySnapshot = await getDocs(projectsCollection)
 
-      // Process space data including prohibit points
-      if (Array.isArray(projectData.space.prohibit)) {
-        projectData.space.prohibit.forEach((point) => {
-          const feature: Feature = {
-            type: 'Point',
-            coordinates: [point.lon, point.lat],
-            isProhibit: true,
-            comment: point.comment,
-            name: projectData.name,
-            timestamp: point.timestamp,
-          }
-          allFeatures.push(feature)
-          addToMap(featuresByType, feature.type, feature)
-          addToMap(featuresByCategory, 'space.prohibit', feature)
-        })
-      }
+      for (const doc of querySnapshot.docs) {
+        const projectData = doc.data()
+        const ownerUserId: string | undefined = projectData.userId || projectData.uid
 
-      // Process other space data (excluding prohibit)
-      Object.keys(projectData.space).forEach((frequency) => {
-        if (
-          Array.isArray(projectData.space[frequency])
-          && frequency !== 'prohibit'
-          && frequency !== 'recreational'
-          && frequency !== 'restricted'
-        ) {
-          projectData.space[frequency].forEach((point) => {
+        // Process space data including prohibit points
+        if (Array.isArray(projectData.space.prohibit)) {
+          projectData.space.prohibit.forEach((point) => {
             const feature: Feature = {
+              userId: ownerUserId,
               type: 'Point',
               coordinates: [point.lon, point.lat],
-              frequency: frequency as FrequencyType,
+              isProhibit: true,
               comment: point.comment,
               name: projectData.name,
               timestamp: point.timestamp,
             }
             allFeatures.push(feature)
             addToMap(featuresByType, feature.type, feature)
-            addToMap(featuresByCategory, `frequency.${frequency}`, feature)
+            addToMap(featuresByCategory, 'space.prohibit', feature)
           })
         }
-      })
 
-      // Process space.recreational data (Polygons)
-      if (Array.isArray(projectData.space.recreational)) {
-        projectData.space.recreational.forEach((polygon) => {
-          const feature: Feature = {
-            type: 'Polygon',
-            coordinates: JSON.parse(polygon.geometry),
-            comment: polygon.comment,
-            name: projectData.name,
-            timestamp: polygon.timestamp,
+        // Process other space data (excluding prohibit)
+        Object.keys(projectData.space).forEach((frequency) => {
+          if (
+            Array.isArray(projectData.space[frequency])
+            && frequency !== 'prohibit'
+            && frequency !== 'recreational'
+            && frequency !== 'restricted'
+          ) {
+            projectData.space[frequency].forEach((point) => {
+              const feature: Feature = {
+                userId: ownerUserId,
+                type: 'Point',
+                coordinates: [point.lon, point.lat],
+                frequency: frequency as FrequencyType,
+                comment: point.comment,
+                name: projectData.name,
+                timestamp: point.timestamp,
+              }
+              allFeatures.push(feature)
+              addToMap(featuresByType, feature.type, feature)
+              addToMap(featuresByCategory, `frequency.${frequency}`, feature)
+            })
           }
-          allFeatures.push(feature)
-          addToMap(featuresByType, feature.type, feature)
-          addToMap(featuresByCategory, `space.recreational`, feature)
         })
-      }
 
-      // Process space.restricted data (LineStrings)
-      if (Array.isArray(projectData.space.restricted)) {
-        projectData.space.restricted.forEach((lineString) => {
-          const feature: Feature = {
-            type: 'LineString',
-            coordinates: JSON.parse(lineString.geometry),
-            comment: lineString.comment,
-            name: projectData.name,
-            timestamp: lineString.timestamp,
-          }
-          allFeatures.push(feature)
-          addToMap(featuresByType, feature.type, feature)
-          addToMap(featuresByCategory, `space.restricted`, feature)
-        })
-      }
+        // Process space.recreational data (Polygons)
+        if (Array.isArray(projectData.space.recreational)) {
+          projectData.space.recreational.forEach((polygon) => {
+            const feature: Feature = {
+              userId: ownerUserId,
+              type: 'Polygon',
+              coordinates: JSON.parse(polygon.geometry),
+              comment: polygon.comment,
+              name: projectData.name,
+              timestamp: polygon.timestamp,
+            }
+            allFeatures.push(feature)
+            addToMap(featuresByType, feature.type, feature)
+            addToMap(featuresByCategory, `space.recreational`, feature)
+          })
+        }
 
-      // Process belonging, safety, and environment data
-      ['belonging', 'safety', 'environment'].forEach((category) => {
-        if (projectData[category]) {
-          Object.keys(projectData[category]).forEach((key) => {
-            if (Array.isArray(projectData[category][key])) {
-              projectData[category][key].forEach((point) => {
-                const feature: Feature = {
+        // Process space.restricted data (LineStrings)
+        if (Array.isArray(projectData.space.restricted)) {
+          projectData.space.restricted.forEach((lineString) => {
+            const feature: Feature = {
+              userId: ownerUserId,
+              type: 'LineString',
+              coordinates: JSON.parse(lineString.geometry),
+              comment: lineString.comment,
+              name: projectData.name,
+              timestamp: lineString.timestamp,
+            }
+            allFeatures.push(feature)
+            addToMap(featuresByType, feature.type, feature)
+            addToMap(featuresByCategory, `space.restricted`, feature)
+          })
+        }
+
+        // Process belonging, safety, and environment data
+        ;['belonging', 'safety', 'environment'].forEach((category) => {
+          if (projectData[category]) {
+            Object.keys(projectData[category]).forEach((key) => {
+              if (Array.isArray(projectData[category][key])) {
+                projectData[category][key].forEach((point) => {
+                                  const feature: Feature = {
                   id: Date.now(),
+                  userId: ownerUserId,
                   type: 'Point',
                   coordinates: [point.lon, point.lat],
-                  iconName: key,
+                  iconName: key as unknown as any,
                   comment: point.comment,
                   name: projectData.name,
                   timestamp: point.timestamp,
                 }
-                allFeatures.push(feature)
-                addToMap(featuresByType, feature.type, feature)
-                addToMap(featuresByCategory, `${category}.${key}`, feature)
-              })
-            }
-          })
-        }
-      })
+                  allFeatures.push(feature)
+                  addToMap(featuresByType, feature.type, feature)
+                  addToMap(featuresByCategory, `${category}.${key}`, feature)
+                })
+              }
+            })
+          }
+        })
+      }
+    }
+    catch (error) {
+      console.error('Failed to fetch features from Firestore:', error)
     }
   }
 
-  // Call fetchAllFeature when the store is initialized
+  /**
+   * Fetches features only for a specific user by querying projects with userId == uid
+   */
+  async function fetchFeaturesForUser(uid: string): Promise<void> {
+    allFeatures.length = 0 // clear the array
+    Object.keys(featuresByType).forEach((k) => { (featuresByType as any)[k] = [] })
+    Object.keys(featuresByCategory).forEach((k) => { delete (featuresByCategory as any)[k] })
+
+    const { getFirebaseApp } = await import('../../layers/firebase/app/utils')
+    getFirebaseApp()
+
+    try {
+      const db = useFirestore()
+      const projectsCollection = collection(db, 'projects')
+      const q = query(projectsCollection, where('userId', '==', uid))
+      const querySnapshot = await getDocs(q)
+
+      for (const doc of querySnapshot.docs) {
+        const projectData = doc.data()
+        const ownerUserId: string | undefined = projectData.userId || projectData.uid
+        
+        // reuse the same processing as fetchAllFeature
+        if (Array.isArray(projectData.space?.prohibit)) {
+          projectData.space.prohibit.forEach((point: any) => {
+            const feature: Feature = {
+              userId: ownerUserId,
+              type: 'Point',
+              coordinates: [point.lon, point.lat],
+              isProhibit: true,
+              comment: point.comment,
+              name: projectData.name,
+              timestamp: point.timestamp,
+            }
+            allFeatures.push(feature)
+            addToMap(featuresByType, feature.type!, feature)
+            addToMap(featuresByCategory, 'space.prohibit', feature)
+          })
+        }
+
+        Object.keys(projectData.space || {}).forEach((frequency) => {
+          if (
+            Array.isArray(projectData.space[frequency])
+            && frequency !== 'prohibit'
+            && frequency !== 'recreational'
+            && frequency !== 'restricted'
+          ) {
+            projectData.space[frequency].forEach((point: any) => {
+              const feature: Feature = {
+                userId: ownerUserId,
+                type: 'Point',
+                coordinates: [point.lon, point.lat],
+                frequency: frequency as FrequencyType,
+                comment: point.comment,
+                name: projectData.name,
+                timestamp: point.timestamp,
+              }
+              allFeatures.push(feature)
+              addToMap(featuresByType, feature.type!, feature)
+              addToMap(featuresByCategory, `frequency.${frequency}`, feature)
+            })
+          }
+        })
+
+        if (Array.isArray(projectData.space?.recreational)) {
+          projectData.space.recreational.forEach((polygon: any) => {
+            const feature: Feature = {
+              userId: ownerUserId,
+              type: 'Polygon',
+              coordinates: JSON.parse(polygon.geometry),
+              comment: polygon.comment,
+              name: projectData.name,
+              timestamp: polygon.timestamp,
+            }
+            allFeatures.push(feature)
+            addToMap(featuresByType, feature.type!, feature)
+            addToMap(featuresByCategory, `space.recreational`, feature)
+          })
+        }
+
+        if (Array.isArray(projectData.space?.restricted)) {
+          projectData.space.restricted.forEach((lineString: any) => {
+            const feature: Feature = {
+              userId: ownerUserId,
+              type: 'LineString',
+              coordinates: JSON.parse(lineString.geometry),
+              comment: lineString.comment,
+              name: projectData.name,
+              timestamp: lineString.timestamp,
+            }
+            allFeatures.push(feature)
+            addToMap(featuresByType, feature.type!, feature)
+            addToMap(featuresByCategory, `space.restricted`, feature)
+          })
+        }
+
+        ;['belonging', 'safety', 'environment'].forEach((category) => {
+          if (projectData[category]) {
+            Object.keys(projectData[category]).forEach((key) => {
+              if (Array.isArray(projectData[category][key])) {
+                projectData[category][key].forEach((point: any) => {
+                  const feature: Feature = {
+                    id: Date.now(),
+                    userId: ownerUserId,
+                    type: 'Point',
+                    coordinates: [point.lon, point.lat],
+                    iconName: key as unknown as any,
+                    comment: point.comment,
+                    name: projectData.name,
+                    timestamp: point.timestamp,
+                  }
+                  allFeatures.push(feature)
+                  addToMap(featuresByType, feature.type!, feature)
+                  addToMap(featuresByCategory, `${category}.${key}`, feature)
+                })
+              }
+            })
+          }
+        })
+      }
+    }
+    catch (error) {
+      console.error('Failed to fetch features for user from Firestore:', error)
+    }
+  }
+
+  // Call fetchAllFeature when the store is initialized, but avoid when a uid filter is present
   onMounted(() => {
-    fetchAllFeature()
+    const uid = route.query.uid as string | undefined
+    if (!uid) {
+      fetchAllFeature()
+    }
   })
 
   /**
@@ -190,5 +336,7 @@ export const useAllFeatureStore = defineStore('all-features', () => {
     addFeature,
     featuresByCategory,
     featuresByType,
+    fetchAllFeature,
+    fetchFeaturesForUser,
   }
 })

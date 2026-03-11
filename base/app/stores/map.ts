@@ -22,8 +22,35 @@ export const useMapStore = defineStore('map', () => {
     mapType.value = type
   }
 
+  // default values
+  const originalCenter = ref([3172858.2941718884, 6317486.347640147])
+  const originalZoom = ref(12.83)
+
+  /**
+   * Sets the original center of the map in Web Mercator coords.
+   *
+   * @param center - The coords in web mercator style.
+   */
+  function setOriginalCenter(center: number[]): void {
+    originalCenter.value = center
+  }
+
+    /**
+   * Sets the original center of the map in Web Mercator coords.
+   *
+   * @param zoom - the zoom ratio
+   */
+  function setOriginalZoom(zoom: number): void {
+    originalZoom.value = zoom
+  }
+
+
   return {
     mapType,
     setMapType,
+    originalCenter,
+    originalZoom,
+    setOriginalCenter,
+    setOriginalZoom
   }
 })

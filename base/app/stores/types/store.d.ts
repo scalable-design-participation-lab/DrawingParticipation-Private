@@ -10,6 +10,7 @@ export interface UserData {
  */
 export interface Feature {
   id?: number
+  userId?: string
   type?: DrawType
   coordinates?: [number, number][] | [number, number] | []
   frequency?: FrequencyType
