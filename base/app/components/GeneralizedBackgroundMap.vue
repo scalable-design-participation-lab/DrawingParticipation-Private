@@ -58,6 +58,7 @@ const emit = defineEmits(['map-click'])
 
 const config = useRuntimeConfig()
 const { mapType } = storeToRefs(useMapStore())
+const mapStore = useMapStore();
 const mapInstance = ref(null)
 
 const colorMode = useColorMode()
@@ -101,13 +102,15 @@ defineExpose({
       :style="{ width: '100%', height: mapHeight }"
       @click="handleMapClick"
     >
+    <!-- wrote things in map store for center and zoom, but no necessary so get rid of them-->
+    <RecenterButton :mapInstance="mapInstance" :center="center" :zoom="zoom" />
       <ol-zoom-control
         v-if="showZoomControl"
         class="custom-zoom-control"
         zoom-in-label="➕"
         zoom-out-label="➖"
         :duration="250"
-      />
+        />
 
       <ol-view
         ref="view"
