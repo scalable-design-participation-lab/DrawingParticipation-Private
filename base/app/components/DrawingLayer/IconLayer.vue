@@ -111,7 +111,7 @@ function handlePlusIconClick(feature) {
 
 function handleDeleteClick(feature) {
   // Add confirmation dialog
-  if (confirm('Ви впевнені, що хочете видалити цю відмітку?')) {
+  if (confirm('Do you want to delete feature?')) {
     featureStore.deleteFeature(feature.id)
   }
 }
