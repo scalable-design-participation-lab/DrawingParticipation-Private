@@ -16,23 +16,31 @@ export const useDb = defineStore('db', () => {
   /**
    * Saves user and feature data to the Firestore database.
    * @async
+   * @param userDataParam - The user data object to use for saving (from Firestore)
    * @throws Will throw an error if saving to Firestore fails.
    */
-  async function saveDataToDatabase(): Promise<void> {
+  async function saveDataToDatabase(userDataParam): Promise<void> {
     const db = getFirestore()
     const projectsCollection = collection(db, 'projects')
 
-    const userId = currentUser || 'anonymous'
+    const userId = userDataParam?.userId || userDataParam?.uid || currentUser || 'anonymous'
     const timestamp = new Date().toISOString()
 
     // Initialize project data structure
     const projectData: ProjectData = {
       userId,
-      name: userData.value
-        ? {
-            lastname: userData.value.lastname,
-            firstname: userData.value.firstname,
-          }
+      name: userDataParam
+        ? (
+            userDataParam.name
+              ? {
+                  lastname: userDataParam.name.lastname,
+                  firstname: userDataParam.name.firstname,
+                }
+              : {
+                  lastname: userDataParam.lastname,
+                  firstname: userDataParam.firstname,
+                }
+          )
         : null,
       timestamp,
       space: {
