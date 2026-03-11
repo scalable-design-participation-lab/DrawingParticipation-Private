@@ -5,15 +5,11 @@
     :mapbox-style-dark="mapboxStyleDark"
   >
     <template #layers>
-      <ol-layer-vector>
-        <ol-source-vector>
-          <DrawingLayer
-            :projection="projection"
-            :is-map-page="isMapPage"
-            :show-delete-button="!isMapPage"
-          />
-        </ol-source-vector>
-      </ol-layer-vector>
+      <DrawingLayer
+        :projection="projection"
+        :is-map-page="isMapPage"
+        :show-delete-button="!isMapPage"
+      />
     </template>
 
     

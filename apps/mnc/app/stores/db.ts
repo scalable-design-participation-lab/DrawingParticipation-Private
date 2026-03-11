@@ -1,5 +1,6 @@
 import { addDoc, collection, getFirestore } from 'firebase/firestore'
 import { defineStore } from 'pinia'
+import { fromLonLat } from 'ol/proj'
 import { useFeatureStore } from '@base/stores/features'
 import { useUserStore } from '@base/stores/user'
 import type { ProjectData } from "./types/store"
@@ -28,10 +29,14 @@ export const useDb = defineStore('db', () => {
         const lon = parseFloat(entry.Longitude)
         const lat = parseFloat(entry.Latitude)
         
+        // Convert from EPSG:4326 (lat/lon) to EPSG:3857 (Web Mercator)
+        const coordinates = fromLonLat([lon, lat], 'EPSG:3857') as [number, number]
+        
         // Create a new feature
         addFeature({
           type: 'Point',
-          coordinates: [lon, lat],
+          iconName: 'heart',
+          coordinates: coordinates,
           comment: entry.Title || '',
           timestamp: new Date().toISOString(),
         })
