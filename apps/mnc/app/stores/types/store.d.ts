@@ -36,6 +36,10 @@ export interface ProjectData {
   }
 }
 
+export interface props {
+  shortDesc?: string
+}
+
 export type Category =
   | 'space.prohibit'
   | 'space.recreational'

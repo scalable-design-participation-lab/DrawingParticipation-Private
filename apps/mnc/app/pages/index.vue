@@ -3,15 +3,15 @@ import { computed, onMounted, ref } from 'vue'
 import { useUserStore } from '@base/stores/user'
 import { useMapStore } from '@base/stores/map'
 import type { MapType } from '@base/stores/types/store'
-import { useDb } from "../stores/db"
+import { useDb } from '../stores/db'
 
 // Map store
 const userStore = useUserStore()
 const mapStore = useMapStore()
+const dbStore = useDb()
 const { setMapType } = mapStore
 const currentMapType = ref('vector')
 const isLoading = ref(true)
-const dbStore = useDb()
 
 const leftItems = ref([
   {
@@ -101,12 +101,18 @@ function handleCloseOnboarding() {
 // Initialize app
 async function initializeApp() {
   try {
-
-    await dbStore.loadDataIntoFeatures()
-
     // Simulate loading time for map initialization
     await new Promise(resolve => setTimeout(resolve, 2000))
     isLoading.value = false
+    
+    // Load data AFTER map is ready
+    setTimeout(async () => {
+      try {
+        await dbStore.loadDataIntoFeatures()
+      } catch (error) {
+        console.error('Failed to load data:', error)
+      }
+    }, 500)
   }
   catch (error) {
     console.error('Error initializing app:', error)

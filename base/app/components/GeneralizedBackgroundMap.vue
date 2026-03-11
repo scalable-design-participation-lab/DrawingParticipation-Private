@@ -6,11 +6,11 @@ import { useRuntimeConfig } from '#app'
 const props = defineProps({
   center: {
     type: Array,
-    default: () => [3172858.2941718884, 6317486.347640147],
+    default: () => [-7912281, 5214952],
   },
   zoom: {
     type: Number,
-    default: 12.83,
+    default: 4,
   },
   projection: {
     type: String,
@@ -34,7 +34,7 @@ const props = defineProps({
   },
   minZoom: {
     type: Number,
-    default: 10,
+    default: 2,
   },
   mapHeight: {
     type: String,
@@ -94,6 +94,12 @@ onMounted(() => {
   nextTick(() => {
     if (mapRef.value) {
       mapInstance.value = mapRef.value.map
+      // Force map to update its size after mounting
+      setTimeout(() => {
+        if (mapInstance.value) {
+          mapInstance.value.updateSize()
+        }
+      }, 100)
     }
   })
 })
