@@ -36,7 +36,10 @@ export const useDb = defineStore('db', () => {
         // Create a new feature
         addFeature({
           type: 'Point',
-          iconName: 'heart',
+          iconName: entry["Primary Tag"] === 'Health & Crisis Response' || 
+                    entry["Primary Tag"] === 'Transportation & Mobility' || 
+                    entry["Primary Tag"] === 'Digital Access & Connectivity' 
+                    ? entry["Primary Tag"] : 'heart',
           coordinates: coordinates,
           comment: entry.Title || '',
           timestamp: new Date().toISOString(),

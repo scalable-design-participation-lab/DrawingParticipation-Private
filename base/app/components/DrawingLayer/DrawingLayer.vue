@@ -22,6 +22,9 @@ import pollutionIcon from '@/assets/icons/pollution.svg'
 import leafIcon from '@/assets/icons/leaf.svg'
 import prohibitIcon from '@/assets/icons/prohibit.svg'
 import trashIcon from '@/assets/icons/trash.svg'
+import healthIcon from '@/assets/icons/Health.png'
+import transportIcon from '@/assets/icons/Transportation.png'
+import wifiIcon from '@/assets/icons/Connectivity.png'
 
 defineProps({
   projection: {
@@ -136,6 +139,9 @@ function getIconForFeature(feature) {
     'smile': smileIcon,
     'positive': smileIcon,
     'trash': trashIcon,
+    'Health & Crisis Response': healthIcon,
+    'Transportation & Mobility': transportIcon,
+    'Digital Access & Connectivity': wifiIcon,
   }
 
   if (feature.iconName && iconMap[feature.iconName]) {

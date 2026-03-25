@@ -34,11 +34,8 @@ import { useRoute } from 'nuxt/app'
 import InfoPopup from './infoPopup.vue'
 
 const route = useRoute()
-
 const projection = ref('EPSG:3857')
-
 const isMapPage = computed(() => route.name === 'result')
-
 const baseMap = ref(null)
 
 // Popup state
@@ -62,7 +59,7 @@ const parsedLinks = computed(() => {
 
 function handleTogglePopup(feature: any) {
   selectedFeature.value = feature
-  showPopup.value = true
+  showPopup.value = !showPopup.value
 }
 
 function closePopup() {
