@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue'
+import type Feature from 'ol/Feature'
 import { useMapStore } from '../stores/map'
 import { useRuntimeConfig } from '#app'
 
@@ -54,7 +55,7 @@ const props = defineProps({
   },
 })
 
-const emit = defineEmits(['map-click'])
+const emit = defineEmits(['map-click', 'toggle-icon-details'])
 
 const config = useRuntimeConfig()
 const { mapType } = storeToRefs(useMapStore())
@@ -82,7 +83,20 @@ const mapboxUrl = computed(() => {
 
 const mapboxAttribution = '© <a href="https://www.mapbox.com/about/maps/">Mapbox</a> © <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
 
-function handleMapClick(event) {
+function handleMapClick(event: any) {
+  const olFeature = event.map.forEachFeatureAtPixel(
+    event.pixel,
+    (f: Feature) => f,
+  ) as Feature | undefined
+
+  if (olFeature) {
+    const iconName = olFeature.get('iconName')
+    const sourceFeature = olFeature.get('sourceFeature') // your original store feature
+    console.log('clicked icon name:', iconName)
+    emit('toggle-icon-details', sourceFeature)
+    return
+  }
+
   emit('map-click', event)
 }
 

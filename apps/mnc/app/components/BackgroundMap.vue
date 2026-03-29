@@ -3,13 +3,13 @@
     ref="baseMap"
     :mapbox-style-light="mapboxStyleLight"
     :mapbox-style-dark="mapboxStyleDark"
+    @toggle-icon-details="handleTogglePopup"
   >
     <template #layers>
       <DrawingLayer
         :projection="projection"
         :is-map-page="isMapPage"
         :show-delete-button="false"
-        @toggle-comment-popup="handleTogglePopup"
       />
     </template>
   </GeneralizedBackgroundMap>
@@ -58,8 +58,9 @@ const parsedLinks = computed(() => {
 })
 
 function handleTogglePopup(feature: any) {
+  console.log("handling TogglePopup in background map", feature)
   selectedFeature.value = feature
-  showPopup.value = !showPopup.value
+  showPopup.value = true
 }
 
 function closePopup() {
