@@ -93,7 +93,43 @@ function handleMapClick(event: any) {
     const iconName = olFeature.get('iconName')
     const sourceFeature = olFeature.get('sourceFeature') // your original store feature
     console.log('clicked icon name:', iconName)
-    emit('toggle-icon-details', sourceFeature)
+
+    const coordinate = olFeature.getGeometry().getCoordinates()
+
+    let markerPosition: { x: number, y: number } | undefined
+
+    // Preferred: convert map coordinate to viewport pixel using OpenLayers map + container bounds.
+    if (Array.isArray(coordinate) && coordinate.length === 2 && event?.map?.getPixelFromCoordinate) {
+      const mapPixel = event.map.getPixelFromCoordinate(coordinate)
+      const targetEl = event.map.getTargetElement?.()
+      const rect = targetEl?.getBoundingClientRect?.()
+      if (Array.isArray(mapPixel) && mapPixel.length === 2 && rect) {
+        markerPosition = {
+          x: rect.left + mapPixel[0],
+          y: rect.top + mapPixel[1],
+        }
+      }
+    }
+
+    // Fallback: DOM click viewport coordinates.
+    if (!markerPosition) {
+      const clickX = event?.originalEvent?.clientX
+      const clickY = event?.originalEvent?.clientY
+      if (Number.isFinite(clickX) && Number.isFinite(clickY)) {
+        markerPosition = { x: clickX, y: clickY }
+      }
+    }
+
+    // Last fallback: map pixel relative to viewport origin.
+    if (!markerPosition && Array.isArray(event?.pixel) && event.pixel.length === 2) {
+      markerPosition = { x: event.pixel[0], y: event.pixel[1] }
+    }
+
+    emit('toggle-icon-details', {
+      feature: sourceFeature,
+      markerPosition,
+    })
+    console.log(coordinate)
     return
   }
 
