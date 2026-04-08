@@ -3,28 +3,28 @@ import { computed } from 'vue'
 import { useRouteFeatureStore } from '../../stores/route-features'
 import { useSideBarStore } from '../../stores/sidebar'
 import { useDrawingStore } from '../../stores/drawing'
-import IconLayer from './IconLayer.vue'
-import PolygonLayer from './PolygonLayer.vue'
-import LineStringLayer from './LineStringLayer.vue'
 
-import redIcon from '@/assets/icons/red.svg'
-import greenIcon from '@/assets/icons/green.svg'
-import blueIcon from '@/assets/icons/blue.svg'
-import yellowIcon from '@/assets/icons/yellow.svg'
-import purpleIcon from '@/assets/icons/purple.svg'
-import dislikeIcon from '@/assets/icons/dislike.svg'
-import heartIcon from '@/assets/icons/heart.svg'
-import smileIcon from '@/assets/icons/smile.svg'
-import brokenIcon from '@/assets/icons/broken.svg'
-import calmIcon from '@/assets/icons/calm.svg'
-import lockIcon from '@/assets/icons/lock.svg'
-import pollutionIcon from '@/assets/icons/pollution.svg'
-import leafIcon from '@/assets/icons/leaf.svg'
-import prohibitIcon from '@/assets/icons/prohibit.svg'
-import trashIcon from '@/assets/icons/trash.svg'
-import healthIcon from '@/assets/icons/Health.png'
-import transportIcon from '@/assets/icons/Transportation.png'
-import wifiIcon from '@/assets/icons/Connectivity.png'
+import redIcon from '../../assets/icons/red.svg'
+import greenIcon from '../../assets/icons/green.svg'
+import blueIcon from '../../assets/icons/blue.svg'
+import yellowIcon from '../../assets/icons/yellow.svg'
+import purpleIcon from '../../assets/icons/purple.svg'
+import dislikeIcon from '../../assets/icons/dislike.svg'
+import heartIcon from '../../assets/icons/heart.svg'
+import smileIcon from '../../assets/icons/smile.svg'
+import brokenIcon from '../../assets/icons/broken.svg'
+import calmIcon from '../../assets/icons/calm.svg'
+import lockIcon from '../../assets/icons/lock.svg'
+import pollutionIcon from '../../assets/icons/pollution.svg'
+import leafIcon from '../../assets/icons/leaf.svg'
+import prohibitIcon from '../../assets/icons/prohibit.svg'
+import trashIcon from '../../assets/icons/trash.svg'
+import healthIcon from '../../assets/icons/Health.png'
+import transportIcon from '../../assets/icons/Transportation.png'
+import wifiIcon from '../../assets/icons/Connectivity.png'
+import LineStringLayer from './LineStringLayer.vue'
+import PolygonLayer from './PolygonLayer.vue'
+import IconLayer from './IconLayer.vue'
 
 defineProps({
   projection: {
@@ -34,10 +34,6 @@ defineProps({
   showAllPlusIcons: {
     type: Boolean,
     default: undefined,
-  },
-  enableClick: {
-    type: Boolean,
-    default: false,
   },
   isMapPage: {
     type: Boolean,
@@ -190,7 +186,6 @@ function getIconForFeature(feature) {
         :get-icon-for-feature="getIconForFeature"
         :show-all-plus-icons="showAllPlusIcons"
         :show-comment-icons="showCommentIcons"
-        :enable-click="enableClick"
         :is-map-page="isMapPage"
         :show-delete-button="showDeleteButton"
         @toggle-comment-popup="toggleCommentModal"
@@ -201,7 +196,6 @@ function getIconForFeature(feature) {
       <PolygonLayer
         :show-all-plus-icons="showAllPlusIcons"
         :show-comment-icons="showCommentIcons"
-        :enable-click="enableClick"
         :is-map-page="isMapPage"
         :show-delete-button="showDeleteButton"
         @toggle-comment-popup="toggleCommentModal"
@@ -209,7 +203,6 @@ function getIconForFeature(feature) {
       />
       <LineStringLayer
         :show-comment-icons="showCommentIcons"
-        :enable-click="enableClick"
         :is-map-page="isMapPage"
         :show-delete-button="showDeleteButton"
         @toggle-comment-popup="toggleCommentModal"
