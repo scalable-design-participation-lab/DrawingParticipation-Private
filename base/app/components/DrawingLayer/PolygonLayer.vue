@@ -10,10 +10,6 @@ const props = defineProps({
     type: Boolean,
     default: false,
   },
-  enableClick: {
-    type: Boolean,
-    default: false,
-  },
   isMapPage: {
     type: Boolean,
     default: false,

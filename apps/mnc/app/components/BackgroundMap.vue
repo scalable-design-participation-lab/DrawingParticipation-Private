@@ -10,6 +10,8 @@
         :projection="projection"
         :is-map-page="isMapPage"
         :show-delete-button="false"
+        :showCommentIcons= "false"
+        :show-all-plus-icons="false"
       />
     </template>
   </GeneralizedBackgroundMap>

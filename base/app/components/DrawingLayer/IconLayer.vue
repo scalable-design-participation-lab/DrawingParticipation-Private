@@ -16,10 +16,6 @@ const props = defineProps({
     type: Boolean,
     default: undefined,
   },
-  enableClick: {
-    type: Boolean,
-    default: false,
-  },
   isMapPage: {
     type: Boolean,
     default: false,
