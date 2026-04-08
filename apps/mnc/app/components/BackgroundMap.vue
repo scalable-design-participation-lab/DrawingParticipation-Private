@@ -21,6 +21,7 @@
     v-if="showPopup && selectedFeature"
     :title="selectedFeature.comment"
     :date-published="selectedFeature.properties?.date || 'hi'"
+    :imagePath="'/Solution_Photos/'+ selectedFeature.properties?.string_id +'/1.png'"
     :location="selectedFeature.properties?.location || 'hi'"
     :caption="selectedFeature.properties?.mediaCaptions || 'hi'"
     :description="selectedFeature.properties?.description || 'hi'"

@@ -34,7 +34,7 @@
 
           <!-- Image Box -->
           <div class="w-52 h-44 bg-teal-100 rounded-2xl flex items-center justify-center flex-shrink-0">
-            <img v-if="image" :src="image" :alt="title" class="w-full h-full object-cover rounded-2xl" />
+            <img v-if="imagePath" :src="imagePath" :alt="title" class="w-full h-full object-cover rounded-2xl" />
             <span v-else class="text-teal-300 text-sm">{{caption}}</span>
           </div>
 
@@ -118,7 +118,7 @@ interface Props {
   title?: string
   datePublished?: string
   location?: string
-  image?: string
+  imagePath?: string
   caption?: string
   description?: string
   connection?: string
