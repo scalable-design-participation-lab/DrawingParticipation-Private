@@ -14,7 +14,8 @@
     "Secondary Tags": [
       "DIY / Maker",
       "Rural Access"
-    ]
+    ],
+    "string_id": "mindanao-the_habal_habal"
   },
   {
     "Title": "Bus 581: A Small Town’s Lifeline",
@@ -30,7 +31,8 @@
     "Primary Tag": "Transportation & Mobility",
     "Secondary Tags": [
       "Grassroots Organizing"
-    ]
+    ],
+    "string_id": "rio-bus_581"
   },
   {
     "Title": "Wi-Fi on Wheels: Wi-Fi Equipped Buses",
@@ -47,7 +49,8 @@
     "Secondary Tags": [
       "Education & Youth",
       "Mobile Vehicle"
-    ]
+    ],
+    "string_id": "coachella-wifi_on_wheels"
   },
   {
     "Title": "Canal*MOTOBOY (Motoboy*Channel) Project: Mobilizing Motoboys to Aid Navigation in São Paulo",
@@ -63,7 +66,8 @@
     "Primary Tag": "Community Mapping & Visibility",
     "Secondary Tags": [
       "Labor & Economy"
-    ]
+    ],
+    "string_id": "sao_paulo-canal_motoboy"
   },
   {
     "Title": "Pedala Queimados (Ride Queimados): How a Bicycle Sharing Project Revolutionized a Small Town in Brazil",
@@ -80,7 +84,8 @@
     "Secondary Tags": [
       "DIY / Maker",
       "Grassroots Organizing"
-    ]
+    ],
+    "string_id": "rio-pedala_queimados"
   },
   {
     "Title": "WikiMapa: Putting Complexo de Alemão (German Complex) on the Map",
@@ -96,7 +101,8 @@
     "Primary Tag": "Community Mapping & Visibility",
     "Secondary Tags": [
       "Favela / Informal Settlement"
-    ]
+    ],
+    "string_id": "rio-wikimapa"
   },
   {
     "Title": "Guia Rocinha Histórica (Historic Rocinha Guide): Making community Visible Through Residents’ Narrated Stories",
@@ -112,7 +118,8 @@
     "Primary Tag": "Community Mapping & Visibility",
     "Secondary Tags": [
       "Cultural Preservation"
-    ]
+    ],
+    "string_id": "rocinha-guia_rocinha_historica"
   },
   {
     "Title": "Mobile Cinema: Bringing Films to Remote Communities With a Truck",
@@ -129,7 +136,8 @@
     "Secondary Tags": [
       "Mobile Vehicle",
       "Rural Access"
-    ]
+    ],
+    "string_id": "pakistan-mobile_cinema"
   },
   {
     "Title": "Truck Art Child Finder: How Pakistan’s Mobile Art Form Helped Bring Missing Children Home",
@@ -145,7 +153,8 @@
     "Primary Tag": "Community Mapping & Visibility",
     "Secondary Tags": [
       "Mobile Vehicle"
-    ]
+    ],
+    "string_id": "pakistan-truck_art_child_finder"
   },
   {
     "Title": "Nuvem (Cloud): Networking the Unconnected",
@@ -162,7 +171,8 @@
     "Secondary Tags": [
       "Rural Access",
       "DIY / Maker"
-    ]
+    ],
+    "string_id": "rio-nuvem"
   },
   {
     "Title": "Bike Arte Festival: Engaging With Low-Income Communities to Promote Biking",
@@ -178,7 +188,8 @@
     "Primary Tag": "Art & Cultural Expression",
     "Secondary Tags": [
       "Education & Youth"
-    ]
+    ],
+    "string_id": "sao_paulo-bike_arte_festival"
   },
   {
     "Title": "World Health Organization (WHO) Mobile Clinics: Providing Disaster Relief Through Boats",
@@ -194,7 +205,8 @@
     "Primary Tag": "Health & Crisis Response",
     "Secondary Tags": [
       "Mobile Vehicle"
-    ]
+    ],
+    "string_id": "myanmar-who_mobile_clinics"
   },
   {
     "Title": "BiH Mine Suspected Areas: An App for Safe Travel in Bosnia and Herzegovina",
@@ -211,7 +223,8 @@
     "Secondary Tags": [
       "Conflict & Safety",
       "Refugee / Forced Migration"
-    ]
+    ],
+    "string_id": "bosnia-bih_mines"
   },
   {
     "Title": "Border Memorial: Visualizing the Dead Forced Migrants in the Arizona Desert",
@@ -227,7 +240,8 @@
     "Primary Tag": "Art & Cultural Expression",
     "Secondary Tags": [
       "Human Rights & Advocacy"
-    ]
+    ],
+    "string_id": "arizona-border_memorial"
   },
   {
     "Title": "The Health Wagon: Mobilizing Healthcare in Rural Virginia",
@@ -244,7 +258,8 @@
     "Secondary Tags": [
       "Mobile Vehicle",
       "Rural Access"
-    ]
+    ],
+    "string_id": "virginia-health_wagon"
   },
   {
     "Title": "Life Jackets Appropriation: Turning Discarded Life Jackets to Benefit Forced Migrants",
@@ -261,7 +276,8 @@
     "Secondary Tags": [
       "Refugee / Forced Migration",
       "Environmental / Upcycling"
-    ]
+    ],
+    "string_id": "lesvos-life_jacket_appropriation"
   },
   {
     "Title": "No Friend but the Mountains: A Book Written Through WhatsApp Text Messages",
@@ -278,7 +294,8 @@
     "Secondary Tags": [
       "Refugee / Forced Migration",
       "Human Rights & Advocacy"
-    ]
+    ],
+    "string_id": "manus-whatsapp_book"
   },
   {
     "Title": "Wi-Fi Bookbags: Creating Mobile Wi-Fi Hotspots in Encampments For Forced Migrants",
@@ -295,7 +312,8 @@
     "Secondary Tags": [
       "Refugee / Forced Migration",
       "DIY / Maker"
-    ]
+    ],
+    "string_id": "opatovac-wifi_bookbags"
   },
   {
     "Title": "Painel Unificador COVID-19 (Unified COVID-19 Dashboard): Counting COVID-19 in the Favelas of Rio de Janeiro",
@@ -312,7 +330,8 @@
     "Secondary Tags": [
       "Favela / Informal Settlement",
       "Public Health"
-    ]
+    ],
+    "string_id": "rio-painel_unificador"
   },
   {
     "Title": "Conexão Saúde (Health Connection): Supporting Favelas During the COVID-19 Pandemic",
@@ -329,7 +348,8 @@
     "Secondary Tags": [
       "Favela / Informal Settlement",
       "Public Health"
-    ]
+    ],
+    "string_id": "mare_favelas-conexao_saude"
   },
   {
     "Title": "FIOTIM and Museu da Imagem Itinerante de Maré (Maré Itinerant Museum of Images): Reclaiming Cultural Access Through Mobile Art",
@@ -346,7 +366,8 @@
     "Secondary Tags": [
       "Mobile Vehicle",
       "Cultural Preservation"
-    ]
+    ],
+    "string_id": "minas_gerais-fiotim_and_miim"
   },
   {
     "Title": "Transborder Immigrant Tool: Repurposing GPS Technology as Humanitarian Aid",
@@ -363,7 +384,8 @@
     "Secondary Tags": [
       "Human Rights & Advocacy",
       "Refugee / Forced Migration"
-    ]
+    ],
+    "string_id": "san_diego-transborder_immigrant_tool"
   },
   {
     "Title": "Homes From Waste: Constructing Homes by Reusing Plastic Water Bottles",
@@ -380,7 +402,8 @@
     "Secondary Tags": [
       "Environmental / Upcycling",
       "Human Rights & Advocacy"
-    ]
+    ],
+    "string_id": "nigeria_brazil_colombia-homes_from_waste"
   },
   {
     "Title": "Encoded Textiles: Weaving QR Codes Into Textiles to Tell the Story of the Mapuche Community",
@@ -396,7 +419,8 @@
     "Primary Tag": "Art & Cultural Expression",
     "Secondary Tags": [
       "Cultural Preservation"
-    ]
+    ],
+    "string_id": "chile-encoded_textiles"
   },
   {
     "Title": "Safwan Harb’s Wheelchair-Bike: Creating Mobility in a Refugee Camp by Modifying a Bike",
@@ -413,6 +437,7 @@
     "Secondary Tags": [
       "Refugee / Forced Migration",
       "Disability & Accessibility"
-    ]
+    ],
+    "string_id": "za_atari-safwan_wheelchair_bike"
   }
 ]

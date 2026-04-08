@@ -50,7 +50,10 @@ export const useDb = defineStore('db', () => {
             entry.Description,
             entry["Connection to Mobile Networked Creativity"],
             entry["Media Captions"],
-            entry.Links
+            entry.Links,
+            entry["Primary Tag"],
+            entry["Secondary Tags"],
+            entry.string_id
           )
         })
       })

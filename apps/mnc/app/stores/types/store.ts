@@ -1,4 +1,5 @@
 import type { Feature } from '@base/stores/types/store'
+import type { string } from 'yup'
 
 /**
  * Properties class for storing additional metadata about MNC features
@@ -11,6 +12,9 @@ export class Properties {
   mncConnection?: string
   mediaCaptions?: string[]
   links?: string
+  primaryTag?: string
+  secondaryTags?: string[]
+  string_id?: string
 
   constructor(
     location?: string,
@@ -19,7 +23,10 @@ export class Properties {
     description?: string,
     mncConnection?: string,
     mediaCaptions?: string[],
-    links?: string
+    links?: string,
+    primaryTag?: string,
+    secondaryTags?: string[],
+    string_id?: string
   ) {
     this.location = location
     this.date = date
@@ -28,5 +35,8 @@ export class Properties {
     this.mncConnection = mncConnection
     this.mediaCaptions = mediaCaptions
     this.links = links
+    this.primaryTag = primaryTag
+    this.secondaryTags = secondaryTags
+    this.string_id = string_id
   }
 }
