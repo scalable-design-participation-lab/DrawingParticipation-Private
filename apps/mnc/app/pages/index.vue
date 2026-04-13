@@ -12,13 +12,9 @@ const dbStore = useDb()
 const { setMapType } = mapStore
 const currentMapType = ref('vector')
 const isLoading = ref(true)
+const headerPrimaryAccentColor = '#4FA19D'
 
 const leftItems = ref([
-  {
-    label: 'Drawing Participation',
-    color: 'black',
-    to: '/about/',
-  },
   {
     label: 'Mobile Networked Creativity',
     color: 'black',
@@ -142,6 +138,7 @@ onMounted(() => {
         class="z-20"
         :left-items="leftItems"
         :right-items="rightItems"
+        :primary-accent-color="headerPrimaryAccentColor"
       />
       <GeneralizedFooter class="z-20" />
       <OnboardingModal

@@ -53,14 +53,6 @@ const menuItems = [
   {
     label: 'Support',
     action: 'help',
-  },
-  {
-    label: 'Results',
-    action: 'results',
-  },
-  {
-    label: 'Dashboard',
-    action: 'dashboard',
   }
 ]
 
@@ -84,9 +76,6 @@ const handleItemClick = (item) => {
       break
     case 'dashboard':
       router.push('/dashboard')
-      break
-    case 'results':
-      router.push('/result')
       break
   }
 

@@ -4,7 +4,7 @@
       <!-- Header -->
       <template #header>
         <div class="flex items-center justify-between">
-          <h3 class="text-xl font-semibold">Help</h3>
+          <h3 class="text-xl font-semibold">Support</h3>
           <UButton
             color="gray"
             variant="ghost"
@@ -17,24 +17,24 @@
       <!-- Content -->
       <div class="space-y-4">
         <p>
-          "Hurtoma" is a community-created map project that allows exploring questions of space use and attitudes towards the surrounding environment.
+          One sentance what is
         </p>
 
         <div class="space-y-2">
           <h4 class="font-medium">Key features:</h4>
           <ul class="list-disc list-inside space-y-1 pl-4">
-            <li>Draw and mark places you visit and use for specific purposes</li>
-            <li>Share your experience about feelings of safety and unity</li>
-            <li>Contribute to environmental protection</li>
-            <li>Learn about the community's opinion</li>
+            <li>ex. Draw and mark places you visit and use for specific purposes</li>
+            <li>ex. Share your experience about feelings of safety and unity</li>
+            <li>ex. Contribute to environmental protection</li>
+            <li>ex. Learn about the community's opinion</li>
           </ul>
         </div>
 
         <div class="space-y-2">
           <p>
-            How to participate: Use the tools on the left sidebar to mark places and share your experience. Your contribution will help better understand the state of urban space and how to improve it.
+            ex. How to participate: Use the tools on the left sidebar to mark places and share your experience. Your contribution will help better understand the state of urban space and how to improve it.
           </p>
-          <p>Please <a href="https://forms.gle/6d8GuBSPaingSR4L6" target="_blank" class="underline hover:no-underline">fill out the form</a> if you would like to leave feedback about the platform.</p>
+          <p>Please <a href="/" target="_blank" class="underline hover:no-underline">fill out SOME form</a> if you would like to leave feedback about the platform.</p>
         </div>
       </div>
 

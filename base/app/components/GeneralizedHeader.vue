@@ -28,6 +28,7 @@ import { computed, ref } from 'vue'
  * @property {string} [logoSrc] - Source URL for the logo image
  * @property {string} [logoLink] - Link URL for the logo image
  * @property {string} [logoAlt='Logo'] - Alt text for the logo image
+ * @property {string} [primaryAccentColor] - Optional text/icon color for all header buttons
  * @property {boolean} [showIcon=true] - Whether to show the icon
  * @property {'rounded' | 'rectangular'} [shape='rounded'] - Shape of the buttons and logo
  */
@@ -57,6 +58,10 @@ const props = defineProps({
     type: String,
     default: 'Logo',
   },
+  primaryAccentColor: {
+    type: String,
+    default: '',
+  },
   showIcon: {
     type: Boolean,
     default: true,
@@ -64,7 +69,7 @@ const props = defineProps({
   shape: {
     type: String,
     default: 'rounded',
-    validator: value => ['rounded', 'rectangular'].includes(value),
+    validator: (value: string) => ['rounded', 'rectangular'].includes(value),
   },
   z: {
     type: [String, Number],
@@ -100,6 +105,16 @@ const shapeClass = computed(() => {
       return 'rounded-full'
   }
 })
+
+const hasPrimaryAccentColor = computed(() => Boolean(props.primaryAccentColor))
+
+const accentTextStyle = computed(() => {
+  if (!hasPrimaryAccentColor.value) {
+    return undefined
+  }
+
+  return { color: props.primaryAccentColor }
+})
 </script>
 
 <template>
@@ -114,7 +129,9 @@ const shapeClass = computed(() => {
           v-if="showIcon"
           class="w-10 lg:w-12 text-xl sm:text-2xl !rounded-lg flex justify-center !bg-gray-50 dark:!bg-black shadow-lg hover:scale-105 relative z-10" :class="[
             shapeClass,
+            hasPrimaryAccentColor ? 'text-current' : 'text-black dark:text-white',
           ]"
+          :style="accentTextStyle"
           alt="Scalable Design Participation Lab Logo"
           to="https://www.northeastern.edu/"
           target="_blank"
@@ -143,7 +160,9 @@ const shapeClass = computed(() => {
               :icon="item.icon"
               class="h-full px-3 sm:px-4 !rounded-lg text-xs sm:text-sm md:text-base lg:text-lg shadow-lg text-black dark:text-white !bg-gray-50 dark:!bg-black hover:scale-105" :class="[
                 shapeClass,
+                hasPrimaryAccentColor ? 'text-current' : 'text-black dark:text-white',
               ]"
+              :style="accentTextStyle"
               @click="navigate"
             >
               {{ item.label }}
@@ -156,7 +175,9 @@ const shapeClass = computed(() => {
             :icon="item.icon"
             class="h-full px-3 sm:px-4 !rounded-lg text-xs sm:text-sm md:text-base lg:text-lg shadow-lg text-black dark:text-white !bg-gray-50 dark:!bg-black hover:scale-105" :class="[
               shapeClass,
+              hasPrimaryAccentColor ? 'text-current' : 'text-black dark:text-white',
             ]"
+            :style="accentTextStyle"
             @click="item.onClick"
           >
             {{ item.label }}
@@ -169,9 +190,13 @@ const shapeClass = computed(() => {
           <UDropdown v-if="item.dropdown" v-bind="item.dropdown">
             <UButton
               :icon="item.icon"
-              class="h-full px-3 md:px-5 lg:px-6 text-xs sm:text-sm md:text-base lg:text-lg rounded-full !bg-gray-50 dark:!bg-black shadow-lg text-black dark:text-white hover:invert" :class="[
+              class="h-full px-3 md:px-5 lg:px-6 text-xs sm:text-sm md:text-base lg:text-lg rounded-full !bg-gray-50 dark:!bg-black shadow-lg" :class="[
                 shapeClass,
+                hasPrimaryAccentColor
+                  ? 'text-current hover:!bg-gray-50 dark:hover:!bg-black'
+                  : 'text-black dark:text-white hover:invert',
               ]"
+              :style="accentTextStyle"
             >
               {{ item.label }}
             </UButton>
@@ -186,9 +211,13 @@ const shapeClass = computed(() => {
               :variant="item.variant"
               :color="item.color"
               :icon="item.icon"
-              class="h-full px-2 md:px-3 lg:px-4 text-xs md:text-base lg:text-lg rounded-full !bg-gray-50 hover:!bg-black hover:!text-white dark:!bg-black shadow-lg dark:hover:!bg-slate-800 text-black dark:text-white hidden md:flex" :class="[
+              class="h-full px-2 md:px-3 lg:px-4 text-xs md:text-base lg:text-lg rounded-full hidden md:flex shadow-lg" :class="[
                 shapeClass,
+                hasPrimaryAccentColor
+                  ? '!bg-gray-50 dark:!bg-black text-current hover:!bg-gray-50 dark:hover:!bg-black'
+                  : '!bg-gray-50 hover:!bg-black hover:!text-white dark:!bg-black dark:hover:!bg-slate-800 text-black dark:text-white',
               ]"
+              :style="accentTextStyle"
               @click="navigate"
             >
               {{ item.label }}
@@ -197,9 +226,13 @@ const shapeClass = computed(() => {
           <UButton
             v-else
             :icon="item.icon"
-            class="h-full px-2 md:px-3 lg:px-4 text-xs md:text-base lg:text-lg rounded-full !bg-gray-50 hover:!bg-black hover:!text-white dark:!bg-black shadow-lg dark:hover:!bg-slate-800 text-black dark:text-white hidden md:flex" :class="[
+            class="h-full px-2 md:px-3 lg:px-4 text-xs md:text-base lg:text-lg rounded-full hidden md:flex shadow-lg" :class="[
               shapeClass,
+              hasPrimaryAccentColor
+                ? '!bg-gray-50 dark:!bg-black text-current hover:!bg-gray-50 dark:hover:!bg-black'
+                : '!bg-gray-50 hover:!bg-black hover:!text-white dark:!bg-black dark:hover:!bg-slate-800 text-black dark:text-white',
             ]"
+            :style="accentTextStyle"
             @click="item.onClick"
           >
             {{ item.label }}
@@ -207,16 +240,24 @@ const shapeClass = computed(() => {
         </template>
         <!-- Dark Mode Toggle -->
         <UColorModeButton
-          class="h-full px-2 md:px-3 lg:px-4 text-xs !bg-gray-50 hover:!bg-black hover:!text-white dark:!bg-black shadow-lg dark:hover:!bg-slate-800 text-black dark:text-white hidden md:flex" :class="[
+          class="h-full px-2 md:px-3 lg:px-4 text-xs hidden md:flex shadow-lg" :class="[
             shapeClass,
+            hasPrimaryAccentColor
+              ? '!bg-gray-50 dark:!bg-black text-current hover:!bg-gray-50 dark:hover:!bg-black'
+              : '!bg-gray-50 hover:!bg-black hover:!text-white dark:!bg-black dark:hover:!bg-slate-800 text-black dark:text-white',
           ]"
+          :style="accentTextStyle"
           @click="isDark = !isDark"
         />
         <!-- Menu -->
         <UButton
-          class="h-full px-2 md:px-2 lg:px-3.5 text-lg !bg-gray-50 hover:!bg-black hover:!text-white dark:!bg-black shadow-lg dark:hover:!bg-slate-800 text-black dark:text-white" :class="[
+          class="h-full px-2 md:px-2 lg:px-3.5 text-lg shadow-lg" :class="[
             shapeClass,
+            hasPrimaryAccentColor
+              ? '!bg-gray-50 dark:!bg-black text-current hover:!bg-gray-50 dark:hover:!bg-black'
+              : '!bg-gray-50 hover:!bg-black hover:!text-white dark:!bg-black dark:hover:!bg-slate-800 text-black dark:text-white',
           ]"
+          :style="accentTextStyle"
           icon="i-heroicons-ellipsis-horizontal-20-solid"
           @click="showMenuModal = true"
         />
