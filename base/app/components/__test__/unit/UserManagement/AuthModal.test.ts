@@ -1,5 +1,6 @@
 import { type VueWrapper, mount } from '@vue/test-utils'
 import { nextTick } from 'vue'
+import { createTestingPinia } from '@pinia/testing'
 
 // Mock Firebase modules first
 vi.mock('firebase/auth', () => ({
@@ -27,11 +28,17 @@ vi.mock('vuefire', () => ({
   useFirestore: vi.fn(() => ({})),
 }))
 
-// Mock the composable
-vi.mock('../../composables/useFirebaseAuth', () => ({
+// Mock the composable (covers AuthModal and all child components)
+vi.mock('../../../../composables/useFirebaseAuth', () => ({
   useFirebaseAuth: () => ({
     checkPersistentAuth: vi.fn().mockResolvedValue({ user: null, userData: null }),
     getUserData: vi.fn().mockResolvedValue(null),
+    signInWithEmail: vi.fn().mockResolvedValue(null),
+    signUpWithEmail: vi.fn().mockResolvedValue(null),
+    resetPassword: vi.fn().mockResolvedValue(false),
+    authError: { value: '' },
+    isLoading: { value: false },
+    clearError: vi.fn(),
   }),
 }))
 
@@ -56,6 +63,7 @@ describe('AuthModal.vue', () => {
         ...props,
       },
       global: {
+        plugins: [createTestingPinia()],
         stubs: {
           UCard: { template: '<div><slot /></div>' },
           WelcomeBackModal: { template: '<div data-test="welcome-back" />' },

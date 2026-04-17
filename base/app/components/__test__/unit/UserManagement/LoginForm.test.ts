@@ -33,7 +33,7 @@ const mockAuthError = ref('')
 const mockIsLoading = ref(false)
 const mockClearError = vi.fn()
 
-vi.mock('../../composables/useFirebaseAuth', () => ({
+vi.mock('../../../../composables/useFirebaseAuth', () => ({
   useFirebaseAuth: () => ({
     signInWithEmail: mockSignInWithEmail,
     authError: mockAuthError,
@@ -58,23 +58,25 @@ describe('LoginForm.vue', () => {
       },
       global: {
         stubs: {
-          UForm: { 
-            template: '<form @submit.prevent="$emit(\'submit\')"><slot /></form>',
-            emits: ['submit']
+          UForm: {
+            name: 'UForm',
+            template: '<form @submit.prevent="$emit(\'submit\', $event)"><slot /></form>',
+            emits: ['submit'],
           },
           UFormGroup: { 
             template: '<div><label v-if="label">{{ label }}</label><slot /></div>',
             props: ['label', 'name']
           },
-          UInput: { 
-            template: '<input :value="modelValue" @input="$emit(\'update:modelValue\', $event.target.value)" />',
+          UInput: {
+            template: '<input :value="modelValue" :type="type || \'text\'" @input="$emit(\'update:modelValue\', $event.target.value)" />',
             props: ['modelValue', 'placeholder', 'color', 'variant', 'size', 'type'],
             emits: ['update:modelValue']
           },
-          UButton: { 
-            template: '<button :disabled="disabled || loading" @click="$emit(\'click\')"><slot /></button>',
+          UButton: {
+            name: 'UButton',
+            template: '<button :type="type" :disabled="disabled || loading" @click="$emit(\'click\')"><slot /></button>',
             props: ['type', 'color', 'class', 'loading', 'disabled'],
-            emits: ['click']
+            emits: ['click'],
           },
         },
       },
@@ -180,9 +182,8 @@ describe('LoginForm.vue', () => {
     await passwordInput.setValue('password123')
     
     // Submit form
-    const form = wrapper.findComponent({ name: 'UForm' })
-    await form.vm.$emit('submit')
-    
+    await wrapper.find('form').trigger('submit')
+
     expect(mockSignInWithEmail).toHaveBeenCalledWith('test@example.com', 'password123')
     expect(mockClearError).toHaveBeenCalled()
     expect(wrapper.emitted('success')).toBeTruthy()
@@ -200,9 +201,8 @@ describe('LoginForm.vue', () => {
     await passwordInput.setValue('wrongpassword')
     
     // Submit form
-    const form = wrapper.findComponent({ name: 'UForm' })
-    await form.vm.$emit('submit')
-    
+    await wrapper.find('form').trigger('submit')
+
     expect(mockSignInWithEmail).toHaveBeenCalledWith('test@example.com', 'wrongpassword')
     expect(wrapper.emitted('success')).toBeFalsy()
   })

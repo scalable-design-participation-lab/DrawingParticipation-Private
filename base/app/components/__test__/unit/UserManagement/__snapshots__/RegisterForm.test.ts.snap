@@ -1,6 +1,6 @@
 // Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
-exports[`LoginForm.vue > renders correctly 1`] = `
+exports[`RegisterForm.vue > renders correctly 1`] = `
 <div
   class="space-y-6"
 >
@@ -10,12 +10,12 @@ exports[`LoginForm.vue > renders correctly 1`] = `
     <h2
       class="text-2xl font-semibold"
     >
-      Login
+      Register
     </h2>
     <p
       class="mt-2 text-gray-600"
     >
-      Enter your credentials
+      Create your account
     </p>
   </div>
   <!--v-if-->
@@ -24,6 +24,7 @@ exports[`LoginForm.vue > renders correctly 1`] = `
     schema="[object Object]"
     state="[object Object]"
   >
+    
     
     <div>
       <label>
@@ -47,36 +48,38 @@ exports[`LoginForm.vue > renders correctly 1`] = `
       />
       
     </div>
+    <div>
+      <label>
+        Username
+      </label>
+      
+      <input
+        type="text"
+        value=""
+      />
+      
+    </div>
+    
     <button
       type="submit"
-      ui="[object Object]"
     >
       
-       Login 
+      Sign Up
       
     </button>
     
   </form>
   <div
-    class="text-center space-y-2"
+    class="text-center"
   >
     <p
       class="text-sm text-gray-600"
     >
-       Don't have an account? 
+       Already have an account? 
       <button
         class="text-primary hover:underline focus:outline-none"
       >
-         Register 
-      </button>
-    </p>
-    <p
-      class="text-sm text-gray-600"
-    >
-      <button
-        class="text-primary hover:underline focus:outline-none"
-      >
-         Forgot password? Click to reset. 
+         Login 
       </button>
     </p>
   </div>
