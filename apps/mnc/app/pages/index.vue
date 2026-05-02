@@ -2,8 +2,9 @@
 import { computed, onMounted, ref } from 'vue'
 import { useUserStore } from '@base/stores/user'
 import { useMapStore } from '@base/stores/map'
-import type { MapType } from '@base/stores/types/store'
+import type { MapType, Feature } from '@base/stores/types/store'
 import { useDb } from '../stores/db'
+import { useIsMobile } from '../composables/useIsMobile'
 
 // Map store
 const userStore = useUserStore()
@@ -13,6 +14,23 @@ const { setMapType } = mapStore
 const currentMapType = ref('vector')
 const isLoading = ref(true)
 const headerPrimaryAccentColor = '#4FA19D'
+
+// Mobile state
+const { isMobile } = useIsMobile()
+type MobileView = 'map' | 'list' | 'info' | 'more'
+const mobileView = ref<MobileView>('map')
+const selectedMobileFeature = ref<Feature | null>(null)
+const projectCardState = ref<'expanded' | 'full'>('expanded')
+
+function selectMobileFeature(feature: Feature) {
+  selectedMobileFeature.value = feature
+  mobileView.value = 'map'
+  projectCardState.value = 'expanded'
+}
+
+function closeMobileProject() {
+  selectedMobileFeature.value = null
+}
 
 const leftItems = ref([
   {
@@ -141,6 +159,31 @@ onMounted(() => {
         :primary-accent-color="headerPrimaryAccentColor"
       />
       <GeneralizedFooter class="z-20" />
+
+      <!-- Desktop only -->
+      <BottomBar v-if="!isMobile" />
+
+      <!-- Mobile only -->
+      <template v-if="isMobile">
+        <MobileProximityList
+          v-if="mobileView === 'list'"
+          @select-feature="selectMobileFeature"
+        />
+        <MobileProjectCard
+          v-if="selectedMobileFeature"
+          :feature="selectedMobileFeature"
+          :state="projectCardState"
+          @update:state="projectCardState = $event"
+          @close="closeMobileProject"
+        />
+        <MobileBottomNav
+          :active-view="mobileView"
+          :project-selected="!!selectedMobileFeature"
+          @update:active-view="mobileView = $event"
+          @close-project="closeMobileProject"
+        />
+      </template>
+
       <OnboardingModal
         :is-visible="showOnboarding"
         @close="handleCloseOnboarding"
