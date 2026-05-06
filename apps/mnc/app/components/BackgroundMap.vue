@@ -23,6 +23,12 @@
     :showPreviousArrow="false"
     :showNextArrow="false"
     :showExpand="true"
+    :title="selectedFeature.comment"
+    :date-published="selectedFeature.properties?.date || 'hi'"
+    :imagePath="'/Solution_Photos/'+ selectedFeature.properties?.string_id +'/1.png'"
+    :location="selectedFeature.properties?.location || 'hi'"
+    :caption="selectedFeature.properties?.mediaCaptions || 'hi'"
+    :primary-tag="selectedFeature.properties?.primaryTag || ''"
     @click-expand="handleExpandedPopup"
     @click-close="handleCloseQuickLook"
   />
@@ -37,6 +43,8 @@
     :caption="selectedFeature.properties?.mediaCaptions || 'hi'"
     :description="selectedFeature.properties?.description || 'hi'"
     :connection="selectedFeature.properties?.mncConnection || 'hi'"
+    :primary-tag="selectedFeature.properties?.primaryTag || 'N/A'"
+    :secondary-tag="selectedFeature.properties?.secondaryTags || 'N/A'"
     :links="parsedLinks"
     @close="closePopup"
   />
