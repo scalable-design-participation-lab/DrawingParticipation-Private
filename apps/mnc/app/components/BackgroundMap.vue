@@ -3,7 +3,7 @@
     ref="baseMap"
     :mapbox-style-light="mapboxStyleLight"
     :mapbox-style-dark="mapboxStyleDark"
-    @toggle-icon-details="handleTogglePopup"
+    @toggle-icon-details="handleShowQuickLook"
   >
     <template #layers>
       <DrawingLayer
@@ -16,6 +16,23 @@
     </template>
   </GeneralizedBackgroundMap>
 
+  <!-- Quick Look -->
+  <QuickLook
+    v-if="showQuickLook"
+    :marker-position="quickLookPosition"
+    :showPreviousArrow="false"
+    :showNextArrow="false"
+    :showExpand="true"
+    :title="selectedFeature.comment"
+    :date-published="selectedFeature.properties?.date || 'hi'"
+    :imagePath="'/Solution_Photos/'+ selectedFeature.properties?.string_id +'/1.png'"
+    :location="selectedFeature.properties?.location || 'hi'"
+    :caption="selectedFeature.properties?.mediaCaptions || 'hi'"
+    :primary-tag="selectedFeature.properties?.primaryTag || ''"
+    @click-expand="handleExpandedPopup"
+    @click-close="handleCloseQuickLook"
+  />
+
   <!-- Info Popup -->
   <InfoPopup
     v-if="showPopup && selectedFeature"
@@ -26,6 +43,8 @@
     :caption="selectedFeature.properties?.mediaCaptions || 'hi'"
     :description="selectedFeature.properties?.description || 'hi'"
     :connection="selectedFeature.properties?.mncConnection || 'hi'"
+    :primary-tag="selectedFeature.properties?.primaryTag || 'N/A'"
+    :secondary-tag="selectedFeature.properties?.secondaryTags || 'N/A'"
     :links="parsedLinks"
     @close="closePopup"
   />
@@ -43,7 +62,9 @@ const baseMap = ref(null)
 
 // Popup state
 const showPopup = ref(false)
+const showQuickLook = ref(false)
 const selectedFeature = ref(null)
+const quickLookPosition = ref({ x: 0, y: 0 })
 
 // Parse links from semicolon-separated string
 const parsedLinks = computed(() => {
@@ -60,10 +81,31 @@ const parsedLinks = computed(() => {
     .map(link => ({ label: link, url: '' }))
 })
 
-function handleTogglePopup(feature: any) {
-  console.log("handling TogglePopup in background map", feature)
-  selectedFeature.value = feature
+function handleShowQuickLook(payload: any) {
+  console.log("handling ShowQuickLook in background map", payload)
+  selectedFeature.value = payload?.feature ?? payload
+  if (payload?.markerPosition) {
+    quickLookPosition.value = payload.markerPosition
+  }
+  else if (typeof window !== 'undefined') {
+    quickLookPosition.value = {
+      x: Math.round(window.innerWidth / 2),
+      y: Math.round(window.innerHeight / 2),
+    }
+  }
+  showQuickLook.value = true
+}
+
+function handleCloseQuickLook() {
+  console.log("handling CloseQuickLook in background map")
+  selectedFeature.value = null
+  showQuickLook.value = false
+}
+
+function handleExpandedPopup() {
+  console.log("handling ExpandedPopup in background map")
   showPopup.value = true
+  showQuickLook.value = false
 }
 
 function closePopup() {
