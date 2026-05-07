@@ -19,9 +19,11 @@ import pollutionIcon from '../../assets/icons/pollution.svg'
 import leafIcon from '../../assets/icons/leaf.svg'
 import prohibitIcon from '../../assets/icons/prohibit.svg'
 import trashIcon from '../../assets/icons/trash.svg'
-import healthIcon from '../../assets/icons/Health.png'
-import transportIcon from '../../assets/icons/Transportation.png'
-import wifiIcon from '../../assets/icons/Connectivity.png'
+import healthIcon from '../../assets/icons/Health.svg'
+import transportIcon from '../../assets/icons/Transportation.svg'
+import connectivityIcon from '../../assets/icons/Connectivity.svg'
+import artIcon from '../../assets/icons/Art.svg'
+import communityIcon from '../../assets/icons/Community.svg'
 import LineStringLayer from './LineStringLayer.vue'
 import PolygonLayer from './PolygonLayer.vue'
 import IconLayer from './IconLayer.vue'
@@ -137,7 +139,9 @@ function getIconForFeature(feature) {
     'trash': trashIcon,
     'Health & Crisis Response': healthIcon,
     'Transportation & Mobility': transportIcon,
-    'Digital Access & Connectivity': wifiIcon,
+    'Digital Access & Connectivity': connectivityIcon,
+    'Community Mapping & Visibility': communityIcon,
+    'Art & Cultural Expression': artIcon
   }
 
   if (feature.iconName && iconMap[feature.iconName]) {
