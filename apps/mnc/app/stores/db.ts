@@ -38,7 +38,9 @@ export const useDb = defineStore('db', () => {
           type: 'Point',
           iconName: entry["Primary Tag"] === 'Health & Crisis Response' || 
                     entry["Primary Tag"] === 'Transportation & Mobility' || 
-                    entry["Primary Tag"] === 'Digital Access & Connectivity' 
+                    entry["Primary Tag"] === 'Digital Access & Connectivity' ||
+                    entry["Primary Tag"] === 'Community Mapping & Visibility' ||
+                    entry["Primary Tag"] === 'Art & Cultural Expression'
                     ? entry["Primary Tag"] : 'heart',
           coordinates: coordinates,
           comment: entry.Title || '',
