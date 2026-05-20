@@ -12,6 +12,7 @@
         :show-delete-button="false"
         :showCommentIcons= "false"
         :show-all-plus-icons="false"
+        :feature-filter="featureFilter"
       />
     </template>
   </GeneralizedBackgroundMap>
@@ -32,8 +33,9 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed } from 'vue'
+import { computed, ref } from 'vue'
 import { useRoute } from 'nuxt/app'
+import { useFilterStore } from '../stores/filter'
 import InfoPopup from './infoPopup.vue'
 
 const route = useRoute()
@@ -41,16 +43,17 @@ const projection = ref('EPSG:3857')
 const isMapPage = computed(() => route.name === 'result')
 const baseMap = ref(null)
 
-// Popup state
-const showPopup = ref(false)
-const selectedFeature = ref(null)
+const filterStore = useFilterStore()
+
+const selectedFeature = computed(() => filterStore.selectedFeature)
+const showPopup = computed(() => selectedFeature.value !== null)
 
 // Parse links from semicolon-separated string
 const parsedLinks = computed(() => {
   if (!selectedFeature.value?.properties?.links) {
     return []
   }
-  
+
   const linksString = selectedFeature.value.properties.links
   // Split by semicolon and filter out empty strings
   return linksString
@@ -61,15 +64,14 @@ const parsedLinks = computed(() => {
 })
 
 function handleTogglePopup(feature: any) {
-  console.log("handling TogglePopup in background map", feature)
-  selectedFeature.value = feature
-  showPopup.value = true
+  filterStore.selectFeature(feature)
 }
 
 function closePopup() {
-  showPopup.value = false
-  selectedFeature.value = null
+  filterStore.clearSelection()
 }
+
+const featureFilter = (feature: any) => filterStore.isFeatureVisible(feature)
 
 const mapboxStyleLight = 'restartukraine/cm3p0s3gw00yd01seasye5jdw'
 const mapboxStyleDark = 'restartukraine/cm3p4jqnj009y01s79ngdah4r'

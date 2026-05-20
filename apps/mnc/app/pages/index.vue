@@ -4,12 +4,14 @@ import { useUserStore } from '@base/stores/user'
 import { useMapStore } from '@base/stores/map'
 import type { MapType, Feature } from '@base/stores/types/store'
 import { useDb } from '../stores/db'
+import { useFilterStore } from '../stores/filter'
 import { useIsMobile } from '../composables/useIsMobile'
 
 // Map store
 const userStore = useUserStore()
 const mapStore = useMapStore()
 const dbStore = useDb()
+const filterStore = useFilterStore()
 const { setMapType } = mapStore
 const currentMapType = ref('vector')
 const isLoading = ref(true)
@@ -162,6 +164,7 @@ onMounted(() => {
 
       <!-- Desktop only -->
       <BottomBar v-if="!isMobile" />
+      <FilteredSelectionSidebar v-if="!isMobile && filterStore.isPanelOpen" />
 
       <!-- Mobile only -->
       <template v-if="isMobile">

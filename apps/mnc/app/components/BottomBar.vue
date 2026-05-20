@@ -1,5 +1,8 @@
 <script setup lang="ts">
 import { ref } from 'vue'
+import { useFilterStore } from '../stores/filter'
+
+const filterStore = useFilterStore()
 
 const showMore = ref(false)
 
@@ -88,10 +91,11 @@ const categories = [
         icon="i-heroicons-tag"
         variant="ghost"
         size="lg"
-        aria-label="Tag"
+        aria-label="Filtered selection"
         class="rounded-full"
-        :style="{ color: '#57C9C0' }"
+        :style="{ color: filterStore.isPanelOpen ? '#FB6D6D' : '#57C9C0' }"
         :ui="{ rounded: 'rounded-full' }"
+        @click="filterStore.togglePanel()"
       />
       <UButton
         icon="i-heroicons-bars-3"
