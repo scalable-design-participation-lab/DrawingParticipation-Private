@@ -12,6 +12,7 @@
         :show-delete-button="false"
         :showCommentIcons= "false"
         :show-all-plus-icons="false"
+        :feature-filter="featureFilter"
       />
     </template>
   </GeneralizedBackgroundMap>
@@ -51,14 +52,19 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed } from 'vue'
+import { computed, ref } from 'vue'
 import { useRoute } from 'nuxt/app'
+import { useFilterStore } from '../stores/filter'
 import InfoPopup from './infoPopup.vue'
 
 const route = useRoute()
 const projection = ref('EPSG:3857')
 const isMapPage = computed(() => route.name === 'result')
 const baseMap = ref(null)
+
+const filterStore = useFilterStore()
+
+
 
 // Popup state
 const showPopup = ref(false)
@@ -71,7 +77,7 @@ const parsedLinks = computed(() => {
   if (!selectedFeature.value?.properties?.links) {
     return []
   }
-  
+
   const linksString = selectedFeature.value.properties.links
   // Split by semicolon and filter out empty strings
   return linksString
@@ -80,6 +86,11 @@ const parsedLinks = computed(() => {
     .filter(link => link.length > 0)
     .map(link => ({ label: link, url: '' }))
 })
+
+function handleTogglePopup(feature: any) {
+  filterStore.selectFeature(feature)
+
+}
 
 function handleShowQuickLook(payload: any) {
   console.log("handling ShowQuickLook in background map", payload)
@@ -108,10 +119,12 @@ function handleExpandedPopup() {
   showQuickLook.value = false
 }
 
+
 function closePopup() {
-  showPopup.value = false
-  selectedFeature.value = null
+  filterStore.clearSelection()
 }
+
+const featureFilter = (feature: any) => filterStore.isFeatureVisible(feature)
 
 const mapboxStyleLight = 'restartukraine/cm3p0s3gw00yd01seasye5jdw'
 const mapboxStyleDark = 'restartukraine/cm3p4jqnj009y01s79ngdah4r'

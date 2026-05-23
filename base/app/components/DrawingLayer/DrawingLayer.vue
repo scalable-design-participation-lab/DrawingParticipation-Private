@@ -28,7 +28,7 @@ import LineStringLayer from './LineStringLayer.vue'
 import PolygonLayer from './PolygonLayer.vue'
 import IconLayer from './IconLayer.vue'
 
-defineProps({
+const props = defineProps({
   projection: {
     type: String,
     required: true,
@@ -49,6 +49,10 @@ defineProps({
     type: Boolean,
     default: true,
   },
+  featureFilter: {
+    type: Function,
+    default: null,
+  },
 })
 
 const emit = defineEmits([
@@ -67,7 +71,8 @@ const currentColor = computed(() => sidebarStore.currentColor)
 
 const pointFeatures = computed(() => {
   const data = routeFeatureStore.getDataForRoute()
-  return data.filter(feature => feature.type === 'Point')
+  const points = data.filter(feature => feature.type === 'Point')
+  return props.featureFilter ? points.filter(props.featureFilter) : points
 },
 )
 
