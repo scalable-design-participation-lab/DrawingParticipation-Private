@@ -33,20 +33,19 @@ export const useDb = defineStore('db', () => {
       data.forEach((entry: any) => {
         const lon = parseFloat(entry.Longitude)
         const lat = parseFloat(entry.Latitude)
-        
+
         // Convert from EPSG:4326 (lat/lon) to EPSG:3857 (Web Mercator)
         const coordinates = fromLonLat([lon, lat], 'EPSG:3857') as [number, number]
-        
-        // Create a new feature
+
         addFeature({
           type: 'Point',
-          iconName: entry["Primary Tag"] === 'Health & Crisis Response' || 
-                    entry["Primary Tag"] === 'Transportation & Mobility' || 
+          iconName: entry["Primary Tag"] === 'Health & Crisis Response' ||
+                    entry["Primary Tag"] === 'Transportation & Mobility' ||
                     entry["Primary Tag"] === 'Digital Access & Connectivity' ||
                     entry["Primary Tag"] === 'Community Mapping & Visibility' ||
                     entry["Primary Tag"] === 'Art & Cultural Expression'
                     ? entry["Primary Tag"] : 'heart',
-          coordinates: coordinates,
+          coordinates,
           comment: entry.Title || '',
           timestamp: new Date().toISOString(),
           properties: new Properties(

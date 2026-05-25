@@ -35,6 +35,10 @@ export const useFilterStore = defineStore('filter', () => {
     return out
   })
 
+  const visibleFeatures = computed<Feature[]>(() =>
+    mncFeatures.value.filter(f => isFeatureVisible(f)),
+  )
+
   function isTagVisible(tag: string | undefined): boolean {
     if (!tag) return true
     return visibleTags.value.has(tag)
@@ -69,6 +73,7 @@ export const useFilterStore = defineStore('filter', () => {
     selectedFeature,
     mncFeatures,
     grouped,
+    visibleFeatures,
     isTagVisible,
     isFeatureVisible,
     togglePanel,
