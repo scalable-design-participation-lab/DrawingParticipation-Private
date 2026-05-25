@@ -1,9 +1,11 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue'
 import type { Feature } from '@base/stores/types/store'
-import healthIcon from '@base/assets/icons/Health.png'
-import transportIcon from '@base/assets/icons/Transportation.png'
-import connectivityIcon from '@base/assets/icons/Connectivity.png'
+import healthIcon from '@base/assets/icons/Health.svg'
+import transportIcon from '@base/assets/icons/Transportation.svg'
+import connectivityIcon from '@base/assets/icons/Connectivity.svg'
+import artIcon from '@base/assets/icons/Art.svg'
+import communityIcon from '@base/assets/icons/Community.svg'
 import { PRIMARY_TAGS, useFilterStore } from '../stores/filter'
 
 const filterStore = useFilterStore()
@@ -11,20 +13,16 @@ const filterStore = useFilterStore()
 const isCollapsed = ref(false)
 const openCategories = ref<Set<string>>(new Set(PRIMARY_TAGS))
 
-type CategoryIcon =
-  | { kind: 'png', src: string }
-  | { kind: 'heroicon', name: string }
-
-const ICONS: Record<string, CategoryIcon> = {
-  'Health & Crisis Response': { kind: 'png', src: healthIcon },
-  'Transportation & Mobility': { kind: 'png', src: transportIcon },
-  'Digital Access & Connectivity': { kind: 'png', src: connectivityIcon },
-  'Community Mapping & Visibility': { kind: 'heroicon', name: 'i-heroicons-map-pin' },
-  'Art & Cultural Expression': { kind: 'heroicon', name: 'i-heroicons-paint-brush' },
+const ICONS: Record<string, string> = {
+  'Health & Crisis Response': healthIcon,
+  'Transportation & Mobility': transportIcon,
+  'Digital Access & Connectivity': connectivityIcon,
+  'Community Mapping & Visibility': communityIcon,
+  'Art & Cultural Expression': artIcon,
 }
 
-function categoryIcon(tag: string): CategoryIcon {
-  return ICONS[tag] ?? { kind: 'heroicon', name: 'i-heroicons-tag' }
+function categoryIcon(tag: string): string | null {
+  return ICONS[tag] ?? null
 }
 
 const categories = computed(() =>
@@ -113,14 +111,14 @@ function itemLocationDate(feature: Feature): string {
         >
           <!-- Category icon -->
           <img
-            v-if="categoryIcon(cat.tag).kind === 'png'"
-            :src="(categoryIcon(cat.tag) as { kind: 'png', src: string }).src"
+            v-if="categoryIcon(cat.tag)"
+            :src="categoryIcon(cat.tag)!"
             :alt="cat.tag"
             class="w-6 h-6 flex-shrink-0 object-contain"
           />
           <UIcon
             v-else
-            :name="(categoryIcon(cat.tag) as { kind: 'heroicon', name: string }).name"
+            name="i-heroicons-tag"
             class="w-6 h-6 flex-shrink-0"
             :style="{ color: '#57C9C0' }"
           />
@@ -158,14 +156,14 @@ function itemLocationDate(feature: Feature): string {
             @click="selectItem(feature)"
           >
             <img
-              v-if="categoryIcon(cat.tag).kind === 'png'"
-              :src="(categoryIcon(cat.tag) as { kind: 'png', src: string }).src"
+              v-if="categoryIcon(cat.tag)"
+              :src="categoryIcon(cat.tag)!"
               :alt="cat.tag"
               class="w-4 h-4 flex-shrink-0 object-contain"
             />
             <UIcon
               v-else
-              :name="(categoryIcon(cat.tag) as { kind: 'heroicon', name: string }).name"
+              name="i-heroicons-tag"
               class="w-4 h-4 flex-shrink-0"
               :style="{ color: '#57C9C0' }"
             />

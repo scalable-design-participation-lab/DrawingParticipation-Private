@@ -52,7 +52,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref } from 'vue'
+import { computed, ref, watch } from 'vue'
 import { useRoute } from 'nuxt/app'
 import { useFilterStore } from '../stores/filter'
 import InfoPopup from './infoPopup.vue'
@@ -64,13 +64,20 @@ const baseMap = ref(null)
 
 const filterStore = useFilterStore()
 
-
-
-// Popup state
+// Popup state. The current selection is held in the filter store so that the
+// FilteredSelectionSidebar and pin-click flows share a single source of truth.
 const showPopup = ref(false)
 const showQuickLook = ref(false)
-const selectedFeature = ref(null)
 const quickLookPosition = ref({ x: 0, y: 0 })
+const selectedFeature = computed<any>(() => filterStore.selectedFeature)
+
+function centerScreen() {
+  if (typeof window === 'undefined') return { x: 0, y: 0 }
+  return {
+    x: Math.round(window.innerWidth / 2),
+    y: Math.round(window.innerHeight / 2),
+  }
+}
 
 // Parse links from semicolon-separated string
 const parsedLinks = computed(() => {
@@ -87,42 +94,39 @@ const parsedLinks = computed(() => {
     .map(link => ({ label: link, url: '' }))
 })
 
-function handleTogglePopup(feature: any) {
-  filterStore.selectFeature(feature)
-
-}
-
 function handleShowQuickLook(payload: any) {
-  console.log("handling ShowQuickLook in background map", payload)
-  selectedFeature.value = payload?.feature ?? payload
-  if (payload?.markerPosition) {
-    quickLookPosition.value = payload.markerPosition
-  }
-  else if (typeof window !== 'undefined') {
-    quickLookPosition.value = {
-      x: Math.round(window.innerWidth / 2),
-      y: Math.round(window.innerHeight / 2),
-    }
-  }
+  const feature = payload?.feature ?? payload
+  quickLookPosition.value = payload?.markerPosition ?? centerScreen()
   showQuickLook.value = true
+  filterStore.selectFeature(feature)
 }
 
 function handleCloseQuickLook() {
-  console.log("handling CloseQuickLook in background map")
-  selectedFeature.value = null
   showQuickLook.value = false
+  filterStore.clearSelection()
 }
 
 function handleExpandedPopup() {
-  console.log("handling ExpandedPopup in background map")
   showPopup.value = true
   showQuickLook.value = false
 }
 
-
 function closePopup() {
+  showPopup.value = false
   filterStore.clearSelection()
 }
+
+// When a feature is selected from outside this component (e.g. the filter
+// sidebar), open QuickLook in the center of the screen.
+watch(
+  () => filterStore.selectedFeature,
+  (feature) => {
+    if (feature && !showQuickLook.value && !showPopup.value) {
+      quickLookPosition.value = centerScreen()
+      showQuickLook.value = true
+    }
+  },
+)
 
 const featureFilter = (feature: any) => filterStore.isFeatureVisible(feature)
 
