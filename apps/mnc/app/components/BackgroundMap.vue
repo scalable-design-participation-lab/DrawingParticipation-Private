@@ -12,8 +12,11 @@
         :show-delete-button="false"
         :showCommentIcons= "false"
         :show-all-plus-icons="false"
-        :feature-filter="featureFilter"
+        :feature-filter="nonMncFeatureFilter"
       />
+    </template>
+    <template #overlays>
+      <MncMapLayer @toggle-icon-details="handleShowQuickLook" />
     </template>
   </GeneralizedBackgroundMap>
 
@@ -128,7 +131,11 @@ watch(
   },
 )
 
-const featureFilter = (feature: any) => filterStore.isFeatureVisible(feature)
+// MNC features (case-study entries from mncData.json) are rendered by
+// MncMapLayer as clustered HTML overlays, so we exclude them from
+// DrawingLayer's IconLayer to avoid double-rendering. Any other point
+// features (e.g. user-drawn pins) still draw through IconLayer.
+const nonMncFeatureFilter = (feature: any) => !(feature?.properties as any)?.string_id
 
 const mapboxStyleLight = 'restartukraine/cm3p0s3gw00yd01seasye5jdw'
 const mapboxStyleDark = 'restartukraine/cm3p4jqnj009y01s79ngdah4r'
