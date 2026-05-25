@@ -21,6 +21,10 @@ export const useDb = defineStore('db', () => {
 
   async function loadDataIntoFeatures(): Promise<void> {
     try {
+      // Clear any previously loaded features so repeated invocations
+      // (HMR, remounts, navigation) don't stack duplicate pins on the map.
+      features.splice(0, features.length)
+
       // Import the mncData.json file
       const mncData = await import('../../content/mncData.json')
       const data = mncData.default || mncData
