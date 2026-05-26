@@ -102,6 +102,7 @@ onMounted(() => {
         :class="{ 'filter blur-md': showOnboarding }"
         :show-all-plus-icons="true"
         :show-comment-icons="false"
+        @select-feature="selectMobileFeature"
       />
       <GeneralizedHeader
         class="z-20"
@@ -121,7 +122,7 @@ onMounted(() => {
           v-if="mobileView === 'list'"
           @select-feature="selectMobileFeature"
         />
-        <MobileProjectCard
+        <MobileInfoPopup
           v-if="selectedMobileFeature"
           :feature="selectedMobileFeature"
           :state="projectCardState"
