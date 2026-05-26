@@ -22,7 +22,7 @@
 
   <!-- Quick Look -->
   <QuickLook
-    v-if="showQuickLook"
+    v-if="showQuickLook && !isMobile"
     :marker-position="quickLookPosition"
     :showPreviousArrow="false"
     :showNextArrow="false"
@@ -39,7 +39,7 @@
 
   <!-- Info Popup -->
   <InfoPopup
-    v-if="showPopup && selectedFeature"
+    v-if="showPopup && selectedFeature && !isMobile"
     :title="selectedFeature.comment"
     :date-published="selectedFeature.properties?.date || 'hi'"
     :imagePath="'/Solution_Photos/'+ selectedFeature.properties?.string_id +'/1.png'"
@@ -58,12 +58,18 @@
 import { computed, ref, watch } from 'vue'
 import { useRoute } from 'nuxt/app'
 import { useFilterStore } from '../stores/filter'
+import { useIsMobile } from '../composables/useIsMobile'
 import InfoPopup from './infoPopup.vue'
+
+const emit = defineEmits<{
+  'select-feature': [feature: any]
+}>()
 
 const route = useRoute()
 const projection = ref('EPSG:3857')
 const isMapPage = computed(() => route.name === 'result')
 const baseMap = ref(null)
+const { isMobile } = useIsMobile()
 
 const filterStore = useFilterStore()
 
@@ -99,9 +105,15 @@ const parsedLinks = computed(() => {
 
 function handleShowQuickLook(payload: any) {
   const feature = payload?.feature ?? payload
+  filterStore.selectFeature(feature)
+
+  if (isMobile.value) {
+    emit('select-feature', feature)
+    return
+  }
+
   quickLookPosition.value = payload?.markerPosition ?? centerScreen()
   showQuickLook.value = true
-  filterStore.selectFeature(feature)
 }
 
 function handleCloseQuickLook() {
