@@ -104,7 +104,12 @@ onMounted(() => {
         :show-comment-icons="false"
         @select-feature="selectMobileFeature"
       />
+      <MobileHeader
+        v-if="isMobile"
+        :color="headerPrimaryAccentColor"
+      />
       <GeneralizedHeader
+        v-else
         class="z-20"
         :left-items="leftItems"
         :right-items="rightItems"
