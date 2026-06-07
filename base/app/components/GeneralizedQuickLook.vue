@@ -32,6 +32,10 @@ const props = defineProps({
     type: Boolean,
     default: undefined,
   },
+  floating: {
+    type: Boolean,
+    default: true,
+  },
 })
 
 const emit = defineEmits(['click-previous', 'click-next', 'click-close', 'click-expand'])
@@ -70,9 +74,10 @@ const cardStyle = {
 
 <template>
   <UCard
-    class="w-[280px] z-[2000] pointer-events-auto fixed"
+    class="w-[280px] z-[2000] pointer-events-auto"
+    :class="{ fixed: floating }"
     :ui="cardStyle"
-    :style="positionStyle"
+    :style="floating ? positionStyle : undefined"
   >
     <template #header>
       <div class="flex justify-between items-center">
