@@ -17,25 +17,30 @@
     </template>
     <template #overlays>
       <MncMapLayer @toggle-icon-details="handleShowQuickLook" />
+
+      <!-- Quick Look -->
+      <ol-overlay
+        v-if="showQuickLook && !isMobile && quickLookCenter"
+        :position="quickLookCenter"
+        positioning="top-left"
+      >
+        <QuickLook
+          :floating="false"
+          :showPreviousArrow="false"
+          :showNextArrow="false"
+          :showExpand="true"
+          :title="selectedFeature.comment"
+          :date-published="selectedFeature.properties?.date || 'hi'"
+          :imagePath="'/Solution_Photos/'+ selectedFeature.properties?.string_id +'/1.png'"
+          :location="selectedFeature.properties?.location || 'hi'"
+          :caption="selectedFeature.properties?.mediaCaptions || 'hi'"
+          :primary-tag="selectedFeature.properties?.primaryTag || ''"
+          @click-expand="handleExpandedPopup"
+          @click-close="handleCloseQuickLook"
+        />
+      </ol-overlay>
     </template>
   </GeneralizedBackgroundMap>
-
-  <!-- Quick Look -->
-  <QuickLook
-    v-if="showQuickLook && !isMobile"
-    :marker-position="quickLookPosition"
-    :showPreviousArrow="false"
-    :showNextArrow="false"
-    :showExpand="true"
-    :title="selectedFeature.comment"
-    :date-published="selectedFeature.properties?.date || 'hi'"
-    :imagePath="'/Solution_Photos/'+ selectedFeature.properties?.string_id +'/1.png'"
-    :location="selectedFeature.properties?.location || 'hi'"
-    :caption="selectedFeature.properties?.mediaCaptions || 'hi'"
-    :primary-tag="selectedFeature.properties?.primaryTag || ''"
-    @click-expand="handleExpandedPopup"
-    @click-close="handleCloseQuickLook"
-  />
 
   <!-- Info Popup -->
   <InfoPopup
@@ -77,15 +82,41 @@ const filterStore = useFilterStore()
 // FilteredSelectionSidebar and pin-click flows share a single source of truth.
 const showPopup = ref(false)
 const showQuickLook = ref(false)
-const quickLookPosition = ref({ x: 0, y: 0 })
 const selectedFeature = computed<any>(() => filterStore.selectedFeature)
 
-function centerScreen() {
-  if (typeof window === 'undefined') return { x: 0, y: 0 }
-  return {
-    x: Math.round(window.innerWidth / 2),
-    y: Math.round(window.innerHeight / 2),
+// Map coordinate (EPSG:3857) the QuickLook overlay is anchored to. The
+// ol-overlay handles the coordinate->pixel positioning on every map render.
+const quickLookCenter = computed(() => featureCenter(selectedFeature.value))
+
+// Fly the map to a feature when it is selected from the sidebar. Coordinates are
+// already in the map projection (EPSG:3857), so no reprojection is needed.
+const FEATURE_ZOOM = 16 // fixed close zoom level
+const FLY_DURATION_MS = 700
+
+function featureCenter(feature: any): [number, number] | null {
+  const c = feature?.coordinates
+  if (!Array.isArray(c) || c.length === 0) return null
+  // Point: [x, y]
+  if (typeof c[0] === 'number' && typeof c[1] === 'number') {
+    return [c[0], c[1]]
   }
+  // Line/Polygon: arithmetic mean of vertex coordinates
+  const pts = c.filter((p: any) => Array.isArray(p) && p.length === 2)
+  if (!pts.length) return null
+  const sx = pts.reduce((s: number, p: any) => s + p[0], 0) / pts.length
+  const sy = pts.reduce((s: number, p: any) => s + p[1], 0) / pts.length
+  return [sx, sy]
+}
+
+function flyToFeature(feature: any) {
+  const center = featureCenter(feature)
+  const map = (baseMap.value as any)?.mapInstance
+  if (!center || !map) return
+  map.getView().animate({
+    center,
+    zoom: FEATURE_ZOOM,
+    duration: FLY_DURATION_MS,
+  })
 }
 
 // Parse links from semicolon-separated string
@@ -103,8 +134,13 @@ const parsedLinks = computed(() => {
     .map(link => ({ label: link, url: '' }))
 })
 
+// Set just before a pin-click updates the selection so the selectedFeature
+// watcher can skip flying/recentering for clicks on already-visible map pins.
+let selectionFromPin = false
+
 function handleShowQuickLook(payload: any) {
   const feature = payload?.feature ?? payload
+  selectionFromPin = true
   filterStore.selectFeature(feature)
 
   if (isMobile.value) {
@@ -112,7 +148,6 @@ function handleShowQuickLook(payload: any) {
     return
   }
 
-  quickLookPosition.value = payload?.markerPosition ?? centerScreen()
   showQuickLook.value = true
 }
 
@@ -132,12 +167,17 @@ function closePopup() {
 }
 
 // When a feature is selected from outside this component (e.g. the filter
-// sidebar), open QuickLook in the center of the screen.
+// sidebar), fly to it and open QuickLook anchored to its map coordinate.
 watch(
   () => filterStore.selectedFeature,
   (feature) => {
-    if (feature && !showQuickLook.value && !showPopup.value) {
-      quickLookPosition.value = centerScreen()
+    // Pin clicks are fully handled by handleShowQuickLook; don't recenter on them.
+    if (selectionFromPin) {
+      selectionFromPin = false
+      return
+    }
+    if (feature && !showPopup.value) {
+      flyToFeature(feature)
       showQuickLook.value = true
     }
   },

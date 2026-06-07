@@ -46,7 +46,11 @@ const props = defineProps({
   showExpand: {
     type: Boolean,
     default: undefined,
-  }
+  },
+  floating: {
+    type: Boolean,
+    default: true,
+  },
 })
 
 const emit = defineEmits(['click-expand', 'click-close', 'click-previous', 'click-next'])
@@ -66,6 +70,7 @@ const formattedDate = computed(() => String(props.datePublished || ''))
 <template>
   <GeneralizedQuickLook
     :marker-position="props.markerPosition"
+    :floating="props.floating"
     :show-previous-arrow="props.showPreviousArrow"
     :show-next-arrow="props.showNextArrow"
     :show-expand="props.showExpand"
