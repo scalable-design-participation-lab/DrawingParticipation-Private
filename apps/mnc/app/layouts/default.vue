@@ -12,13 +12,13 @@ useHead({
     { rel: 'icon', href: '/favicon.ico' },
   ],
   htmlAttrs: {
-    lang: 'uk',
+    lang: 'en',
   },
 })
 
 // SEO meta
-const title = 'Гуртомá - Платформа для покращення міст'
-const description = 'Платформа від команди дослідників та містопланувальників Restart, яка спрощує комунікацію між містянами та урбаністами.'
+const title = 'Mobile Networked Creativity'
+const description = 'Mobile Networked Creativity'
 
 useSeoMeta({
   title,
