@@ -35,8 +35,7 @@ function toggleState() {
 
 <template>
   <div
-    class="fixed left-0 right-0 z-40 flex justify-center pointer-events-none transition-all duration-300"
-    :class="state === 'full' ? 'bottom-24 px-4' : 'bottom-24'"
+    class="fixed left-0 right-0 z-40 flex justify-center pointer-events-none transition-all duration-300 bottom-24 px-4"
   >
     <!-- Expanded state: compact summary card -->
     <UCard
