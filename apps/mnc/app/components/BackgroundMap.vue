@@ -119,19 +119,13 @@ function flyToFeature(feature: any) {
   })
 }
 
-// Parse links from semicolon-separated string
+// Links are stored as structured { label, url } entries on each feature.
 const parsedLinks = computed(() => {
-  if (!selectedFeature.value?.properties?.links) {
+  const links = selectedFeature.value?.properties?.links
+  if (!Array.isArray(links)) {
     return []
   }
-
-  const linksString = selectedFeature.value.properties.links
-  // Split by semicolon and filter out empty strings
-  return linksString
-    .split(';')
-    .map(link => link.trim())
-    .filter(link => link.length > 0)
-    .map(link => ({ label: link, url: '' }))
+  return links.filter(link => link?.label)
 })
 
 // Set just before a pin-click updates the selection so the selectedFeature
