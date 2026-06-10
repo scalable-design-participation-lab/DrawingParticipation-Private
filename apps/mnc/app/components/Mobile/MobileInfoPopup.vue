@@ -20,12 +20,9 @@ const imagePath = computed(() =>
 )
 
 const parsedLinks = computed(() => {
-  if (!p.value?.links) return []
-  return p.value.links
-    .split(';')
-    .map((l) => l.trim())
-    .filter(Boolean)
-    .map((l) => ({ label: l, url: '' }))
+  const links = p.value?.links
+  if (!Array.isArray(links)) return []
+  return links.filter((l) => l?.label)
 })
 
 function toggleState() {
@@ -153,10 +150,19 @@ function toggleState() {
         <!-- Links -->
         <div v-if="parsedLinks.length">
           <p class="text-sm font-bold text-white mb-2">Learn More:</p>
-          <ul class="space-y-1">
-            <li v-for="(link, i) in parsedLinks" :key="i" class="flex items-center gap-2">
-              <UIcon name="i-heroicons-link" class="w-3 h-3 text-white flex-shrink-0" />
-              <span class="text-white text-xs">{{ link.label }}</span>
+          <ul class="space-y-1.5">
+            <li v-for="(link, i) in parsedLinks" :key="i" class="flex items-start gap-2">
+              <UIcon name="i-heroicons-link" class="w-3 h-3 text-white flex-shrink-0 mt-0.5" />
+              <a
+                v-if="link.url"
+                :href="link.url"
+                target="_blank"
+                rel="noopener noreferrer"
+                class="text-white text-xs underline underline-offset-2 break-words"
+              >
+                {{ link.label }}
+              </a>
+              <span v-else class="text-white text-xs break-words">{{ link.label }}</span>
             </li>
           </ul>
         </div>
