@@ -2,6 +2,9 @@
   "name": "@mono/mnc",
   "type": "module",
   "private": true,
+  "engines": {
+    "node": ">=20"
+  },
   "scripts": {
     "test": "vitest",
     "coverage": "vitest --coverage",
