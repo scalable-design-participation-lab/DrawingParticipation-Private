@@ -3,19 +3,20 @@
     <UCard>
       <template #header>
         <div class="flex items-center gap-2">
-          <h3 class="text-xl font-semibold">Community Participation Map</h3>
+          <h3 class="text-xl font-semibold">Mobile Networked Creativity Map</h3>
         </div>
       </template>
 
       <div class="space-y-4">
         <p>
-          On this map you can see all the marks left by survey participants.
+          This map gathers real-world case studies of mobile and networked
+          creativity from communities around the world.
         </p>
         <p>You can:</p>
         <ul class="list-disc pl-6 space-y-2">
-          <li>Click on any marker to see comments</li>
-          <li>Change the map type (satellite/scheme)</li>
-          <li>Zoom the map for detailed view</li>
+          <li>Click any pin to read the full case study</li>
+          <li>Switch the basemap between map and satellite views</li>
+          <li>Add your own photos and comments to a case study</li>
         </ul>
       </div>
 

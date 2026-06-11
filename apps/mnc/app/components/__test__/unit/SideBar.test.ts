@@ -118,10 +118,10 @@ describe('SidebarComponent', () => {
     const menuItems = wrapper.vm.menuItems
     expect(menuItems).toHaveLength(4)
     expect(menuItems.map(item => item.label)).toEqual([
-      'Середовище',
-      'Приналежність', 
-      'Безпека',
-      'Екологія'
+      'Environment',
+      'Belonging',
+      'Safety',
+      'Ecology'
     ])
   })
 
@@ -135,14 +135,14 @@ describe('SidebarComponent', () => {
   it('handles space content changes correctly', async () => {
     mockSidebarStore.spaceSubwindow = 2
     
-    expect(wrapper.vm.spaceContent.title).toBe('Позначте місця для дозвілля навколо р. Тяжилівка')
+    expect(wrapper.vm.spaceContent.title).toBe('Mark leisure places around the Tyazhylivka River')
     expect(wrapper.vm.spaceContent.button).toBeTruthy()
   })
 
   it('handles space content changes correctly', async () => {
     mockSidebarStore.spaceSubwindow = 1
     
-    expect(wrapper.vm.spaceContent.title).toBe('Позначте місця, які ви відвідували навколо р. Тяжилівка')
+    expect(wrapper.vm.spaceContent.title).toBe('Mark the places you visited around the Tyazhylivka River')
     expect(wrapper.vm.spaceContent.buttonGroup).toHaveLength(5)
     
   })
@@ -201,7 +201,7 @@ describe('SidebarComponent', () => {
     expect(wrapper.vm.showThankYouModal).toBe(false)
     expect(wrapper.vm.isSaving).toBe(false)
     expect(wrapper.vm.notificationColor).toBe('red')
-    expect(wrapper.vm.notificationText).toBe('Не вдалося подати дані')
+    expect(wrapper.vm.notificationText).toBe('Failed to submit data')
   })
 
   it('navigates subwindows correctly', async () => {

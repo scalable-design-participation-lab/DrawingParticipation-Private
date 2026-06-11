@@ -1,0 +1,58 @@
+rules_version = '2';
+
+// Firestore security rules for the MNC mapping app.
+// Deploy with:  firebase deploy --only firestore:rules  (from apps/mnc)
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // Validates a user-submitted contribution document. The app does not
+    // require sign-in yet, so userId may be the literal "anonymous".
+    function isValidContribution(data) {
+      return data.projectId is string
+        && data.projectId.size() > 0
+        && data.projectId.size() <= 200
+        && data.comment is string
+        && data.comment.size() <= 2000
+        && data.media is list
+        && data.media.size() <= 10
+        && data.userId is string
+        // serverTimestamp() on the client resolves to the request time.
+        && data.createdAt == request.time;
+    }
+
+    // User-contributed media + comments attached to existing MNC projects.
+    // Anyone may read; anyone may create a well-formed contribution.
+    // Contributions are immutable from the client once created.
+    match /contributions/{contributionId} {
+      allow read: if true;
+      allow create: if isValidContribution(request.resource.data);
+      allow update, delete: if false;
+    }
+
+    // User-submitted solutions (new case-study pins). Anyone may read or create
+    // a well-formed solution; immutable from the client once created.
+    match /userSolutions/{solutionId} {
+      allow read: if true;
+      allow create: if request.resource.data.title is string
+        && request.resource.data.title.size() > 0
+        && request.resource.data.title.size() <= 200
+        && request.resource.data.primaryTag is string
+        && request.resource.data.lon is number
+        && request.resource.data.lat is number
+        && request.resource.data.createdAt == request.time;
+      allow update, delete: if false;
+    }
+
+    // Collections written/read by the existing app code (db.ts
+    // saveDataToDatabase, DownloadModalHurtoma export, base all-features).
+    // Open for the participatory demo; tighten once auth is wired in.
+    match /projects/{projectId} {
+      allow read, create: if true;
+      allow update, delete: if false;
+    }
+    match /users/{userId} {
+      allow read, create: if true;
+      allow update, delete: if false;
+    }
+  }
+}

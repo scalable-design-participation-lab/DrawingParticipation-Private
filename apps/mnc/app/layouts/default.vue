@@ -18,7 +18,7 @@ useHead({
 
 // SEO meta
 const title = 'Mobile Networked Creativity'
-const description = 'Mobile Networked Creativity'
+const description = 'An interactive map of real-world examples of how communities around the world creatively adapt mobile and networked technology to meet local needs.'
 
 useSeoMeta({
   title,

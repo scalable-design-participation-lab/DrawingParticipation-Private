@@ -17,6 +17,7 @@ export const useFilterStore = defineStore('filter', () => {
   const featureStore = useFeatureStore()
 
   const isPanelOpen = ref(false)
+  const isListOpen = ref(false)
   const visibleTags = ref<Set<string>>(new Set<string>(PRIMARY_TAGS))
   const selectedFeature = ref<Feature | null>(null)
 
@@ -48,8 +49,18 @@ export const useFilterStore = defineStore('filter', () => {
     return isTagVisible((feature.properties as any)?.primaryTag)
   }
 
+  // The filter panel and the flat list share the same screen slot, so opening
+  // one closes the other.
   function togglePanel() {
     isPanelOpen.value = !isPanelOpen.value
+    if (isPanelOpen.value)
+      isListOpen.value = false
+  }
+
+  function toggleList() {
+    isListOpen.value = !isListOpen.value
+    if (isListOpen.value)
+      isPanelOpen.value = false
   }
 
   function toggleTag(tag: string) {
@@ -69,6 +80,7 @@ export const useFilterStore = defineStore('filter', () => {
 
   return {
     isPanelOpen,
+    isListOpen,
     visibleTags,
     selectedFeature,
     mncFeatures,
@@ -77,6 +89,7 @@ export const useFilterStore = defineStore('filter', () => {
     isTagVisible,
     isFeatureVisible,
     togglePanel,
+    toggleList,
     toggleTag,
     selectFeature,
     clearSelection,

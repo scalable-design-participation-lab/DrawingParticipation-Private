@@ -3,7 +3,9 @@
     ref="baseMap"
     :mapbox-style-light="mapboxStyleLight"
     :mapbox-style-dark="mapboxStyleDark"
+    :class="{ 'cursor-crosshair': solutionsStore.isPlacing }"
     @toggle-icon-details="handleShowQuickLook"
+    @map-click="handleMapClick"
   >
     <template #layers>
       <DrawingLayer
@@ -16,7 +18,7 @@
       />
     </template>
     <template #overlays>
-      <MncMapLayer @toggle-icon-details="handleShowQuickLook" />
+      <MncMapLayer :key="mncLayerKey" @toggle-icon-details="handleShowQuickLook" />
 
       <!-- Quick Look -->
       <ol-overlay
@@ -46,16 +48,38 @@
   <InfoPopup
     v-if="showPopup && selectedFeature && !isMobile"
     :title="selectedFeature.comment"
-    :date-published="selectedFeature.properties?.date || 'hi'"
+    :string-id="selectedFeature.properties?.string_id || ''"
+    :date-published="selectedFeature.properties?.date || ''"
     :imagePath="'/Solution_Photos/'+ selectedFeature.properties?.string_id +'/1.png'"
-    :location="selectedFeature.properties?.location || 'hi'"
-    :caption="selectedFeature.properties?.mediaCaptions || 'hi'"
-    :description="selectedFeature.properties?.description || 'hi'"
-    :connection="selectedFeature.properties?.mncConnection || 'hi'"
+    :photos="selectedFeature.properties?.photos || []"
+    :location="selectedFeature.properties?.location || ''"
+    :caption="selectedFeature.properties?.mediaCaptions || ''"
+    :description="selectedFeature.properties?.description || ''"
+    :connection="selectedFeature.properties?.mncConnection || ''"
     :primary-tag="selectedFeature.properties?.primaryTag || 'N/A'"
     :secondary-tag="selectedFeature.properties?.secondaryTags || 'N/A'"
     :links="parsedLinks"
     @close="closePopup"
+  />
+
+  <!-- "Add a Solution": placement banner + form -->
+  <div
+    v-if="solutionsStore.isPlacing"
+    class="fixed left-1/2 top-24 z-[60] flex -translate-x-1/2 items-center gap-3 rounded-full bg-white px-5 py-2.5 shadow-lg dark:bg-black"
+    style="border: 2px solid #FB6D6D;"
+  >
+    <UIcon name="i-heroicons-map-pin" class="h-5 w-5" :style="{ color: '#FB6D6D' }" />
+    <span class="text-sm font-medium text-gray-900 dark:text-white">Click the map to place your solution</span>
+    <UButton color="gray" variant="ghost" size="xs" class="rounded-full" @click="solutionsStore.cancelPlacing()">
+      Cancel
+    </UButton>
+  </div>
+
+  <AddSolutionModal
+    v-if="pendingCoord"
+    :coordinate="pendingCoord"
+    @save="onSaveSolution"
+    @close="pendingCoord = null"
   />
 </template>
 
@@ -63,6 +87,7 @@
 import { computed, ref, watch } from 'vue'
 import { useRoute } from 'nuxt/app'
 import { useFilterStore } from '../stores/filter'
+import { useSolutionsStore, type SolutionInput } from '../stores/solutions'
 import { useIsMobile } from '../composables/useIsMobile'
 import InfoPopup from './infoPopup.vue'
 
@@ -77,12 +102,38 @@ const baseMap = ref(null)
 const { isMobile } = useIsMobile()
 
 const filterStore = useFilterStore()
+const solutionsStore = useSolutionsStore()
+
+// Map coordinate (EPSG:3857) captured for a new solution; non-null shows the form.
+const pendingCoord = ref<[number, number] | null>(null)
+
+// While in placement mode, a map click captures the coordinate and opens the
+// "Add a Solution" form. Otherwise clicks on the empty map are ignored.
+function handleMapClick(event: any) {
+  if (!solutionsStore.isPlacing)
+    return
+  const coordinate = event?.coordinate
+  if (Array.isArray(coordinate) && coordinate.length === 2) {
+    pendingCoord.value = [coordinate[0], coordinate[1]]
+    solutionsStore.cancelPlacing()
+  }
+}
+
+function onSaveSolution(payload: SolutionInput) {
+  solutionsStore.addSolution(payload)
+  pendingCoord.value = null
+}
 
 // Popup state. The current selection is held in the filter store so that the
 // FilteredSelectionSidebar and pin-click flows share a single source of truth.
 const showPopup = ref(false)
 const showQuickLook = ref(false)
 const selectedFeature = computed<any>(() => filterStore.selectedFeature)
+
+// Remount MncMapLayer whenever the visible-tag set changes. A clean remount of
+// all pin overlays avoids a vue3-openlayers reconciliation bug where partially
+// patching the ol-overlay list throws "insertBefore ... not a child of node".
+const mncLayerKey = computed(() => [...filterStore.visibleTags].sort().join('|'))
 
 // Map coordinate (EPSG:3857) the QuickLook overlay is anchored to. The
 // ol-overlay handles the coordinate->pixel positioning on every map render.
@@ -119,19 +170,21 @@ function flyToFeature(feature: any) {
   })
 }
 
-// Parse links from semicolon-separated string
+// Links for the "Learn More" section. Prefer the structured list (real URLs
+// from mncLinks.csv); fall back to splitting the legacy semicolon string.
 const parsedLinks = computed(() => {
-  if (!selectedFeature.value?.properties?.links) {
+  const props = selectedFeature.value?.properties
+  if (Array.isArray(props?.linkList) && props.linkList.length) {
+    return props.linkList
+  }
+  if (!props?.links) {
     return []
   }
-
-  const linksString = selectedFeature.value.properties.links
-  // Split by semicolon and filter out empty strings
-  return linksString
+  return props.links
     .split(';')
-    .map(link => link.trim())
-    .filter(link => link.length > 0)
-    .map(link => ({ label: link, url: '' }))
+    .map((link: string) => link.trim())
+    .filter((link: string) => link.length > 0)
+    .map((link: string) => ({ label: link, url: '' }))
 })
 
 // Set just before a pin-click updates the selection so the selectedFeature
