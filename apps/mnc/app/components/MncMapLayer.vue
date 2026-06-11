@@ -81,13 +81,14 @@ function onPinClick(feature: Feature, event: MouseEvent) {
 </script>
 
 <template>
-  <template v-for="cluster in clusters" :key="cluster.id">
-    <ol-overlay
-      :position="cluster.centroid"
-      :stop-event="false"
-      positioning="center-center"
-    >
-      <div class="mnc-pin">
+  <ol-overlay
+    v-for="cluster in clusters"
+    :key="cluster.id"
+    :position="cluster.centroid"
+    :stop-event="false"
+    positioning="center-center"
+  >
+    <div class="mnc-pin">
         <button
           v-for="member in cluster.members"
           :key="member.id"
@@ -104,7 +105,6 @@ function onPinClick(feature: Feature, event: MouseEvent) {
         </button>
       </div>
     </ol-overlay>
-  </template>
 </template>
 
 <style scoped>

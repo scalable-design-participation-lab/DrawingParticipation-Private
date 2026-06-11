@@ -1,25 +1,38 @@
 <template>
   <UCard
     v-if="isVisible"
-    class="w-64 bg-black rounded-lg shadow-lg flex flex-col"
+    class="w-72 bg-black rounded-lg shadow-lg flex flex-col"
   >
     <div class="p-3">
-      <div v-if="selectedImage" class="mb-3">
+      <div class="mb-3 flex items-center gap-2">
+        <UIcon name="i-heroicons-camera" class="h-4 w-4 text-gray-300" />
+        <span class="text-sm font-medium text-white">Add photo or comment</span>
+      </div>
+
+      <!-- Live previews of the images chosen this session -->
+      <div v-if="items.length" class="grid grid-cols-3 gap-2 mb-3">
         <img
-          :src="selectedImage"
-          alt="Selected image"
-          class="w-full h-32 object-cover rounded"
+          v-for="(item, i) in items"
+          :key="`thumb-${i}`"
+          :src="item.previewUrl"
+          :alt="item.fileName"
+          class="h-16 w-full object-cover rounded"
         />
       </div>
+
+      <!-- File picker. Images only for now; video support is planned. -->
       <div
         class="relative w-full h-32 bg-slate-800 rounded overflow-hidden mb-3"
       >
         <div
           class="absolute inset-0 flex flex-col items-center justify-center text-gray-400"
         >
-          <UIcon name="i-heroicons-arrow-up-tray" class="w-12 h-12 mb-2" />
+          <UIcon name="i-heroicons-arrow-up-tray" class="w-10 h-10 mb-2" />
           <p class="text-sm text-center px-4">
-            click to select image
+            Click to select images
+          </p>
+          <p class="text-xs text-center px-4 text-gray-500 mt-1">
+            Images only · up to 10 MB each
           </p>
         </div>
         <input
@@ -30,19 +43,21 @@
           @change="handleImageSelect"
         />
       </div>
-      <div v-for="(image, index) in images" :key="index" class="mb-2">
+
+      <!-- Per-file upload status with real progress -->
+      <div v-for="(item, index) in items" :key="`progress-${index}`" class="mb-2">
         <div class="flex justify-between items-center text-white text-sm mb-1">
-          <span class="truncate max-w-[180px]">{{ image.name }}</span>
+          <span class="truncate max-w-[200px]">{{ item.label }}</span>
           <UIcon
-            v-if="image.status === 'success'"
+            v-if="item.status === 'success'"
             name="i-heroicons-check"
             class="text-green-500 ml-2 flex-shrink-0"
           />
           <UIcon
-            v-else-if="image.status === 'error'"
+            v-else-if="item.status === 'error'"
             name="i-heroicons-x-mark"
             class="text-red-500 ml-2 flex-shrink-0 cursor-pointer"
-            @click="removeImage(index)"
+            @click="removeItem(index)"
           />
           <UIcon
             v-else
@@ -51,8 +66,8 @@
           />
         </div>
         <UProgress
-          :value="image.progress"
-          :color="getProgressColor(image.status)"
+          :value="item.progress"
+          :color="getProgressColor(item.status)"
           size="xs"
         />
       </div>
@@ -62,6 +77,10 @@
         placeholder="Write a comment"
         class="flex-grow text-sm resize-none mt-4"
       />
+
+      <p v-if="errorMessage" class="text-xs text-red-400 mt-2">
+        {{ errorMessage }}
+      </p>
 
       <div class="flex justify-between mt-2">
         <UButton
@@ -76,10 +95,12 @@
         <UButton
           color="primary"
           size="sm"
+          :loading="isSubmitting"
+          :disabled="!canSubmit"
           class="w-[48%] rounded-full flex justify-center"
-          @click="addCommentAndUpload"
+          @click="submitContribution"
         >
-          {{ existingComment ? 'Update' : 'Add' }}
+          Add
         </UButton>
       </div>
     </div>
@@ -87,104 +108,118 @@
 </template>
 
 <script setup>
-import { ref, watch, onMounted } from 'vue'
-import { useFeatureStore } from '@base/stores/features'
+import { computed, ref } from 'vue'
+import { useContributionsStore } from '../stores/contributions'
 
 const props = defineProps({
   isVisible: Boolean,
-  featureId: Number,
+  // The MNC project this contribution attaches to (mncData.json `string_id`).
+  projectId: {
+    type: String,
+    default: '',
+  },
 })
 
-const emit = defineEmits(['close', 'upload'])
+const emit = defineEmits(['close', 'uploaded'])
 
-const featureStore = useFeatureStore()
+const contributions = useContributionsStore()
 
-const images = ref([])
-const selectedImage = ref(null)
+// View-models tracking each selected file's real upload progress + result.
+const items = ref([])
 const localComment = ref('')
-const existingComment = ref('')
+const isSubmitting = ref(false)
+const errorMessage = ref('')
 
-// Initialize when component mounts
-onMounted(() => {
-  if (props.featureId) {
-    loadExistingData()
-  }
-})
-
-// Watch for featureId changes
-watch(
-  () => props.featureId,
-  (newId) => {
-    if (newId) {
-      loadExistingData()
-    }
-  },
+// "Add" is enabled only when at least one image has finished uploading
+// successfully and no upload is still in flight. A comment alone is not enough.
+const canSubmit = computed(() =>
+  !isSubmitting.value
+  && items.value.length > 0
+  && items.value.every(item => item.status !== 'uploading')
+  && items.value.some(item => item.status === 'success'),
 )
 
-// Watch for visibility changes
-watch(
-  () => props.isVisible,
-  (newValue) => {
-    if (newValue && props.featureId) {
-      loadExistingData()
-    }
-  },
-)
-
-function loadExistingData() {
-  const comment = featureStore.getComment(props.featureId)
-  existingComment.value = comment
-  localComment.value = comment
-
-  // Load existing images if any
-  const feature = featureStore.features.find((f) => f.id === props.featureId)
-  if (feature?.images) {
-    images.value = feature.images.map((img) => ({
-      name: img.name,
-      progress: 100,
-      status: 'success',
-    }))
-  }
-}
-
-function handleImageSelect(event) {
+async function handleImageSelect(event) {
   const fileInput = event.target
-  if (fileInput.files && fileInput.files.length > 0) {
-    const file = fileInput.files[0]
-    selectedImage.value = URL.createObjectURL(file)
+  if (!fileInput.files || fileInput.files.length === 0)
+    return
 
-    // Clear previous images
-    images.value = []
+  errorMessage.value = ''
 
-    // Add new images to the list
-    for (let i = 0; i < Math.min(fileInput.files.length, 3); i++) {
-      const file = fileInput.files[i]
-      images.value.push({
-        name: `IMG${Math.floor(Math.random() * 10000000)}.jpg (${(
-          file.size /
-          (1024 * 1024)
-        ).toFixed(1)} mb)`,
-        progress: 0,
-        status: 'uploading',
-      })
+  // Only accept images for now (video support is planned).
+  const picked = Array.from(fileInput.files).filter(file =>
+    file.type.startsWith('image/'),
+  )
+
+  for (const file of picked) {
+    items.value.push({
+      fileName: file.name,
+      label: `${file.name} (${(file.size / (1024 * 1024)).toFixed(1)} MB)`,
+      previewUrl: URL.createObjectURL(file),
+      progress: 0,
+      status: 'uploading',
+      media: null,
+    })
+    // Grab the reactive proxy for the item we just pushed. Mutating this proxy
+    // (not the raw object literal) is what triggers Vue 3 reactivity, so the
+    // progress bar, status icon, and `canSubmit` actually update. The proxy
+    // reference stays valid even if the array is spliced (e.g. removeItem).
+    const item = items.value[items.value.length - 1]
+
+    // Kick off the real Firebase Storage upload and stream progress.
+    try {
+      const media = await contributions.uploadFile(
+        props.projectId,
+        file,
+        (percent) => {
+          item.progress = percent
+        },
+      )
+      item.media = media
+      item.progress = 100
+      item.status = 'success'
     }
-
-    simulateUpload()
+    catch (err) {
+      console.error('Image upload failed:', err)
+      item.status = 'error'
+      errorMessage.value = 'One or more uploads failed. Please try again.'
+    }
   }
+
+  // Allow re-selecting the same file again later.
+  fileInput.value = ''
 }
 
-function simulateUpload() {
-  images.value.forEach((image, index) => {
-    const interval = setInterval(() => {
-      if (image.progress < 100) {
-        image.progress += 10
-      } else {
-        clearInterval(interval)
-        if (index === 0) image.status = 'success'
-        else if (index === 1) image.status = 'error'
-      }
-    }, 500)
-  })
+async function submitContribution() {
+  if (!canSubmit.value)
+    return
+
+  isSubmitting.value = true
+  errorMessage.value = ''
+  try {
+    const media = items.value
+      .filter(item => item.status === 'success' && item.media)
+      .map(item => item.media)
+
+    await contributions.addContribution(props.projectId, {
+      comment: localComment.value.trim(),
+      media,
+    })
+
+    // Refresh the cached list so the new contribution shows up immediately.
+    await contributions.fetchContributions(props.projectId)
+
+    emit('uploaded')
+    // closePopup() runs resetState(), which revokes the preview object URLs.
+    closePopup()
+  }
+  catch (err) {
+    console.error('Failed to save contribution:', err)
+    errorMessage.value = 'Could not save your contribution. Please try again.'
+  }
+  finally {
+    isSubmitting.value = false
+  }
 }
 
 function getProgressColor(status) {
@@ -198,26 +233,23 @@ function getProgressColor(status) {
   }
 }
 
+function removeItem(index) {
+  const [removed] = items.value.splice(index, 1)
+  if (removed?.previewUrl)
+    URL.revokeObjectURL(removed.previewUrl)
+}
+
+function resetState() {
+  items.value.forEach(item => item.previewUrl && URL.revokeObjectURL(item.previewUrl))
+  items.value = []
+  localComment.value = ''
+  errorMessage.value = ''
+}
+
 function closePopup() {
+  // Revoke any outstanding preview object URLs on every close path (Close
+  // button, mid-upload close, or post-submit), then notify the parent.
+  resetState()
   emit('close')
-}
-
-function addCommentAndUpload() {
-  if (props.featureId !== null) {
-    featureStore.addComment(props.featureId, localComment.value)
-    // Update images in the store
-    featureStore.updateFeatureImages(props.featureId, images.value)
-    existingComment.value = localComment.value
-  }
-  console.log('Uploading images:', images.value)
-  emit('upload', images.value)
-  closePopup()
-}
-
-function removeImage(index) {
-  images.value.splice(index, 1)
-  if (images.value.length === 0) {
-    selectedImage.value = null
-  }
 }
 </script>

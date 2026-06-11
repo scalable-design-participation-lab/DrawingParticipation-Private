@@ -52,7 +52,7 @@ const leftItems = ref([
     color: 'black',
   },
   {
-    label: 'Гуртомá',
+    label: 'About',
     variant: 'solid',
     color: 'black',
   },

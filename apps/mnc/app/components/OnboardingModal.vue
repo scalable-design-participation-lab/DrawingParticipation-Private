@@ -5,13 +5,15 @@
   >
     <template #header>
       <h3 class="text-xl md:text-2xl font-semibold text-center">
-        Welcome to __!
+        Welcome to Mobile Networked Creativity
       </h3>
     </template>
 
     <div class="space-y-8 px-6">
       <p class="leading-tight">
-        __ is a platform that __.
+        Mobile Networked Creativity (MNC) maps real-world examples of how
+        communities around the world creatively adapt mobile and networked
+        technology to meet local needs.
       </p>
 
       <div class="space-y-3 leading-tight">
@@ -21,17 +23,17 @@
             class="flex-shrink-0 w-6 h-6 text-blue-500"
           />
           <p>
-            Explore the map and __
+            Explore case studies across the globe, by location and by theme
           </p>
         </div>
 
         <div class="flex items-start space-x-3">
           <UIcon
-            name="i-heroicons-chat-bubble-left-right"
+            name="i-heroicons-cursor-arrow-rays"
             class="flex-shrink-0 w-6 h-6 text-blue-500"
           />
           <p>
-            Participate in discussions with other users
+            Click any pin to read how a community adapted technology to its needs
           </p>
         </div>
 
@@ -41,7 +43,7 @@
             class="flex-shrink-0 w-6 h-6 text-blue-500"
           />
           <p>
-            Add comments to share memories and ideas for improving the river
+            Add your own photos and comments to contribute related examples
           </p>
         </div>
       </div>
@@ -59,7 +61,7 @@
 
     <template #footer>
       <p class="text-xs text-gray-500 px-6 py-3 leading-tight text-center">
-        Hurtoma is a joint project of <a href="https://www.restartfuture.org/" target="_blank" class="underline hover:no-underline">Restart</a> and <a href="https://northeastern.edu" target="_blank" class="underline hover:no-underline">Northeastern University</a>
+        Mobile Networked Creativity is a project of the Scalable Design Participation Lab at <a href="https://northeastern.edu" target="_blank" class="underline hover:no-underline">Northeastern University</a>
       </p>
     </template>
   </UCard>

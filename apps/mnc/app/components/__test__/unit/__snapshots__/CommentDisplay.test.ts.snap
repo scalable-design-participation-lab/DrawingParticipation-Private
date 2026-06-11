@@ -30,7 +30,7 @@ exports[`CommentDisplay.vue > renders correctly 1`] = `
         class="font-medium"
         data-v-dfaab4d5=""
       >
-        Точка забруднення
+        Pollution Point
       </h3>
     </div>
     <div

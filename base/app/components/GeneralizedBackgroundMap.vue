@@ -185,13 +185,18 @@ onMounted(() => {
         :min-zoom="minZoom"
       />
 
-      <ol-tile-layer>
+      <!-- preload=2 keeps a couple of lower-zoom levels ready so panning/zooming
+           shows low-res tiles instead of blank, without the main-thread jank of
+           preloading every level. A larger cacheSize keeps recently-seen tiles. -->
+      <ol-tile-layer :preload="2">
         <ol-source-xyz
           :url="mapboxUrl"
           :attributions="mapboxAttribution"
           :max-zoom="19"
           :tile-size="512"
           :tile-pixel-ratio="2"
+          :cache-size="2048"
+          :transition="0"
         />
       </ol-tile-layer>
 

@@ -44,8 +44,38 @@ base/app/components/DrawingLayer/DrawingLayer.vue - For this project, its main r
         * What to do when there are 2 icons in the same location - Pakistan
         * Icons only click on the bottom left side, rather than anywhere on the icon.
 
+# Firebase & User Contributions
+
+Users can attach photos + a comment to an existing MNC project (case-study pin).
+Uploaded images go to Firebase Storage; one metadata document per submission is
+written to the Firestore `contributions` collection, keyed by the project's
+`string_id`. They are read back and shown in the project's expanded detail view.
+
+Key files:
+* apps/mnc/app/stores/contributions.ts -- upload to Storage + read/write Firestore
+* apps/mnc/app/stores/types/contribution.ts -- MediaItem / Contribution types
+* apps/mnc/app/components/ImageUploadModal.vue -- real upload UI (opened from infoPopup)
+* apps/mnc/app/components/infoPopup.vue -- "Add photo or comment" button + contributions list
+* apps/mnc/app/firestoreSchema.js -- documents the `contributions` shape
+
+Setup:
+1. Copy apps/mnc/.env.example to apps/mnc/.env and fill in the FIREBASE_* values
+   (FIREBASE_STORAGE_BUCKET is required for uploads).
+2. Enable Firestore + Storage in the Firebase console.
+3. Deploy the security rules (from apps/mnc): `firebase deploy --only firestore:rules,storage`
+   (rules live in apps/mnc/firestore.rules and apps/mnc/storage.rules).
+
+Not done yet: video upload (images only for now), authentication (userId defaults
+to "anonymous"), unifying the separate CommentModal path.
+
 # MVP TODOS
-* connect to firebase
-* bottom toolbar 
-* filter functionality
-* add mnc solutions functionality
+* connect to firebase -- DONE (image contributions + user solutions); needs Firebase Storage enabled + rules deployed for live persistence
+* bottom toolbar -- DONE (filter toggle, theme quick-filters, "+" add-solution)
+* filter functionality -- DONE (FilteredSelectionSidebar + bottom-bar theme toggles)
+* add mnc solutions functionality -- DONE (click "+" then the map to drop a new pin; contributions = photos/comments on any pin)
+
+# infoPopup TODOs (status)
+* Add the tags -- DONE
+* Make the links clickable -- DONE (real URLs from content/mncLinks.json)
+* Attach the captions to the image -- DONE (carousel caption overlay)
+* Make the image a carousel -- DONE (PhotoCarousel.vue, all /Solution_Photos/<id>/*)

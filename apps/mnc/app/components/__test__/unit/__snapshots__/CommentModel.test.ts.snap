@@ -15,14 +15,14 @@ exports[`CommentModal.vue > renders correctly 1`] = `
       class="u-button rounded-full flex justify-center"
     >
       
-       Закрити 
+       Close 
       
     </button>
     <button
       class="u-button px-5 py-2 rounded-full flex justify-center hover:bg-gray-300 hover:text-black dark:hover:bg-zinc-700 dark:hover:text-white"
     >
       
-      Додати
+      Add
       
     </button>
   </div>
