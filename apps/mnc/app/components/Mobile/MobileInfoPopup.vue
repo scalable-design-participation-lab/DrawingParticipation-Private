@@ -52,6 +52,7 @@ const parsedLinks = computed(() => {
     .map((l) => l.trim())
     .filter(Boolean)
     .map((l) => ({ label: l, url: '' }))
+
 })
 
 function toggleState() {
@@ -181,6 +182,7 @@ function toggleState() {
                 class="text-white text-xs underline decoration-white/40 hover:decoration-white"
               >{{ link.label }}</a>
               <span v-else class="text-white text-xs">{{ link.label }}</span>
+
             </li>
           </ul>
         </div>
