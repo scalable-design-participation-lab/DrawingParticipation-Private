@@ -89,7 +89,7 @@ describe('CommentDisplay.vue', () => {
 
   it('displays the feature title correctly based on feature data', () => {
     const title = wrapper.find('h3');
-    expect(title.text()).toBe('Точка забруднення'); // 'pollution' in Ukrainian
+    expect(title.text()).toBe('Pollution Point');
   });
 
   it('displays the formatted timestamp', () => {
@@ -100,6 +100,6 @@ describe('CommentDisplay.vue', () => {
   it('shows fallback message when comment is empty', async () => {
     await wrapper.setProps({ feature: { ...wrapper.props().feature, comment: '' } });
     const fallbackMessage = wrapper.find('p.text-sm.italic');
-    expect(fallbackMessage.text()).toBe('Ще ніхто не залишив коментарів для цієї локації.');
+    expect(fallbackMessage.text()).toBe('No one has left comments for this location yet.');
   });
 });

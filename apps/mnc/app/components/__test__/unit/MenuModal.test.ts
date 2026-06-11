@@ -61,7 +61,7 @@ describe("MenuModal.vue", () => {
 
   it("displays all menu items", () => {
     const buttons = wrapper.findAllComponents(UButton);
-    const menuItems = ["Головна", "Про нас", "Підтримка", "Результати", "Heat Map"];
+    const menuItems = ["Home", "About Us", "Support"];
     buttons.forEach((button, index) => {
       expect(button.text()).toBe(menuItems[index]);
     });
@@ -93,16 +93,12 @@ describe("MenuModal.vue", () => {
   it("navigates to the correct route when a menu item is clicked", async () => {
     const buttons = wrapper.findAllComponents(UButton);
 
-    // Test "Головна"
+    // Test "Home"
     await buttons[0].trigger("click");
     expect(mockRouter.push).toHaveBeenCalledWith("/");
 
-    // Test "Про нас"
+    // Test "About Us"
     await buttons[1].trigger("click");
     expect(mockRouter.push).toHaveBeenCalledWith("/about");
-
-    // Test "Результати"
-    await buttons[3].trigger("click");
-    expect(mockRouter.push).toHaveBeenCalledWith("/result");
   });
 });

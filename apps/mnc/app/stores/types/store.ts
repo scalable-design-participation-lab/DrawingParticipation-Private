@@ -23,6 +23,11 @@ export class Properties {
   primaryTag?: string
   secondaryTags?: string[]
   string_id?: string
+  // Structured citations (label + real URL), sourced from mncLinks.csv so the
+  // detail view can render clickable "Learn More" links.
+  linkList?: { label: string, url: string }[]
+  // All photo paths under /Solution_Photos/<string_id>/ for the gallery carousel.
+  photos?: string[]
 
   constructor(
     location?: string,
@@ -34,7 +39,9 @@ export class Properties {
     links?: Link[],
     primaryTag?: string,
     secondaryTags?: string[],
-    string_id?: string
+    string_id?: string,
+    linkList?: { label: string, url: string }[],
+    photos?: string[]
   ) {
     this.location = location
     this.date = date
@@ -46,5 +53,7 @@ export class Properties {
     this.primaryTag = primaryTag
     this.secondaryTags = secondaryTags
     this.string_id = string_id
+    this.linkList = linkList
+    this.photos = photos
   }
 }

@@ -133,12 +133,12 @@ describe('CommentModal.vue', () => {
   it('shows correct button text based on existing comment', async () => {
     // New comment
     const addButton = wrapper.find('.u-button:last-child');
-    expect(addButton.text()).toBe('Оновити');
+    expect(addButton.text()).toBe('Update');
 
     // Existing comment
     wrapper.vm.existingComment = 'Existing';
     await wrapper.vm.$nextTick();
-    expect(addButton.text()).toBe('Оновити');
+    expect(addButton.text()).toBe('Update');
   });
 
   // Test null featureId handling

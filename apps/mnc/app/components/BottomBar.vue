@@ -1,37 +1,26 @@
 <script setup lang="ts">
 import { ref } from 'vue'
+import healthIcon from '@base/assets/icons/Health.svg'
+import transportIcon from '@base/assets/icons/Transportation.svg'
+import connectivityIcon from '@base/assets/icons/Connectivity.svg'
+import artIcon from '@base/assets/icons/Art.svg'
+import communityIcon from '@base/assets/icons/Community.svg'
 import { useFilterStore } from '../stores/filter'
+import { useSolutionsStore } from '../stores/solutions'
 
 const filterStore = useFilterStore()
+const solutionsStore = useSolutionsStore()
 
 const showMore = ref(false)
 
-const categories = [
-  {
-    label: 'Belonging',
-    icon: 'i-heroicons-heart',
-    active: true,
-  },
-  {
-    label: 'Environment',
-    icon: 'i-heroicons-map-pin',
-    active: true,
-  },
-  {
-    label: 'Safety',
-    icon: 'i-heroicons-shield-check',
-    active: false,
-  },
-  {
-    label: 'Ecology',
-    icon: 'i-heroicons-leaf',
-    active: false,
-  },
-  {
-    label: 'Obstacles',
-    icon: 'i-heroicons-no-symbol',
-    active: false,
-  },
+// The five MNC primary-tag themes, used as quick-filter toggles. Clicking one
+// shows/hides that theme's pins via the shared filter store.
+const themes = [
+  { tag: 'Health & Crisis Response', icon: healthIcon },
+  { tag: 'Transportation & Mobility', icon: transportIcon },
+  { tag: 'Digital Access & Connectivity', icon: connectivityIcon },
+  { tag: 'Community Mapping & Visibility', icon: communityIcon },
+  { tag: 'Art & Cultural Expression', icon: artIcon },
 ]
 </script>
 
@@ -53,20 +42,23 @@ const categories = [
         style="border: 2px solid #FB6D6D;"
       >
         <button
-          v-for="cat in categories"
-          :key="cat.label"
+          v-for="theme in themes"
+          :key="theme.tag"
+          type="button"
           class="flex flex-col items-center gap-1 group"
-          :aria-label="cat.label"
+          :aria-label="(filterStore.isTagVisible(theme.tag) ? 'Hide ' : 'Show ') + theme.tag"
+          @click="filterStore.toggleTag(theme.tag)"
         >
-          <!-- Circular icon button -->
+          <!-- Circular toggle: gradient border + full opacity when the theme is visible -->
           <div
-            class="w-14 h-14 rounded-full flex items-center justify-center bg-white dark:bg-zinc-900 shadow-sm"
-            :class="cat.active ? 'active-gradient-border' : 'inactive-border'"
+            class="w-14 h-14 rounded-full flex items-center justify-center bg-white dark:bg-zinc-900 shadow-sm transition"
+            :class="filterStore.isTagVisible(theme.tag) ? 'active-gradient-border' : 'inactive-border'"
           >
-            <UIcon
-              :name="cat.icon"
-              class="w-7 h-7"
-              :style="{ color: cat.active ? '#57C9C0' : '#9CA3AF' }"
+            <img
+              :src="theme.icon"
+              :alt="theme.tag"
+              class="w-7 h-7 object-contain transition-opacity"
+              :style="{ opacity: filterStore.isTagVisible(theme.tag) ? 1 : 0.4 }"
             />
           </div>
         </button>
@@ -82,10 +74,11 @@ const categories = [
         icon="i-heroicons-plus"
         variant="ghost"
         size="lg"
-        aria-label="Add"
+        aria-label="Add a solution"
         class="rounded-full"
-        :style="{ color: '#57C9C0' }"
+        :style="{ color: solutionsStore.isPlacing ? '#FB6D6D' : '#57C9C0' }"
         :ui="{ rounded: 'rounded-full' }"
+        @click="solutionsStore.startPlacing()"
       />
       <UButton
         icon="i-heroicons-tag"
@@ -103,8 +96,9 @@ const categories = [
         size="lg"
         aria-label="List"
         class="rounded-full"
-        :style="{ color: '#57C9C0' }"
+        :style="{ color: filterStore.isListOpen ? '#FB6D6D' : '#57C9C0' }"
         :ui="{ rounded: 'rounded-full' }"
+        @click="filterStore.toggleList()"
       />
       <UButton
         icon="i-heroicons-ellipsis-horizontal"

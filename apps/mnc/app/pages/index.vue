@@ -5,6 +5,7 @@ import { useMapStore } from '@base/stores/map'
 import type { MapType, Feature } from '@base/stores/types/store'
 import { useDb } from '../stores/db'
 import { useFilterStore } from '../stores/filter'
+import { useSolutionsStore } from '../stores/solutions'
 import { useIsMobile } from '../composables/useIsMobile'
 
 // Map store
@@ -12,6 +13,7 @@ const userStore = useUserStore()
 const mapStore = useMapStore()
 const dbStore = useDb()
 const filterStore = useFilterStore()
+const solutionsStore = useSolutionsStore()
 const { setMapType } = mapStore
 const currentMapType = ref('vector')
 const isLoading = ref(true)
@@ -66,18 +68,14 @@ function handleCloseOnboarding() {
 // Initialize app
 async function initializeApp() {
   try {
-    // Simulate loading time for map initialization
-    await new Promise(resolve => setTimeout(resolve, 2000))
+    // Brief splash while the map mounts (it lives behind v-show, so it is
+    // already in the DOM — no need to stall for seconds).
+    await new Promise(resolve => setTimeout(resolve, 400))
     isLoading.value = false
-    
-    // Load data AFTER map is ready
-    setTimeout(async () => {
-      try {
-        await dbStore.loadDataIntoFeatures()
-      } catch (error) {
-        console.error('Failed to load data:', error)
-      }
-    }, 500)
+
+    // Load case-study data, then user-submitted solutions (best-effort).
+    await dbStore.loadDataIntoFeatures()
+    await solutionsStore.fetchSolutions()
   }
   catch (error) {
     console.error('Error initializing app:', error)
@@ -120,6 +118,7 @@ onMounted(() => {
       <!-- Desktop only -->
       <BottomBar v-if="!isMobile" />
       <FilteredSelectionSidebar v-if="!isMobile && filterStore.isPanelOpen" />
+      <ProjectListPanel v-if="!isMobile && filterStore.isListOpen" />
 
       <!-- Mobile only -->
       <template v-if="isMobile">

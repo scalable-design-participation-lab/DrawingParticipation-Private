@@ -113,8 +113,8 @@ const layerEventHandlers = computed(() =>
 
 // Header Nav Items
 const leftItems = ref([
-  { label: 'Drawing Participation', to: '/about/' },
-  { label: 'Гуртомá',             to: '/about/' },
+  { label: 'Mobile Networked Creativity', to: '/about/' },
+  { label: 'About', to: '/about/' },
 ])
 const rightItems = ref([
   {

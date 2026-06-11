@@ -7,7 +7,11 @@ export default defineNuxtConfig({
     enabled: true
   },
 
-  target: 'static',
+  // This is a client-side map SPA (OpenLayers + client-only Firebase via
+  // nuxt-vuefire). Disabling SSR avoids server-side Firebase Admin init
+  // (which would require a service-account.json) and Pinia SSR payload
+  // serialization issues, neither of which this app needs.
+  ssr: false,
 
   css: ['vue3-openlayers/dist/vue3-openlayers.css'],
 
@@ -55,12 +59,10 @@ export default defineNuxtConfig({
   ],
 
   plugins: [
-    { src: '~/plugins/vue3-openlayers.js', mode: 'client' }
+    { src: '~/plugins/vue3-openlayers.js', mode: 'client' },
+    { src: '~/plugins/auth.client.ts', mode: 'client' }
   ],
 
-  layouts: {
-    default: '~/layouts/default.vue'
-  },
   vite: {
     resolve: {
       alias: {

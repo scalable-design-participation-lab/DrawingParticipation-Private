@@ -5,6 +5,10 @@ import { useFeatureStore } from '@base/stores/features'
 import { useUserStore } from '@base/stores/user'
 import { Properties } from "./types/store"
 import type { ProjectData } from "./types/store"
+// Structured citations (label + URL) per project, keyed by string_id.
+import mncLinks from '../../content/mncLinks.json'
+// All photo paths per project (for the detail-view carousel), keyed by string_id.
+import mncPhotos from '../../content/mncPhotos.json'
 
 
 
@@ -58,7 +62,9 @@ export const useDb = defineStore('db', () => {
             entry.Links,
             entry["Primary Tag"],
             entry["Secondary Tags"],
-            entry.string_id
+            entry.string_id,
+            (mncLinks as Record<string, { label: string, url: string }[]>)[entry.string_id] || [],
+            (mncPhotos as Record<string, string[]>)[entry.string_id] || []
           )
         })
       })

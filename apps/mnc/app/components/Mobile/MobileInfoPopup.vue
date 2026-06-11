@@ -1,7 +1,8 @@
 <script setup lang="ts">
-import { computed } from 'vue'
+import { computed, onMounted, ref, watch } from 'vue'
 import type { Feature } from '@base/stores/types/store'
 import type { Properties } from '../../stores/types/store'
+import { useContributionsStore } from '../../stores/contributions'
 
 const props = defineProps<{
   feature: Feature
@@ -15,14 +16,43 @@ const emit = defineEmits<{
 
 const p = computed(() => props.feature.properties as Properties | undefined)
 
+// Community contributions (user-uploaded photos + comments) for this project.
+const contributions = useContributionsStore()
+const showUpload = ref(false)
+const projectContributions = computed(
+  () => contributions.byProject[p.value?.string_id || ''] || [],
+)
+
+function loadContributions() {
+  if (p.value?.string_id)
+    contributions.fetchContributions(p.value.string_id)
+}
+onMounted(loadContributions)
+watch(() => p.value?.string_id, loadContributions)
+
+function handleUploaded() {
+  showUpload.value = false
+}
+
 const imagePath = computed(() =>
   p.value?.string_id ? `/Solution_Photos/${p.value.string_id}/1.png` : null,
 )
 
+// Photos come from the project's manifest; user-submitted pins have none and
+// fall through to the carousel's empty state (no broken /Solution_Photos URL).
+const galleryImages = computed(() => (Array.isArray(p.value?.photos) ? p.value.photos : []))
+
 const parsedLinks = computed(() => {
-  const links = p.value?.links
-  if (!Array.isArray(links)) return []
-  return links.filter((l) => l?.label)
+  // Prefer the structured list (real URLs from mncLinks.csv).
+  if (Array.isArray(p.value?.linkList) && p.value.linkList.length)
+    return p.value.linkList
+  if (!p.value?.links) return []
+  return p.value.links
+    .split(';')
+    .map((l) => l.trim())
+    .filter(Boolean)
+    .map((l) => ({ label: l, url: '' }))
+
 })
 
 function toggleState() {
@@ -70,7 +100,7 @@ function toggleState() {
 
           <div class="flex-1 min-w-0">
             <p class="font-bold text-gray-900 text-sm leading-tight">{{ feature.comment }}</p>
-            <p class="text-xs text-teal-500 mt-1 font-medium">Task 1</p>
+            <p v-if="p?.primaryTag" class="text-xs text-teal-500 mt-1 font-medium">{{ p.primaryTag }}</p>
             <p class="text-xs text-gray-500 mt-2 line-clamp-3">
               {{ p?.shortDesc || p?.description }}
             </p>
@@ -130,27 +160,18 @@ function toggleState() {
           <p class="text-white text-sm leading-relaxed mt-3">{{ p?.description }}</p>
         </div>
 
-        <!-- Image with white border + Tap to learn more overlay -->
+        <!-- Photo carousel with white border -->
         <div
-          v-if="imagePath"
-          class="relative rounded-2xl overflow-hidden border-2 border-white"
-          style="height: 200px;"
+          v-if="galleryImages.length"
+          class="overflow-hidden rounded-2xl border-2 border-white"
         >
-          <img
-            :src="imagePath"
-            :alt="feature.comment"
-            class="w-full h-full object-cover"
-            @error="($event.target as HTMLImageElement).style.display = 'none'"
-          />
-          <div class="absolute inset-0 flex items-center justify-center bg-black/25">
-            <span class="text-white text-base font-bold drop-shadow-md">Tap to learn more</span>
-          </div>
+          <PhotoCarousel :images="galleryImages" :alt="feature.comment" height="200px" />
         </div>
 
         <!-- Links -->
         <div v-if="parsedLinks.length">
           <p class="text-sm font-bold text-white mb-2">Learn More:</p>
-          <ul class="space-y-1.5">
+          <ul class="space-y-1">
             <li v-for="(link, i) in parsedLinks" :key="i" class="flex items-start gap-2">
               <UIcon name="i-heroicons-link" class="w-3 h-3 text-white flex-shrink-0 mt-0.5" />
               <a
@@ -158,15 +179,69 @@ function toggleState() {
                 :href="link.url"
                 target="_blank"
                 rel="noopener noreferrer"
-                class="text-white text-xs underline underline-offset-2 break-words"
-              >
-                {{ link.label }}
-              </a>
-              <span v-else class="text-white text-xs break-words">{{ link.label }}</span>
+                class="text-white text-xs underline decoration-white/40 hover:decoration-white"
+              >{{ link.label }}</a>
+              <span v-else class="text-white text-xs">{{ link.label }}</span>
+
             </li>
           </ul>
         </div>
+
+        <!-- Community contributions -->
+        <div v-if="p?.string_id" class="border-t border-white/30 pt-4">
+          <div class="mb-2 flex items-center justify-between">
+            <p class="text-sm font-bold text-white">
+              Community
+              <span v-if="projectContributions.length" class="font-normal text-white/70">
+                ({{ projectContributions.length }})
+              </span>
+            </p>
+            <button
+              type="button"
+              class="flex items-center gap-1 rounded-full bg-white/20 px-3 py-1 text-xs font-medium text-white"
+              @click="showUpload = true"
+            >
+              <UIcon name="i-heroicons-plus" class="h-3.5 w-3.5" />
+              Add
+            </button>
+          </div>
+
+          <p v-if="!projectContributions.length" class="text-xs text-white/70">
+            Be the first to add a photo or comment.
+          </p>
+
+          <div v-else class="space-y-3">
+            <div
+              v-for="c in projectContributions"
+              :key="c.id"
+              class="rounded-xl bg-white/15 p-3"
+            >
+              <div v-if="c.media.length" class="mb-2 grid grid-cols-3 gap-1.5">
+                <a
+                  v-for="(m, mi) in c.media"
+                  :key="mi"
+                  :href="m.url"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  <img :src="m.url" :alt="m.name" class="h-16 w-full rounded object-cover" />
+                </a>
+              </div>
+              <p v-if="c.comment" class="text-xs text-white">{{ c.comment }}</p>
+            </div>
+          </div>
+        </div>
       </div>
+    </div>
+
+    <!-- Floating upload modal -->
+    <div v-if="showUpload" class="pointer-events-auto fixed left-1/2 top-20 z-[60] -translate-x-1/2">
+      <ImageUploadModal
+        :is-visible="showUpload"
+        :project-id="p?.string_id || ''"
+        @close="showUpload = false"
+        @uploaded="handleUploaded"
+      />
     </div>
   </div>
 </template>
