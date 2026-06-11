@@ -2,6 +2,14 @@ import type { Feature } from '@base/stores/types/store'
 import type { string } from 'yup'
 
 /**
+ * A reference link displayed in the "Learn More" section of an MNC feature.
+ */
+export interface Link {
+  label: string
+  url?: string
+}
+
+/**
  * Properties class for storing additional metadata about MNC features
  */
 export class Properties {
@@ -11,7 +19,7 @@ export class Properties {
   description?: string
   mncConnection?: string
   mediaCaptions?: string[]
-  links?: string
+  links?: Link[]
   primaryTag?: string
   secondaryTags?: string[]
   string_id?: string
@@ -28,7 +36,7 @@ export class Properties {
     description?: string,
     mncConnection?: string,
     mediaCaptions?: string[],
-    links?: string,
+    links?: Link[],
     primaryTag?: string,
     secondaryTags?: string[],
     string_id?: string,

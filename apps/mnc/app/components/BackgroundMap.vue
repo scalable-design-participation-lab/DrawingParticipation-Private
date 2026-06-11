@@ -185,6 +185,7 @@ const parsedLinks = computed(() => {
     .map((link: string) => link.trim())
     .filter((link: string) => link.length > 0)
     .map((link: string) => ({ label: link, url: '' }))
+
 })
 
 // Set just before a pin-click updates the selection so the selectedFeature
