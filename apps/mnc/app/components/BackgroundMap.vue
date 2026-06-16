@@ -75,6 +75,16 @@
     </UButton>
   </div>
 
+  <!-- Mobile contribute flow: prompt to tap the map to drop a location pin -->
+  <div
+    v-if="pickingLocation"
+    class="fixed left-1/2 top-24 z-[60] flex -translate-x-1/2 items-center gap-3 rounded-full bg-white px-5 py-2.5 shadow-lg dark:bg-black"
+    style="border: 2px solid #FB6D6D;"
+  >
+    <UIcon name="i-heroicons-map-pin" class="h-5 w-5" :style="{ color: '#FB6D6D' }" />
+    <span class="text-sm font-medium text-gray-900 dark:text-white">Tap the map to drop your pin</span>
+  </div>
+
   <AddSolutionModal
     v-if="pendingCoord"
     :coordinate="pendingCoord"
@@ -91,8 +101,18 @@ import { useSolutionsStore, type SolutionInput } from '../stores/solutions'
 import { useIsMobile } from '../composables/useIsMobile'
 import InfoPopup from './infoPopup.vue'
 
+const props = defineProps<{
+  showAllPlusIcons?: boolean
+  showCommentIcons?: boolean
+  // When true, the next map tap is captured for the mobile contribute flow's
+  // location step (emitted via `pick-location`) instead of opening the
+  // "Add a Solution" form.
+  pickingLocation?: boolean
+}>()
+
 const emit = defineEmits<{
   'select-feature': [feature: any]
+  'pick-location': [coordinate: [number, number]]
 }>()
 
 const route = useRoute()
@@ -110,10 +130,19 @@ const pendingCoord = ref<[number, number] | null>(null)
 // While in placement mode, a map click captures the coordinate and opens the
 // "Add a Solution" form. Otherwise clicks on the empty map are ignored.
 function handleMapClick(event: any) {
+  const coordinate = event?.coordinate
+  const valid = Array.isArray(coordinate) && coordinate.length === 2
+
+  // Mobile contribute flow: capture the tapped coordinate and hand it back.
+  if (props.pickingLocation) {
+    if (valid)
+      emit('pick-location', [coordinate[0], coordinate[1]])
+    return
+  }
+
   if (!solutionsStore.isPlacing)
     return
-  const coordinate = event?.coordinate
-  if (Array.isArray(coordinate) && coordinate.length === 2) {
+  if (valid) {
     pendingCoord.value = [coordinate[0], coordinate[1]]
     solutionsStore.cancelPlacing()
   }

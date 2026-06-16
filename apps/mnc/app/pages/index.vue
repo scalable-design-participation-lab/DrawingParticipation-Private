@@ -26,6 +26,32 @@ const mobileView = ref<MobileView>('map')
 const selectedMobileFeature = ref<Feature | null>(null)
 const projectCardState = ref<'expanded' | 'full'>('expanded')
 
+// Mobile "Join Our Research" contribute flow (launched from the "More" nav).
+const pickingContributeLocation = ref(false)
+const contributeCoordinate = ref<[number, number] | null>(null)
+
+function closeContribute() {
+  mobileView.value = 'map'
+  pickingContributeLocation.value = false
+}
+
+// The flow asks us to hide it so the user can tap the map for a location pin.
+function startContributePick() {
+  pickingContributeLocation.value = true
+}
+
+// A map tap during picking: store the coordinate and restore the flow.
+function onContributePicked(coordinate: [number, number]) {
+  contributeCoordinate.value = coordinate
+  pickingContributeLocation.value = false
+}
+
+function onContributeSubmit(payload: unknown) {
+  // Front-end-only shell for now — persistence is deferred until the
+  // submission content model is finalized.
+  console.warn('[contribute] submission payload (not persisted yet):', payload)
+}
+
 function selectMobileFeature(feature: Feature) {
   selectedMobileFeature.value = feature
   mobileView.value = 'map'
@@ -100,7 +126,9 @@ onMounted(() => {
         :class="{ 'filter blur-md': showOnboarding }"
         :show-all-plus-icons="true"
         :show-comment-icons="false"
+        :picking-location="pickingContributeLocation"
         @select-feature="selectMobileFeature"
+        @pick-location="onContributePicked"
       />
       <MobileHeader
         v-if="isMobile"
@@ -138,6 +166,15 @@ onMounted(() => {
           :project-selected="!!selectedMobileFeature"
           @update:active-view="mobileView = $event"
           @close-project="closeMobileProject"
+        />
+
+        <MobileContributeFlow
+          v-if="mobileView === 'more'"
+          v-show="!pickingContributeLocation"
+          :picked-coordinate="contributeCoordinate"
+          @pick-location="startContributePick"
+          @close="closeContribute"
+          @submit="onContributeSubmit"
         />
       </template>
 
