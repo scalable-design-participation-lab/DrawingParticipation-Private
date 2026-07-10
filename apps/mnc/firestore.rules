@@ -5,8 +5,20 @@ rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
 
-    // Validates a user-submitted contribution document. The app does not
-    // require sign-in yet, so userId may be the literal "anonymous".
+    // A signed-in user is a moderator when an admins/<uid> document exists.
+    // Bootstrap the first admin by creating that document from the console.
+    function isAdmin() {
+      return request.auth != null
+        && exists(/databases/$(database)/documents/admins/$(request.auth.uid));
+    }
+
+    // Admin allowlist: readable so the client can check its own status; only
+    // writable from the Firebase console (never from the app).
+    match /admins/{uid} {
+      allow read: if true;
+      allow write: if false;
+    }
+
     function isValidContribution(data) {
       return data.projectId is string
         && data.projectId.size() > 0
@@ -16,36 +28,36 @@ service cloud.firestore {
         && data.media is list
         && data.media.size() <= 10
         && data.userId is string
-        // serverTimestamp() on the client resolves to the request time.
+        // New submissions must be unapproved; only a moderator can approve.
+        && data.approved == false
         && data.createdAt == request.time;
     }
 
-    // User-contributed media + comments attached to existing MNC projects.
-    // Anyone may read; anyone may create a well-formed contribution.
-    // Contributions are immutable from the client once created.
+    // User-contributed media + comments. Anyone may create a well-formed,
+    // pending contribution; the public reads only approved ones; moderators
+    // read all and may approve (update) or delete.
     match /contributions/{contributionId} {
-      allow read: if true;
+      allow read: if resource.data.approved == true || isAdmin();
       allow create: if isValidContribution(request.resource.data);
-      allow update, delete: if false;
+      allow update, delete: if isAdmin();
     }
 
-    // User-submitted solutions (new case-study pins). Anyone may read or create
-    // a well-formed solution; immutable from the client once created.
+    // User-submitted solutions (new case-study pins). Same moderation model.
     match /userSolutions/{solutionId} {
-      allow read: if true;
+      allow read: if resource.data.approved == true || isAdmin();
       allow create: if request.resource.data.title is string
         && request.resource.data.title.size() > 0
         && request.resource.data.title.size() <= 200
         && request.resource.data.primaryTag is string
         && request.resource.data.lon is number
         && request.resource.data.lat is number
+        && request.resource.data.approved == false
         && request.resource.data.createdAt == request.time;
-      allow update, delete: if false;
+      allow update, delete: if isAdmin();
     }
 
     // Collections written/read by the existing app code (db.ts
     // saveDataToDatabase, DownloadModalHurtoma export, base all-features).
-    // Open for the participatory demo; tighten once auth is wired in.
     match /projects/{projectId} {
       allow read, create: if true;
       allow update, delete: if false;

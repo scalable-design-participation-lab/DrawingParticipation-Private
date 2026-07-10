@@ -1,9 +1,10 @@
-import { addDoc, collection, getDocs, getFirestore, query, serverTimestamp, where } from 'firebase/firestore'
-import { getDownloadURL, getStorage, ref as storageRef, uploadBytesResumable } from 'firebase/storage'
+import { addDoc, collection, deleteDoc, doc, getDocs, getFirestore, query, serverTimestamp, updateDoc, where } from 'firebase/firestore'
+import { deleteObject, getDownloadURL, getStorage, ref as storageRef, uploadBytesResumable } from 'firebase/storage'
 import { getAuth } from 'firebase/auth'
 import { defineStore } from 'pinia'
 import { reactive, ref } from 'vue'
 import type { Contribution, MediaItem } from './types/contribution'
+import { useAuthStore } from './auth'
 
 /** Firestore collection that holds every user contribution. */
 const CONTRIBUTIONS_COLLECTION = 'contributions'
@@ -65,7 +66,11 @@ export const useContributionsStore = defineStore('contributions', () => {
             name: file.name,
             size: file.size,
             contentType: file.type,
-            kind: file.type.startsWith('video/') ? 'video' : 'image',
+            kind: file.type.startsWith('video/')
+              ? 'video'
+              : file.type.startsWith('audio/')
+                ? 'audio'
+                : 'image',
           })
         },
       )
@@ -91,6 +96,8 @@ export const useContributionsStore = defineStore('contributions', () => {
       comment: payload.comment,
       media: payload.media,
       userId,
+      // New contributions wait for a moderator before they go public.
+      approved: false,
       // Server-side timestamp keeps ordering correct across clients.
       createdAt: serverTimestamp(),
     })
@@ -111,20 +118,25 @@ export const useContributionsStore = defineStore('contributions', () => {
     error.value = null
     try {
       const db = getFirestore()
-      const q = query(
-        collection(db, CONTRIBUTIONS_COLLECTION),
-        where('projectId', '==', projectId),
-      )
+      const admin = useAuthStore().isAdmin
+      const base = collection(db, CONTRIBUTIONS_COLLECTION)
+      // Firestore list rules require the query itself to guarantee readable
+      // rows, so the public must constrain to approved==true (two equality
+      // filters need no composite index); moderators read all for the project.
+      const q = admin
+        ? query(base, where('projectId', '==', projectId))
+        : query(base, where('projectId', '==', projectId), where('approved', '==', true))
       const snapshot = await getDocs(q)
 
-      const items = snapshot.docs.map((doc) => {
-        const data = doc.data() as any
+      const items = snapshot.docs.map((docSnap) => {
+        const data = docSnap.data() as any
         return {
-          id: doc.id,
+          id: docSnap.id,
           projectId: data.projectId,
           comment: data.comment || '',
           media: Array.isArray(data.media) ? data.media : [],
           userId: data.userId || 'anonymous',
+          approved: data.approved === true,
           // serverTimestamp resolves to a Firestore Timestamp; normalize to ISO.
           createdAt: data.createdAt?.toDate?.().toISOString?.() || '',
         } as Contribution
@@ -144,6 +156,33 @@ export const useContributionsStore = defineStore('contributions', () => {
     }
   }
 
+  /** Moderator: approve a pending contribution. */
+  async function approveContribution(id: string, projectId: string): Promise<void> {
+    await updateDoc(doc(getFirestore(), CONTRIBUTIONS_COLLECTION, id), { approved: true })
+    const c = byProject[projectId]?.find(x => x.id === id)
+    if (c)
+      c.approved = true
+  }
+
+  /** Moderator: delete a contribution (Firestore doc + its Storage files). */
+  async function deleteContribution(contribution: Contribution): Promise<void> {
+    // Remove the stored media files first (best-effort), then the document.
+    for (const m of contribution.media) {
+      if (m.path) {
+        try {
+          await deleteObject(storageRef(getStorage(), m.path))
+        }
+        catch (e) {
+          console.warn('Could not delete media file:', m.path, e)
+        }
+      }
+    }
+    await deleteDoc(doc(getFirestore(), CONTRIBUTIONS_COLLECTION, contribution.id!))
+    const list = byProject[contribution.projectId]
+    if (list)
+      byProject[contribution.projectId] = list.filter(x => x.id !== contribution.id)
+  }
+
   return {
     byProject,
     isLoading,
@@ -151,5 +190,7 @@ export const useContributionsStore = defineStore('contributions', () => {
     uploadFile,
     addContribution,
     fetchContributions,
+    approveContribution,
+    deleteContribution,
   }
 })

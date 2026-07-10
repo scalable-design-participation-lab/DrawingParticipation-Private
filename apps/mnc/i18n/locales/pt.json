@@ -1,0 +1,66 @@
+{
+  "onboarding": {
+    "title": "Bem-vindo à Mobile Networked Creativity",
+    "intro": "A Mobile Networked Creativity (MNC) mapeia exemplos reais de como comunidades ao redor do mundo adaptam criativamente a tecnologia móvel e em rede para atender às necessidades locais.",
+    "point1": "Explore estudos de caso pelo mundo, por localização e por tema",
+    "point2": "Clique em qualquer marcador para ler como uma comunidade adaptou a tecnologia às suas necessidades",
+    "point3": "Adicione suas próprias fotos e comentários para contribuir com exemplos relacionados",
+    "getStarted": "Começar",
+    "footer": "A Mobile Networked Creativity é um projeto do Scalable Design Participation Lab da Northeastern University"
+  },
+  "nav": {
+    "addEntry": "Adicionar registro — ou clique em qualquer lugar do mapa",
+    "filter": "Seleção filtrada",
+    "list": "Lista de registros",
+    "map": "Mapa",
+    "info": "Sobre este mapa",
+    "help": "Ajuda",
+    "satelliteOn": "Mudar para vista de satélite",
+    "satelliteOff": "Mudar para vista de mapa"
+  },
+  "detail": {
+    "description": "Descrição",
+    "tags": "Tags",
+    "learnMore": "Saiba mais",
+    "contributions": "Contribuições da comunidade",
+    "add": "Adicionar",
+    "addPhoto": "Adicionar foto ou comentário",
+    "noContributions": "Ainda não há contribuições da comunidade. Seja o primeiro a adicionar uma foto ou comentário.",
+    "showAll": "Mostrar todos os registros de {tag}"
+  },
+  "photo": {
+    "noPhoto": "Ainda sem foto",
+    "beFirst": "Seja o primeiro a adicionar uma"
+  },
+  "add": {
+    "title": "Adicionar um registro",
+    "titleLabel": "Título",
+    "titlePlaceholder": "ex.: Bomba d'água comunitária movida a energia solar",
+    "theme": "Tema",
+    "themePlaceholder": "Selecione um tema — ou digite para criar um novo",
+    "location": "Localização",
+    "locationHint": "Preenchido automaticamente a partir de onde você tocou no mapa — edite se necessário.",
+    "detecting": "detectando…",
+    "shortDesc": "Descrição curta",
+    "shortDescPlaceholder": "Resumo em uma linha",
+    "fullDesc": "Descrição completa (opcional)",
+    "media": "Fotos ou áudio (opcional)",
+    "filesSelected": "{n} arquivo(s) selecionado(s)",
+    "pinNote": "A localização do marcador é definida por onde você tocou no mapa.",
+    "required": "Título, tema e localização são obrigatórios.",
+    "cancel": "Cancelar",
+    "submit": "Adicionar ao mapa"
+  },
+  "list": {
+    "title": "Todas as soluções",
+    "search": "Buscar soluções…",
+    "empty": "Nenhuma solução corresponde a “{q}”.",
+    "nearest": "Mais próximos de você",
+    "all": "Todos os registros"
+  },
+  "lang": {
+    "label": "Idioma",
+    "en": "English",
+    "pt": "Português"
+  }
+}

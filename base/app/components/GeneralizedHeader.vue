@@ -75,6 +75,12 @@ const props = defineProps({
     type: [String, Number],
     default: 50,
   },
+  // Whether to show the top-right ellipsis menu button. Apps that have moved
+  // their nav elsewhere (e.g. MNC) can hide it without affecting other apps.
+  showMenu: {
+    type: Boolean,
+    default: true,
+  },
 })
 
 // Add new refs for modals
@@ -251,6 +257,7 @@ const accentTextStyle = computed(() => {
         />
         <!-- Menu -->
         <UButton
+          v-if="showMenu"
           class="h-full px-2 md:px-2 lg:px-3.5 text-lg shadow-lg" :class="[
             shapeClass,
             hasPrimaryAccentColor

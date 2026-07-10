@@ -169,10 +169,10 @@ function prettyCoord(coord: [number, number]): string {
       <h3 class="mt-4 text-xl font-bold text-[#FB6D6D]">
         Thank you
       </h3>
-      <p class="mt-6 max-w-xs text-sm text-[#F2A3A3]">
+      <p class="mt-6 max-w-xs text-sm text-[#A84A4A]">
         Your submission has been received and will be reviewed by our team.
       </p>
-      <p class="mt-2 max-w-xs text-sm text-[#F2A3A3]">
+      <p class="mt-2 max-w-xs text-sm text-[#A84A4A]">
         We will be in touch and contact you soon!
       </p>
       <UButton
@@ -338,6 +338,12 @@ function prettyCoord(coord: [number, number]): string {
               <UInput v-model="form.city" class="flex-1" :ui="{ rounded: 'rounded-full' }" />
             </div>
           </div>
+
+          <p class="pt-1 text-xs leading-snug text-gray-500">
+            Your example and any media may be shown publicly on the map. Your name
+            is shown only if you choose "Yes" above. Your email is used only so we
+            can contact you — it is never shown publicly.
+          </p>
         </div>
       </div>
 
@@ -354,7 +360,7 @@ function prettyCoord(coord: [number, number]): string {
         <UButton
           v-if="step < TOTAL_STEPS"
           class="rounded-full px-6"
-          :style="{ backgroundColor: '#FB6D6D' }"
+          :style="{ backgroundColor: '#C0392B', color: '#ffffff' }"
           @click="next"
         >
           Next
@@ -362,7 +368,7 @@ function prettyCoord(coord: [number, number]): string {
         <UButton
           v-else
           class="rounded-full px-6"
-          :style="{ backgroundColor: '#FB6D6D' }"
+          :style="{ backgroundColor: '#C0392B', color: '#ffffff' }"
           @click="submit"
         >
           Submit

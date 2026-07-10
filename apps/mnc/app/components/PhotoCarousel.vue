@@ -35,7 +35,7 @@ function prev() {
 
 <template>
   <div
-    class="relative w-full overflow-hidden rounded-2xl bg-teal-50"
+    class="relative w-full overflow-hidden rounded-2xl bg-teal-50/60 dark:bg-white/5"
     :style="{ height }"
   >
     <template v-if="hasImages">
@@ -93,12 +93,14 @@ function prev() {
       </div>
     </template>
 
-    <!-- Empty state -->
+    <!-- Empty state: dashed placeholder that reads on both light and dark cards -->
     <div
       v-else
-      class="flex h-full w-full items-center justify-center px-3 text-center text-sm text-teal-600"
+      class="flex h-full w-full flex-col items-center justify-center gap-1 rounded-2xl border border-dashed border-teal-200 px-3 text-center dark:border-zinc-700"
     >
-      {{ caption || 'No image available' }}
+      <UIcon name="i-heroicons-photo" class="mb-1 h-8 w-8 text-teal-400 dark:text-teal-500" />
+      <p class="text-sm font-medium text-gray-500 dark:text-gray-300">No photo yet</p>
+      <p class="text-xs text-gray-400 dark:text-gray-500">Be the first to add one</p>
     </div>
   </div>
 </template>

@@ -67,8 +67,8 @@ function toggleState() {
     <!-- Expanded state: compact summary card -->
     <UCard
       v-if="state === 'expanded'"
-      class="pointer-events-auto w-full max-w-sm shadow-xl transition-all duration-300"
-      style="max-height: 45vh;"
+      class="pointer-events-auto touch-manipulation w-full max-w-sm shadow-xl transition-all duration-300"
+      style="max-height: 45dvh;"
       :ui="{
         base: 'overflow-hidden',
         rounded: 'rounded-t-3xl rounded-b-none',
@@ -78,8 +78,16 @@ function toggleState() {
       }"
     >
       <template #header>
-        <div class="flex justify-center cursor-pointer" @click="toggleState">
-          <div class="w-10 h-1 bg-gray-300 rounded-full" />
+        <div class="relative flex justify-center">
+          <div class="w-10 h-1 bg-gray-300 rounded-full cursor-pointer" @click="toggleState" />
+          <button
+            type="button"
+            aria-label="Close"
+            class="absolute right-2 -top-1 p-1 text-gray-400 hover:text-gray-600 dark:hover:text-gray-200"
+            @click="emit('close')"
+          >
+            <UIcon name="i-heroicons-x-mark" class="h-5 w-5" />
+          </button>
         </div>
       </template>
 
@@ -99,9 +107,9 @@ function toggleState() {
           </div>
 
           <div class="flex-1 min-w-0">
-            <p class="font-bold text-gray-900 text-sm leading-tight">{{ feature.comment }}</p>
+            <p class="font-bold text-gray-900 dark:text-white text-sm leading-tight">{{ feature.comment }}</p>
             <p v-if="p?.primaryTag" class="text-xs text-teal-500 mt-1 font-medium">{{ p.primaryTag }}</p>
-            <p class="text-xs text-gray-500 mt-2 line-clamp-3">
+            <p class="text-xs text-gray-500 dark:text-gray-400 mt-2 line-clamp-3">
               {{ p?.shortDesc || p?.description }}
             </p>
           </div>
@@ -122,12 +130,20 @@ function toggleState() {
     <!-- Full state: themed teal popup matching design spec -->
     <div
       v-else
-      class="pointer-events-auto w-full max-w-sm rounded-3xl border-[3px] border-white shadow-2xl overflow-hidden flex flex-col"
-      style="background-color: #5FC5BD; max-height: 85vh;"
+      class="pointer-events-auto touch-manipulation w-full max-w-sm rounded-3xl border-[3px] border-white shadow-2xl overflow-hidden flex flex-col"
+      style="background-color: #5FC5BD; max-height: 85dvh;"
     >
-      <!-- Drag handle to collapse -->
-      <div class="flex justify-center pt-2 pb-1 cursor-pointer flex-shrink-0" @click="toggleState">
-        <div class="w-10 h-1 bg-white/50 rounded-full" />
+      <!-- Drag handle to collapse + explicit close -->
+      <div class="relative flex justify-center pt-2 pb-1 flex-shrink-0">
+        <div class="w-10 h-1 bg-white/50 rounded-full cursor-pointer" @click="toggleState" />
+        <button
+          type="button"
+          aria-label="Close"
+          class="absolute right-2 top-1 p-1 text-white/80 hover:text-white"
+          @click="emit('close')"
+        >
+          <UIcon name="i-heroicons-x-mark" class="h-5 w-5" />
+        </button>
       </div>
 
       <div class="overflow-y-auto px-6 pb-6 pt-2 space-y-4">
@@ -157,7 +173,7 @@ function toggleState() {
           <span class="inline-block border-2 border-white rounded-full px-4 py-1 text-sm text-white font-medium">
             Description:
           </span>
-          <p class="text-white text-sm leading-relaxed mt-3">{{ p?.description }}</p>
+          <p class="whitespace-pre-line text-white text-sm leading-relaxed mt-3">{{ p?.description }}</p>
         </div>
 
         <!-- Photo carousel with white border -->
@@ -217,15 +233,22 @@ function toggleState() {
               class="rounded-xl bg-white/15 p-3"
             >
               <div v-if="c.media.length" class="mb-2 grid grid-cols-3 gap-1.5">
-                <a
-                  v-for="(m, mi) in c.media"
-                  :key="mi"
-                  :href="m.url"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
-                  <img :src="m.url" :alt="m.name" class="h-16 w-full rounded object-cover" />
-                </a>
+                <template v-for="(m, mi) in c.media" :key="mi">
+                  <audio
+                    v-if="m.kind === 'audio'"
+                    :src="m.url"
+                    controls
+                    class="col-span-3 w-full"
+                  />
+                  <a
+                    v-else
+                    :href="m.url"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    <img :src="m.url" :alt="m.name" class="h-16 w-full rounded object-cover" />
+                  </a>
+                </template>
               </div>
               <p v-if="c.comment" class="text-xs text-white">{{ c.comment }}</p>
             </div>

@@ -30,8 +30,26 @@ export default defineNuxtConfig({
     '@pinia/nuxt',
     '@nuxt/ui',
     'nuxt-vuefire',
-    'nuxt-color-picker'
+    'nuxt-color-picker',
+    '@nuxtjs/i18n'
   ],
+
+  // Automatic English/Portuguese: detects the browser language on first visit,
+  // then remembers the user's choice from the header switcher. `no_prefix`
+  // keeps the URLs clean (this is a single-page map app).
+  i18n: {
+    strategy: 'no_prefix',
+    defaultLocale: 'en',
+    locales: [
+      { code: 'en', language: 'en-US', name: 'English', file: 'en.json' },
+      { code: 'pt', language: 'pt-BR', name: 'Português', file: 'pt.json' },
+    ],
+    detectBrowserLanguage: {
+      useCookie: true,
+      cookieKey: 'mnc_locale',
+      redirectOn: 'root',
+    },
+  },
 
   vuefire: {
     config: {

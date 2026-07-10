@@ -7,6 +7,7 @@ import connectivityIcon from '@base/assets/icons/Connectivity.svg'
 import artIcon from '@base/assets/icons/Art.svg'
 import communityIcon from '@base/assets/icons/Community.svg'
 import { useFilterStore } from '../stores/filter'
+import { categoryMeta } from '../composables/categoryMeta'
 
 const filterStore = useFilterStore()
 const search = ref('')
@@ -23,11 +24,11 @@ function categoryIcon(tag: string | undefined): string | null {
   return tag ? ICONS[tag] ?? null : null
 }
 
-// All case studies (curated + user-submitted), filtered by the search query,
-// sorted alphabetically by title.
+// Case studies matching the active theme filter (so a tag click / theme toggle
+// narrows this list too), filtered by the search query, sorted A→Z by title.
 const items = computed<Feature[]>(() => {
   const q = search.value.trim().toLowerCase()
-  const all = [...filterStore.mncFeatures].sort((a, b) =>
+  const all = [...filterStore.visibleFeatures].sort((a, b) =>
     (a.comment || '').localeCompare(b.comment || ''),
   )
   if (!q)
@@ -47,6 +48,17 @@ function coverImage(feature: Feature): string | null {
 
 function primaryTag(feature: Feature): string {
   return (feature.properties as any)?.primaryTag || ''
+}
+
+// Category chip: tinted background in both themes, with the darkened ink on the
+// light card and the vivid color on the dark card so the label stays legible.
+const colorMode = useColorMode()
+function tagChipStyle(tag: string) {
+  const m = categoryMeta(tag)
+  return {
+    backgroundColor: `${m.color}22`,
+    color: colorMode.value === 'dark' ? m.color : m.ink,
+  }
 }
 
 function itemMeta(feature: Feature): string {
@@ -137,8 +149,10 @@ function select(feature: Feature) {
             <div class="flex flex-1 flex-col gap-1.5 p-4">
               <span
                 v-if="primaryTag(feature)"
-                class="inline-flex w-fit items-center gap-1 rounded-full bg-teal-100 px-2.5 py-0.5 text-xs font-medium text-teal-800 dark:bg-teal-900/40 dark:text-teal-300"
+                class="inline-flex w-fit items-center gap-1 rounded-full px-2.5 py-0.5 text-xs font-medium"
+                :style="tagChipStyle(primaryTag(feature))"
               >
+                <UIcon :name="categoryMeta(primaryTag(feature)).icon" class="h-3 w-3" />
                 {{ primaryTag(feature) }}
               </span>
               <p class="line-clamp-2 text-sm font-semibold leading-snug text-gray-900 dark:text-white">

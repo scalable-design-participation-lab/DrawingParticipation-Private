@@ -21,11 +21,22 @@ export const useFilterStore = defineStore('filter', () => {
   const visibleTags = ref<Set<string>>(new Set<string>(PRIMARY_TAGS))
   const selectedFeature = ref<Feature | null>(null)
 
-  const mncFeatures = computed(() =>
-    featureStore.features.filter(
-      f => (f.properties as any)?.string_id,
-    ),
-  )
+  // MNC catalog + user-submitted entries, de-duplicated by title. Fake/trial
+  // user submissions often repeat an existing project's title (with a different
+  // string_id), so title is a better key than id here. Static catalog entries
+  // load before user solutions, so they win a tie.
+  const mncFeatures = computed(() => {
+    const seen = new Set<string>()
+    const out: Feature[] = []
+    for (const f of featureStore.features) {
+      if (!(f.properties as any)?.string_id) continue
+      const key = (f.comment || '').trim().toLowerCase() || (f.properties as any).string_id
+      if (seen.has(key)) continue
+      seen.add(key)
+      out.push(f)
+    }
+    return out
+  })
 
   const grouped = computed<Record<string, Feature[]>>(() => {
     const out: Record<string, Feature[]> = {}
@@ -70,6 +81,24 @@ export const useFilterStore = defineStore('filter', () => {
     visibleTags.value = next
   }
 
+  // Make sure a tag is shown — used when a user creates a brand-new theme so
+  // its pin isn't immediately filtered out.
+  function ensureTagVisible(tag: string) {
+    if (tag && !visibleTags.value.has(tag))
+      visibleTags.value = new Set(visibleTags.value).add(tag)
+  }
+
+  // Show only the given tag on the map (used when a tag chip is clicked) and
+  // open the list so the matching entries are listed together.
+  function showOnlyTag(tag: string) {
+    visibleTags.value = new Set([tag])
+  }
+
+  function openList() {
+    isListOpen.value = true
+    isPanelOpen.value = false
+  }
+
   function selectFeature(f: Feature | null) {
     selectedFeature.value = f
   }
@@ -91,6 +120,9 @@ export const useFilterStore = defineStore('filter', () => {
     togglePanel,
     toggleList,
     toggleTag,
+    ensureTagVisible,
+    showOnlyTag,
+    openList,
     selectFeature,
     clearSelection,
   }

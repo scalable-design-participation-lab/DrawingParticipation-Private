@@ -9,18 +9,25 @@
         <span class="text-sm font-medium text-white">Add photo or comment</span>
       </div>
 
-      <!-- Live previews of the images chosen this session -->
+      <!-- Live previews of the media chosen this session -->
       <div v-if="items.length" class="grid grid-cols-3 gap-2 mb-3">
-        <img
-          v-for="(item, i) in items"
-          :key="`thumb-${i}`"
-          :src="item.previewUrl"
-          :alt="item.fileName"
-          class="h-16 w-full object-cover rounded"
-        />
+        <template v-for="(item, i) in items" :key="`thumb-${i}`">
+          <img
+            v-if="!item.isAudio"
+            :src="item.previewUrl"
+            :alt="item.fileName"
+            class="h-16 w-full object-cover rounded"
+          />
+          <div
+            v-else
+            class="h-16 w-full rounded bg-slate-700 flex items-center justify-center"
+          >
+            <UIcon name="i-heroicons-musical-note" class="h-6 w-6 text-teal-300" />
+          </div>
+        </template>
       </div>
 
-      <!-- File picker. Images only for now; video support is planned. -->
+      <!-- File picker: photos or audio. -->
       <div
         class="relative w-full h-32 bg-slate-800 rounded overflow-hidden mb-3"
       >
@@ -29,15 +36,15 @@
         >
           <UIcon name="i-heroicons-arrow-up-tray" class="w-10 h-10 mb-2" />
           <p class="text-sm text-center px-4">
-            Click to select images
+            Click to select photos or audio
           </p>
           <p class="text-xs text-center px-4 text-gray-500 mt-1">
-            Images only · up to 10 MB each
+            Photos or audio · up to 10 MB each
           </p>
         </div>
         <input
           type="file"
-          accept="image/*"
+          accept="image/*,audio/*"
           multiple
           class="absolute inset-0 opacity-0 cursor-pointer"
           @change="handleImageSelect"
@@ -77,6 +84,10 @@
         placeholder="Write a comment"
         class="flex-grow text-sm resize-none mt-4"
       />
+
+      <p class="text-[11px] leading-snug text-gray-500 mt-2">
+        Anything you add is shown publicly on this project.
+      </p>
 
       <p v-if="errorMessage" class="text-xs text-red-400 mt-2">
         {{ errorMessage }}
@@ -130,14 +141,14 @@ const localComment = ref('')
 const isSubmitting = ref(false)
 const errorMessage = ref('')
 
-// "Add" is enabled only when at least one image has finished uploading
-// successfully and no upload is still in flight. A comment alone is not enough.
-const canSubmit = computed(() =>
-  !isSubmitting.value
-  && items.value.length > 0
-  && items.value.every(item => item.status !== 'uploading')
-  && items.value.some(item => item.status === 'success'),
-)
+// "Add" is enabled once nothing is still uploading and the user has provided
+// SOMETHING — a comment on its own is enough; media is optional (and vice versa).
+const canSubmit = computed(() => {
+  const anyUploading = items.value.some(item => item.status === 'uploading')
+  const hasMedia = items.value.some(item => item.status === 'success')
+  const hasComment = localComment.value.trim().length > 0
+  return !isSubmitting.value && !anyUploading && (hasMedia || hasComment)
+})
 
 async function handleImageSelect(event) {
   const fileInput = event.target
@@ -146,9 +157,9 @@ async function handleImageSelect(event) {
 
   errorMessage.value = ''
 
-  // Only accept images for now (video support is planned).
+  // Accept photos and audio clips.
   const picked = Array.from(fileInput.files).filter(file =>
-    file.type.startsWith('image/'),
+    file.type.startsWith('image/') || file.type.startsWith('audio/'),
   )
 
   for (const file of picked) {
@@ -156,6 +167,7 @@ async function handleImageSelect(event) {
       fileName: file.name,
       label: `${file.name} (${(file.size / (1024 * 1024)).toFixed(1)} MB)`,
       previewUrl: URL.createObjectURL(file),
+      isAudio: file.type.startsWith('audio/'),
       progress: 0,
       status: 'uploading',
       media: null,

@@ -1,10 +1,12 @@
-import { addDoc, collection, getDocs, getFirestore, serverTimestamp } from 'firebase/firestore'
+import { addDoc, collection, deleteDoc, doc, getDocs, getFirestore, query, serverTimestamp, updateDoc, where } from 'firebase/firestore'
 import { getAuth } from 'firebase/auth'
 import { defineStore } from 'pinia'
 import { ref } from 'vue'
 import { fromLonLat, toLonLat } from 'ol/proj'
 import { useFeatureStore } from '@base/stores/features'
 import { Properties } from './types/store'
+import { useFilterStore } from './filter'
+import { useAuthStore } from './auth'
 
 /** Firestore collection holding user-submitted solutions (separate from the
  *  curated mncData.json catalog). */
@@ -19,6 +21,16 @@ export interface SolutionInput {
   coordinate: [number, number] // EPSG:3857 (map projection)
 }
 
+/** A user solution as seen by a moderator (with its Firestore id + status). */
+export interface ModeratedSolution {
+  id: string
+  string_id: string
+  title: string
+  primaryTag: string
+  location: string
+  approved: boolean
+}
+
 function slugify(s: string): string {
   return s
     .toLowerCase()
@@ -28,12 +40,20 @@ function slugify(s: string): string {
 }
 
 /**
- * Pinia store for user-submitted "solutions" (new case-study pins). A new
- * solution is shown on the map immediately (added to the shared feature store)
- * and persisted to Firestore on a best-effort basis.
+ * Pinia store for user-submitted "solutions" (new case-study pins). New
+ * submissions are shown to their author immediately but persisted as
+ * unapproved; on reload only approved solutions load for the public, while
+ * moderators see everything and can approve or delete.
  */
 export const useSolutionsStore = defineStore('solutions', () => {
-  const { addFeature } = useFeatureStore()
+  const featureStore = useFeatureStore()
+  const filterStore = useFilterStore()
+
+  // Firestore ids already rendered on the map, so re-fetching (e.g. after an
+  // admin signs in) doesn't stack duplicate pins.
+  const loadedIds = new Set<string>()
+  // Every user solution the current admin can moderate.
+  const moderation = ref<ModeratedSolution[]>([])
 
   // True while the user is in "click the map to place your pin" mode.
   const isPlacing = ref(false)
@@ -45,7 +65,8 @@ export const useSolutionsStore = defineStore('solutions', () => {
   }
 
   // Adds a solution to the shared feature store so it renders like a curated
-  // pin (MncMapLayer keys off properties.primaryTag / string_id).
+  // pin (MncMapLayer keys off properties.primaryTag / string_id). De-duped by
+  // string_id so repeated fetches don't double-render.
   function addSolutionFeature(s: {
     string_id: string
     title: string
@@ -55,10 +76,11 @@ export const useSolutionsStore = defineStore('solutions', () => {
     location: string
     coordinate: [number, number]
   }) {
+    if (loadedIds.has(s.string_id))
+      return
+    loadedIds.add(s.string_id)
     addFeature({
       type: 'Point',
-      // MncMapLayer keys off properties.primaryTag; iconName isn't in the base
-      // IconType union for MNC themes, so cast to satisfy the Feature type.
       iconName: s.primaryTag as any,
       coordinates: s.coordinate,
       comment: s.title,
@@ -79,11 +101,17 @@ export const useSolutionsStore = defineStore('solutions', () => {
       ),
     })
   }
+  const { addFeature, features } = featureStore
 
-  /** Create a new solution: show it now, then try to persist it. */
-  async function addSolution(input: SolutionInput): Promise<void> {
+  /** Create a new solution: show it now, then try to persist it (as pending).
+   *  Returns the generated string_id so the caller can attach uploaded media. */
+  async function addSolution(input: SolutionInput): Promise<string> {
     const string_id = `user_${slugify(input.title)}_${Math.floor(Math.random() * 100000)}`
     const [lon, lat] = toLonLat(input.coordinate)
+
+    // A user-created theme isn't in the default visible set, so make sure it is
+    // shown — otherwise the new pin would be filtered straight back off the map.
+    filterStore.ensureTagVisible(input.primaryTag)
 
     addSolutionFeature({
       string_id,
@@ -108,25 +136,47 @@ export const useSolutionsStore = defineStore('solutions', () => {
         lon,
         lat,
         userId: getAuth().currentUser?.uid || 'anonymous',
+        // New submissions wait for a moderator before they go public.
+        approved: false,
         createdAt: serverTimestamp(),
       })
     }
     catch (err) {
       console.warn('Could not persist solution (shown locally only):', err)
     }
+
+    return string_id
   }
 
-  /** Load previously submitted solutions from Firestore onto the map. */
+  /** Load solutions from Firestore onto the map. The public sees only approved
+   *  ones; a signed-in admin sees everything and can moderate. */
   async function fetchSolutions(): Promise<void> {
+    const authStore = useAuthStore()
+    const admin = authStore.isAdmin
     try {
       const db = getFirestore()
-      const snapshot = await getDocs(collection(db, COLLECTION))
-      snapshot.docs.forEach((doc) => {
-        const data = doc.data() as any
+      const col = collection(db, COLLECTION)
+      const snapshot = await getDocs(admin ? col : query(col, where('approved', '==', true)))
+      moderation.value = []
+      snapshot.docs.forEach((d) => {
+        const data = d.data() as any
         if (typeof data.lon !== 'number' || typeof data.lat !== 'number')
           return
+        const approved = data.approved === true
+        if (admin) {
+          moderation.value.push({
+            id: d.id,
+            string_id: data.string_id || d.id,
+            title: data.title || 'Untitled',
+            primaryTag: data.primaryTag || '',
+            location: data.location || '',
+            approved,
+          })
+        }
+        // Public: only approved reach here (query already filtered). Admin: show
+        // all, including pending, so they can review them on the map.
         addSolutionFeature({
-          string_id: data.string_id || doc.id,
+          string_id: data.string_id || d.id,
           title: data.title || 'Untitled',
           shortDesc: data.shortDesc || '',
           description: data.description || '',
@@ -141,5 +191,32 @@ export const useSolutionsStore = defineStore('solutions', () => {
     }
   }
 
-  return { isPlacing, startPlacing, cancelPlacing, addSolution, fetchSolutions }
+  /** Moderator: approve a pending solution so it becomes public. */
+  async function approveSolution(id: string): Promise<void> {
+    await updateDoc(doc(getFirestore(), COLLECTION, id), { approved: true })
+    const m = moderation.value.find(x => x.id === id)
+    if (m)
+      m.approved = true
+  }
+
+  /** Moderator: delete a solution and remove its pin from the map. */
+  async function deleteSolution(id: string, string_id: string): Promise<void> {
+    await deleteDoc(doc(getFirestore(), COLLECTION, id))
+    moderation.value = moderation.value.filter(x => x.id !== id)
+    loadedIds.delete(string_id)
+    const idx = features.findIndex(f => (f.properties as any)?.string_id === string_id)
+    if (idx !== -1)
+      features.splice(idx, 1)
+  }
+
+  return {
+    isPlacing,
+    moderation,
+    startPlacing,
+    cancelPlacing,
+    addSolution,
+    fetchSolutions,
+    approveSolution,
+    deleteSolution,
+  }
 })

@@ -6,6 +6,7 @@ import type { MapType, Feature } from '@base/stores/types/store'
 import { useDb } from '../stores/db'
 import { useFilterStore } from '../stores/filter'
 import { useSolutionsStore } from '../stores/solutions'
+import { useAuthStore } from '../stores/auth'
 import { useIsMobile } from '../composables/useIsMobile'
 
 // Map store
@@ -14,6 +15,7 @@ const mapStore = useMapStore()
 const dbStore = useDb()
 const filterStore = useFilterStore()
 const solutionsStore = useSolutionsStore()
+const authStore = useAuthStore()
 const { setMapType } = mapStore
 const currentMapType = ref('vector')
 const isLoading = ref(true)
@@ -62,15 +64,27 @@ function closeMobileProject() {
   selectedMobileFeature.value = null
 }
 
+// The title links out to the main MNC website (mobilecreativity.net), which
+// also carries the team page — so the in-app "About" is no longer needed.
 const leftItems = ref([
   {
     label: 'Mobile Networked Creativity',
     color: 'black',
-    to: '/about/',
+    to: 'https://mobilecreativity.net',
   },
 ])
 
+// Persistent language switcher (English / Portuguese) in the header.
+const { locale, setLocale } = useI18n()
+function toggleLocale() {
+  setLocale(locale.value === 'en' ? 'pt' : 'en')
+}
+
 const rightItems = ref([
+  {
+    label: computed(() => (locale.value === 'en' ? 'PT' : 'EN')),
+    onClick: toggleLocale,
+  },
   {
     icon: computed(() =>
       currentMapType.value === 'vector'
@@ -79,7 +93,7 @@ const rightItems = ref([
     ),
     onClick: () => {
       currentMapType.value
-        = currentMapType.value === 'vector' ? 'satellite' : 'vector' 
+        = currentMapType.value === 'vector' ? 'satellite' : 'vector'
       setMapType(currentMapType.value as MapType)
     },
   },
@@ -111,6 +125,7 @@ async function initializeApp() {
 
 // Initialize on mount
 onMounted(() => {
+  authStore.init()
   initializeApp()
 })
 </script>
@@ -140,11 +155,26 @@ onMounted(() => {
         :left-items="leftItems"
         :right-items="rightItems"
         :primary-accent-color="headerPrimaryAccentColor"
+        :show-icon="false"
+        :show-menu="false"
+        logo-src="/mnc-logo.svg"
+        logo-link="https://mobilecreativity.net"
+        logo-alt="Mobile Networked Creativity"
       />
-      <GeneralizedFooter class="z-20" />
 
       <!-- Desktop only -->
+      <ThemeFilterBar v-if="!isMobile" />
       <BottomBar v-if="!isMobile" />
+      <!-- Help: re-open the intro/onboarding for a quick refresher -->
+      <button
+        v-if="!isMobile"
+        type="button"
+        aria-label="Help"
+        class="fixed bottom-6 right-6 z-40 flex h-11 w-11 items-center justify-center rounded-full bg-white dark:bg-zinc-900 text-lg font-semibold text-gray-500 dark:text-gray-300 shadow-lg border border-gray-200 dark:border-white/10 transition-transform hover:scale-105"
+        @click="showOnboarding = true"
+      >
+        ?
+      </button>
       <FilteredSelectionSidebar v-if="!isMobile && filterStore.isPanelOpen" />
       <ProjectListPanel v-if="!isMobile && filterStore.isListOpen" />
 
@@ -176,7 +206,18 @@ onMounted(() => {
           @close="closeContribute"
           @submit="onContributeSubmit"
         />
+
+        <!-- "Info" tab: reuse the intro as an about/help panel -->
+        <OnboardingModal
+          v-if="mobileView === 'info'"
+          :is-visible="true"
+          @close="mobileView = 'map'"
+        />
       </template>
+
+      <!-- Moderator sign-in + entry review (visible to everyone; only admins
+           get the review panel after signing in). -->
+      <AdminBar />
 
       <OnboardingModal
         :is-visible="showOnboarding"

@@ -32,10 +32,10 @@
           :showNextArrow="false"
           :showExpand="true"
           :title="selectedFeature.comment"
-          :date-published="selectedFeature.properties?.date || 'hi'"
-          :imagePath="'/Solution_Photos/'+ selectedFeature.properties?.string_id +'/1.png'"
-          :location="selectedFeature.properties?.location || 'hi'"
-          :caption="selectedFeature.properties?.mediaCaptions || 'hi'"
+          :date-published="selectedFeature.properties?.date || ''"
+          :imagePath="selectedFeature.properties?.photos?.[0] || ''"
+          :location="selectedFeature.properties?.location || ''"
+          :caption="selectedFeature.properties?.mediaCaptions || ''"
           :primary-tag="selectedFeature.properties?.primaryTag || ''"
           @click-expand="handleExpandedPopup"
           @click-close="handleCloseQuickLook"
@@ -98,6 +98,7 @@ import { computed, ref, watch } from 'vue'
 import { useRoute } from 'nuxt/app'
 import { useFilterStore } from '../stores/filter'
 import { useSolutionsStore, type SolutionInput } from '../stores/solutions'
+import { useContributionsStore } from '../stores/contributions'
 import { useIsMobile } from '../composables/useIsMobile'
 import InfoPopup from './infoPopup.vue'
 
@@ -123,12 +124,17 @@ const { isMobile } = useIsMobile()
 
 const filterStore = useFilterStore()
 const solutionsStore = useSolutionsStore()
+const contributions = useContributionsStore()
 
 // Map coordinate (EPSG:3857) captured for a new solution; non-null shows the form.
 const pendingCoord = ref<[number, number] | null>(null)
 
-// While in placement mode, a map click captures the coordinate and opens the
-// "Add a Solution" form. Otherwise clicks on the empty map are ignored.
+// Map-click behavior: capture the coordinate for the mobile contribute flow,
+// otherwise dismiss any open detail, otherwise (desktop) open the "Add a
+// Solution" form directly at the click — a single tap, no need to arm "+" first.
+// OpenLayers only fires 'click' on a real click (a pan is a drag), so casual
+// exploration isn't hijacked. ponytail: keep the "+" as an alternative entry
+// point; revert to the isPlacing gate if direct-tap proves too eager.
 function handleMapClick(event: any) {
   const coordinate = event?.coordinate
   const valid = Array.isArray(coordinate) && coordinate.length === 2
@@ -140,17 +146,42 @@ function handleMapClick(event: any) {
     return
   }
 
-  if (!solutionsStore.isPlacing)
+  // First click on the empty map closes an open QuickLook/detail rather than
+  // opening the add form.
+  if (showQuickLook.value || showPopup.value) {
+    showQuickLook.value = false
+    showPopup.value = false
+    filterStore.clearSelection()
     return
-  if (valid) {
-    pendingCoord.value = [coordinate[0], coordinate[1]]
-    solutionsStore.cancelPlacing()
   }
+
+  if (!valid || isMobile.value)
+    return
+  pendingCoord.value = [coordinate[0], coordinate[1]]
+  solutionsStore.cancelPlacing()
 }
 
-function onSaveSolution(payload: SolutionInput) {
-  solutionsStore.addSolution(payload)
+async function onSaveSolution(payload: SolutionInput & { files?: File[] }) {
+  const { files = [], ...solution } = payload
+  const stringId = await solutionsStore.addSolution(solution)
   pendingCoord.value = null
+  // Recenter on the new pin so it's never dropped off-screen (the "I added an
+  // entry but it didn't show up" report).
+  flyToFeature({ coordinates: payload.coordinate })
+
+  // Best-effort: attach any chosen photos/audio to the new entry.
+  if (files.length && stringId) {
+    try {
+      const media = []
+      for (const f of files)
+        media.push(await contributions.uploadFile(stringId, f))
+      if (media.length)
+        await contributions.addContribution(stringId, { comment: '', media })
+    }
+    catch (e) {
+      console.warn('Could not attach media to new entry:', e)
+    }
+  }
 }
 
 // Popup state. The current selection is held in the filter store so that the
