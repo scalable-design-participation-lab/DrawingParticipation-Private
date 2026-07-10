@@ -86,5 +86,5 @@ const emit = defineEmits(['close'])
 
 // Language switcher state (English / Portuguese).
 const { locale, setLocale } = useI18n()
-const langs = [{ code: 'en' }, { code: 'pt' }]
+const langs = [{ code: 'en' }, { code: 'pt' }] as const
 </script>

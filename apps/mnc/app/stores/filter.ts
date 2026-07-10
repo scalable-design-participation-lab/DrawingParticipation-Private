@@ -88,8 +88,8 @@ export const useFilterStore = defineStore('filter', () => {
       visibleTags.value = new Set(visibleTags.value).add(tag)
   }
 
-  // Show only the given tag on the map (used when a tag chip is clicked) and
-  // open the list so the matching entries are listed together.
+  // Narrow the map to a single tag (used when a tag chip is clicked). The
+  // caller pairs this with openList() to show the matching entries together.
   function showOnlyTag(tag: string) {
     visibleTags.value = new Set([tag])
   }

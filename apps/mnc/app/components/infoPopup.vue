@@ -369,12 +369,6 @@ const tagChipStyle = computed(() => ({
   backgroundColor: `${primaryMeta.value.color}22`,
   color: colorMode.value === 'dark' ? primaryMeta.value.color : primaryMeta.value.ink,
 }))
-const secondaryTagText = computed(() =>
-  Array.isArray(props.secondaryTag)
-    ? props.secondaryTag.join(', ')
-    : props.secondaryTag || 'N/A',
-)
-
 // Individual secondary tags, for rendering as separate chips.
 const secondaryTagList = computed<string[]>(() => {
   const s = props.secondaryTag

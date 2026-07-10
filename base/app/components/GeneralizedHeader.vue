@@ -271,8 +271,9 @@ const accentTextStyle = computed(() => {
       </div>
     </header>
 
-    <!-- Add popups -->
-    <MenuModal v-model="showMenuModal" @select="handleMenuSelect" />
+    <!-- Add popups (only when the menu is enabled; apps that hide the ellipsis
+         also drop the menu + its Support modal entirely) -->
+    <MenuModal v-if="showMenu" v-model="showMenuModal" @select="handleMenuSelect" />
   </div>
 </template>
 

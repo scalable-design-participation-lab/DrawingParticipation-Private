@@ -66,7 +66,10 @@
     "pinNote": "Pin location is set from where you tapped the map.",
     "required": "A title, a theme, and a location are required.",
     "cancel": "Cancel",
-    "submit": "Add to map"
+    "submit": "Add to map",
+    "placeBanner": "Click the map to place your solution",
+    "pickBanner": "Tap the map to drop your pin",
+    "locationPlaceholder": "e.g. Nairobi, Kenya"
   },
   "list": {
     "title": "All Solutions",

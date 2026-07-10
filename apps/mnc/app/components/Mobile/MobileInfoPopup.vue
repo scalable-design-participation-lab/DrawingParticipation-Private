@@ -3,6 +3,8 @@ import { computed, onMounted, ref, watch } from 'vue'
 import type { Feature } from '@base/stores/types/store'
 import type { Properties } from '../../stores/types/store'
 import { useContributionsStore } from '../../stores/contributions'
+import type { Contribution } from '../../stores/types/contribution'
+import { useAuthStore } from '../../stores/auth'
 
 const props = defineProps<{
   feature: Feature
@@ -18,7 +20,15 @@ const p = computed(() => props.feature.properties as Properties | undefined)
 
 // Community contributions (user-uploaded photos + comments) for this project.
 const contributions = useContributionsStore()
+const auth = useAuthStore()
 const showUpload = ref(false)
+
+async function approveContribution(c: Contribution) {
+  await contributions.approveContribution(c.id!, p.value?.string_id || '')
+}
+async function deleteContribution(c: Contribution) {
+  await contributions.deleteContribution(c)
+}
 const projectContributions = computed(
   () => contributions.byProject[p.value?.string_id || ''] || [],
 )
@@ -34,9 +44,6 @@ function handleUploaded() {
   showUpload.value = false
 }
 
-const imagePath = computed(() =>
-  p.value?.string_id ? `/Solution_Photos/${p.value.string_id}/1.png` : null,
-)
 
 // Photos come from the project's manifest; user-submitted pins have none and
 // fall through to the carousel's empty state (no broken /Solution_Photos URL).
@@ -138,7 +145,7 @@ function toggleState() {
         <div class="w-10 h-1 bg-white/50 rounded-full cursor-pointer" @click="toggleState" />
         <button
           type="button"
-          aria-label="Close"
+          :aria-label="$t('mDetail.close')"
           class="absolute right-2 top-1 p-1 text-white/80 hover:text-white"
           @click="emit('close')"
         >
@@ -251,6 +258,28 @@ function toggleState() {
                 </template>
               </div>
               <p v-if="c.comment" class="text-xs text-white">{{ c.comment }}</p>
+
+              <!-- Moderator: pending badge + approve/delete -->
+              <div v-if="auth.isAdmin" class="mt-2 flex items-center gap-2">
+                <span v-if="!c.approved" class="rounded-full bg-amber-200/90 px-2 py-0.5 text-[10px] font-semibold text-amber-800">
+                  {{ $t('detail.pending') }}
+                </span>
+                <button
+                  v-if="!c.approved"
+                  type="button"
+                  class="rounded-full bg-white/80 px-2.5 py-0.5 text-[11px] font-semibold text-teal-700"
+                  @click="approveContribution(c)"
+                >
+                  {{ $t('detail.approve') }}
+                </button>
+                <button
+                  type="button"
+                  class="rounded-full bg-red-500/90 px-2.5 py-0.5 text-[11px] font-semibold text-white"
+                  @click="deleteContribution(c)"
+                >
+                  {{ $t('detail.delete') }}
+                </button>
+              </div>
             </div>
           </div>
         </div>

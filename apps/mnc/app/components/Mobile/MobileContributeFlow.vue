@@ -177,7 +177,7 @@ function prettyCoord(coord: [number, number]): string {
       </p>
       <UButton
         class="mt-10 rounded-full px-6"
-        :style="{ backgroundColor: '#FB6D6D' }"
+        :style="{ backgroundColor: '#C0392B', color: '#ffffff' }"
         @click="reset"
       >
         {{ $t('contribute.anotherStory') }}

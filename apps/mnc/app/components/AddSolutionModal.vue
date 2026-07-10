@@ -138,7 +138,7 @@ function submit() {
             {{ $t('add.location') }}
             <span v-if="geocoding" class="font-normal text-gray-400">· {{ $t('add.detecting') }}</span>
           </label>
-          <UInput v-model="form.location" placeholder="e.g. Nairobi, Kenya" />
+          <UInput v-model="form.location" :placeholder="$t('add.locationPlaceholder')" />
           <p class="mt-1 text-xs text-gray-400">{{ $t('add.locationHint') }}</p>
         </div>
 

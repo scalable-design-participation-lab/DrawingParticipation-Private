@@ -69,9 +69,9 @@
     style="border: 2px solid #FB6D6D;"
   >
     <UIcon name="i-heroicons-map-pin" class="h-5 w-5" :style="{ color: '#FB6D6D' }" />
-    <span class="text-sm font-medium text-gray-900 dark:text-white">Click the map to place your solution</span>
+    <span class="text-sm font-medium text-gray-900 dark:text-white">{{ $t('add.placeBanner') }}</span>
     <UButton color="gray" variant="ghost" size="xs" class="rounded-full" @click="solutionsStore.cancelPlacing()">
-      Cancel
+      {{ $t('add.cancel') }}
     </UButton>
   </div>
 
@@ -82,7 +82,7 @@
     style="border: 2px solid #FB6D6D;"
   >
     <UIcon name="i-heroicons-map-pin" class="h-5 w-5" :style="{ color: '#FB6D6D' }" />
-    <span class="text-sm font-medium text-gray-900 dark:text-white">Tap the map to drop your pin</span>
+    <span class="text-sm font-medium text-gray-900 dark:text-white">{{ $t('add.pickBanner') }}</span>
   </div>
 
   <AddSolutionModal

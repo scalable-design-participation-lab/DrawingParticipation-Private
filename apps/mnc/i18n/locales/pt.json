@@ -66,7 +66,10 @@
     "pinNote": "A localização do marcador é definida por onde você tocou no mapa.",
     "required": "Título, tema e localização são obrigatórios.",
     "cancel": "Cancelar",
-    "submit": "Adicionar ao mapa"
+    "submit": "Adicionar ao mapa",
+    "placeBanner": "Clique no mapa para posicionar sua solução",
+    "pickBanner": "Toque no mapa para marcar seu ponto",
+    "locationPlaceholder": "ex.: Nairóbi, Quênia"
   },
   "list": {
     "title": "Todas as soluções",
