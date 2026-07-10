@@ -26,11 +26,28 @@
     "add": "Adicionar",
     "addPhoto": "Adicionar foto ou comentário",
     "noContributions": "Ainda não há contribuições da comunidade. Seja o primeiro a adicionar uma foto ou comentário.",
-    "showAll": "Mostrar todos os registros de {tag}"
+    "showAll": "Mostrar todos os registros de {tag}",
+    "close": "Fechar",
+    "connection": "Conexão com a Criatividade Móvel em Rede",
+    "readMore": "Ler mais",
+    "readLess": "Ler menos",
+    "loading": "Carregando…",
+    "pending": "Pendente",
+    "approve": "Aprovar",
+    "delete": "Excluir",
+    "anonymous": "Anônimo",
+    "contributor": "Colaborador",
+    "justNow": "agora mesmo",
+    "minutesAgo": "há {n}min",
+    "hoursAgo": "há {n}h",
+    "daysAgo": "há {n}d"
   },
   "photo": {
     "noPhoto": "Ainda sem foto",
-    "beFirst": "Seja o primeiro a adicionar uma"
+    "beFirst": "Seja o primeiro a adicionar uma",
+    "prevPhoto": "Foto anterior",
+    "nextPhoto": "Próxima foto",
+    "goToPhoto": "Ir para a foto {n}"
   },
   "add": {
     "title": "Adicionar um registro",
@@ -56,11 +73,105 @@
     "search": "Buscar soluções…",
     "empty": "Nenhuma solução corresponde a “{q}”.",
     "nearest": "Mais próximos de você",
-    "all": "Todos os registros"
+    "all": "Todos os registros",
+    "close": "Fechar",
+    "untitled": "Sem título",
+    "emptyList": "Nenhum projeto carregado ainda.",
+    "kmAway": "a {d} km de distância"
   },
   "lang": {
     "label": "Idioma",
     "en": "English",
     "pt": "Português"
+  },
+  "mDetail": {
+    "close": "Fechar",
+    "tapToExpand": "Toque para expandir",
+    "datePublished": "Data de publicação:",
+    "location": "Localização:",
+    "description": "Descrição:",
+    "learnMore": "Saiba mais:",
+    "community": "Comunidade",
+    "beFirst": "Seja o primeiro a adicionar uma foto ou comentário."
+  },
+  "quick": {
+    "noImage": "Nenhuma imagem disponível"
+  },
+  "upload": {
+    "clickToSelect": "Clique para selecionar fotos ou áudio",
+    "hint": "Fotos ou áudio · até 10 MB cada",
+    "commentPlaceholder": "Escreva um comentário",
+    "publicNote": "Tudo o que você adicionar é exibido publicamente neste projeto.",
+    "close": "Fechar",
+    "uploadError": "Falha em um ou mais envios. Tente novamente.",
+    "saveError": "Não foi possível salvar sua contribuição. Tente novamente."
+  },
+  "mod": {
+    "signInTitle": "Entrar como moderador",
+    "email": "E-mail",
+    "password": "Senha",
+    "signIn": "Entrar",
+    "notModerator": "Conectado, mas esta conta não é de moderador.",
+    "signInFailed": "Falha ao entrar. Verifique seu e-mail e senha.",
+    "reviewEntries": "Revisar registros",
+    "signOut": "Sair",
+    "noEntries": "Nenhum registro enviado por usuários.",
+    "live": "Publicado",
+    "pending": "Pendente",
+    "approve": "Aprovar",
+    "delete": "Excluir",
+    "moderate": "Moderar",
+    "close": "Fechar"
+  },
+  "contribute": {
+    "title": "Participe da Nossa Pesquisa",
+    "thankYou": "Obrigado",
+    "received": "Sua contribuição foi recebida e será analisada pela nossa equipe.",
+    "inTouch": "Entraremos em contato com você em breve!",
+    "anotherStory": "Conte-nos outra história",
+    "close": "Fechar",
+    "back": "Voltar",
+    "next": "Avançar",
+    "submit": "Enviar",
+    "descPlaceholder": "Digite sua descrição aqui",
+    "step1": {
+      "prompt": "Quer adicionar uma criação? Onde esse evento aconteceu?",
+      "placeholder": "Digite o local aqui ou toque para marcar no mapa",
+      "dropPin": "Toque para marcar um ponto no mapa",
+      "pinDropped": "Ponto marcado ({coord})"
+    },
+    "step2": {
+      "prompt": "Descreva brevemente um exemplo de Criatividade Móvel em Rede abaixo:"
+    },
+    "step3": {
+      "prompt": "Por que você acha que este é um bom exemplo de Criatividade Móvel em Rede?"
+    },
+    "step4": {
+      "prompt": "Você tem imagens ou vídeos para ilustrar o exemplo acima? Se sim, envie-os aqui:"
+    },
+    "step5": {
+      "prompt": "Quando esse evento aconteceu?"
+    },
+    "step6": {
+      "prompt": "Há alguma informação adicional que você gostaria de compartilhar sobre sua contribuição? Insira-a abaixo."
+    },
+    "step7": {
+      "prompt": "Você deseja vincular suas informações pessoais à sua contribuição?",
+      "yes": "Sim, quero que meu nome seja identificado na minha contribuição",
+      "no": "Não, quero enviar anonimamente",
+      "ifYes": "Se sim, informe seu nome, cidade e país.",
+      "fullName": "Nome completo",
+      "email": "Endereço de e-mail",
+      "country": "País",
+      "city": "Cidade",
+      "privacy": "Seu exemplo e qualquer mídia podem ser exibidos publicamente no mapa. Seu nome é exibido apenas se você escolher \"Sim\" acima. Seu e-mail é usado apenas para que possamos entrar em contato — ele nunca é exibido publicamente."
+    }
+  },
+  "fileUpload": {
+    "prompt": "Selecione um arquivo ou arraste e solte aqui",
+    "hint": "JPG, PNG ou PDF, tamanho máximo de 10 MB",
+    "removeFile": "Remover arquivo",
+    "tooLarge": "\"{name}\" excede {max} MB.",
+    "unsupported": "\"{name}\" não é um tipo de arquivo compatível."
   }
 }

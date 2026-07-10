@@ -82,7 +82,7 @@ function toggleState() {
           <div class="w-10 h-1 bg-gray-300 rounded-full cursor-pointer" @click="toggleState" />
           <button
             type="button"
-            aria-label="Close"
+            :aria-label="$t('mDetail.close')"
             class="absolute right-2 -top-1 p-1 text-gray-400 hover:text-gray-600 dark:hover:text-gray-200"
             @click="emit('close')"
           >
@@ -122,7 +122,7 @@ function toggleState() {
           class="w-full mt-4 justify-center text-gray-400"
           @click="toggleState"
         >
-          Tap to expand
+          {{ $t('mDetail.tapToExpand') }}
         </UButton>
       </div>
     </UCard>
@@ -155,7 +155,7 @@ function toggleState() {
         <!-- Date pill -->
         <div v-if="p?.date" class="flex items-center gap-3 flex-wrap">
           <span class="border-2 border-white rounded-full px-4 py-1 text-sm text-white font-medium whitespace-nowrap">
-            Date published:
+            {{ $t('mDetail.datePublished') }}
           </span>
           <span class="text-white text-sm">{{ p?.date }}</span>
         </div>
@@ -163,7 +163,7 @@ function toggleState() {
         <!-- Location pill -->
         <div v-if="p?.location" class="flex items-center gap-3 flex-wrap">
           <span class="border-2 border-white rounded-full px-4 py-1 text-sm text-white font-medium whitespace-nowrap">
-            Location:
+            {{ $t('mDetail.location') }}
           </span>
           <span class="text-white text-sm">{{ p?.location }}</span>
         </div>
@@ -171,7 +171,7 @@ function toggleState() {
         <!-- Description pill + text -->
         <div v-if="p?.description">
           <span class="inline-block border-2 border-white rounded-full px-4 py-1 text-sm text-white font-medium">
-            Description:
+            {{ $t('mDetail.description') }}
           </span>
           <p class="whitespace-pre-line text-white text-sm leading-relaxed mt-3">{{ p?.description }}</p>
         </div>
@@ -186,7 +186,7 @@ function toggleState() {
 
         <!-- Links -->
         <div v-if="parsedLinks.length">
-          <p class="text-sm font-bold text-white mb-2">Learn More:</p>
+          <p class="text-sm font-bold text-white mb-2">{{ $t('mDetail.learnMore') }}</p>
           <ul class="space-y-1">
             <li v-for="(link, i) in parsedLinks" :key="i" class="flex items-start gap-2">
               <UIcon name="i-heroicons-link" class="w-3 h-3 text-white flex-shrink-0 mt-0.5" />
@@ -207,7 +207,7 @@ function toggleState() {
         <div v-if="p?.string_id" class="border-t border-white/30 pt-4">
           <div class="mb-2 flex items-center justify-between">
             <p class="text-sm font-bold text-white">
-              Community
+              {{ $t('mDetail.community') }}
               <span v-if="projectContributions.length" class="font-normal text-white/70">
                 ({{ projectContributions.length }})
               </span>
@@ -218,12 +218,12 @@ function toggleState() {
               @click="showUpload = true"
             >
               <UIcon name="i-heroicons-plus" class="h-3.5 w-3.5" />
-              Add
+              {{ $t('detail.add') }}
             </button>
           </div>
 
           <p v-if="!projectContributions.length" class="text-xs text-white/70">
-            Be the first to add a photo or comment.
+            {{ $t('mDetail.beFirst') }}
           </p>
 
           <div v-else class="space-y-3">

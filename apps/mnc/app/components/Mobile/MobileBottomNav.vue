@@ -15,10 +15,10 @@ const emit = defineEmits<{
 }>()
 
 const defaultNavItems = [
-  { view: 'map' as MapView, icon: 'i-heroicons-map', label: 'Map' },
-  { view: 'list' as MapView, icon: 'i-heroicons-square-3-stack-3d', label: 'List of entries' },
-  { view: 'info' as MapView, icon: 'i-heroicons-information-circle', label: 'About this map' },
-  { view: 'more' as MapView, icon: 'i-heroicons-plus', label: 'Add entry' },
+  { view: 'map' as MapView, icon: 'i-heroicons-map', labelKey: 'nav.map' },
+  { view: 'list' as MapView, icon: 'i-heroicons-square-3-stack-3d', labelKey: 'nav.list' },
+  { view: 'info' as MapView, icon: 'i-heroicons-information-circle', labelKey: 'nav.info' },
+  { view: 'more' as MapView, icon: 'i-heroicons-plus', labelKey: 'nav.addEntry' },
 ]
 </script>
 
@@ -32,10 +32,10 @@ const defaultNavItems = [
     >
       <!-- Default navigation stays visible even with a project open (the detail
            popup has its own close/expand), so the user is never stranded. -->
-      <UTooltip v-for="item in defaultNavItems" :key="item.view" :text="item.label">
+      <UTooltip v-for="item in defaultNavItems" :key="item.view" :text="$t(item.labelKey)">
         <UButton
           :icon="item.icon"
-          :aria-label="item.label"
+          :aria-label="$t(item.labelKey)"
           variant="ghost"
           size="lg"
           class="rounded-full"

@@ -3,6 +3,7 @@ import { computed, ref, watch } from 'vue'
 import { useAuthStore } from '../stores/auth'
 import { useSolutionsStore, type ModeratedSolution } from '../stores/solutions'
 
+const { t } = useI18n()
 const auth = useAuthStore()
 const solutions = useSolutionsStore()
 
@@ -34,11 +35,11 @@ async function doSignIn() {
       showPanel.value = true
     }
     else {
-      err.value = 'Signed in, but this account is not a moderator.'
+      err.value = t('mod.notModerator')
     }
   }
   catch {
-    err.value = 'Sign-in failed. Check your email and password.'
+    err.value = t('mod.signInFailed')
   }
   finally {
     busy.value = false
@@ -68,7 +69,7 @@ async function remove(m: ModeratedSolution) {
       color="gray"
       variant="solid"
       size="sm"
-      aria-label="Moderator sign in"
+      :aria-label="$t('mod.signInTitle')"
       class="rounded-full shadow-lg"
       @click="showLogin = true"
     />
@@ -81,7 +82,7 @@ async function remove(m: ModeratedSolution) {
       icon="i-heroicons-shield-check"
       @click="showPanel = !showPanel"
     >
-      Moderate<span v-if="pendingCount"> · {{ pendingCount }}</span>
+      {{ $t('mod.moderate') }}<span v-if="pendingCount"> · {{ pendingCount }}</span>
     </UButton>
   </div>
 
@@ -94,15 +95,15 @@ async function remove(m: ModeratedSolution) {
     <UCard class="w-full max-w-sm">
       <template #header>
         <div class="flex items-center justify-between">
-          <h3 class="text-base font-semibold text-gray-900 dark:text-white">Moderator sign in</h3>
-          <UButton icon="i-heroicons-x-mark" color="gray" variant="ghost" size="xs" aria-label="Close" @click="showLogin = false" />
+          <h3 class="text-base font-semibold text-gray-900 dark:text-white">{{ $t('mod.signInTitle') }}</h3>
+          <UButton icon="i-heroicons-x-mark" color="gray" variant="ghost" size="xs" :aria-label="$t('mod.close')" @click="showLogin = false" />
         </div>
       </template>
       <form class="space-y-3" @submit.prevent="doSignIn">
-        <UInput v-model="email" type="email" placeholder="Email" autocomplete="username" />
-        <UInput v-model="password" type="password" placeholder="Password" autocomplete="current-password" />
+        <UInput v-model="email" type="email" :placeholder="$t('mod.email')" autocomplete="username" />
+        <UInput v-model="password" type="password" :placeholder="$t('mod.password')" autocomplete="current-password" />
         <p v-if="err" class="text-xs text-red-500">{{ err }}</p>
-        <UButton type="submit" color="primary" block :loading="busy">Sign in</UButton>
+        <UButton type="submit" color="primary" block :loading="busy">{{ $t('mod.signIn') }}</UButton>
       </form>
     </UCard>
   </div>
@@ -113,12 +114,12 @@ async function remove(m: ModeratedSolution) {
     class="fixed bottom-20 left-6 z-40 w-80 max-w-[90vw] rounded-2xl border border-gray-200 bg-white shadow-2xl dark:border-zinc-700 dark:bg-zinc-900"
   >
     <div class="flex items-center justify-between border-b border-gray-100 px-4 py-3 dark:border-zinc-800">
-      <h3 class="text-sm font-semibold text-gray-900 dark:text-white">Review entries</h3>
-      <UButton size="xs" color="gray" variant="ghost" @click="doSignOut">Sign out</UButton>
+      <h3 class="text-sm font-semibold text-gray-900 dark:text-white">{{ $t('mod.reviewEntries') }}</h3>
+      <UButton size="xs" color="gray" variant="ghost" @click="doSignOut">{{ $t('mod.signOut') }}</UButton>
     </div>
     <div class="max-h-[50vh] overflow-y-auto p-3">
       <p v-if="!solutions.moderation.length" class="py-6 text-center text-xs text-gray-400">
-        No user-submitted entries.
+        {{ $t('mod.noEntries') }}
       </p>
       <div
         v-for="m in solutions.moderation"
@@ -134,12 +135,12 @@ async function remove(m: ModeratedSolution) {
             class="shrink-0 rounded-full px-2 py-0.5 text-[10px] font-semibold"
             :class="m.approved ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-300' : 'bg-amber-100 text-amber-700 dark:bg-amber-900/40 dark:text-amber-300'"
           >
-            {{ m.approved ? 'Live' : 'Pending' }}
+            {{ m.approved ? $t('mod.live') : $t('mod.pending') }}
           </span>
         </div>
         <div class="mt-2 flex gap-2">
-          <UButton v-if="!m.approved" size="2xs" color="primary" @click="approve(m)">Approve</UButton>
-          <UButton size="2xs" color="red" variant="soft" @click="remove(m)">Delete</UButton>
+          <UButton v-if="!m.approved" size="2xs" color="primary" @click="approve(m)">{{ $t('mod.approve') }}</UButton>
+          <UButton size="2xs" color="red" variant="soft" @click="remove(m)">{{ $t('mod.delete') }}</UButton>
         </div>
       </div>
     </div>

@@ -89,14 +89,14 @@ function select(feature: Feature) {
       <div class="flex flex-col gap-3 border-b border-gray-100 px-6 py-4 dark:border-zinc-800">
         <div class="flex items-center justify-between">
           <h2 class="text-xl font-bold text-gray-900 dark:text-white">
-            All Solutions
+            {{ $t('list.title') }}
             <span class="font-normal text-gray-400">({{ items.length }})</span>
           </h2>
           <UButton
             icon="i-heroicons-x-mark"
             color="gray"
             variant="ghost"
-            aria-label="Close"
+            :aria-label="$t('list.close')"
             :ui="{ rounded: 'rounded-full' }"
             @click="filterStore.toggleList()"
           />
@@ -104,7 +104,7 @@ function select(feature: Feature) {
         <UInput
           v-model="search"
           icon="i-heroicons-magnifying-glass"
-          placeholder="Search solutions…"
+          :placeholder="$t('list.search')"
           :ui="{ rounded: 'rounded-full' }"
         />
       </div>
@@ -112,7 +112,7 @@ function select(feature: Feature) {
       <!-- Tiled grid -->
       <div class="mnc-grid-scroll flex-1 overflow-y-auto p-6">
         <p v-if="!items.length" class="py-12 text-center text-sm text-gray-400">
-          No solutions match “{{ search }}”.
+          {{ $t('list.empty', { q: search }) }}
         </p>
 
         <div v-else class="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
@@ -156,7 +156,7 @@ function select(feature: Feature) {
                 {{ primaryTag(feature) }}
               </span>
               <p class="line-clamp-2 text-sm font-semibold leading-snug text-gray-900 dark:text-white">
-                {{ feature.comment || 'Untitled' }}
+                {{ feature.comment || $t('list.untitled') }}
               </p>
               <p v-if="itemMeta(feature)" class="mt-auto truncate text-xs text-gray-400">
                 {{ itemMeta(feature) }}

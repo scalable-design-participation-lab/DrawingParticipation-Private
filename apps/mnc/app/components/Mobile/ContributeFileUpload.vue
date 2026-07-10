@@ -17,9 +17,11 @@ const props = withDefaults(defineProps<{
   maxSizeMb?: number
 }>(), {
   accept: 'image/png,image/jpeg,application/pdf',
-  hint: 'JPG, PNG, or PDF, file size no more than 10 MB',
+  hint: '',
   maxSizeMb: 10,
 })
+
+const { t } = useI18n()
 
 const emit = defineEmits<{
   'update:modelValue': [files: File[]]
@@ -31,7 +33,7 @@ const error = ref('')
 
 function isAllowed(file: File): boolean {
   if (file.size > props.maxSizeMb * 1024 * 1024) {
-    error.value = `"${file.name}" is larger than ${props.maxSizeMb} MB.`
+    error.value = t('fileUpload.tooLarge', { name: file.name, max: props.maxSizeMb })
     return false
   }
   // Loose type check: the accept list is a hint, so we only reject obvious
@@ -45,7 +47,7 @@ function isAllowed(file: File): boolean {
     return file.type === a
   })
   if (!ok) {
-    error.value = `"${file.name}" is not a supported file type.`
+    error.value = t('fileUpload.unsupported', { name: file.name })
     return false
   }
   return true
@@ -98,10 +100,10 @@ function prettySize(bytes: number): string {
     >
       <UIcon name="i-heroicons-cloud-arrow-up" class="mb-2 h-7 w-7 text-[#FB6D6D]" />
       <p class="text-sm font-medium text-[#F26D6D]">
-        Select a file or drag and drop here
+        {{ $t('fileUpload.prompt') }}
       </p>
       <p class="mt-1 text-xs text-[#F2A3A3]">
-        {{ hint }}
+        {{ hint || $t('fileUpload.hint') }}
       </p>
       <input
         ref="inputEl"
@@ -130,7 +132,7 @@ function prettySize(bytes: number): string {
           variant="ghost"
           size="2xs"
           :ui="{ rounded: 'rounded-full' }"
-          aria-label="Remove file"
+          :aria-label="$t('fileUpload.removeFile')"
           @click.stop="removeFile(i)"
         />
       </li>

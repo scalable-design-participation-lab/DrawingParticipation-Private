@@ -131,7 +131,7 @@ const tagChipStyle = computed(() => ({
             v-else
             class="flex h-full w-full items-center justify-center px-2 text-center text-xs text-teal-700 dark:text-teal-300"
           >
-            {{ normalizedCaption || 'No image available' }}
+            {{ normalizedCaption || $t('quick.noImage') }}
           </div>
         </div>
       </div>

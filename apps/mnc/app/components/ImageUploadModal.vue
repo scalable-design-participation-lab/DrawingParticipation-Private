@@ -6,7 +6,7 @@
     <div class="p-3">
       <div class="mb-3 flex items-center gap-2">
         <UIcon name="i-heroicons-camera" class="h-4 w-4 text-gray-300" />
-        <span class="text-sm font-medium text-white">Add photo or comment</span>
+        <span class="text-sm font-medium text-white">{{ $t('detail.addPhoto') }}</span>
       </div>
 
       <!-- Live previews of the media chosen this session -->
@@ -36,10 +36,10 @@
         >
           <UIcon name="i-heroicons-arrow-up-tray" class="w-10 h-10 mb-2" />
           <p class="text-sm text-center px-4">
-            Click to select photos or audio
+            {{ $t('upload.clickToSelect') }}
           </p>
           <p class="text-xs text-center px-4 text-gray-500 mt-1">
-            Photos or audio · up to 10 MB each
+            {{ $t('upload.hint') }}
           </p>
         </div>
         <input
@@ -81,12 +81,12 @@
 
       <UTextarea
         v-model="localComment"
-        placeholder="Write a comment"
+        :placeholder="$t('upload.commentPlaceholder')"
         class="flex-grow text-sm resize-none mt-4"
       />
 
       <p class="text-[11px] leading-snug text-gray-500 mt-2">
-        Anything you add is shown publicly on this project.
+        {{ $t('upload.publicNote') }}
       </p>
 
       <p v-if="errorMessage" class="text-xs text-red-400 mt-2">
@@ -101,7 +101,7 @@
           class="w-[48%] rounded-full flex justify-center"
           @click="closePopup"
         >
-          Close
+          {{ $t('upload.close') }}
         </UButton>
         <UButton
           color="primary"
@@ -111,7 +111,7 @@
           class="w-[48%] rounded-full flex justify-center"
           @click="submitContribution"
         >
-          Add
+          {{ $t('detail.add') }}
         </UButton>
       </div>
     </div>
@@ -133,6 +133,7 @@ const props = defineProps({
 
 const emit = defineEmits(['close', 'uploaded'])
 
+const { t } = useI18n()
 const contributions = useContributionsStore()
 
 // View-models tracking each selected file's real upload progress + result.
@@ -194,7 +195,7 @@ async function handleImageSelect(event) {
     catch (err) {
       console.error('Image upload failed:', err)
       item.status = 'error'
-      errorMessage.value = 'One or more uploads failed. Please try again.'
+      errorMessage.value = t('upload.uploadError')
     }
   }
 
@@ -227,7 +228,7 @@ async function submitContribution() {
   }
   catch (err) {
     console.error('Failed to save contribution:', err)
-    errorMessage.value = 'Could not save your contribution. Please try again.'
+    errorMessage.value = t('upload.saveError')
   }
   finally {
     isSubmitting.value = false

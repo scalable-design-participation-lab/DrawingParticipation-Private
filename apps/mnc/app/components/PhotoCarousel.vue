@@ -49,7 +49,7 @@ function prev() {
       <template v-if="multiple">
         <button
           type="button"
-          aria-label="Previous photo"
+          :aria-label="$t('photo.prevPhoto')"
           class="absolute left-2 top-1/2 flex h-8 w-8 -translate-y-1/2 items-center justify-center rounded-full bg-black/40 text-white transition hover:bg-black/60"
           @click.stop="prev"
         >
@@ -57,7 +57,7 @@ function prev() {
         </button>
         <button
           type="button"
-          aria-label="Next photo"
+          :aria-label="$t('photo.nextPhoto')"
           class="absolute right-2 top-1/2 flex h-8 w-8 -translate-y-1/2 items-center justify-center rounded-full bg-black/40 text-white transition hover:bg-black/60"
           @click.stop="next"
         >
@@ -75,7 +75,7 @@ function prev() {
             v-for="(_, i) in images"
             :key="i"
             type="button"
-            :aria-label="`Go to photo ${i + 1}`"
+            :aria-label="$t('photo.goToPhoto', { n: i + 1 })"
             class="h-1.5 rounded-full transition-all"
             :class="i === current ? 'w-4 bg-white' : 'w-1.5 bg-white/60'"
             @click.stop="current = i"
@@ -99,8 +99,8 @@ function prev() {
       class="flex h-full w-full flex-col items-center justify-center gap-1 rounded-2xl border border-dashed border-teal-200 px-3 text-center dark:border-zinc-700"
     >
       <UIcon name="i-heroicons-photo" class="mb-1 h-8 w-8 text-teal-400 dark:text-teal-500" />
-      <p class="text-sm font-medium text-gray-500 dark:text-gray-300">No photo yet</p>
-      <p class="text-xs text-gray-400 dark:text-gray-500">Be the first to add one</p>
+      <p class="text-sm font-medium text-gray-500 dark:text-gray-300">{{ $t('photo.noPhoto') }}</p>
+      <p class="text-xs text-gray-400 dark:text-gray-500">{{ $t('photo.beFirst') }}</p>
     </div>
   </div>
 </template>

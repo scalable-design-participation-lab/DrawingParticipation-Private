@@ -154,7 +154,7 @@ function prettyCoord(coord: [number, number]): string {
       size="sm"
       class="pointer-events-auto absolute right-4 top-6 z-10"
       :ui="{ rounded: 'rounded-full' }"
-      aria-label="Close"
+      :aria-label="$t('contribute.close')"
       @click="emit('close')"
     />
 
@@ -164,23 +164,23 @@ function prettyCoord(coord: [number, number]): string {
       class="pointer-events-auto flex flex-1 flex-col items-center justify-center px-8 text-center"
     >
       <h2 class="text-3xl font-extrabold text-[#F26D6D]">
-        Join Our Research
+        {{ $t('contribute.title') }}
       </h2>
       <h3 class="mt-4 text-xl font-bold text-[#FB6D6D]">
-        Thank you
+        {{ $t('contribute.thankYou') }}
       </h3>
       <p class="mt-6 max-w-xs text-sm text-[#A84A4A]">
-        Your submission has been received and will be reviewed by our team.
+        {{ $t('contribute.received') }}
       </p>
       <p class="mt-2 max-w-xs text-sm text-[#A84A4A]">
-        We will be in touch and contact you soon!
+        {{ $t('contribute.inTouch') }}
       </p>
       <UButton
         class="mt-10 rounded-full px-6"
         :style="{ backgroundColor: '#FB6D6D' }"
         @click="reset"
       >
-        Tell us another story
+        {{ $t('contribute.anotherStory') }}
       </UButton>
     </div>
 
@@ -197,18 +197,18 @@ function prettyCoord(coord: [number, number]): string {
       </div>
 
       <h2 class="pointer-events-auto mt-5 text-center text-2xl font-extrabold text-[#F26D6D]">
-        Join Our Research
+        {{ $t('contribute.title') }}
       </h2>
 
       <div class="flex-1 overflow-y-auto px-6 pb-32 pt-4">
         <!-- Step 1: Location -->
         <div v-if="step === 1" class="pointer-events-auto space-y-4">
           <p class="text-sm font-semibold text-[#F26D6D]">
-            Want to add a creation? Where did this event happen?
+            {{ $t('contribute.step1.prompt') }}
           </p>
           <UInput
             v-model="form.location"
-            placeholder="Enter location here or tap to drop pin in map"
+            :placeholder="$t('contribute.step1.placeholder')"
             :ui="{ rounded: 'rounded-full' }"
           />
           <button
@@ -216,23 +216,23 @@ function prettyCoord(coord: [number, number]): string {
             class="text-sm font-medium text-[#FB6D6D] underline"
             @click="emit('pick-location')"
           >
-            Tap to drop a pin on the map
+            {{ $t('contribute.step1.dropPin') }}
           </button>
           <p v-if="form.coordinate" class="flex items-center gap-1 text-xs text-emerald-600">
             <UIcon name="i-heroicons-map-pin" class="h-4 w-4" />
-            Pin dropped ({{ prettyCoord(form.coordinate) }})
+            {{ $t('contribute.step1.pinDropped', { coord: prettyCoord(form.coordinate) }) }}
           </p>
         </div>
 
         <!-- Step 2: Describe an example -->
         <div v-else-if="step === 2" class="space-y-4">
           <p class="text-sm font-semibold text-[#F26D6D]">
-            Briefly describe an example of Mobile Networked Creativity below:
+            {{ $t('contribute.step2.prompt') }}
           </p>
           <UTextarea
             v-model="form.example"
             :rows="5"
-            placeholder="Type your description here"
+            :placeholder="$t('contribute.descPlaceholder')"
             :ui="{ rounded: 'rounded-2xl' }"
             class="contribute-textarea"
           />
@@ -242,12 +242,12 @@ function prettyCoord(coord: [number, number]): string {
         <!-- Step 3: Why is this a good example -->
         <div v-else-if="step === 3" class="space-y-4">
           <p class="text-sm font-semibold text-[#F26D6D]">
-            Why do you think this is a good example of Mobile Networked Creativity?
+            {{ $t('contribute.step3.prompt') }}
           </p>
           <UTextarea
             v-model="form.why"
             :rows="5"
-            placeholder="Type your description here"
+            :placeholder="$t('contribute.descPlaceholder')"
             :ui="{ rounded: 'rounded-2xl' }"
             class="contribute-textarea"
           />
@@ -257,8 +257,7 @@ function prettyCoord(coord: [number, number]): string {
         <!-- Step 4: Illustrative media -->
         <div v-else-if="step === 4" class="space-y-4">
           <p class="text-sm font-semibold text-[#F26D6D]">
-            Do you have any images or videos to illustrate your example above?
-            If so, please upload it here:
+            {{ $t('contribute.step4.prompt') }}
           </p>
           <ContributeFileUpload v-model="files.media" />
         </div>
@@ -266,7 +265,7 @@ function prettyCoord(coord: [number, number]): string {
         <!-- Step 5: Date -->
         <div v-else-if="step === 5" class="space-y-4">
           <p class="text-sm font-semibold text-[#F26D6D]">
-            When did this event happen?
+            {{ $t('contribute.step5.prompt') }}
           </p>
           <UInput
             v-model="form.date"
@@ -278,13 +277,12 @@ function prettyCoord(coord: [number, number]): string {
         <!-- Step 6: Additional info -->
         <div v-else-if="step === 6" class="space-y-4">
           <p class="text-sm font-semibold text-[#F26D6D]">
-            Is there any additional information you'd like to share about your
-            submission? Please enter it below.
+            {{ $t('contribute.step6.prompt') }}
           </p>
           <UTextarea
             v-model="form.additionalInfo"
             :rows="5"
-            placeholder="Type your description here"
+            :placeholder="$t('contribute.descPlaceholder')"
             :ui="{ rounded: 'rounded-2xl' }"
             class="contribute-textarea"
           />
@@ -294,7 +292,7 @@ function prettyCoord(coord: [number, number]): string {
         <!-- Step 7: Personal information -->
         <div v-else-if="step === 7" class="space-y-4">
           <p class="text-sm font-semibold text-[#F26D6D]">
-            Do you want your personal information connected to your submission?
+            {{ $t('contribute.step7.prompt') }}
           </p>
           <div class="space-y-2">
             <label class="flex items-center gap-2 text-sm text-gray-700">
@@ -304,7 +302,7 @@ function prettyCoord(coord: [number, number]): string {
                 :value="true"
                 class="accent-[#FB6D6D]"
               >
-              Yes, I want my name identified in my submission
+              {{ $t('contribute.step7.yes') }}
             </label>
             <label class="flex items-center gap-2 text-sm text-gray-700">
               <input
@@ -313,36 +311,34 @@ function prettyCoord(coord: [number, number]): string {
                 :value="false"
                 class="accent-[#FB6D6D]"
               >
-              No, I want to submit anonymously
+              {{ $t('contribute.step7.no') }}
             </label>
           </div>
 
           <p class="pt-2 text-sm font-semibold text-[#F26D6D]">
-            If yes, please tell us your name, city and country.
+            {{ $t('contribute.step7.ifYes') }}
           </p>
           <div class="space-y-3">
             <div class="flex items-center gap-3">
-              <label class="w-28 flex-shrink-0 text-sm text-[#F26D6D]">Full Name</label>
+              <label class="w-28 flex-shrink-0 text-sm text-[#F26D6D]">{{ $t('contribute.step7.fullName') }}</label>
               <UInput v-model="form.fullName" class="flex-1" :ui="{ rounded: 'rounded-full' }" />
             </div>
             <div class="flex items-center gap-3">
-              <label class="w-28 flex-shrink-0 text-sm text-[#F26D6D]">Email Address</label>
+              <label class="w-28 flex-shrink-0 text-sm text-[#F26D6D]">{{ $t('contribute.step7.email') }}</label>
               <UInput v-model="form.email" type="email" class="flex-1" :ui="{ rounded: 'rounded-full' }" />
             </div>
             <div class="flex items-center gap-3">
-              <label class="w-28 flex-shrink-0 text-sm text-[#F26D6D]">Country</label>
+              <label class="w-28 flex-shrink-0 text-sm text-[#F26D6D]">{{ $t('contribute.step7.country') }}</label>
               <UInput v-model="form.country" class="flex-1" :ui="{ rounded: 'rounded-full' }" />
             </div>
             <div class="flex items-center gap-3">
-              <label class="w-28 flex-shrink-0 text-sm text-[#F26D6D]">City</label>
+              <label class="w-28 flex-shrink-0 text-sm text-[#F26D6D]">{{ $t('contribute.step7.city') }}</label>
               <UInput v-model="form.city" class="flex-1" :ui="{ rounded: 'rounded-full' }" />
             </div>
           </div>
 
           <p class="pt-1 text-xs leading-snug text-gray-500">
-            Your example and any media may be shown publicly on the map. Your name
-            is shown only if you choose "Yes" above. Your email is used only so we
-            can contact you — it is never shown publicly.
+            {{ $t('contribute.step7.privacy') }}
           </p>
         </div>
       </div>
@@ -355,7 +351,7 @@ function prettyCoord(coord: [number, number]): string {
           class="text-sm font-semibold text-[#F26D6D]"
           @click="back"
         >
-          Back
+          {{ $t('contribute.back') }}
         </button>
         <UButton
           v-if="step < TOTAL_STEPS"
@@ -363,7 +359,7 @@ function prettyCoord(coord: [number, number]): string {
           :style="{ backgroundColor: '#C0392B', color: '#ffffff' }"
           @click="next"
         >
-          Next
+          {{ $t('contribute.next') }}
         </UButton>
         <UButton
           v-else
@@ -371,7 +367,7 @@ function prettyCoord(coord: [number, number]): string {
           :style="{ backgroundColor: '#C0392B', color: '#ffffff' }"
           @click="submit"
         >
-          Submit
+          {{ $t('contribute.submit') }}
         </UButton>
       </div>
     </template>

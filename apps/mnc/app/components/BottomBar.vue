@@ -13,36 +13,36 @@ const solutionsStore = useSolutionsStore()
       class="pointer-events-auto flex items-center gap-5 bg-white dark:bg-zinc-900 rounded-full pl-2 pr-6 py-2 shadow-lg border border-gray-200 dark:border-white/10"
     >
       <!-- Primary action: filled teal circle -->
-      <UTooltip text="Add entry — or click anywhere on the map">
+      <UTooltip :text="$t('nav.addEntry')">
         <UButton
           icon="i-heroicons-plus"
           variant="solid"
           size="lg"
-          aria-label="Add entry"
+          :aria-label="$t('nav.addEntry')"
           class="rounded-full !p-3 shadow-md transition-transform hover:scale-105"
           :style="{ backgroundColor: solutionsStore.isPlacing ? '#FB6D6D' : '#57C9C0', color: '#ffffff' }"
           :ui="{ rounded: 'rounded-full' }"
           @click="solutionsStore.startPlacing()"
         />
       </UTooltip>
-      <UTooltip text="Filtered selection">
+      <UTooltip :text="$t('nav.filter')">
         <UButton
           icon="i-heroicons-tag"
           variant="ghost"
           size="lg"
-          aria-label="Filtered selection"
+          :aria-label="$t('nav.filter')"
           class="rounded-full"
           :style="{ color: filterStore.isPanelOpen ? '#FB6D6D' : '#57C9C0' }"
           :ui="{ rounded: 'rounded-full' }"
           @click="filterStore.togglePanel()"
         />
       </UTooltip>
-      <UTooltip text="List of entries">
+      <UTooltip :text="$t('nav.list')">
         <UButton
           icon="i-heroicons-square-3-stack-3d"
           variant="ghost"
           size="lg"
-          aria-label="List of entries"
+          :aria-label="$t('nav.list')"
           class="rounded-full"
           :style="{ color: filterStore.isListOpen ? '#FB6D6D' : '#57C9C0' }"
           :ui="{ rounded: 'rounded-full' }"

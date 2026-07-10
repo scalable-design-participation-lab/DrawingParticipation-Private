@@ -26,11 +26,28 @@
     "add": "Add",
     "addPhoto": "Add photo or comment",
     "noContributions": "No community contributions yet. Be the first to add a photo or comment.",
-    "showAll": "Show all {tag} entries"
+    "showAll": "Show all {tag} entries",
+    "close": "Close",
+    "connection": "Connection to Mobile Networked Creativity",
+    "readMore": "Read more",
+    "readLess": "Read less",
+    "loading": "Loading…",
+    "pending": "Pending",
+    "approve": "Approve",
+    "delete": "Delete",
+    "anonymous": "Anonymous",
+    "contributor": "Contributor",
+    "justNow": "just now",
+    "minutesAgo": "{n}m ago",
+    "hoursAgo": "{n}h ago",
+    "daysAgo": "{n}d ago"
   },
   "photo": {
     "noPhoto": "No photo yet",
-    "beFirst": "Be the first to add one"
+    "beFirst": "Be the first to add one",
+    "prevPhoto": "Previous photo",
+    "nextPhoto": "Next photo",
+    "goToPhoto": "Go to photo {n}"
   },
   "add": {
     "title": "Add an entry",
@@ -56,11 +73,105 @@
     "search": "Search solutions…",
     "empty": "No solutions match “{q}”.",
     "nearest": "Nearest to you",
-    "all": "All entries"
+    "all": "All entries",
+    "close": "Close",
+    "untitled": "Untitled",
+    "emptyList": "No projects loaded yet.",
+    "kmAway": "{d} km away"
   },
   "lang": {
     "label": "Language",
     "en": "English",
     "pt": "Português"
+  },
+  "mDetail": {
+    "close": "Close",
+    "tapToExpand": "Tap to expand",
+    "datePublished": "Date published:",
+    "location": "Location:",
+    "description": "Description:",
+    "learnMore": "Learn More:",
+    "community": "Community",
+    "beFirst": "Be the first to add a photo or comment."
+  },
+  "quick": {
+    "noImage": "No image available"
+  },
+  "upload": {
+    "clickToSelect": "Click to select photos or audio",
+    "hint": "Photos or audio · up to 10 MB each",
+    "commentPlaceholder": "Write a comment",
+    "publicNote": "Anything you add is shown publicly on this project.",
+    "close": "Close",
+    "uploadError": "One or more uploads failed. Please try again.",
+    "saveError": "Could not save your contribution. Please try again."
+  },
+  "mod": {
+    "signInTitle": "Moderator sign in",
+    "email": "Email",
+    "password": "Password",
+    "signIn": "Sign in",
+    "notModerator": "Signed in, but this account is not a moderator.",
+    "signInFailed": "Sign-in failed. Check your email and password.",
+    "reviewEntries": "Review entries",
+    "signOut": "Sign out",
+    "noEntries": "No user-submitted entries.",
+    "live": "Live",
+    "pending": "Pending",
+    "approve": "Approve",
+    "delete": "Delete",
+    "moderate": "Moderate",
+    "close": "Close"
+  },
+  "contribute": {
+    "title": "Join Our Research",
+    "thankYou": "Thank you",
+    "received": "Your submission has been received and will be reviewed by our team.",
+    "inTouch": "We will be in touch and contact you soon!",
+    "anotherStory": "Tell us another story",
+    "close": "Close",
+    "back": "Back",
+    "next": "Next",
+    "submit": "Submit",
+    "descPlaceholder": "Type your description here",
+    "step1": {
+      "prompt": "Want to add a creation? Where did this event happen?",
+      "placeholder": "Enter location here or tap to drop pin in map",
+      "dropPin": "Tap to drop a pin on the map",
+      "pinDropped": "Pin dropped ({coord})"
+    },
+    "step2": {
+      "prompt": "Briefly describe an example of Mobile Networked Creativity below:"
+    },
+    "step3": {
+      "prompt": "Why do you think this is a good example of Mobile Networked Creativity?"
+    },
+    "step4": {
+      "prompt": "Do you have any images or videos to illustrate your example above? If so, please upload it here:"
+    },
+    "step5": {
+      "prompt": "When did this event happen?"
+    },
+    "step6": {
+      "prompt": "Is there any additional information you'd like to share about your submission? Please enter it below."
+    },
+    "step7": {
+      "prompt": "Do you want your personal information connected to your submission?",
+      "yes": "Yes, I want my name identified in my submission",
+      "no": "No, I want to submit anonymously",
+      "ifYes": "If yes, please tell us your name, city and country.",
+      "fullName": "Full Name",
+      "email": "Email Address",
+      "country": "Country",
+      "city": "City",
+      "privacy": "Your example and any media may be shown publicly on the map. Your name is shown only if you choose \"Yes\" above. Your email is used only so we can contact you — it is never shown publicly."
+    }
+  },
+  "fileUpload": {
+    "prompt": "Select a file or drag and drop here",
+    "hint": "JPG, PNG, or PDF, file size no more than 10 MB",
+    "removeFile": "Remove file",
+    "tooLarge": "\"{name}\" is larger than {max} MB.",
+    "unsupported": "\"{name}\" is not a supported file type."
   }
 }

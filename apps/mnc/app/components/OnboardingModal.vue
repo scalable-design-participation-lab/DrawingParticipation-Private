@@ -11,7 +11,7 @@
         <!-- Language switcher, offered up-front on the welcome screen -->
         <div class="absolute right-0 top-0 flex gap-1">
           <button
-            v-for="l in locales"
+            v-for="l in langs"
             :key="l.code"
             type="button"
             class="rounded-full px-2 py-0.5 text-xs font-semibold transition"
@@ -85,5 +85,6 @@ const props = defineProps({
 const emit = defineEmits(['close'])
 
 // Language switcher state (English / Portuguese).
-const { locale, locales, setLocale } = useI18n()
+const { locale, setLocale } = useI18n()
+const langs = [{ code: 'en' }, { code: 'pt' }]
 </script>

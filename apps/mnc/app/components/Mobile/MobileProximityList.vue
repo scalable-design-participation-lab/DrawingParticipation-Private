@@ -9,6 +9,7 @@ const emit = defineEmits<{
   'select-feature': [feature: Feature]
 }>()
 
+const { t } = useI18n()
 const filterStore = useFilterStore()
 
 // The user's location, once granted. null until resolved / if denied.
@@ -49,7 +50,8 @@ function distanceKm(feature: Feature): number | null {
 function distanceLabel(feature: Feature): string {
   const d = distanceKm(feature)
   if (d == null) return ''
-  return d < 10 ? `${d.toFixed(1)} km away` : `${Math.round(d)} km away`
+  const value = d < 10 ? d.toFixed(1) : String(Math.round(d))
+  return t('list.kmAway', { d: value })
 }
 
 // Sorted by real proximity when we have the user's location, else by date
@@ -83,7 +85,7 @@ const sortedFeatures = computed(() => {
         <div class="flex flex-col items-center gap-2">
           <div class="w-10 h-1 bg-gray-300 rounded-full" />
           <p class="w-full text-xs font-medium text-gray-500 dark:text-gray-400">
-            {{ userLonLat ? 'Nearest to you' : 'All entries' }}
+            {{ userLonLat ? $t('list.nearest') : $t('list.all') }}
             <span class="text-gray-400">· {{ sortedFeatures.length }}</span>
           </p>
         </div>
@@ -119,7 +121,7 @@ const sortedFeatures = computed(() => {
         </button>
 
         <p v-if="sortedFeatures.length === 0" class="text-center text-gray-400 py-8 text-sm">
-          No projects loaded yet.
+          {{ $t('list.emptyList') }}
         </p>
       </div>
     </UCard>

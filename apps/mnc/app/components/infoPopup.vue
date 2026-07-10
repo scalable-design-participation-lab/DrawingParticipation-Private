@@ -26,11 +26,11 @@
                 class="rounded-full"
                 @click="showUpload = !showUpload"
               >
-                <span class="hidden sm:inline">Add photo or comment</span>
-                <span class="sm:hidden">Add</span>
+                <span class="hidden sm:inline">{{ $t('detail.addPhoto') }}</span>
+                <span class="sm:hidden">{{ $t('detail.add') }}</span>
               </UButton>
               <UButton
-                aria-label="Close"
+                :aria-label="$t('detail.close')"
                 color="gray"
                 variant="ghost"
                 icon="i-heroicons-x-mark"
@@ -72,7 +72,7 @@
 
               <div v-if="connection" class="rounded-2xl bg-teal-50/70 p-5 dark:bg-teal-950/30">
                 <p class="mb-2 text-xs font-semibold uppercase tracking-wide text-teal-700 dark:text-teal-400">
-                  Connection to Mobile Networked Creativity
+                  {{ $t('detail.connection') }}
                 </p>
                 <p :class="['whitespace-pre-line text-sm leading-6 text-gray-700 dark:text-gray-300', { 'line-clamp-6': !connectionExpanded }]">
                   {{ connection }}
@@ -82,7 +82,7 @@
                   class="mt-2 text-sm font-semibold text-teal-700 hover:underline dark:text-teal-400"
                   @click="connectionExpanded = !connectionExpanded"
                 >
-                  {{ connectionExpanded ? 'Read less' : 'Read more' }}
+                  {{ connectionExpanded ? $t('detail.readLess') : $t('detail.readMore') }}
                 </button>
               </div>
             </section>
@@ -91,7 +91,7 @@
             <section class="space-y-5">
               <div v-if="description" class="rounded-2xl bg-gray-50 p-5 dark:bg-zinc-800/50">
                 <p class="mb-2 text-xs font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400">
-                  Description
+                  {{ $t('detail.description') }}
                 </p>
                 <p :class="['whitespace-pre-line text-sm leading-6 text-gray-700 dark:text-gray-300', { 'line-clamp-[12]': !descriptionExpanded }]">
                   {{ description }}
@@ -101,20 +101,20 @@
                   class="mt-2 text-sm font-semibold text-teal-700 hover:underline dark:text-teal-400"
                   @click="descriptionExpanded = !descriptionExpanded"
                 >
-                  {{ descriptionExpanded ? 'Read less' : 'Read more' }}
+                  {{ descriptionExpanded ? $t('detail.readLess') : $t('detail.readMore') }}
                 </button>
               </div>
 
               <div>
                 <p class="mb-2 text-xs font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400">
-                  Tags
+                  {{ $t('detail.tags') }}
                 </p>
                 <div class="flex flex-wrap gap-2">
                   <button
                     type="button"
                     class="inline-flex items-center gap-1.5 rounded-full px-3.5 py-1.5 text-sm font-medium transition hover:brightness-95"
                     :style="tagChipStyle"
-                    :title="`Show all ${primaryTagText} entries`"
+                    :title="$t('detail.showAll', { tag: primaryTagText })"
                     @click="onTagClick(primaryTag)"
                   >
                     <UIcon :name="primaryMeta.icon" class="h-3.5 w-3.5" />
@@ -134,7 +134,7 @@
 
           <section v-if="links && links.length">
             <p class="mb-2 text-xs font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400">
-              Learn More
+              {{ $t('detail.learnMore') }}
             </p>
             <div class="grid gap-2 sm:grid-cols-2">
               <template v-for="(link, index) in links" :key="index">
@@ -168,7 +168,7 @@
           <section v-if="stringId" class="border-t border-gray-100 pt-6 dark:border-zinc-800">
             <div class="mb-3 flex items-center justify-between gap-3">
               <h3 class="text-lg font-semibold text-gray-900 dark:text-white">
-                Community Contributions
+                {{ $t('detail.contributions') }}
                 <span v-if="projectContributions.length" class="font-normal text-gray-400">
                   ({{ projectContributions.length }})
                 </span>
@@ -181,7 +181,7 @@
                 class="shrink-0 rounded-full"
                 @click="showUpload = true"
               >
-                Add
+                {{ $t('detail.add') }}
               </UButton>
             </div>
 
@@ -190,7 +190,7 @@
               class="flex items-center gap-2 text-sm text-gray-400"
             >
               <UIcon name="i-heroicons-arrow-path" class="h-4 w-4 animate-spin" />
-              Loading…
+              {{ $t('detail.loading') }}
             </div>
 
             <div
@@ -199,7 +199,7 @@
             >
               <UIcon name="i-heroicons-camera" class="mx-auto mb-2 h-8 w-8 text-gray-300" />
               <p class="text-sm text-gray-500">
-                No community contributions yet. Be the first to add a photo or comment.
+                {{ $t('detail.noContributions') }}
               </p>
             </div>
 
@@ -211,7 +211,7 @@
               >
                 <div class="mb-2 flex items-center gap-1.5 text-xs text-gray-400">
                   <UIcon name="i-heroicons-user-circle" class="h-4 w-4" />
-                  <span>{{ contribution.userId === 'anonymous' ? 'Anonymous' : 'Contributor' }}</span>
+                  <span>{{ contribution.userId === 'anonymous' ? $t('detail.anonymous') : $t('detail.contributor') }}</span>
                   <span v-if="formatRelativeTime(contribution.createdAt)">
                     · {{ formatRelativeTime(contribution.createdAt) }}
                   </span>
@@ -219,7 +219,7 @@
                     v-if="!contribution.approved"
                     class="rounded-full bg-amber-100 px-2 py-0.5 text-[10px] font-semibold text-amber-700 dark:bg-amber-900/40 dark:text-amber-300"
                   >
-                    Pending
+                    {{ $t('detail.pending') }}
                   </span>
                 </div>
                 <div
@@ -254,8 +254,8 @@
 
                 <!-- Moderator actions -->
                 <div v-if="auth.isAdmin" class="mt-3 flex gap-2 border-t border-gray-100 pt-2 dark:border-zinc-700">
-                  <UButton v-if="!contribution.approved" size="2xs" color="primary" @click="approveContribution(contribution)">Approve</UButton>
-                  <UButton size="2xs" color="red" variant="soft" @click="deleteContribution(contribution)">Delete</UButton>
+                  <UButton v-if="!contribution.approved" size="2xs" color="primary" @click="approveContribution(contribution)">{{ $t('detail.approve') }}</UButton>
+                  <UButton size="2xs" color="red" variant="soft" @click="deleteContribution(contribution)">{{ $t('detail.delete') }}</UButton>
                 </div>
               </article>
             </div>
@@ -325,6 +325,8 @@ const props = withDefaults(defineProps<Props>(), {
 const emit = defineEmits<{
   close: []
 }>()
+
+const { t } = useI18n()
 
 // Clicking the primary tag filters the map to that theme and opens the list, so
 // the user can see every entry sharing the tag.
@@ -428,15 +430,15 @@ function formatRelativeTime(iso: string): string {
     return ''
   const mins = Math.floor((Date.now() - then) / 60000)
   if (mins < 1)
-    return 'just now'
+    return t('detail.justNow')
   if (mins < 60)
-    return `${mins}m ago`
+    return t('detail.minutesAgo', { n: mins })
   const hrs = Math.floor(mins / 60)
   if (hrs < 24)
-    return `${hrs}h ago`
+    return t('detail.hoursAgo', { n: hrs })
   const days = Math.floor(hrs / 24)
   if (days < 30)
-    return `${days}d ago`
+    return t('detail.daysAgo', { n: days })
   return new Date(iso).toLocaleDateString()
 }
 
