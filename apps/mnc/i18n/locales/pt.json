@@ -131,7 +131,8 @@
     "review": "Revisar",
     "entries": "Registros",
     "contributions": "Contribuições",
-    "noContributions": "Nenhuma contribuição pendente."
+    "noContributions": "Nenhuma contribuição pendente.",
+    "showOnMap": "Mostrar no mapa"
   },
   "contribute": {
     "title": "Participe da Nossa Pesquisa",

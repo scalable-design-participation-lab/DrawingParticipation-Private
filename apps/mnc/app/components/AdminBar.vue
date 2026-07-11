@@ -4,13 +4,23 @@ import { useFeatureStore } from '@base/stores/features'
 import { useAuthStore } from '../stores/auth'
 import { useSolutionsStore, type ModeratedSolution } from '../stores/solutions'
 import { useContributionsStore } from '../stores/contributions'
+import { useFilterStore } from '../stores/filter'
 import type { Contribution } from '../stores/types/contribution'
 
 const { t } = useI18n()
 const auth = useAuthStore()
 const solutions = useSolutionsStore()
 const contributions = useContributionsStore()
+const filterStore = useFilterStore()
 const featureStore = useFeatureStore()
+
+// Fly the map to (and preview) the pin for a given project string_id, reusing
+// the sidebar-selection flow that BackgroundMap already watches.
+function flyTo(stringId: string) {
+  const f = featureStore.features.find(x => (x.properties as any)?.string_id === stringId)
+  if (f)
+    filterStore.selectFeature(f)
+}
 
 // Pull the moderation queues once moderator status is known (a returning admin
 // resolves isAdmin after the initial public load).
@@ -140,7 +150,9 @@ async function removeC(c: Contribution) {
       <div
         v-for="m in solutions.moderation"
         :key="m.id"
-        class="mb-2 rounded-xl border border-gray-200 p-3 dark:border-zinc-700"
+        class="mb-2 cursor-pointer rounded-xl border border-gray-200 p-3 transition hover:border-teal-300 hover:bg-teal-50/50 dark:border-zinc-700 dark:hover:bg-teal-950/20"
+        :title="$t('mod.showOnMap')"
+        @click="flyTo(m.string_id)"
       >
         <div class="flex items-start justify-between gap-2">
           <div class="min-w-0">
@@ -155,8 +167,8 @@ async function removeC(c: Contribution) {
           </span>
         </div>
         <div class="mt-2 flex gap-2">
-          <UButton v-if="!m.approved" size="2xs" color="primary" @click="approve(m)">{{ $t('mod.approve') }}</UButton>
-          <UButton size="2xs" color="red" variant="soft" @click="remove(m)">{{ $t('mod.delete') }}</UButton>
+          <UButton v-if="!m.approved" size="2xs" color="primary" @click.stop="approve(m)">{{ $t('mod.approve') }}</UButton>
+          <UButton size="2xs" color="red" variant="soft" @click.stop="remove(m)">{{ $t('mod.delete') }}</UButton>
         </div>
       </div>
 
@@ -170,14 +182,16 @@ async function removeC(c: Contribution) {
       <div
         v-for="c in contributions.pending"
         :key="c.id"
-        class="mb-2 rounded-xl border border-gray-200 p-3 dark:border-zinc-700"
+        class="mb-2 cursor-pointer rounded-xl border border-gray-200 p-3 transition hover:border-teal-300 hover:bg-teal-50/50 dark:border-zinc-700 dark:hover:bg-teal-950/20"
+        :title="$t('mod.showOnMap')"
+        @click="flyTo(c.projectId)"
       >
         <p class="truncate text-xs font-medium text-gray-500 dark:text-gray-300">{{ projectTitle(c.projectId) }}</p>
         <p v-if="c.comment" class="mt-0.5 line-clamp-2 text-sm text-gray-900 dark:text-white">{{ c.comment }}</p>
         <p v-if="c.media.length" class="mt-0.5 text-xs text-gray-400">{{ c.media.length }} × media</p>
         <div class="mt-2 flex gap-2">
-          <UButton size="2xs" color="primary" @click="approveC(c)">{{ $t('mod.approve') }}</UButton>
-          <UButton size="2xs" color="red" variant="soft" @click="removeC(c)">{{ $t('mod.delete') }}</UButton>
+          <UButton size="2xs" color="primary" @click.stop="approveC(c)">{{ $t('mod.approve') }}</UButton>
+          <UButton size="2xs" color="red" variant="soft" @click.stop="removeC(c)">{{ $t('mod.delete') }}</UButton>
         </div>
       </div>
     </div>

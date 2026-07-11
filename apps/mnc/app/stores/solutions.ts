@@ -49,9 +49,6 @@ export const useSolutionsStore = defineStore('solutions', () => {
   const featureStore = useFeatureStore()
   const filterStore = useFilterStore()
 
-  // Firestore ids already rendered on the map, so re-fetching (e.g. after an
-  // admin signs in) doesn't stack duplicate pins.
-  const loadedIds = new Set<string>()
   // Every user solution the current admin can moderate.
   const moderation = ref<ModeratedSolution[]>([])
 
@@ -65,8 +62,9 @@ export const useSolutionsStore = defineStore('solutions', () => {
   }
 
   // Adds a solution to the shared feature store so it renders like a curated
-  // pin (MncMapLayer keys off properties.primaryTag / string_id). De-duped by
-  // string_id so repeated fetches don't double-render.
+  // pin (MncMapLayer keys off properties.primaryTag / string_id). De-duped
+  // against the CURRENT feature list (not a separate cache) so it stays correct
+  // after loadDataIntoFeatures() clears the store on re-init.
   function addSolutionFeature(s: {
     string_id: string
     title: string
@@ -76,9 +74,8 @@ export const useSolutionsStore = defineStore('solutions', () => {
     location: string
     coordinate: [number, number]
   }) {
-    if (loadedIds.has(s.string_id))
+    if (features.some(f => (f.properties as any)?.string_id === s.string_id))
       return
-    loadedIds.add(s.string_id)
     addFeature({
       type: 'Point',
       iconName: s.primaryTag as any,
@@ -203,7 +200,6 @@ export const useSolutionsStore = defineStore('solutions', () => {
   async function deleteSolution(id: string, string_id: string): Promise<void> {
     await deleteDoc(doc(getFirestore(), COLLECTION, id))
     moderation.value = moderation.value.filter(x => x.id !== id)
-    loadedIds.delete(string_id)
     const idx = features.findIndex(f => (f.properties as any)?.string_id === string_id)
     if (idx !== -1)
       features.splice(idx, 1)

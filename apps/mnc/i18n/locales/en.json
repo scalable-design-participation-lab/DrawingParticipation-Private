@@ -131,7 +131,8 @@
     "review": "Review",
     "entries": "Entries",
     "contributions": "Contributions",
-    "noContributions": "No pending contributions."
+    "noContributions": "No pending contributions.",
+    "showOnMap": "Show on the map"
   },
   "contribute": {
     "title": "Join Our Research",
