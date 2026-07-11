@@ -81,8 +81,9 @@ function onPinClick(feature: Feature, event: MouseEvent) {
         :key="member.id"
         type="button"
         class="mnc-pin"
+        :class="{ 'mnc-pin--pending': (member.properties as any)?.pending }"
         :style="{ '--pin-color': metaFor(member).color }"
-        :aria-label="member.comment || 'Map pin'"
+        :aria-label="(member.properties as any)?.pending ? `${member.comment || 'Map pin'} — pending review` : (member.comment || 'Map pin')"
         @click.stop="onPinClick(member, $event)"
       >
         <UIcon
@@ -90,6 +91,8 @@ function onPinClick(feature: Feature, event: MouseEvent) {
           class="mnc-pin__icon"
           :style="{ color: metaFor(member).color }"
         />
+        <!-- Amber marker on pins still awaiting moderator approval (admins only) -->
+        <span v-if="(member.properties as any)?.pending" class="mnc-pin__pending" title="Pending review" />
       </button>
     </div>
   </ol-overlay>
@@ -148,6 +151,25 @@ function onPinClick(feature: Feature, event: MouseEvent) {
 .mnc-pin__icon {
   width: 22px;
   height: 22px;
+  pointer-events: none;
+}
+
+/* Pins awaiting moderator approval: dashed ring, slightly faded, amber marker.
+   Only admins ever load these, so the public never sees the pending state. */
+.mnc-pin--pending {
+  border-style: dashed;
+  opacity: 0.9;
+}
+
+.mnc-pin__pending {
+  position: absolute;
+  top: -3px;
+  right: -3px;
+  width: 13px;
+  height: 13px;
+  border-radius: 50%;
+  background: #f59e0b;
+  border: 2px solid rgba(24, 24, 27, 0.9);
   pointer-events: none;
 }
 </style>

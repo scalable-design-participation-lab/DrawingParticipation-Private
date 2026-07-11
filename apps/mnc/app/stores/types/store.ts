@@ -28,6 +28,9 @@ export class Properties {
   linkList?: { label: string, url: string }[]
   // All photo paths under /Solution_Photos/<string_id>/ for the gallery carousel.
   photos?: string[]
+  // Set on user-submitted pins awaiting moderator approval (admins only ever see
+  // these) so the map can mark them as pending. Assigned after construction.
+  pending?: boolean
 
   constructor(
     location?: string,

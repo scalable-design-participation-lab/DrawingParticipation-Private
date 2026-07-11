@@ -73,29 +73,33 @@ export const useSolutionsStore = defineStore('solutions', () => {
     primaryTag: string
     location: string
     coordinate: [number, number]
+    approved?: boolean
   }) {
     if (features.some(f => (f.properties as any)?.string_id === s.string_id))
       return
+    const properties = new Properties(
+      s.location,
+      '',
+      s.shortDesc,
+      s.description,
+      '',
+      undefined,
+      undefined,
+      s.primaryTag,
+      undefined,
+      s.string_id,
+      [],
+      [],
+    )
+    // Mark pins that are still awaiting approval so the map can distinguish them.
+    properties.pending = s.approved === false
     addFeature({
       type: 'Point',
       iconName: s.primaryTag as any,
       coordinates: s.coordinate,
       comment: s.title,
       timestamp: new Date().toISOString(),
-      properties: new Properties(
-        s.location,
-        '',
-        s.shortDesc,
-        s.description,
-        '',
-        undefined,
-        undefined,
-        s.primaryTag,
-        undefined,
-        s.string_id,
-        [],
-        [],
-      ),
+      properties,
     })
   }
   const { addFeature, features } = featureStore
@@ -118,6 +122,7 @@ export const useSolutionsStore = defineStore('solutions', () => {
       primaryTag: input.primaryTag,
       location: input.location,
       coordinate: input.coordinate,
+      approved: false,
     })
     isPlacing.value = false
 
@@ -180,6 +185,7 @@ export const useSolutionsStore = defineStore('solutions', () => {
           primaryTag: data.primaryTag || '',
           location: data.location || '',
           coordinate: fromLonLat([data.lon, data.lat]) as [number, number],
+          approved,
         })
       })
     }
@@ -192,8 +198,13 @@ export const useSolutionsStore = defineStore('solutions', () => {
   async function approveSolution(id: string): Promise<void> {
     await updateDoc(doc(getFirestore(), COLLECTION, id), { approved: true })
     const m = moderation.value.find(x => x.id === id)
-    if (m)
+    if (m) {
       m.approved = true
+      // Clear the map pin's pending marker so it stops showing as "under review".
+      const f = features.find(x => (x.properties as any)?.string_id === m.string_id)
+      if (f)
+        (f.properties as any).pending = false
+    }
   }
 
   /** Moderator: delete a solution and remove its pin from the map. */
