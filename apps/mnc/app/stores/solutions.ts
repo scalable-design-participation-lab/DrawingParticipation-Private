@@ -22,6 +22,7 @@ export interface SolutionInput {
   // Optional richer fields from the "Join Our Research" flow.
   mncConnection?: string // "why is this a good example of MNC"
   date?: string
+  photos?: string[] // uploaded photo URLs — the entry's own gallery
 }
 
 /** Personal contact info from the "Join Our Research" step. Stored in a
@@ -89,6 +90,7 @@ export const useSolutionsStore = defineStore('solutions', () => {
     approved?: boolean
     mncConnection?: string
     date?: string
+    photos?: string[]
   }) {
     if (features.some(f => (f.properties as any)?.string_id === s.string_id))
       return
@@ -104,7 +106,7 @@ export const useSolutionsStore = defineStore('solutions', () => {
       undefined,
       s.string_id,
       [],
-      [],
+      s.photos || [],
     )
     // Mark pins that are still awaiting approval so the map can distinguish them.
     properties.pending = s.approved === false
@@ -140,6 +142,7 @@ export const useSolutionsStore = defineStore('solutions', () => {
       approved: false,
       mncConnection: input.mncConnection,
       date: input.date,
+      photos: input.photos,
     })
     isPlacing.value = false
 
@@ -155,6 +158,7 @@ export const useSolutionsStore = defineStore('solutions', () => {
         // Optional richer fields (empty when added via the quick desktop form).
         mncConnection: input.mncConnection || '',
         date: input.date || '',
+        photos: input.photos || [],
         lon,
         lat,
         userId: getAuth().currentUser?.uid || 'anonymous',
@@ -229,6 +233,9 @@ export const useSolutionsStore = defineStore('solutions', () => {
           location: data.location || '',
           coordinate: fromLonLat([data.lon, data.lat]) as [number, number],
           approved,
+          mncConnection: data.mncConnection || '',
+          date: data.date || '',
+          photos: Array.isArray(data.photos) ? data.photos : [],
         })
       })
     }

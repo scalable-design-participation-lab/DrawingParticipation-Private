@@ -92,6 +92,27 @@ async function onContributeSubmit(payload: any) {
   if (!payload?.coordinate)
     return
   try {
+    // Upload the wizard's files FIRST so their URLs can be written onto the entry
+    // at creation (the entry doc is admin-only to update afterwards). They become
+    // the entry's own photo gallery — approved/deleted with the entry, not a
+    // separate pending contribution.
+    const f = payload.files || {}
+    const allFiles: File[] = [...(f.example || []), ...(f.why || []), ...(f.media || []), ...(f.additional || [])]
+    const photos: string[] = []
+    if (allFiles.length) {
+      const slug = (payload.title || '').toLowerCase().replace(/[^a-z0-9]+/g, '_').replace(/^_+|_+$/g, '').slice(0, 30)
+      const folder = `entry_${slug || 'untitled'}_${Math.floor(Math.random() * 100000)}`
+      for (const file of allFiles) {
+        try {
+          const m = await contributionsStore.uploadFile(folder, file)
+          photos.push(m.url)
+        }
+        catch (e) {
+          console.warn('Could not upload entry photo:', e)
+        }
+      }
+    }
+
     const stringId = await solutionsStore.addSolution({
       title: payload.title,
       primaryTag: payload.primaryTag,
@@ -101,19 +122,8 @@ async function onContributeSubmit(payload: any) {
       description: payload.example || '',
       mncConnection: payload.why || '',
       date: payload.date || '',
+      photos,
     })
-
-    // Attach every uploaded file (across the wizard's steps) to the new entry,
-    // through the same pending-contributions pipeline a desktop add uses.
-    const f = payload.files || {}
-    const allFiles: File[] = [...(f.example || []), ...(f.why || []), ...(f.media || []), ...(f.additional || [])]
-    if (allFiles.length && stringId) {
-      const media = []
-      for (const file of allFiles)
-        media.push(await contributionsStore.uploadFile(stringId, file))
-      if (media.length)
-        await contributionsStore.addContribution(stringId, { comment: '', media })
-    }
 
     // Personal contact info goes to the admin-only collection, never the pin.
     await solutionsStore.addEntryContact(stringId, {
