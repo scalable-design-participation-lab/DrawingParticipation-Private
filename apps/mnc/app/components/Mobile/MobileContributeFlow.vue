@@ -171,27 +171,35 @@ function prettyCoord(coord: [number, number]): string {
 
 <template>
   <div
-    class="fixed inset-0 z-40 flex flex-col"
-    :class="isMapStep ? 'pointer-events-none bg-transparent' : 'bg-white'"
+    class="fixed inset-0 z-40"
+    :class="isMobile
+      ? (isMapStep ? 'flex flex-col pointer-events-none bg-transparent' : 'flex flex-col bg-white')
+      : 'flex items-center justify-center bg-black/50 p-4'"
   >
-    <MobileHeader v-if="isMobile" color="#4FA19D" />
+    <!-- Full-screen on mobile; a centered, bounded card on desktop. -->
+    <div
+      :class="isMobile
+        ? 'relative flex w-full flex-1 flex-col'
+        : 'pointer-events-auto relative flex max-h-[88vh] w-full max-w-xl flex-col overflow-hidden rounded-2xl bg-white shadow-2xl dark:bg-zinc-900'"
+    >
+      <MobileHeader v-if="isMobile" color="#4FA19D" />
 
-    <!-- Close button (top-right), available throughout the flow -->
-    <UButton
-      icon="i-heroicons-x-mark"
-      color="gray"
-      variant="ghost"
-      size="sm"
-      class="pointer-events-auto absolute right-4 top-6 z-10"
-      :ui="{ rounded: 'rounded-full' }"
-      :aria-label="$t('contribute.close')"
-      @click="emit('close')"
-    />
+      <!-- Close button (top-right), available throughout the flow -->
+      <UButton
+        icon="i-heroicons-x-mark"
+        color="gray"
+        variant="ghost"
+        size="sm"
+        class="pointer-events-auto absolute right-4 top-4 z-10"
+        :ui="{ rounded: 'rounded-full' }"
+        :aria-label="$t('contribute.close')"
+        @click="emit('close')"
+      />
 
     <!-- ============================== Thank-you ============================== -->
     <div
       v-if="submitted"
-      class="pointer-events-auto flex flex-1 flex-col items-center justify-center px-8 text-center"
+      class="pointer-events-auto flex flex-1 flex-col items-center justify-center px-8 py-12 text-center md:py-16"
     >
       <h2 class="text-3xl font-extrabold text-[#F26D6D]">
         {{ $t('contribute.title') }}
@@ -217,7 +225,7 @@ function prettyCoord(coord: [number, number]): string {
     <!-- =============================== Steps =============================== -->
     <template v-else>
       <!-- Progress bar -->
-      <div class="pointer-events-auto mt-20 flex justify-center gap-1.5 px-8">
+      <div class="pointer-events-auto mt-20 flex justify-center gap-1.5 px-8 md:mt-8">
         <span
           v-for="i in TOTAL_STEPS"
           :key="i"
@@ -230,7 +238,7 @@ function prettyCoord(coord: [number, number]): string {
         {{ $t('contribute.title') }}
       </h2>
 
-      <div class="mx-auto w-full max-w-2xl flex-1 overflow-y-auto px-6 pb-32 pt-4">
+      <div class="mx-auto w-full max-w-2xl flex-1 overflow-y-auto px-6 pb-32 pt-4 md:pb-6">
         <!-- Step 1: the entry's required core — title, theme, location + pin -->
         <div v-if="step === 1" class="pointer-events-auto space-y-4">
           <p class="text-sm font-semibold text-[#F26D6D]">
@@ -386,8 +394,12 @@ function prettyCoord(coord: [number, number]): string {
         </div>
       </div>
 
-      <!-- Footer nav: Back / Next|Submit, sits above the bottom nav bar -->
-      <div class="pointer-events-auto absolute inset-x-0 bottom-24 flex items-center justify-center gap-6 md:bottom-10">
+      <!-- Footer nav: Back / Next|Submit. Above the bottom nav on mobile;
+           an in-card footer on desktop. -->
+      <div
+        class="pointer-events-auto flex items-center justify-center gap-6"
+        :class="isMobile ? 'absolute inset-x-0 bottom-24' : 'shrink-0 border-t border-gray-100 py-4 dark:border-zinc-800'"
+      >
         <button
           v-if="step > 1"
           type="button"
@@ -415,6 +427,7 @@ function prettyCoord(coord: [number, number]): string {
         </UButton>
       </div>
     </template>
+    </div>
   </div>
 </template>
 
