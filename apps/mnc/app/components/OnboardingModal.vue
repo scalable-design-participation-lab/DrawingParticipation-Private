@@ -4,23 +4,27 @@
     class="onboarding-card max-w-[90vw] w-[500px] max-h-[90vh] overflow-y-auto z-50 absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 rounded-xl shadow-xl dark:bg-black"
   >
     <template #header>
-      <div class="relative">
+      <div class="flex flex-col gap-3">
+        <!-- Language switcher, on its own row so it never overlaps the title -->
+        <div class="flex justify-end">
+          <div class="inline-flex rounded-full border border-gray-200 p-0.5 dark:border-zinc-700">
+            <button
+              v-for="l in langs"
+              :key="l.code"
+              type="button"
+              class="rounded-full px-3 py-0.5 text-xs font-bold transition"
+              :class="locale === l.code
+                ? 'bg-teal-500 text-white shadow-sm'
+                : 'text-gray-500 hover:text-gray-800 dark:text-gray-400 dark:hover:text-gray-100'"
+              @click="setLocale(l.code)"
+            >
+              {{ l.code.toUpperCase() }}
+            </button>
+          </div>
+        </div>
         <h3 class="text-xl md:text-2xl font-semibold text-center">
           {{ $t('onboarding.title') }}
         </h3>
-        <!-- Language switcher, offered up-front on the welcome screen -->
-        <div class="absolute right-0 top-0 flex gap-1">
-          <button
-            v-for="l in langs"
-            :key="l.code"
-            type="button"
-            class="rounded-full px-2 py-0.5 text-xs font-semibold transition"
-            :class="locale === l.code ? 'bg-teal-100 text-teal-700 dark:bg-teal-900/40 dark:text-teal-300' : 'text-gray-400 hover:text-gray-600 dark:hover:text-gray-200'"
-            @click="setLocale(l.code)"
-          >
-            {{ l.code.toUpperCase() }}
-          </button>
-        </div>
       </div>
     </template>
 
