@@ -4,7 +4,9 @@ import { useFilterStore } from '../stores/filter'
 // Mirrors the mobile bottom nav (Mobile/MobileBottomNav.vue) so the two match:
 // same pill, same icons, same order. Actions are desktop-appropriate (panels
 // instead of full-screen views). Theme filtering lives in the top ThemeFilterBar.
-const props = defineProps<{ adding?: boolean }>()
+// `active` is the current mode ('map' | 'list' | 'info' | 'add') so exactly one
+// icon is highlighted, tab-style, like the mobile nav. Defaults to 'map'.
+const props = defineProps<{ active?: string }>()
 const emit = defineEmits<{ contribute: [], info: [] }>()
 const filterStore = useFilterStore()
 
@@ -32,11 +34,7 @@ function onNav(key: string) {
 }
 
 function isActive(key: string): boolean {
-  if (key === 'list')
-    return filterStore.isListOpen
-  if (key === 'add')
-    return !!props.adding
-  return false
+  return (props.active || 'map') === key
 }
 </script>
 

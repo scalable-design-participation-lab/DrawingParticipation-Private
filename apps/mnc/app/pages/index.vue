@@ -62,6 +62,18 @@ function toggleContribute() {
     showContribute.value = true
 }
 
+// The bottom nav's current mode — exactly one icon is highlighted, tab-style.
+// Defaults to "map" (you're looking at the map).
+const bottomBarMode = computed(() => {
+  if (showContribute.value)
+    return 'add'
+  if (filterStore.isListOpen)
+    return 'list'
+  if (showOnboarding.value)
+    return 'info'
+  return 'map'
+})
+
 // The flow asks us to hide it so the user can tap the map for a location pin.
 function startContributePick() {
   pickingContributeLocation.value = true
@@ -232,7 +244,7 @@ onMounted(() => {
       <ThemeFilterBar v-if="!isMobile && !showContribute" />
       <BottomBar
         v-if="!isMobile"
-        :adding="showContribute"
+        :active="bottomBarMode"
         @contribute="toggleContribute"
         @info="showOnboarding = true"
       />
