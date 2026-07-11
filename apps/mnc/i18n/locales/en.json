@@ -69,7 +69,9 @@
     "submit": "Add to map",
     "placeBanner": "Click the map to place your solution",
     "pickBanner": "Tap the map to drop your pin",
-    "locationPlaceholder": "e.g. Nairobi, Kenya"
+    "locationPlaceholder": "e.g. Nairobi, Kenya",
+    "chooseFiles": "Choose files",
+    "noFile": "No file chosen"
   },
   "list": {
     "title": "All Solutions",

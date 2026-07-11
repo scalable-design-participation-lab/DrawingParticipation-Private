@@ -78,44 +78,28 @@ function select(feature: Feature) {
 </script>
 
 <template>
-  <div
-    class="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4"
-    @click.self="filterStore.toggleList()"
-  >
-    <div
-      class="flex max-h-[88vh] w-full max-w-5xl flex-col overflow-hidden rounded-3xl bg-white shadow-2xl dark:bg-zinc-900"
-    >
-      <!-- Header -->
-      <div class="flex flex-col gap-3 border-b border-gray-100 px-6 py-4 dark:border-zinc-800">
-        <div class="flex items-center justify-between">
-          <h2 class="text-xl font-bold text-gray-900 dark:text-white">
-            {{ $t('list.title') }}
-            <span class="font-normal text-gray-400">({{ items.length }})</span>
-          </h2>
-          <UButton
-            icon="i-heroicons-x-mark"
-            color="gray"
-            variant="ghost"
-            :aria-label="$t('list.close')"
-            :ui="{ rounded: 'rounded-full' }"
-            @click="filterStore.toggleList()"
-          />
-        </div>
+  <AppModal max-width="max-w-5xl" @close="filterStore.toggleList()">
+    <template #header>
+      <div class="min-w-0 flex-1">
+        <h2 class="text-xl font-bold text-gray-900 dark:text-white">
+          {{ $t('list.title') }}
+          <span class="font-normal text-gray-400">({{ items.length }})</span>
+        </h2>
         <UInput
           v-model="search"
           icon="i-heroicons-magnifying-glass"
           :placeholder="$t('list.search')"
           :ui="{ rounded: 'rounded-full' }"
+          class="mt-3"
         />
       </div>
+    </template>
 
-      <!-- Tiled grid -->
-      <div class="mnc-grid-scroll flex-1 overflow-y-auto p-6">
-        <p v-if="!items.length" class="py-12 text-center text-sm text-gray-400">
-          {{ $t('list.empty', { q: search }) }}
-        </p>
+    <p v-if="!items.length" class="py-12 text-center text-sm text-gray-400">
+      {{ $t('list.empty', { q: search }) }}
+    </p>
 
-        <div v-else class="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+    <div v-else class="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
           <button
             v-for="feature in items"
             :key="feature.id"
@@ -164,9 +148,7 @@ function select(feature: Feature) {
             </div>
           </button>
         </div>
-      </div>
-    </div>
-  </div>
+  </AppModal>
 </template>
 
 <style scoped>
@@ -176,22 +158,5 @@ function select(feature: Feature) {
   line-clamp: 2;
   -webkit-box-orient: vertical;
   overflow: hidden;
-}
-.mnc-grid-scroll::-webkit-scrollbar {
-  width: 10px;
-}
-.mnc-grid-scroll::-webkit-scrollbar-track {
-  background: transparent;
-  margin: 8px 0;
-}
-.mnc-grid-scroll::-webkit-scrollbar-thumb {
-  background-color: rgba(148, 163, 184, 0.45);
-  border-radius: 9999px;
-  border: 3px solid transparent;
-  background-clip: content-box;
-}
-.mnc-grid-scroll {
-  scrollbar-width: thin;
-  scrollbar-color: rgba(148, 163, 184, 0.45) transparent;
 }
 </style>

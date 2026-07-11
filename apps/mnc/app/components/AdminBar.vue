@@ -87,26 +87,14 @@ async function remove(m: ModeratedSolution) {
   </div>
 
   <!-- Login modal -->
-  <div
-    v-if="showLogin"
-    class="fixed inset-0 z-[80] flex items-center justify-center bg-black/40 p-4"
-    @click.self="showLogin = false"
-  >
-    <UCard class="w-full max-w-sm">
-      <template #header>
-        <div class="flex items-center justify-between">
-          <h3 class="text-base font-semibold text-gray-900 dark:text-white">{{ $t('mod.signInTitle') }}</h3>
-          <UButton icon="i-heroicons-x-mark" color="gray" variant="ghost" size="xs" :aria-label="$t('mod.close')" @click="showLogin = false" />
-        </div>
-      </template>
-      <form class="space-y-3" @submit.prevent="doSignIn">
-        <UInput v-model="email" type="email" :placeholder="$t('mod.email')" autocomplete="username" />
-        <UInput v-model="password" type="password" :placeholder="$t('mod.password')" autocomplete="current-password" />
-        <p v-if="err" class="text-xs text-red-500">{{ err }}</p>
-        <UButton type="submit" color="primary" block :loading="busy">{{ $t('mod.signIn') }}</UButton>
-      </form>
-    </UCard>
-  </div>
+  <AppModal v-if="showLogin" :title="$t('mod.signInTitle')" max-width="max-w-sm" @close="showLogin = false">
+    <form class="space-y-3" @submit.prevent="doSignIn">
+      <UInput v-model="email" type="email" :placeholder="$t('mod.email')" autocomplete="username" />
+      <UInput v-model="password" type="password" :placeholder="$t('mod.password')" autocomplete="current-password" />
+      <p v-if="err" class="text-xs text-red-500">{{ err }}</p>
+      <UButton type="submit" color="primary" block :loading="busy">{{ $t('mod.signIn') }}</UButton>
+    </form>
+  </AppModal>
 
   <!-- Moderation panel -->
   <div

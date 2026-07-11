@@ -69,7 +69,9 @@
     "submit": "Adicionar ao mapa",
     "placeBanner": "Clique no mapa para posicionar sua solução",
     "pickBanner": "Toque no mapa para marcar seu ponto",
-    "locationPlaceholder": "ex.: Nairóbi, Quênia"
+    "locationPlaceholder": "ex.: Nairóbi, Quênia",
+    "chooseFiles": "Escolher arquivos",
+    "noFile": "Nenhum arquivo selecionado"
   },
   "list": {
     "title": "Todas as soluções",

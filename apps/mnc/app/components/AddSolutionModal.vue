@@ -20,7 +20,7 @@ const emit = defineEmits<{
   close: []
 }>()
 
-const { t } = useI18n()
+const { t, locale } = useI18n()
 
 const themes = ref<string[]>([...PRIMARY_TAGS])
 
@@ -44,13 +44,15 @@ const canSubmit = computed(() =>
 )
 
 // Reverse-geocode the clicked point into a "City, Country" label so entries
-// always carry a real place (OpenStreetMap Nominatim, no API key needed).
+// always carry a real place (OpenStreetMap Nominatim, no API key needed). The
+// accept-language is pinned to the app locale so place names match the UI
+// (otherwise Nominatim returns them in the browser's language).
 onMounted(async () => {
   try {
     geocoding.value = true
     const [lon, lat] = toLonLat(props.coordinate)
     const res = await fetch(
-      `https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${lat}&lon=${lon}&zoom=10&addressdetails=1`,
+      `https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${lat}&lon=${lon}&zoom=10&addressdetails=1&accept-language=${locale.value || 'en'}`,
     )
     if (res.ok) {
       const a = (await res.json())?.address || {}
@@ -99,81 +101,68 @@ function submit() {
 </script>
 
 <template>
-  <div class="fixed inset-0 z-[70] flex items-center justify-center bg-black/40 p-4">
-    <UCard class="w-full max-w-md">
-      <template #header>
-        <div class="flex items-center justify-between">
-          <h3 class="text-lg font-semibold text-gray-900 dark:text-white">{{ $t('add.title') }}</h3>
-          <UButton
-            icon="i-heroicons-x-mark"
-            color="gray"
-            variant="ghost"
-            size="sm"
-            :aria-label="$t('add.cancel')"
-            @click="emit('close')"
-          />
-        </div>
-      </template>
-
-      <div class="space-y-4">
-        <div>
-          <label class="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-200">{{ $t('add.titleLabel') }}</label>
-          <UInput v-model="form.title" :placeholder="$t('add.titlePlaceholder')" />
-        </div>
-
-        <div>
-          <label class="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-200">{{ $t('add.theme') }}</label>
-          <USelectMenu
-            v-model="form.primaryTag"
-            :options="themes"
-            searchable
-            creatable
-            :placeholder="$t('add.themePlaceholder')"
-            @create="onCreateTheme"
-          />
-        </div>
-
-        <div>
-          <label class="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-200">
-            {{ $t('add.location') }}
-            <span v-if="geocoding" class="font-normal text-gray-400">· {{ $t('add.detecting') }}</span>
-          </label>
-          <UInput v-model="form.location" :placeholder="$t('add.locationPlaceholder')" />
-          <p class="mt-1 text-xs text-gray-400">{{ $t('add.locationHint') }}</p>
-        </div>
-
-        <div>
-          <label class="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-200">{{ $t('add.shortDesc') }}</label>
-          <UTextarea v-model="form.shortDesc" :rows="2" :placeholder="$t('add.shortDescPlaceholder')" />
-        </div>
-
-        <div>
-          <label class="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-200">{{ $t('add.fullDesc') }}</label>
-          <UTextarea v-model="form.description" :rows="4" />
-        </div>
-
-        <div>
-          <label class="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-200">{{ $t('add.media') }}</label>
-          <input
-            type="file"
-            accept="image/*,audio/*"
-            multiple
-            class="block w-full text-sm text-gray-500 file:mr-3 file:rounded-full file:border-0 file:bg-teal-50 file:px-4 file:py-1.5 file:text-teal-700 hover:file:bg-teal-100 dark:file:bg-teal-950/40 dark:file:text-teal-300"
-            @change="onFiles"
-          />
-          <p v-if="mediaFiles.length" class="mt-1 text-xs text-gray-400">{{ $t('add.filesSelected', { n: mediaFiles.length }) }}</p>
-        </div>
-
-        <p class="text-xs text-gray-400">{{ $t('add.pinNote') }}</p>
-        <p v-if="error" class="text-xs text-red-500">{{ error }}</p>
+  <AppModal :title="$t('add.title')" @close="emit('close')">
+    <div class="space-y-4">
+      <div>
+        <label class="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-200">{{ $t('add.titleLabel') }}</label>
+        <UInput v-model="form.title" :placeholder="$t('add.titlePlaceholder')" />
       </div>
 
-      <template #footer>
-        <div class="flex justify-end gap-2">
-          <UButton color="gray" variant="ghost" @click="emit('close')">{{ $t('add.cancel') }}</UButton>
-          <UButton color="primary" :disabled="!canSubmit" @click="submit">{{ $t('add.submit') }}</UButton>
+      <div>
+        <label class="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-200">{{ $t('add.theme') }}</label>
+        <USelectMenu
+          v-model="form.primaryTag"
+          :options="themes"
+          searchable
+          creatable
+          :placeholder="$t('add.themePlaceholder')"
+          @create="onCreateTheme"
+        />
+      </div>
+
+      <div>
+        <label class="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-200">
+          {{ $t('add.location') }}
+          <span v-if="geocoding" class="font-normal text-gray-400">· {{ $t('add.detecting') }}</span>
+        </label>
+        <UInput v-model="form.location" :placeholder="$t('add.locationPlaceholder')" />
+        <p class="mt-1 text-xs text-gray-400">{{ $t('add.locationHint') }}</p>
+      </div>
+
+      <div>
+        <label class="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-200">{{ $t('add.shortDesc') }}</label>
+        <UTextarea v-model="form.shortDesc" :rows="2" :placeholder="$t('add.shortDescPlaceholder')" />
+      </div>
+
+      <div>
+        <label class="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-200">{{ $t('add.fullDesc') }}</label>
+        <UTextarea v-model="form.description" :rows="4" />
+      </div>
+
+      <div>
+        <label class="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-200">{{ $t('add.media') }}</label>
+        <!-- Custom, translatable file control (the native input button renders in
+             the browser's language, which wouldn't match the app). -->
+        <div class="flex items-center gap-3">
+          <label class="inline-flex cursor-pointer items-center rounded-full bg-teal-50 px-4 py-1.5 text-sm font-medium text-teal-700 hover:bg-teal-100 dark:bg-teal-950/40 dark:text-teal-300">
+            <input type="file" accept="image/*,audio/*" multiple class="hidden" @change="onFiles" />
+            {{ $t('add.chooseFiles') }}
+          </label>
+          <span class="text-sm text-gray-400">
+            {{ mediaFiles.length ? $t('add.filesSelected', { n: mediaFiles.length }) : $t('add.noFile') }}
+          </span>
         </div>
-      </template>
-    </UCard>
-  </div>
+      </div>
+
+      <p class="text-xs text-gray-400">{{ $t('add.pinNote') }}</p>
+      <p v-if="error" class="text-xs text-red-500">{{ error }}</p>
+    </div>
+
+    <template #footer>
+      <div class="flex justify-end gap-2">
+        <UButton color="gray" variant="ghost" @click="emit('close')">{{ $t('add.cancel') }}</UButton>
+        <UButton color="primary" :disabled="!canSubmit" @click="submit">{{ $t('add.submit') }}</UButton>
+      </div>
+    </template>
+  </AppModal>
 </template>
