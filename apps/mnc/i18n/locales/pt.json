@@ -132,7 +132,9 @@
     "entries": "Registros",
     "contributions": "Contribuições",
     "noContributions": "Nenhuma contribuição pendente.",
-    "showOnMap": "Mostrar no mapa"
+    "showOnMap": "Mostrar no mapa",
+    "collapse": "Recolher",
+    "expand": "Expandir"
   },
   "contribute": {
     "title": "Participe da Nossa Pesquisa",

@@ -132,7 +132,9 @@
     "entries": "Entries",
     "contributions": "Contributions",
     "noContributions": "No pending contributions.",
-    "showOnMap": "Show on the map"
+    "showOnMap": "Show on the map",
+    "collapse": "Collapse",
+    "expand": "Expand"
   },
   "contribute": {
     "title": "Join Our Research",
