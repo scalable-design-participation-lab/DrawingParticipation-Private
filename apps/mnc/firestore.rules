@@ -56,6 +56,15 @@ service cloud.firestore {
       allow update, delete: if isAdmin();
     }
 
+    // Personal contact info attached to an entry (from the "Join Our Research"
+    // step). Carries name/email, so ONLY moderators may read; anyone may create
+    // one. Never rendered publicly — the entry itself lives in userSolutions.
+    match /entryContacts/{contactId} {
+      allow read: if isAdmin();
+      allow create: if request.resource.data.createdAt == request.time;
+      allow update, delete: if isAdmin();
+    }
+
     // Collections written/read by the existing app code (db.ts
     // saveDataToDatabase, DownloadModalHurtoma export, base all-features).
     match /projects/{projectId} {

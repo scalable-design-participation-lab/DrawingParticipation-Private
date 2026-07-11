@@ -19,6 +19,19 @@ export interface SolutionInput {
   primaryTag: string
   location: string
   coordinate: [number, number] // EPSG:3857 (map projection)
+  // Optional richer fields from the "Join Our Research" flow.
+  mncConnection?: string // "why is this a good example of MNC"
+  date?: string
+}
+
+/** Personal contact info from the "Join Our Research" step. Stored in a
+ *  separate admin-only collection — never on the public entry document. */
+export interface EntryContact {
+  connectInfo: boolean | null
+  fullName: string
+  email: string
+  country: string
+  city: string
 }
 
 /** A user solution as seen by a moderator (with its Firestore id + status). */
@@ -74,15 +87,17 @@ export const useSolutionsStore = defineStore('solutions', () => {
     location: string
     coordinate: [number, number]
     approved?: boolean
+    mncConnection?: string
+    date?: string
   }) {
     if (features.some(f => (f.properties as any)?.string_id === s.string_id))
       return
     const properties = new Properties(
       s.location,
-      '',
+      s.date || '',
       s.shortDesc,
       s.description,
-      '',
+      s.mncConnection || '',
       undefined,
       undefined,
       s.primaryTag,
@@ -123,6 +138,8 @@ export const useSolutionsStore = defineStore('solutions', () => {
       location: input.location,
       coordinate: input.coordinate,
       approved: false,
+      mncConnection: input.mncConnection,
+      date: input.date,
     })
     isPlacing.value = false
 
@@ -135,6 +152,9 @@ export const useSolutionsStore = defineStore('solutions', () => {
         description: input.description,
         primaryTag: input.primaryTag,
         location: input.location,
+        // Optional richer fields (empty when added via the quick desktop form).
+        mncConnection: input.mncConnection || '',
+        date: input.date || '',
         lon,
         lat,
         userId: getAuth().currentUser?.uid || 'anonymous',
@@ -148,6 +168,29 @@ export const useSolutionsStore = defineStore('solutions', () => {
     }
 
     return string_id
+  }
+
+  /** Persist the optional personal contact info for an entry to an admin-only
+   *  collection (never on the public entry doc). Best-effort. */
+  async function addEntryContact(stringId: string, contact: EntryContact): Promise<void> {
+    // Nothing worth storing if the person stayed anonymous with no details.
+    if (!contact.email && !contact.fullName)
+      return
+    try {
+      await addDoc(collection(getFirestore(), 'entryContacts'), {
+        entryStringId: stringId,
+        connectInfo: contact.connectInfo,
+        fullName: contact.fullName,
+        email: contact.email,
+        country: contact.country,
+        city: contact.city,
+        userId: getAuth().currentUser?.uid || 'anonymous',
+        createdAt: serverTimestamp(),
+      })
+    }
+    catch (err) {
+      console.warn('Could not persist entry contact:', err)
+    }
   }
 
   /** Load solutions from Firestore onto the map. The public sees only approved
@@ -222,6 +265,7 @@ export const useSolutionsStore = defineStore('solutions', () => {
     startPlacing,
     cancelPlacing,
     addSolution,
+    addEntryContact,
     fetchSolutions,
     approveSolution,
     deleteSolution,

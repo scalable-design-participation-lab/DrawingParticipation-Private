@@ -2,15 +2,17 @@
 import { computed, reactive, ref, watch } from 'vue'
 import MobileHeader from './MobileHeader.vue'
 import ContributeFileUpload from './ContributeFileUpload.vue'
+import { PRIMARY_TAGS } from '../../stores/filter'
 
 /**
- * Mobile "Join Our Research" contribution flow — a 7-step wizard plus a
- * thank-you screen, launched from the bottom-nav "More" button.
+ * Mobile "Join Our Research" flow — a 7-step wizard plus a thank-you screen,
+ * launched from the bottom-nav "+" button.
  *
- * This is currently a front-end-only shell: it gathers the submission in local
- * state and emits it on `submit`, but nothing is persisted (the content model
- * is still being finalized). It deliberately does NOT drop a map pin —
- * submissions go to a review queue.
+ * A submission IS a map entry: on submit the parent persists it as a pending
+ * `userSolutions` doc (title + theme + location + the research answers), drops
+ * the author's pending pin, and it goes through the same moderator review queue
+ * as a desktop-added entry. Personal contact info is stored separately, admin-
+ * only. Step 1 (title + theme + a dropped pin) is required; the rest is optional.
  */
 const props = defineProps<{
   // A coordinate (EPSG:3857) captured when the user taps the map to drop a pin.
@@ -26,6 +28,8 @@ const emit = defineEmits<{
 }>()
 
 interface ContributePayload {
+  title: string
+  primaryTag: string
   location: string
   coordinate: [number, number] | null
   example: string
@@ -50,6 +54,8 @@ const step = ref(1)
 const submitted = ref(false)
 
 const form = reactive({
+  title: '',
+  primaryTag: '',
   location: '',
   coordinate: null as [number, number] | null,
   example: '',
@@ -62,6 +68,19 @@ const form = reactive({
   country: '',
   city: '',
 })
+
+// Theme options (pick an existing one or type to create a new one).
+const themes = ref<string[]>([...PRIMARY_TAGS])
+function onCreateTheme(newTheme: string) {
+  if (newTheme && !themes.value.includes(newTheme))
+    themes.value.push(newTheme)
+  form.primaryTag = newTheme
+}
+
+// Step 1 is the entry's required core: a title, a theme, and a dropped pin.
+const step1Valid = computed(() =>
+  form.title.trim().length > 0 && form.primaryTag.length > 0 && !!form.coordinate,
+)
 
 const files = reactive({
   example: [] as File[],
@@ -80,6 +99,9 @@ watch(() => props.pickedCoordinate, (coord) => {
 const isMapStep = computed(() => step.value === 1 && !submitted.value)
 
 function next() {
+  // Can't leave step 1 without the entry's required core (title/theme/pin).
+  if (step.value === 1 && !step1Valid.value)
+    return
   if (step.value < TOTAL_STEPS)
     step.value += 1
 }
@@ -91,6 +113,8 @@ function back() {
 
 function submit() {
   emit('submit', {
+    title: form.title,
+    primaryTag: form.primaryTag,
     location: form.location,
     coordinate: form.coordinate,
     example: form.example,
@@ -116,6 +140,8 @@ function reset() {
   step.value = 1
   submitted.value = false
   Object.assign(form, {
+    title: '',
+    primaryTag: '',
     location: '',
     coordinate: null,
     example: '',
@@ -201,11 +227,24 @@ function prettyCoord(coord: [number, number]): string {
       </h2>
 
       <div class="flex-1 overflow-y-auto px-6 pb-32 pt-4">
-        <!-- Step 1: Location -->
+        <!-- Step 1: the entry's required core — title, theme, location + pin -->
         <div v-if="step === 1" class="pointer-events-auto space-y-4">
           <p class="text-sm font-semibold text-[#F26D6D]">
             {{ $t('contribute.step1.prompt') }}
           </p>
+          <UInput
+            v-model="form.title"
+            :placeholder="$t('add.titlePlaceholder')"
+            :ui="{ rounded: 'rounded-full' }"
+          />
+          <USelectMenu
+            v-model="form.primaryTag"
+            :options="themes"
+            searchable
+            creatable
+            :placeholder="$t('add.themePlaceholder')"
+            @create="onCreateTheme"
+          />
           <UInput
             v-model="form.location"
             :placeholder="$t('contribute.step1.placeholder')"
@@ -357,6 +396,7 @@ function prettyCoord(coord: [number, number]): string {
           v-if="step < TOTAL_STEPS"
           class="rounded-full px-6"
           :style="{ backgroundColor: '#C0392B', color: '#ffffff' }"
+          :disabled="step === 1 && !step1Valid"
           @click="next"
         >
           {{ $t('contribute.next') }}

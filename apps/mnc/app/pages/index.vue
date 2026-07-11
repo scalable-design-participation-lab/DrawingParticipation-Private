@@ -6,6 +6,7 @@ import type { MapType, Feature } from '@base/stores/types/store'
 import { useDb } from '../stores/db'
 import { useFilterStore } from '../stores/filter'
 import { useSolutionsStore } from '../stores/solutions'
+import { useContributionsStore } from '../stores/contributions'
 import { useAuthStore } from '../stores/auth'
 import { useIsMobile } from '../composables/useIsMobile'
 
@@ -15,6 +16,7 @@ const mapStore = useMapStore()
 const dbStore = useDb()
 const filterStore = useFilterStore()
 const solutionsStore = useSolutionsStore()
+const contributionsStore = useContributionsStore()
 const authStore = useAuthStore()
 const { setMapType } = mapStore
 const currentMapType = ref('vector')
@@ -48,10 +50,48 @@ function onContributePicked(coordinate: [number, number]) {
   pickingContributeLocation.value = false
 }
 
-function onContributeSubmit(payload: unknown) {
-  // Front-end-only shell for now — persistence is deferred until the
-  // submission content model is finalized.
-  console.warn('[contribute] submission payload (not persisted yet):', payload)
+// The "Join Our Research" wizard submits a new map entry. Persist it exactly
+// like a desktop add: a pending userSolutions pin + its media, plus the private
+// contact info. Best-effort — the wizard already shows its thank-you screen.
+async function onContributeSubmit(payload: any) {
+  if (!payload?.coordinate)
+    return
+  try {
+    const stringId = await solutionsStore.addSolution({
+      title: payload.title,
+      primaryTag: payload.primaryTag,
+      location: payload.location,
+      coordinate: payload.coordinate,
+      shortDesc: (payload.example || '').slice(0, 140),
+      description: payload.example || '',
+      mncConnection: payload.why || '',
+      date: payload.date || '',
+    })
+
+    // Attach every uploaded file (across the wizard's steps) to the new entry,
+    // through the same pending-contributions pipeline a desktop add uses.
+    const f = payload.files || {}
+    const allFiles: File[] = [...(f.example || []), ...(f.why || []), ...(f.media || []), ...(f.additional || [])]
+    if (allFiles.length && stringId) {
+      const media = []
+      for (const file of allFiles)
+        media.push(await contributionsStore.uploadFile(stringId, file))
+      if (media.length)
+        await contributionsStore.addContribution(stringId, { comment: '', media })
+    }
+
+    // Personal contact info goes to the admin-only collection, never the pin.
+    await solutionsStore.addEntryContact(stringId, {
+      connectInfo: payload.connectInfo ?? null,
+      fullName: payload.fullName || '',
+      email: payload.email || '',
+      country: payload.country || '',
+      city: payload.city || '',
+    })
+  }
+  catch (e) {
+    console.warn('Could not persist entry from the research flow:', e)
+  }
 }
 
 function selectMobileFeature(feature: Feature) {
