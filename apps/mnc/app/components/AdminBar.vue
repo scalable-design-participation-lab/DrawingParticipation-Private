@@ -186,12 +186,13 @@ async function removeC(c: Contribution) {
     </div>
 
     <div v-show="!collapsed" class="flex-1 overflow-y-auto p-3">
-      <!-- Entries -->
+      <!-- One queue for everything a user contributes: new places (userSolutions)
+           and photos/comments added to existing places (contributions). -->
       <p class="mb-2 px-1 text-[11px] font-semibold uppercase tracking-wide text-gray-400">
-        {{ $t('mod.entries') }} ({{ solutions.moderation.length }})
+        {{ $t('mod.contributions') }} ({{ solutions.moderation.length + contributions.pending.length }})
       </p>
-      <p v-if="!solutions.moderation.length" class="mb-3 px-1 text-xs text-gray-400">
-        {{ $t('mod.noEntries') }}
+      <p v-if="!solutions.moderation.length && !contributions.pending.length" class="mb-3 px-1 text-xs text-gray-400">
+        {{ $t('mod.noContributions') }}
       </p>
       <div
         v-for="m in solutions.moderation"
@@ -218,13 +219,7 @@ async function removeC(c: Contribution) {
         </div>
       </div>
 
-      <!-- Contributions (pending only) -->
-      <p class="mb-2 mt-4 px-1 text-[11px] font-semibold uppercase tracking-wide text-gray-400">
-        {{ $t('mod.contributions') }} ({{ contributions.pending.length }})
-      </p>
-      <p v-if="!contributions.pending.length" class="px-1 text-xs text-gray-400">
-        {{ $t('mod.noContributions') }}
-      </p>
+      <!-- Photos / comments added to existing places (also contributions). -->
       <div
         v-for="c in contributions.pending"
         :key="c.id"
