@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { computed, reactive, ref, watch } from 'vue'
+import { toLonLat } from 'ol/proj'
 import MobileHeader from './MobileHeader.vue'
 import ContributeFileUpload from './ContributeFileUpload.vue'
 import { PRIMARY_TAGS } from '../../stores/filter'
@@ -51,6 +52,7 @@ interface ContributePayload {
 }
 
 const { isMobile } = useIsMobile()
+const { locale } = useI18n()
 
 const TOTAL_STEPS = 7
 const step = ref(1)
@@ -92,11 +94,43 @@ const files = reactive({
   additional: [] as File[],
 })
 
-// When the parent hands back a map-tapped coordinate, store it on the form.
+// Human-readable place for the dropped pin (reverse-geocoded); shown instead of
+// raw coordinates, which mean nothing to a user.
+const pinPlace = ref('')
+
+// Reverse-geocode the dropped point into "City, Country" (OpenStreetMap
+// Nominatim, no key). Fills the editable location field and the confirmation.
+async function resolvePlace(coord: [number, number]) {
+  pinPlace.value = ''
+  try {
+    const [lon, lat] = toLonLat(coord)
+    const res = await fetch(
+      `https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${lat}&lon=${lon}&zoom=10&addressdetails=1&accept-language=${locale.value || 'en'}`,
+    )
+    if (res.ok) {
+      const a = (await res.json())?.address || {}
+      const city = a.city || a.town || a.village || a.county || a.state || ''
+      const country = a.country || ''
+      const label = [city, country].filter(Boolean).join(', ')
+      if (label) {
+        pinPlace.value = label
+        if (!form.location.trim())
+          form.location = label
+      }
+    }
+  }
+  catch {
+    // Offline / rate-limited: the user can still type the location manually.
+  }
+}
+
+// When the parent hands back a map-tapped coordinate, store it + resolve a place.
 // immediate: desktop opens the wizard already seeded with a tapped coordinate.
 watch(() => props.pickedCoordinate, (coord) => {
-  if (coord)
+  if (coord) {
     form.coordinate = coord
+    resolvePlace(coord)
+  }
 }, { immediate: true })
 
 // On step 1 the map shows through, so the backdrop is transparent + click-through.
@@ -271,7 +305,7 @@ function prettyCoord(coord: [number, number]): string {
           </button>
           <p v-if="form.coordinate" class="flex items-center gap-1 text-xs text-emerald-600">
             <UIcon name="i-heroicons-map-pin" class="h-4 w-4" />
-            {{ $t('contribute.step1.pinDropped', { coord: prettyCoord(form.coordinate) }) }}
+            {{ $t('contribute.step1.pinDropped', { coord: pinPlace || form.location || prettyCoord(form.coordinate) }) }}
           </p>
         </div>
 

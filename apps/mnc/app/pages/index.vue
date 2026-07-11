@@ -54,6 +54,14 @@ function onMapAddEntry(coordinate: [number, number]) {
   showContribute.value = true
 }
 
+// The desktop ➕ toggles the wizard (so it can show a "selected" state).
+function toggleContribute() {
+  if (showContribute.value)
+    closeDesktopContribute()
+  else
+    showContribute.value = true
+}
+
 // The flow asks us to hide it so the user can tap the map for a location pin.
 function startContributePick() {
   pickingContributeLocation.value = true
@@ -223,8 +231,9 @@ onMounted(() => {
            bar or the bottom toolbar. -->
       <ThemeFilterBar v-if="!isMobile && !showContribute" />
       <BottomBar
-        v-if="!isMobile && !showContribute"
-        @contribute="showContribute = true"
+        v-if="!isMobile"
+        :adding="showContribute"
+        @contribute="toggleContribute"
         @info="showOnboarding = true"
       />
 
