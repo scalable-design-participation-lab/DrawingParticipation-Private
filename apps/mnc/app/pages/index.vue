@@ -30,13 +30,21 @@ const mobileView = ref<MobileView>('map')
 const selectedMobileFeature = ref<Feature | null>(null)
 const projectCardState = ref<'expanded' | 'full'>('expanded')
 
-// Mobile "Join Our Research" contribute flow (launched from the "More" nav).
+// "Join Our Research" contribute flow. On mobile it's the "More" nav view; on
+// desktop it opens from the ➕ toolbar button (showContribute).
 const pickingContributeLocation = ref(false)
 const contributeCoordinate = ref<[number, number] | null>(null)
+const showContribute = ref(false)
 
 function closeContribute() {
   mobileView.value = 'map'
   pickingContributeLocation.value = false
+}
+
+function closeDesktopContribute() {
+  showContribute.value = false
+  pickingContributeLocation.value = false
+  contributeCoordinate.value = null
 }
 
 // The flow asks us to hide it so the user can tap the map for a location pin.
@@ -202,9 +210,22 @@ onMounted(() => {
         logo-alt="Mobile Networked Creativity"
       />
 
-      <!-- Desktop only -->
-      <ThemeFilterBar v-if="!isMobile" />
-      <BottomBar v-if="!isMobile" />
+      <!-- Desktop only. Hidden while the contribute wizard is open so its
+           step-1 (click-through, map visible) doesn't overlap the top filter
+           bar or the bottom toolbar. -->
+      <ThemeFilterBar v-if="!isMobile && !showContribute" />
+      <BottomBar v-if="!isMobile && !showContribute" @contribute="showContribute = true" />
+
+      <!-- "Join Our Research" wizard on desktop (same flow as mobile's "More"
+           tab), opened from the ➕ toolbar button. -->
+      <MobileContributeFlow
+        v-if="!isMobile && showContribute"
+        v-show="!pickingContributeLocation"
+        :picked-coordinate="contributeCoordinate"
+        @pick-location="startContributePick"
+        @close="closeDesktopContribute"
+        @submit="onContributeSubmit"
+      />
       <!-- Help: re-open the intro/onboarding for a quick refresher -->
       <button
         v-if="!isMobile"

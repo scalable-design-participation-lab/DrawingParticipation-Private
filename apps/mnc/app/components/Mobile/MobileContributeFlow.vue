@@ -3,6 +3,7 @@ import { computed, reactive, ref, watch } from 'vue'
 import MobileHeader from './MobileHeader.vue'
 import ContributeFileUpload from './ContributeFileUpload.vue'
 import { PRIMARY_TAGS } from '../../stores/filter'
+import { useIsMobile } from '../../composables/useIsMobile'
 
 /**
  * Mobile "Join Our Research" flow — a 7-step wizard plus a thank-you screen,
@@ -48,6 +49,8 @@ interface ContributePayload {
     additional: File[]
   }
 }
+
+const { isMobile } = useIsMobile()
 
 const TOTAL_STEPS = 7
 const step = ref(1)
@@ -170,7 +173,7 @@ function prettyCoord(coord: [number, number]): string {
     class="fixed inset-0 z-40 flex flex-col"
     :class="isMapStep ? 'pointer-events-none bg-transparent' : 'bg-white'"
   >
-    <MobileHeader color="#4FA19D" />
+    <MobileHeader v-if="isMobile" color="#4FA19D" />
 
     <!-- Close button (top-right), available throughout the flow -->
     <UButton
@@ -226,7 +229,7 @@ function prettyCoord(coord: [number, number]): string {
         {{ $t('contribute.title') }}
       </h2>
 
-      <div class="flex-1 overflow-y-auto px-6 pb-32 pt-4">
+      <div class="mx-auto w-full max-w-2xl flex-1 overflow-y-auto px-6 pb-32 pt-4">
         <!-- Step 1: the entry's required core — title, theme, location + pin -->
         <div v-if="step === 1" class="pointer-events-auto space-y-4">
           <p class="text-sm font-semibold text-[#F26D6D]">
@@ -383,7 +386,7 @@ function prettyCoord(coord: [number, number]): string {
       </div>
 
       <!-- Footer nav: Back / Next|Submit, sits above the bottom nav bar -->
-      <div class="pointer-events-auto absolute inset-x-0 bottom-24 flex items-center justify-center gap-6">
+      <div class="pointer-events-auto absolute inset-x-0 bottom-24 flex items-center justify-center gap-6 md:bottom-10">
         <button
           v-if="step > 1"
           type="button"

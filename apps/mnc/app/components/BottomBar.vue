@@ -1,9 +1,9 @@
 <script setup lang="ts">
 import { useFilterStore } from '../stores/filter'
-import { useSolutionsStore } from '../stores/solutions'
 
+// ➕ opens the "Join Our Research" contribute wizard (handled by the page).
+const emit = defineEmits<{ contribute: [] }>()
 const filterStore = useFilterStore()
-const solutionsStore = useSolutionsStore()
 </script>
 
 <template>
@@ -20,9 +20,9 @@ const solutionsStore = useSolutionsStore()
           size="lg"
           :aria-label="$t('nav.addEntry')"
           class="rounded-full !p-3 shadow-md transition-transform hover:scale-105"
-          :style="{ backgroundColor: solutionsStore.isPlacing ? '#FB6D6D' : '#57C9C0', color: '#ffffff' }"
+          :style="{ backgroundColor: '#57C9C0', color: '#ffffff' }"
           :ui="{ rounded: 'rounded-full' }"
-          @click="solutionsStore.startPlacing()"
+          @click="emit('contribute')"
         />
       </UTooltip>
       <UTooltip :text="$t('nav.filter')">
