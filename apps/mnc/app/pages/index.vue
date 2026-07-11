@@ -216,8 +216,12 @@ onMounted(() => {
       </template>
 
       <!-- Moderator sign-in + entry review (visible to everyone; only admins
-           get the review panel after signing in). -->
-      <AdminBar />
+           get the review panel after signing in). On mobile the bottom zone is
+           shared with the nav pill and the list/contribute/info flows, so the
+           moderator controls only appear in the map view (moderation is map-
+           centric — it flies to pins) to avoid stacking buttons on top of each
+           other. Always present on desktop. -->
+      <AdminBar v-if="!isMobile || mobileView === 'map'" />
 
       <OnboardingModal
         :is-visible="showOnboarding"
