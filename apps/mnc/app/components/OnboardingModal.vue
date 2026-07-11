@@ -92,3 +92,29 @@ const emit = defineEmits(['close'])
 const { locale, setLocale } = useI18n()
 const langs = [{ code: 'en' }, { code: 'pt' }] as const
 </script>
+
+<style scoped>
+/* Slim, inset scrollbar so it doesn't sit chunkily on the card's rounded edge. */
+.onboarding-card {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(148, 163, 184, 0.45) transparent;
+}
+.onboarding-card::-webkit-scrollbar {
+  width: 10px;
+}
+.onboarding-card::-webkit-scrollbar-track {
+  background: transparent;
+  /* Keep the thumb clear of the rounded top/bottom corners. */
+  margin: 20px 0;
+}
+.onboarding-card::-webkit-scrollbar-thumb {
+  background-color: rgba(148, 163, 184, 0.45);
+  border-radius: 9999px;
+  border: 3px solid transparent;
+  background-clip: content-box;
+}
+.onboarding-card::-webkit-scrollbar-thumb:hover {
+  background-color: rgba(100, 116, 139, 0.6);
+  background-clip: content-box;
+}
+</style>
