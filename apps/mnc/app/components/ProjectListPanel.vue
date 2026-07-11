@@ -109,6 +109,13 @@ function select(feature: Feature) {
           >
             <!-- Cover -->
             <div class="relative h-36 overflow-hidden bg-teal-50 dark:bg-teal-950/30">
+              <!-- Only admins ever load unapproved features, so this badge self-gates. -->
+              <span
+                v-if="(feature.properties as any)?.pending"
+                class="absolute right-2 top-2 z-10 rounded-full bg-amber-500 px-2 py-0.5 text-[10px] font-semibold text-white shadow"
+              >
+                {{ $t('mod.pending') }}
+              </span>
               <img
                 v-if="coverImage(feature)"
                 :src="coverImage(feature)!"
