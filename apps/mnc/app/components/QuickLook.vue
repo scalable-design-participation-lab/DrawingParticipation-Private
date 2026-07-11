@@ -102,7 +102,7 @@ const tagChipStyle = computed(() => ({
         </span>
       </div>
       <div class="px-4 pb-3 space-y-3">
-        <h2 class="font-semibold leading-tight text-black dark:text-white">
+        <h2 class="line-clamp-2 font-semibold leading-tight text-black dark:text-white">
           {{ props.title }}
         </h2>
 

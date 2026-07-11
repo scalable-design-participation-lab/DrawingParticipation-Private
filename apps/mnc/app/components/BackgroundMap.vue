@@ -20,11 +20,13 @@
     <template #overlays>
       <MncMapLayer :key="mncLayerKey" @toggle-icon-details="handleShowQuickLook" />
 
-      <!-- Quick Look -->
+      <!-- Quick Look. autoPan nudges the map so the whole card is visible when a
+           pin sits near the bottom/edge (otherwise the card would be clipped). -->
       <ol-overlay
         v-if="showQuickLook && !isMobile && quickLookCenter"
         :position="quickLookCenter"
         positioning="top-left"
+        :auto-pan="{ animation: { duration: 300 }, margin: 24 }"
       >
         <QuickLook
           :floating="false"
