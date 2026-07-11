@@ -26,6 +26,8 @@ export const useContributionsStore = defineStore('contributions', () => {
   const byProject = reactive<Record<string, Contribution[]>>({})
   const isLoading = ref(false)
   const error = ref<string | null>(null)
+  /** All pending (unapproved) contributions across projects, for the moderator queue. */
+  const pending = ref<Contribution[]>([])
 
   /** Builds a collision-resistant Storage path for a file. */
   function buildStoragePath(projectId: string, file: File): string {
@@ -156,12 +158,40 @@ export const useContributionsStore = defineStore('contributions', () => {
     }
   }
 
+  /** Moderator: load every pending contribution across all projects (admin-only;
+   *  the where(approved==false) query is rejected for the public by the rules). */
+  async function fetchPendingContributions(): Promise<void> {
+    try {
+      const db = getFirestore()
+      const q = query(collection(db, CONTRIBUTIONS_COLLECTION), where('approved', '==', false))
+      const snap = await getDocs(q)
+      pending.value = snap.docs
+        .map((d) => {
+          const data = d.data() as any
+          return {
+            id: d.id,
+            projectId: data.projectId,
+            comment: data.comment || '',
+            media: Array.isArray(data.media) ? data.media : [],
+            userId: data.userId || 'anonymous',
+            approved: false,
+            createdAt: data.createdAt?.toDate?.().toISOString?.() || '',
+          } as Contribution
+        })
+        .sort((a, b) => (b.createdAt || '').localeCompare(a.createdAt || ''))
+    }
+    catch (e) {
+      console.warn('Could not load pending contributions:', e)
+    }
+  }
+
   /** Moderator: approve a pending contribution. */
   async function approveContribution(id: string, projectId: string): Promise<void> {
     await updateDoc(doc(getFirestore(), CONTRIBUTIONS_COLLECTION, id), { approved: true })
     const c = byProject[projectId]?.find(x => x.id === id)
     if (c)
       c.approved = true
+    pending.value = pending.value.filter(x => x.id !== id)
   }
 
   /** Moderator: delete a contribution (Firestore doc + its Storage files). */
@@ -181,15 +211,18 @@ export const useContributionsStore = defineStore('contributions', () => {
     const list = byProject[contribution.projectId]
     if (list)
       byProject[contribution.projectId] = list.filter(x => x.id !== contribution.id)
+    pending.value = pending.value.filter(x => x.id !== contribution.id)
   }
 
   return {
     byProject,
+    pending,
     isLoading,
     error,
     uploadFile,
     addContribution,
     fetchContributions,
+    fetchPendingContributions,
     approveContribution,
     deleteContribution,
   }

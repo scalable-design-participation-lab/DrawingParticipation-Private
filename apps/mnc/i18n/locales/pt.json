@@ -71,7 +71,8 @@
     "pickBanner": "Toque no mapa para marcar seu ponto",
     "locationPlaceholder": "ex.: Nairóbi, Quênia",
     "chooseFiles": "Escolher arquivos",
-    "noFile": "Nenhum arquivo selecionado"
+    "noFile": "Nenhum arquivo selecionado",
+    "submitted": "Enviado para revisão — aparecerá no mapa assim que um moderador aprovar."
   },
   "list": {
     "title": "Todas as soluções",
@@ -126,7 +127,11 @@
     "approve": "Aprovar",
     "delete": "Excluir",
     "moderate": "Moderar",
-    "close": "Fechar"
+    "close": "Fechar",
+    "review": "Revisar",
+    "entries": "Registros",
+    "contributions": "Contribuições",
+    "noContributions": "Nenhuma contribuição pendente."
   },
   "contribute": {
     "title": "Participe da Nossa Pesquisa",

@@ -71,7 +71,8 @@
     "pickBanner": "Tap the map to drop your pin",
     "locationPlaceholder": "e.g. Nairobi, Kenya",
     "chooseFiles": "Choose files",
-    "noFile": "No file chosen"
+    "noFile": "No file chosen",
+    "submitted": "Submitted for review — it will appear on the map once a moderator approves it."
   },
   "list": {
     "title": "All Solutions",
@@ -126,7 +127,11 @@
     "approve": "Approve",
     "delete": "Delete",
     "moderate": "Moderate",
-    "close": "Close"
+    "close": "Close",
+    "review": "Review",
+    "entries": "Entries",
+    "contributions": "Contributions",
+    "noContributions": "No pending contributions."
   },
   "contribute": {
     "title": "Join Our Research",

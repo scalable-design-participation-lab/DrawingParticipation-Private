@@ -93,6 +93,23 @@
     @save="onSaveSolution"
     @close="pendingCoord = null"
   />
+
+  <!-- "Submitted, pending review" confirmation -->
+  <Transition
+    enter-active-class="transition duration-200 ease-out"
+    enter-from-class="opacity-0 -translate-y-2"
+    leave-active-class="transition duration-150 ease-in"
+    leave-to-class="opacity-0 -translate-y-2"
+  >
+    <div
+      v-if="showSubmitted"
+      class="fixed left-1/2 top-24 z-[75] flex max-w-[92vw] -translate-x-1/2 items-center gap-2 rounded-full bg-white px-5 py-2.5 shadow-lg dark:bg-black"
+      style="border: 2px solid #2f9268;"
+    >
+      <UIcon name="i-heroicons-check-circle" class="h-5 w-5 shrink-0" style="color: #2f9268;" />
+      <span class="text-sm font-medium text-gray-900 dark:text-white">{{ $t('add.submitted') }}</span>
+    </div>
+  </Transition>
 </template>
 
 <script setup lang="ts">
@@ -130,6 +147,9 @@ const contributions = useContributionsStore()
 
 // Map coordinate (EPSG:3857) captured for a new solution; non-null shows the form.
 const pendingCoord = ref<[number, number] | null>(null)
+// Brief "submitted, pending review" confirmation after a new entry is added.
+const showSubmitted = ref(false)
+let submittedTimer: ReturnType<typeof setTimeout> | undefined
 
 // Map-click behavior: capture the coordinate for the mobile contribute flow,
 // otherwise dismiss any open detail, otherwise (desktop) open the "Add a
@@ -170,6 +190,11 @@ async function onSaveSolution(payload: SolutionInput & { files?: File[] }) {
   // Recenter on the new pin so it's never dropped off-screen (the "I added an
   // entry but it didn't show up" report).
   flyToFeature({ coordinates: payload.coordinate })
+  // New entries are pending: shown to the author now, public only after a
+  // moderator approves. Confirm that so it doesn't look like it went live.
+  showSubmitted.value = true
+  clearTimeout(submittedTimer)
+  submittedTimer = setTimeout(() => { showSubmitted.value = false }, 6000)
 
   // Best-effort: attach any chosen photos/audio to the new entry.
   if (files.length && stringId) {
