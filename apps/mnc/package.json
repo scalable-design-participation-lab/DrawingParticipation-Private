@@ -10,6 +10,8 @@
     "coverage": "vitest --coverage",
     "build": "nuxt build",
     "dev": "nuxt dev",
+    "emulators": "npx -y firebase-tools emulators:start",
+    "dev:emulators": "dotenv -e .env.emulators -- nuxt dev",
     "generate": "nuxt generate",
     "preview": "nuxt preview",
     "postinstall": "nuxt prepare",

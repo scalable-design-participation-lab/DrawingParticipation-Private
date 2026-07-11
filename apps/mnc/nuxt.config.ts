@@ -61,6 +61,12 @@ export default defineNuxtConfig({
       appId: process.env.FIREBASE_APP_ID,
       measurementId: process.env.FIREBASE_MEASUREMENT_ID,
     },
+    // Opt-in local testing: set VUEFIRE_EMULATORS=true to point the app at the
+    // Firebase Emulator Suite instead of the cloud project. Off by default, so a
+    // normal `yarn dev` still uses the real project.
+    emulators: {
+      enabled: process.env.VUEFIRE_EMULATORS === 'true',
+    },
   },
 
   runtimeConfig: {
