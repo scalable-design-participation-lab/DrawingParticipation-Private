@@ -222,7 +222,11 @@ onMounted(() => {
            step-1 (click-through, map visible) doesn't overlap the top filter
            bar or the bottom toolbar. -->
       <ThemeFilterBar v-if="!isMobile && !showContribute" />
-      <BottomBar v-if="!isMobile && !showContribute" @contribute="showContribute = true" />
+      <BottomBar
+        v-if="!isMobile && !showContribute"
+        @contribute="showContribute = true"
+        @info="showOnboarding = true"
+      />
 
       <!-- "Join Our Research" wizard on desktop (same flow as mobile's "More"
            tab), opened from the ➕ toolbar button. -->
@@ -234,16 +238,6 @@ onMounted(() => {
         @close="closeDesktopContribute"
         @submit="onContributeSubmit"
       />
-      <!-- Help: re-open the intro/onboarding for a quick refresher -->
-      <button
-        v-if="!isMobile"
-        type="button"
-        :aria-label="$t('nav.help')"
-        class="fixed bottom-6 right-6 z-40 flex h-11 w-11 items-center justify-center rounded-full bg-white dark:bg-zinc-900 text-lg font-semibold text-gray-500 dark:text-gray-300 shadow-lg border border-gray-200 dark:border-white/10 transition-transform hover:scale-105"
-        @click="showOnboarding = true"
-      >
-        ?
-      </button>
       <FilteredSelectionSidebar v-if="!isMobile && filterStore.isPanelOpen" />
       <ProjectListPanel v-if="!isMobile && filterStore.isListOpen" />
 

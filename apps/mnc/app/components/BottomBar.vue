@@ -1,54 +1,76 @@
 <script setup lang="ts">
 import { useFilterStore } from '../stores/filter'
 
-// ➕ opens the "Join Our Research" contribute wizard (handled by the page).
-const emit = defineEmits<{ contribute: [] }>()
+// Mirrors the mobile bottom nav (Mobile/MobileBottomNav.vue) so the two match:
+// same pill, same icons, same order. Actions are desktop-appropriate (panels
+// instead of full-screen views). Theme filtering lives in the top ThemeFilterBar.
+const emit = defineEmits<{ contribute: [], info: [] }>()
 const filterStore = useFilterStore()
+
+const navItems = [
+  { key: 'map', icon: 'i-heroicons-map', labelKey: 'nav.map' },
+  { key: 'list', icon: 'i-heroicons-square-3-stack-3d', labelKey: 'nav.list' },
+  { key: 'info', icon: 'i-heroicons-information-circle', labelKey: 'nav.info' },
+  { key: 'add', icon: 'i-heroicons-plus', labelKey: 'nav.addEntry' },
+]
+
+function onNav(key: string) {
+  if (key === 'add')
+    emit('contribute')
+  else if (key === 'list')
+    filterStore.toggleList()
+  else if (key === 'info')
+    emit('info')
+  else if (key === 'map') {
+    // Back to a clean map: close any open panel / list.
+    if (filterStore.isPanelOpen)
+      filterStore.togglePanel()
+    if (filterStore.isListOpen)
+      filterStore.toggleList()
+  }
+}
+
+function isActive(key: string): boolean {
+  return key === 'list' && filterStore.isListOpen
+}
 </script>
 
 <template>
-  <div class="fixed bottom-6 left-0 right-0 flex flex-col items-center gap-3 z-40 pointer-events-none">
-    <!-- Floating toolbar. Theme filters now live in the top bar (ThemeFilterBar). -->
+  <div class="fixed bottom-6 left-0 right-0 z-40 flex justify-center pointer-events-none">
     <div
-      class="pointer-events-auto flex items-center gap-5 bg-white dark:bg-zinc-900 rounded-full pl-2 pr-6 py-2 shadow-lg border border-gray-200 dark:border-white/10"
+      class="pointer-events-auto flex items-center gap-2 rounded-full bg-white px-4 py-2 shadow-lg dark:bg-zinc-900"
+      style="border: 2px solid #e5e7eb;"
     >
-      <!-- Primary action: filled teal circle -->
-      <UTooltip :text="$t('nav.addEntry')">
+      <UTooltip v-for="item in navItems" :key="item.key" :text="$t(item.labelKey)">
         <UButton
-          icon="i-heroicons-plus"
-          variant="solid"
-          size="lg"
-          :aria-label="$t('nav.addEntry')"
-          class="rounded-full !p-3 shadow-md transition-transform hover:scale-105"
-          :style="{ backgroundColor: '#57C9C0', color: '#ffffff' }"
-          :ui="{ rounded: 'rounded-full' }"
-          @click="emit('contribute')"
-        />
-      </UTooltip>
-      <UTooltip :text="$t('nav.filter')">
-        <UButton
-          icon="i-heroicons-tag"
+          :icon="item.icon"
+          :aria-label="$t(item.labelKey)"
           variant="ghost"
           size="lg"
-          :aria-label="$t('nav.filter')"
           class="rounded-full"
-          :style="{ color: filterStore.isPanelOpen ? '#FB6D6D' : '#57C9C0' }"
+          :class="isActive(item.key) ? 'active-icon' : ''"
+          :style="{ color: isActive(item.key) ? '#57C9C0' : '#9CA3AF' }"
           :ui="{ rounded: 'rounded-full' }"
-          @click="filterStore.togglePanel()"
-        />
-      </UTooltip>
-      <UTooltip :text="$t('nav.list')">
-        <UButton
-          icon="i-heroicons-square-3-stack-3d"
-          variant="ghost"
-          size="lg"
-          :aria-label="$t('nav.list')"
-          class="rounded-full"
-          :style="{ color: filterStore.isListOpen ? '#FB6D6D' : '#57C9C0' }"
-          :ui="{ rounded: 'rounded-full' }"
-          @click="filterStore.toggleList()"
+          @click="onNav(item.key)"
         />
       </UTooltip>
     </div>
   </div>
 </template>
+
+<style scoped>
+.active-icon {
+  border: 2.5px solid transparent;
+  background-image:
+    linear-gradient(white, white),
+    linear-gradient(135deg, #57C9C0, #84e8a0, #f9d876);
+  background-origin: border-box;
+  background-clip: padding-box, border-box;
+}
+
+.dark .active-icon {
+  background-image:
+    linear-gradient(#18181b, #18181b),
+    linear-gradient(135deg, #57C9C0, #84e8a0, #f9d876);
+}
+</style>
