@@ -93,10 +93,11 @@ const files = reactive({
 })
 
 // When the parent hands back a map-tapped coordinate, store it on the form.
+// immediate: desktop opens the wizard already seeded with a tapped coordinate.
 watch(() => props.pickedCoordinate, (coord) => {
   if (coord)
     form.coordinate = coord
-})
+}, { immediate: true })
 
 // On step 1 the map shows through, so the backdrop is transparent + click-through.
 const isMapStep = computed(() => step.value === 1 && !submitted.value)

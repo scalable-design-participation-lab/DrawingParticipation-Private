@@ -47,6 +47,13 @@ function closeDesktopContribute() {
   contributeCoordinate.value = null
 }
 
+// Desktop: a tap on the empty map opens the contribute wizard, pre-seeded with
+// the tapped point as the entry's location/pin.
+function onMapAddEntry(coordinate: [number, number]) {
+  contributeCoordinate.value = coordinate
+  showContribute.value = true
+}
+
 // The flow asks us to hide it so the user can tap the map for a location pin.
 function startContributePick() {
   pickingContributeLocation.value = true
@@ -192,6 +199,7 @@ onMounted(() => {
         :picking-location="pickingContributeLocation"
         @select-feature="selectMobileFeature"
         @pick-location="onContributePicked"
+        @add-entry-at="onMapAddEntry"
       />
       <MobileHeader
         v-if="isMobile"

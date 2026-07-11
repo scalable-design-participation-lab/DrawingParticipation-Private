@@ -3,7 +3,6 @@
     ref="baseMap"
     :mapbox-style-light="mapboxStyleLight"
     :mapbox-style-dark="mapboxStyleDark"
-    :class="{ 'cursor-crosshair': solutionsStore.isPlacing }"
     @toggle-icon-details="handleShowQuickLook"
     @map-click="handleMapClick"
   >
@@ -64,20 +63,7 @@
     @close="closePopup"
   />
 
-  <!-- "Add a Solution": placement banner + form -->
-  <div
-    v-if="solutionsStore.isPlacing"
-    class="fixed left-1/2 top-24 z-[60] flex -translate-x-1/2 items-center gap-3 rounded-full bg-white px-5 py-2.5 shadow-lg dark:bg-black"
-    style="border: 2px solid #FB6D6D;"
-  >
-    <UIcon name="i-heroicons-map-pin" class="h-5 w-5" :style="{ color: '#FB6D6D' }" />
-    <span class="text-sm font-medium text-gray-900 dark:text-white">{{ $t('add.placeBanner') }}</span>
-    <UButton color="gray" variant="ghost" size="xs" class="rounded-full" @click="solutionsStore.cancelPlacing()">
-      {{ $t('add.cancel') }}
-    </UButton>
-  </div>
-
-  <!-- Mobile contribute flow: prompt to tap the map to drop a location pin -->
+  <!-- Contribute flow: prompt to tap the map to drop a location pin -->
   <div
     v-if="pickingLocation"
     class="fixed left-1/2 top-24 z-[60] flex -translate-x-1/2 items-center gap-3 rounded-full bg-white px-5 py-2.5 shadow-lg dark:bg-black"
@@ -86,53 +72,28 @@
     <UIcon name="i-heroicons-map-pin" class="h-5 w-5" :style="{ color: '#FB6D6D' }" />
     <span class="text-sm font-medium text-gray-900 dark:text-white">{{ $t('add.pickBanner') }}</span>
   </div>
-
-  <AddSolutionModal
-    v-if="pendingCoord"
-    :coordinate="pendingCoord"
-    @save="onSaveSolution"
-    @close="pendingCoord = null"
-  />
-
-  <!-- "Submitted, pending review" confirmation -->
-  <Transition
-    enter-active-class="transition duration-200 ease-out"
-    enter-from-class="opacity-0 -translate-y-2"
-    leave-active-class="transition duration-150 ease-in"
-    leave-to-class="opacity-0 -translate-y-2"
-  >
-    <div
-      v-if="showSubmitted"
-      class="fixed left-1/2 top-24 z-[75] flex max-w-[92vw] -translate-x-1/2 items-center gap-2 rounded-full bg-white px-5 py-2.5 shadow-lg dark:bg-black"
-      style="border: 2px solid #2f9268;"
-    >
-      <UIcon name="i-heroicons-check-circle" class="h-5 w-5 shrink-0" style="color: #2f9268;" />
-      <span class="text-sm font-medium text-gray-900 dark:text-white">{{ $t('add.submitted') }}</span>
-    </div>
-  </Transition>
 </template>
 
 <script setup lang="ts">
 import { computed, ref, watch } from 'vue'
 import { useRoute } from 'nuxt/app'
 import { useFilterStore } from '../stores/filter'
-import { useSolutionsStore, type SolutionInput } from '../stores/solutions'
-import { useContributionsStore } from '../stores/contributions'
 import { useIsMobile } from '../composables/useIsMobile'
 import InfoPopup from './infoPopup.vue'
 
 const props = defineProps<{
   showAllPlusIcons?: boolean
   showCommentIcons?: boolean
-  // When true, the next map tap is captured for the mobile contribute flow's
-  // location step (emitted via `pick-location`) instead of opening the
-  // "Add a Solution" form.
+  // When true, the next map tap is captured for the contribute flow's location
+  // step (emitted via `pick-location`) instead of starting a new entry.
   pickingLocation?: boolean
 }>()
 
 const emit = defineEmits<{
   'select-feature': [feature: any]
   'pick-location': [coordinate: [number, number]]
+  // A tap on the empty map: open the "Join Our Research" entry flow here.
+  'add-entry-at': [coordinate: [number, number]]
 }>()
 
 const route = useRoute()
@@ -142,26 +103,16 @@ const baseMap = ref(null)
 const { isMobile } = useIsMobile()
 
 const filterStore = useFilterStore()
-const solutionsStore = useSolutionsStore()
-const contributions = useContributionsStore()
 
-// Map coordinate (EPSG:3857) captured for a new solution; non-null shows the form.
-const pendingCoord = ref<[number, number] | null>(null)
-// Brief "submitted, pending review" confirmation after a new entry is added.
-const showSubmitted = ref(false)
-let submittedTimer: ReturnType<typeof setTimeout> | undefined
-
-// Map-click behavior: capture the coordinate for the mobile contribute flow,
-// otherwise dismiss any open detail, otherwise (desktop) open the "Add a
-// Solution" form directly at the click — a single tap, no need to arm "+" first.
-// OpenLayers only fires 'click' on a real click (a pan is a drag), so casual
-// exploration isn't hijacked. ponytail: keep the "+" as an alternative entry
-// point; revert to the isPlacing gate if direct-tap proves too eager.
+// Map-click behavior: capture the coordinate for the contribute flow's pin-drop,
+// otherwise dismiss any open detail, otherwise (desktop) open the entry flow at
+// the click — a single tap, no need to arm "+" first. OpenLayers only fires
+// 'click' on a real click (a pan is a drag), so casual exploration isn't hijacked.
 function handleMapClick(event: any) {
   const coordinate = event?.coordinate
   const valid = Array.isArray(coordinate) && coordinate.length === 2
 
-  // Mobile contribute flow: capture the tapped coordinate and hand it back.
+  // Contribute flow pin-drop: capture the tapped coordinate and hand it back.
   if (props.pickingLocation) {
     if (valid)
       emit('pick-location', [coordinate[0], coordinate[1]])
@@ -169,7 +120,7 @@ function handleMapClick(event: any) {
   }
 
   // First click on the empty map closes an open QuickLook/detail rather than
-  // opening the add form.
+  // starting a new entry.
   if (showQuickLook.value || showPopup.value) {
     showQuickLook.value = false
     showPopup.value = false
@@ -177,38 +128,11 @@ function handleMapClick(event: any) {
     return
   }
 
+  // Desktop: a tap on the empty map opens the entry flow at that point. (Mobile
+  // adds from the "+" nav.)
   if (!valid || isMobile.value)
     return
-  pendingCoord.value = [coordinate[0], coordinate[1]]
-  solutionsStore.cancelPlacing()
-}
-
-async function onSaveSolution(payload: SolutionInput & { files?: File[] }) {
-  const { files = [], ...solution } = payload
-  const stringId = await solutionsStore.addSolution(solution)
-  pendingCoord.value = null
-  // Recenter on the new pin so it's never dropped off-screen (the "I added an
-  // entry but it didn't show up" report).
-  flyToFeature({ coordinates: payload.coordinate })
-  // New entries are pending: shown to the author now, public only after a
-  // moderator approves. Confirm that so it doesn't look like it went live.
-  showSubmitted.value = true
-  clearTimeout(submittedTimer)
-  submittedTimer = setTimeout(() => { showSubmitted.value = false }, 6000)
-
-  // Best-effort: attach any chosen photos/audio to the new entry.
-  if (files.length && stringId) {
-    try {
-      const media = []
-      for (const f of files)
-        media.push(await contributions.uploadFile(stringId, f))
-      if (media.length)
-        await contributions.addContribution(stringId, { comment: '', media })
-    }
-    catch (e) {
-      console.warn('Could not attach media to new entry:', e)
-    }
-  }
+  emit('add-entry-at', [coordinate[0], coordinate[1]])
 }
 
 // Popup state. The current selection is held in the filter store so that the
