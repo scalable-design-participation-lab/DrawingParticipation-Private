@@ -66,6 +66,9 @@ export default defineNuxtConfig({
     // normal `yarn dev` still uses the real project.
     emulators: {
       enabled: process.env.VUEFIRE_EMULATORS === 'true',
+      // Suppress the Firebase Auth SDK's fixed "Running in emulator mode" banner
+      // (it overlaps the mobile bottom nav). Emulator-only; production is unaffected.
+      auth: { options: { disableWarnings: true } },
     },
   },
 
