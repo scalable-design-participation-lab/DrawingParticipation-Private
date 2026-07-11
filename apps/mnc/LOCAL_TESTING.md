@@ -38,22 +38,41 @@ emulators. A plain `yarn dev` still uses the cloud project.
 > catalog pins (those come from `content/mncData.json`, not Firestore). Anything
 > you add is stored in the local emulator.
 
-### Make yourself a moderator (one-time, in the Emulator UI)
+### Make yourself a moderator
 
-1. Open http://localhost:4000 → **Authentication** → **Add user** → enter an
-   email + password → copy the generated **User UID**.
-2. Go to **Firestore** → **Start collection** `admins` → **Document ID** = that
-   UID → add any field (e.g. `role: "admin"`) → Save.
-3. In the app (http://localhost:3000) click the **🔒** (bottom-left) → sign in
-   with that email/password. The button becomes **Moderate**.
+The emulator's Auth is in-memory, so the moderator account is **lost on every
+restart** and must be re-created.
+
+**Quick way** — run this from a shell while the emulators are up. It creates a
+fixed test moderator (`moderator@mnc.test` / `moderator123`) and grants it admin:
+
+```bash
+PID=drawing-participation; EMAIL=moderator@mnc.test; PASS=moderator123
+UIDD=$(curl -s -X POST "http://localhost:9099/identitytoolkit.googleapis.com/v1/accounts:signUp?key=fake" \
+  -H 'Content-Type: application/json' -d "{\"email\":\"$EMAIL\",\"password\":\"$PASS\",\"returnSecureToken\":true}" \
+  | node -e "let s='';process.stdin.on('data',d=>s+=d).on('end',()=>{const j=JSON.parse(s);console.log(j.localId||'')})")
+[ -z "$UIDD" ] && UIDD=$(curl -s -X POST "http://localhost:9099/identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=fake" \
+  -H 'Content-Type: application/json' -d "{\"email\":\"$EMAIL\",\"password\":\"$PASS\",\"returnSecureToken\":true}" \
+  | node -e "let s='';process.stdin.on('data',d=>s+=d).on('end',()=>{const j=JSON.parse(s);console.log(j.localId||'')})")
+curl -s -X PATCH -H 'Authorization: Bearer owner' -H 'Content-Type: application/json' \
+  "http://localhost:8080/v1/projects/$PID/databases/(default)/documents/admins/$UIDD" \
+  -d '{"fields":{"role":{"stringValue":"admin"}}}' >/dev/null; echo "moderator ready: $EMAIL / $PASS"
+```
+
+**Manual way** — Emulator UI (http://localhost:4000):
+1. **Authentication** → **Add user** → email + password → copy the **User UID**.
+2. **Firestore** → collection `admins` → **Document ID** = that UID → add any field
+   (e.g. `role: "admin"`) → Save.
+
+Then in the app (http://localhost:3000) click the **🔒** (bottom-left) → sign in
+with that email/password. The button becomes **Moderate**.
 
 ### Try the loop
 
-1. Add an entry (click the map → fill the form → *Add to map*). You'll see a
-   "Submitted for review" banner; on reload it's hidden (pending).
-2. As moderator, open **Moderate** → **Entries** → **Approve**. Reload → it's now
-   public. **Delete** removes it. Community contributions work the same way under
-   the **Contributions** section.
+1. Add a contribution (`+` → the "Join Our Research" wizard, or click the map on
+   desktop → fill it → *Submit*). Your pending pin shows; on reload it's hidden.
+2. As moderator, open **Moderate** → **Contributions** → **Approve**. Reload → it's
+   now public. **Delete** removes it.
 
 To keep emulator data between runs:
 
