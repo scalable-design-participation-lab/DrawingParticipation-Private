@@ -136,6 +136,11 @@ watch(() => props.pickedCoordinate, (coord) => {
 // On step 1 the map shows through, so the backdrop is transparent + click-through.
 const isMapStep = computed(() => step.value === 1 && !submitted.value)
 
+// On the mobile map step the floating groups (progress+title, the step-1 form)
+// sit over the live map, so they need an opaque card backing to stay readable.
+// Desktop always renders inside a solid modal, so it never needs this.
+const mapCard = computed(() => isMobile.value && isMapStep.value)
+
 function next() {
   // Can't leave step 1 without the entry's required core (title/theme/pin).
   if (step.value === 1 && !step1Valid.value)
@@ -218,13 +223,17 @@ function prettyCoord(coord: [number, number]): string {
     >
       <MobileHeader v-if="isMobile" color="#4FA19D" />
 
-      <!-- Close button (top-right), available throughout the flow -->
+      <!-- Close button. Solid white circle so it stays visible over the map on
+           step 1. On mobile it sits below the header row (whose language + map
+           toggle own the top-right corner) and above it in the stacking order. -->
       <UButton
+        v-if="!mapCard"
         icon="i-heroicons-x-mark"
         color="gray"
-        variant="ghost"
+        variant="solid"
         size="sm"
-        class="pointer-events-auto absolute right-4 top-4 z-10"
+        class="pointer-events-auto absolute z-30 bg-white text-gray-700 shadow-md hover:bg-gray-100 dark:bg-zinc-800 dark:text-gray-200 dark:hover:bg-zinc-700"
+        :class="isMobile ? 'right-6 top-24' : 'right-4 top-4'"
         :ui="{ rounded: 'rounded-full' }"
         :aria-label="$t('contribute.close')"
         @click="emit('close')"
@@ -258,23 +267,33 @@ function prettyCoord(coord: [number, number]): string {
 
     <!-- =============================== Steps =============================== -->
     <template v-else>
-      <!-- Progress bar -->
-      <div class="pointer-events-auto mt-20 flex justify-center gap-1.5 px-8 md:mt-8">
-        <span
-          v-for="i in TOTAL_STEPS"
-          :key="i"
-          class="h-1.5 w-8 rounded-full transition-colors"
-          :class="i <= step ? 'bg-[#FB6D6D]' : 'bg-[#F8C9C9]'"
-        />
-      </div>
+      <!-- Progress + title. On the mobile map step this floats over the live
+           map, so it gets an opaque card backing to stay legible. -->
+      <div
+        class="pointer-events-auto mt-20 md:mt-8"
+        :class="mapCard ? 'mx-4 rounded-2xl bg-white px-6 py-4 shadow-lg dark:bg-zinc-900' : ''"
+      >
+        <div class="flex justify-center gap-1.5 px-8">
+          <span
+            v-for="i in TOTAL_STEPS"
+            :key="i"
+            class="h-1.5 w-8 rounded-full transition-colors"
+            :class="i <= step ? 'bg-[#FB6D6D]' : 'bg-[#F8C9C9]'"
+          />
+        </div>
 
-      <h2 class="pointer-events-auto mt-5 text-center text-2xl font-extrabold text-[#F26D6D]">
-        {{ $t('contribute.title') }}
-      </h2>
+        <h2 class="mt-4 text-center text-2xl font-extrabold text-[#F26D6D]">
+          {{ $t('contribute.title') }}
+        </h2>
+      </div>
 
       <div class="mx-auto w-full max-w-2xl flex-1 overflow-y-auto px-6 pb-32 pt-4 md:pb-6">
         <!-- Step 1: the entry's required core — title, theme, location + pin -->
-        <div v-if="step === 1" class="pointer-events-auto space-y-4">
+        <div
+          v-if="step === 1"
+          class="pointer-events-auto space-y-4"
+          :class="mapCard ? 'rounded-2xl bg-white p-5 shadow-lg dark:bg-zinc-900' : ''"
+        >
           <p class="text-sm font-semibold text-[#F26D6D]">
             {{ $t('contribute.step1.prompt') }}
           </p>
@@ -441,6 +460,17 @@ function prettyCoord(coord: [number, number]): string {
           @click="back"
         >
           {{ $t('contribute.back') }}
+        </button>
+        <!-- Step 1 has no Back, so the close action takes the Back slot here
+             (the top-corner X is hidden on the mobile map step). A white pill
+             backdrop keeps it readable where it floats over the map. -->
+        <button
+          v-else-if="mapCard"
+          type="button"
+          class="rounded-full bg-white px-6 py-2 text-sm font-semibold text-[#F26D6D] shadow-md hover:bg-gray-100 dark:bg-zinc-800 dark:hover:bg-zinc-700"
+          @click="emit('close')"
+        >
+          {{ $t('contribute.close') }}
         </button>
         <UButton
           v-if="step < TOTAL_STEPS"
