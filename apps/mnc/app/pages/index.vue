@@ -253,7 +253,7 @@ onMounted(() => {
            bar or the bottom toolbar. -->
       <ThemeFilterBar v-if="!isMobile && !showContribute" />
       <BottomBar
-        v-if="!isMobile"
+        v-if="!isMobile && !showOnboarding"
         :active="bottomBarMode"
         @contribute="toggleContribute"
         @info="showOnboarding = true"
