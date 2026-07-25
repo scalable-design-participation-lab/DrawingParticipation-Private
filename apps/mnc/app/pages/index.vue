@@ -74,6 +74,18 @@ const bottomBarMode = computed(() => {
   return 'map'
 })
 
+// Full-screen modals/popups (welcome, info/about, the contribute wizard, a
+// selected project's detail card) cover the toolbar, so hide it rather than
+// stack on top. The Map/List tab views keep it visible — it's how you switch
+// between them.
+const isPopupOpen = computed(() =>
+  showOnboarding.value
+  || showContribute.value
+  || mobileView.value === 'info'
+  || mobileView.value === 'more'
+  || !!selectedMobileFeature.value,
+)
+
 // The flow asks us to hide it so the user can tap the map for a location pin.
 function startContributePick() {
   pickingContributeLocation.value = true
@@ -253,7 +265,7 @@ onMounted(() => {
            bar or the bottom toolbar. -->
       <ThemeFilterBar v-if="!isMobile && !showContribute" />
       <BottomBar
-        v-if="!isMobile && !showOnboarding"
+        v-if="!isMobile && !isPopupOpen"
         :active="bottomBarMode"
         @contribute="toggleContribute"
         @info="showOnboarding = true"
@@ -286,7 +298,7 @@ onMounted(() => {
           @close="closeMobileProject"
         />
         <MobileBottomNav
-          v-if="!showOnboarding"
+          v-if="!isPopupOpen"
           :active-view="mobileView"
           :project-selected="!!selectedMobileFeature"
           @update:active-view="mobileView = $event"
