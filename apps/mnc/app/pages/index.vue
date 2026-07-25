@@ -286,6 +286,7 @@ onMounted(() => {
           @close="closeMobileProject"
         />
         <MobileBottomNav
+          v-if="!showOnboarding"
           :active-view="mobileView"
           :project-selected="!!selectedMobileFeature"
           @update:active-view="mobileView = $event"
