@@ -165,7 +165,7 @@ function closeMobileProject() {
 // also carries the team page — so the in-app "About" is no longer needed.
 const leftItems = ref([
   {
-    label: 'Mobile Networked Creativity',
+    label: 'MNC',
     color: 'black',
     to: 'https://mobilecreativity.net',
   },
@@ -253,8 +253,8 @@ onMounted(() => {
         :left-items="leftItems"
         :right-items="rightItems"
         :primary-accent-color="headerPrimaryAccentColor"
-        :show-icon="false"
         :show-menu="false"
+        icon-link="https://scalabledesignparticipation.org/"
         logo-src="/mnc-logo.svg"
         logo-link="https://mobilecreativity.net"
         logo-alt="Mobile Networked Creativity"

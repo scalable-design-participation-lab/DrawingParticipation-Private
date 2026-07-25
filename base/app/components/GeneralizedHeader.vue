@@ -66,6 +66,10 @@ const props = defineProps({
     type: Boolean,
     default: true,
   },
+  iconLink: {
+    type: String,
+    default: 'https://www.northeastern.edu/',
+  },
   shape: {
     type: String,
     default: 'rounded',
@@ -139,7 +143,7 @@ const accentTextStyle = computed(() => {
           ]"
           :style="accentTextStyle"
           alt="Scalable Design Participation Lab Logo"
-          to="https://www.northeastern.edu/"
+          :to="iconLink"
           target="_blank"
         >
           🤲
