@@ -83,7 +83,8 @@ const isPopupOpen = computed(() =>
   || showContribute.value
   || mobileView.value === 'info'
   || mobileView.value === 'more'
-  || !!selectedMobileFeature.value,
+  || !!selectedMobileFeature.value
+  || (!isMobile.value && !!filterStore.selectedFeature),
 )
 
 // The flow asks us to hide it so the user can tap the map for a location pin.
