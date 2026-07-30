@@ -10,6 +10,17 @@ import { useAuthStore } from './auth'
 const CONTRIBUTIONS_COLLECTION = 'contributions'
 
 /**
+ * Monotonic counter making every Storage path in a batch unique.
+ *
+ * `Date.now()` alone is not enough: a batch upload usually carries files that
+ * share a name (a phone photo roll hands us `image.jpg` for every shot), and
+ * two of them can finish within the same millisecond. The paths then collide,
+ * the second upload overwrites the first object, and every media item ends up
+ * resolving to the SAME picture — the batch looks duplicated.
+ */
+let uploadSeq = 0
+
+/**
  * Pinia store that persists user-contributed media + comments for existing
  * MNC projects.
  *
@@ -29,10 +40,16 @@ export const useContributionsStore = defineStore('contributions', () => {
   /** All pending (unapproved) contributions across projects, for the moderator queue. */
   const pending = ref<Contribution[]>([])
 
-  /** Builds a collision-resistant Storage path for a file. */
+  /**
+   * Builds a collision-resistant Storage path for a file. The timestamp keeps
+   * the bucket readable; the sequence number and random suffix are what make
+   * the path unique for same-named files uploaded in the same millisecond.
+   */
   function buildStoragePath(projectId: string, file: File): string {
     const safeName = file.name.replace(/[^\w.\-]+/g, '_')
-    return `${CONTRIBUTIONS_COLLECTION}/${projectId}/${Date.now()}-${safeName}`
+    uploadSeq += 1
+    const unique = `${Date.now()}-${uploadSeq}-${Math.random().toString(36).slice(2, 8)}`
+    return `${CONTRIBUTIONS_COLLECTION}/${projectId}/${unique}-${safeName}`
   }
 
   /**

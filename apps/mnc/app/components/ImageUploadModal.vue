@@ -121,6 +121,7 @@
 <script setup>
 import { computed, ref } from 'vue'
 import { useContributionsStore } from '../stores/contributions'
+import { dedupeFiles, fileKey } from '../utils/files'
 
 const props = defineProps({
   isVisible: Boolean,
@@ -159,12 +160,22 @@ async function handleImageSelect(event) {
   errorMessage.value = ''
 
   // Accept photos and audio clips.
-  const picked = Array.from(fileInput.files).filter(file =>
+  const selected = Array.from(fileInput.files).filter(file =>
     file.type.startsWith('image/') || file.type.startsWith('audio/'),
   )
 
+  // Upload each distinct file once: the picker can hand us the same photo twice
+  // in one go, and the user may re-select a file already in the list. Both
+  // would otherwise be uploaded again and repeat in the contribution.
+  const picked = dedupeFiles(selected).filter(
+    file => !items.value.some(item => item.key === fileKey(file)),
+  )
+  if (picked.length < selected.length)
+    errorMessage.value = t('upload.duplicateSkipped')
+
   for (const file of picked) {
     items.value.push({
+      key: fileKey(file),
       fileName: file.name,
       label: `${file.name} (${(file.size / (1024 * 1024)).toFixed(1)} MB)`,
       previewUrl: URL.createObjectURL(file),

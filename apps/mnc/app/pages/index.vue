@@ -7,6 +7,7 @@ import { useDb } from '../stores/db'
 import { useFilterStore } from '../stores/filter'
 import { useSolutionsStore } from '../stores/solutions'
 import { useContributionsStore } from '../stores/contributions'
+import { dedupeFiles } from '../utils/files'
 import { useAuthStore } from '../stores/auth'
 import { useIsMobile } from '../composables/useIsMobile'
 
@@ -109,7 +110,15 @@ async function onContributeSubmit(payload: any) {
     // the entry's own photo gallery — approved/deleted with the entry, not a
     // separate pending contribution.
     const f = payload.files || {}
-    const allFiles: File[] = [...(f.example || []), ...(f.why || []), ...(f.media || []), ...(f.additional || [])]
+    // The wizard collects files in four separate steps, so the same photo can
+    // be attached more than once — upload each distinct file exactly once,
+    // otherwise the entry's gallery repeats it.
+    const allFiles: File[] = dedupeFiles([
+      ...(f.example || []),
+      ...(f.why || []),
+      ...(f.media || []),
+      ...(f.additional || []),
+    ])
     const photos: string[] = []
     if (allFiles.length) {
       const slug = (payload.title || '').toLowerCase().replace(/[^a-z0-9]+/g, '_').replace(/^_+|_+$/g, '').slice(0, 30)

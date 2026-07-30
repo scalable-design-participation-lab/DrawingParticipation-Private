@@ -110,7 +110,8 @@
     "publicNote": "Tudo o que você adicionar é exibido publicamente neste projeto.",
     "close": "Fechar",
     "uploadError": "Falha em um ou mais envios. Tente novamente.",
-    "saveError": "Não foi possível salvar sua contribuição. Tente novamente."
+    "saveError": "Não foi possível salvar sua contribuição. Tente novamente.",
+    "duplicateSkipped": "Alguns arquivos já haviam sido adicionados e foram ignorados."
   },
   "mod": {
     "signInTitle": "Entrar como moderador",
@@ -185,6 +186,7 @@
     "hint": "JPG, PNG ou PDF, tamanho máximo de 10 MB",
     "removeFile": "Remover arquivo",
     "tooLarge": "\"{name}\" excede {max} MB.",
-    "unsupported": "\"{name}\" não é um tipo de arquivo compatível."
+    "unsupported": "\"{name}\" não é um tipo de arquivo compatível.",
+    "duplicateSkipped": "Alguns arquivos já haviam sido adicionados e foram ignorados."
   }
 }

@@ -110,7 +110,8 @@
     "publicNote": "Anything you add is shown publicly on this project.",
     "close": "Close",
     "uploadError": "One or more uploads failed. Please try again.",
-    "saveError": "Could not save your contribution. Please try again."
+    "saveError": "Could not save your contribution. Please try again.",
+    "duplicateSkipped": "Some files were already added and were skipped."
   },
   "mod": {
     "signInTitle": "Moderator sign in",
@@ -185,6 +186,7 @@
     "hint": "JPG, PNG, or PDF, file size no more than 10 MB",
     "removeFile": "Remove file",
     "tooLarge": "\"{name}\" is larger than {max} MB.",
-    "unsupported": "\"{name}\" is not a supported file type."
+    "unsupported": "\"{name}\" is not a supported file type.",
+    "duplicateSkipped": "Some files were already added and were skipped."
   }
 }

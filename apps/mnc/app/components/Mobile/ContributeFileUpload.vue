@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { ref } from 'vue'
+import { dedupeFiles, fileKey } from '../../utils/files'
 
 /**
  * Front-end-only file dropzone used by the mobile "Join Our Research" flow.
@@ -57,9 +58,16 @@ function addFiles(fileList: FileList | null) {
   if (!fileList || fileList.length === 0)
     return
   error.value = ''
-  const accepted = Array.from(fileList).filter(isAllowed)
-  if (accepted.length)
-    emit('update:modelValue', [...props.modelValue, ...accepted])
+  const accepted = dedupeFiles(Array.from(fileList).filter(isAllowed))
+  // Adding the same file twice (re-picking it, or dropping a folder that
+  // repeats it) would upload and show it twice, so keep the list distinct.
+  const existing = new Set(props.modelValue.map(fileKey))
+  const fresh = accepted.filter(file => !existing.has(fileKey(file)))
+  // Don't clobber a "too large"/"unsupported" message from isAllowed above.
+  if (fresh.length < accepted.length && !error.value)
+    error.value = t('fileUpload.duplicateSkipped')
+  if (fresh.length)
+    emit('update:modelValue', [...props.modelValue, ...fresh])
 }
 
 function onSelect(event: Event) {

@@ -65,6 +65,31 @@ describe('contributions store', () => {
     expect(media.path).toContain('My_Photo.png')
   })
 
+  it('gives same-named files uploaded in one batch distinct storage paths', async () => {
+    // Both uploads complete instantly, so they share a Date.now() millisecond —
+    // exactly the batch case that used to overwrite the first object and make
+    // every media item resolve to the same picture.
+    ;(uploadBytesResumable as any).mockImplementation(() => ({
+      snapshot: { ref: {} },
+      on: vi.fn((_event, _onProgress, _onError, onComplete) => onComplete()),
+    }))
+
+    const store = useContributionsStore()
+    // A phone photo roll hands us the same file name for every shot.
+    const a = new File([new Uint8Array(8)], 'image.jpg', { type: 'image/jpeg' })
+    const b = new File([new Uint8Array(16)], 'image.jpg', { type: 'image/jpeg' })
+
+    const [first, second] = await Promise.all([
+      store.uploadFile('p1', a),
+      store.uploadFile('p1', b),
+    ])
+
+    expect(first!.path).not.toBe(second!.path)
+    // The paths passed to Storage are the ones that must differ.
+    const paths = (uploadBytesResumable as any).mock.calls.map((c: any[]) => c[0].path)
+    expect(new Set(paths).size).toBe(2)
+  })
+
   it('addContribution writes a well-formed doc with an anonymous userId', async () => {
     const store = useContributionsStore()
     await store.addContribution('p1', {
