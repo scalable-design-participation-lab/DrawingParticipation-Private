@@ -151,7 +151,9 @@
       "prompt": "Quer adicionar uma criação? Onde esse evento aconteceu?",
       "placeholder": "Digite o local aqui ou toque para marcar no mapa",
       "dropPin": "Toque para marcar um ponto no mapa",
-      "pinDropped": "Ponto marcado ({coord})"
+      "pinDropped": "Ponto marcado ({coord})",
+      "confirmPinPrompt": "Aqui está o ponto marcado — o local está correto?",
+      "movePin": "Não está certo? Toque para escolher outro local"
     },
     "step2": {
       "prompt": "Descreva brevemente um exemplo de Criatividade Móvel em Rede abaixo:"

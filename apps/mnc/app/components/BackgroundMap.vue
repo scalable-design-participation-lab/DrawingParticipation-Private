@@ -42,6 +42,18 @@
           @click-close="handleCloseQuickLook"
         />
       </ol-overlay>
+
+      <!-- Contribute flow: placeholder pin at the chosen (not yet submitted)
+           entry location, so the user can see exactly where it landed. -->
+      <ol-overlay
+        v-if="contributePin"
+        :position="contributePin"
+        positioning="bottom-center"
+      >
+        <div class="contribute-pin" aria-hidden="true">
+          <UIcon name="i-heroicons-map-pin" class="contribute-pin__icon" />
+        </div>
+      </ol-overlay>
     </template>
   </GeneralizedBackgroundMap>
 
@@ -87,6 +99,9 @@ const props = defineProps<{
   // When true, the next map tap is captured for the contribute flow's location
   // step (emitted via `pick-location`) instead of starting a new entry.
   pickingLocation?: boolean
+  // The contribute flow's chosen (but not yet submitted) entry location, shown
+  // as a placeholder pin so the user can see exactly where it landed.
+  contributePin?: [number, number] | null
 }>()
 
 const emit = defineEmits<{
@@ -257,3 +272,48 @@ const nonMncFeatureFilter = (feature: any) => !(feature?.properties as any)?.str
 const mapboxStyleLight = 'restartukraine/cm3p0s3gw00yd01seasye5jdw'
 const mapboxStyleDark = 'restartukraine/cm3p4jqnj009y01s79ngdah4r'
 </script>
+
+<style scoped>
+/* Contribute flow's placeholder pin: same coral used by the "tap to drop a
+   pin" banner, with a soft pulse so it reads as provisional (not yet a real
+   entry) rather than an existing pin. */
+.contribute-pin {
+  position: relative;
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  border: 3.5px solid white;
+  background: #FB6D6D;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 12px;
+  box-shadow: 0 3px 12px rgba(0, 0, 0, 0.45), 0 0 0 5px rgba(251, 109, 109, 0.35);
+  animation: contribute-pin-pulse 1.6s ease-in-out infinite;
+}
+
+.contribute-pin::after {
+  content: '';
+  position: absolute;
+  bottom: -12px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 0;
+  height: 0;
+  border-left: 9px solid transparent;
+  border-right: 9px solid transparent;
+  border-top: 12px solid #FB6D6D;
+}
+
+.contribute-pin__icon {
+  width: 28px;
+  height: 28px;
+  color: white;
+  pointer-events: none;
+}
+
+@keyframes contribute-pin-pulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.08); }
+}
+</style>

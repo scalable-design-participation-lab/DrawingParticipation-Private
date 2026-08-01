@@ -151,7 +151,9 @@
       "prompt": "Want to add a creation? Where did this event happen?",
       "placeholder": "Enter location here or tap to drop pin in map",
       "dropPin": "Tap to drop a pin on the map",
-      "pinDropped": "Pin dropped ({coord})"
+      "pinDropped": "Pin dropped ({coord})",
+      "confirmPinPrompt": "Here's your dropped pin — does the location look right?",
+      "movePin": "Not quite right? Tap to choose a different spot"
     },
     "step2": {
       "prompt": "Briefly describe an example of Mobile Networked Creativity below:"

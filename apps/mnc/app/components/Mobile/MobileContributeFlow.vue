@@ -58,6 +58,10 @@ const TOTAL_STEPS = 7
 const step = ref(1)
 const submitted = ref(false)
 
+// After a pin drops, pause on a confirm screen (map + dropped pin + Next)
+// before the title/theme form, so the user can check the placement first.
+const confirmingPin = ref(false)
+
 const form = reactive({
   title: '',
   primaryTag: '',
@@ -130,6 +134,7 @@ watch(() => props.pickedCoordinate, (coord) => {
   if (coord) {
     form.coordinate = coord
     resolvePlace(coord)
+    confirmingPin.value = true
   }
 }, { immediate: true })
 
@@ -142,6 +147,12 @@ const isMapStep = computed(() => step.value === 1 && !submitted.value)
 const mapCard = computed(() => isMobile.value && isMapStep.value)
 
 function next() {
+  // The pin-confirm screen's Next just dismisses it — it doesn't advance the
+  // step, since the title/theme form underneath still needs filling in.
+  if (step.value === 1 && confirmingPin.value) {
+    confirmingPin.value = false
+    return
+  }
   // Can't leave step 1 without the entry's required core (title/theme/pin).
   if (step.value === 1 && !step1Valid.value)
     return
@@ -182,6 +193,7 @@ function submit() {
 function reset() {
   step.value = 1
   submitted.value = false
+  confirmingPin.value = false
   Object.assign(form, {
     title: '',
     primaryTag: '',
@@ -221,7 +233,7 @@ function prettyCoord(coord: [number, number]): string {
         ? 'relative flex w-full flex-1 flex-col'
         : 'pointer-events-auto relative flex max-h-[88vh] w-full max-w-xl flex-col overflow-hidden rounded-2xl bg-white shadow-2xl dark:bg-zinc-900'"
     >
-      <MobileHeader v-if="isMobile" color="#4FA19D" />
+      <MobileHeader v-if="isMobile" />
 
       <!-- Close button. Solid white circle so it stays visible over the map on
            step 1. On mobile it sits below the header row (whose language + map
@@ -288,9 +300,33 @@ function prettyCoord(coord: [number, number]): string {
       </div>
 
       <div class="mx-auto w-full max-w-2xl flex-1 overflow-y-auto px-6 pb-32 pt-4 md:pb-6">
-        <!-- Step 1: the entry's required core — title, theme, location + pin -->
+        <!-- Step 1a: confirm the just-dropped pin before the form, so the
+             user can check the placement (the live map + pin show through
+             behind this card on mobile) before typing anything. -->
         <div
-          v-if="step === 1"
+          v-if="step === 1 && confirmingPin"
+          class="pointer-events-auto space-y-4"
+          :class="mapCard ? 'rounded-2xl bg-white p-5 shadow-lg dark:bg-zinc-900' : ''"
+        >
+          <p class="text-sm font-semibold text-[#F26D6D]">
+            {{ $t('contribute.step1.confirmPinPrompt') }}
+          </p>
+          <p v-if="form.coordinate" class="flex items-center gap-1 text-xs text-emerald-600">
+            <UIcon name="i-heroicons-map-pin" class="h-4 w-4" />
+            {{ $t('contribute.step1.pinDropped', { coord: pinPlace || form.location || prettyCoord(form.coordinate) }) }}
+          </p>
+          <button
+            type="button"
+            class="text-sm font-medium text-[#FB6D6D] underline"
+            @click="emit('pick-location')"
+          >
+            {{ $t('contribute.step1.movePin') }}
+          </button>
+        </div>
+
+        <!-- Step 1b: the entry's required core — title, theme, location + pin -->
+        <div
+          v-else-if="step === 1"
           class="pointer-events-auto space-y-4"
           :class="mapCard ? 'rounded-2xl bg-white p-5 shadow-lg dark:bg-zinc-900' : ''"
         >
@@ -476,7 +512,7 @@ function prettyCoord(coord: [number, number]): string {
           v-if="step < TOTAL_STEPS"
           class="rounded-full px-6"
           :style="{ backgroundColor: '#C0392B', color: '#ffffff' }"
-          :disabled="step === 1 && !step1Valid"
+          :disabled="step === 1 && !confirmingPin && !step1Valid"
           @click="next"
         >
           {{ $t('contribute.next') }}
