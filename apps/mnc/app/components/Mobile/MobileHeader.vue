@@ -1,8 +1,9 @@
 <!--
  * MobileHeader Component
  *
- * Mobile top bar: the MNC logo + title (linking to the main website) on the
- * left, and a vector/satellite map-type toggle on the right.
+ * Mobile top bar: the lab hands icon (linking to the lab site) on the left,
+ * the MNC title (linking to the main website) centered, and a vector/
+ * satellite map-type toggle on the right.
  -->
 
 <script setup lang="ts">
@@ -12,10 +13,6 @@ defineProps({
   title: {
     type: String,
     default: 'MNC',
-  },
-  color: {
-    type: String,
-    default: '#57C9C0',
   },
 })
 
@@ -35,13 +32,22 @@ function toggleLocale() {
 <template>
   <header class="fixed top-4 left-0 right-0 z-20 flex items-center justify-between px-4 pointer-events-none">
     <a
+      href="https://scalabledesignparticipation.org/"
+      target="_blank"
+      rel="noopener noreferrer"
+      aria-label="Scalable Design Participation Lab"
+      class="pointer-events-auto flex h-10 w-10 items-center justify-center rounded-full bg-white/90 dark:bg-black/80 text-xl shadow-md backdrop-blur"
+    >
+      🤲
+    </a>
+
+    <a
       href="https://mobilecreativity.net"
       target="_blank"
       rel="noopener noreferrer"
-      class="pointer-events-auto flex items-center gap-2 rounded-full bg-white/90 dark:bg-black/80 px-3 py-1.5 shadow-md backdrop-blur"
+      class="pointer-events-auto absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 mnc-title"
     >
-      <img src="/mnc-logo.svg" alt="Mobile Networked Creativity" class="h-6 w-6" />
-      <span class="mnc-title" :style="{ color }">{{ title }}</span>
+      {{ title }}
     </a>
 
     <div class="pointer-events-auto flex items-center gap-2">
@@ -69,9 +75,14 @@ function toggleLocale() {
 .mnc-title {
   font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
   font-weight: 900;
-  font-size: 1.15rem;
+  font-size: 1.4rem;
   line-height: 1;
   text-transform: uppercase;
   letter-spacing: -0.03em;
+  background: linear-gradient(90deg, #E8998D, #ADB2B8, #5FC3B5, #C7E896);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  -webkit-text-fill-color: transparent;
 }
 </style>
