@@ -23,7 +23,7 @@ import { computed, ref } from 'vue'
 /**
  * Props for the GeneralizedHeader component
  * @typedef {object} GeneralizedHeaderProps
- * @property {Array<{label: string, to?: string, onClick?: Function, variant?: string, color?: string, icon?: string, primary?: boolean}>} leftItems - Items for the left side of the header
+ * @property {Array<{label: string, to?: string, target?: string, onClick?: Function, variant?: string, color?: string, icon?: string, primary?: boolean}>} leftItems - Items for the left side of the header
  * @property {Array<{label: string, to?: string, onClick?: Function, variant?: string, color?: string, icon?: string, dropdown?: object}>} rightItems - Items for the right side of the header
  * @property {string} [logoSrc] - Source URL for the logo image
  * @property {string} [logoLink] - Link URL for the logo image
@@ -163,21 +163,21 @@ const accentTextStyle = computed(() => {
           >
         </UButton>
         <template v-for="(item, index) in leftItems" :key="index">
-          <NuxtLink v-if="item.to" v-slot="{ navigate }" :to="item.to" custom>
-            <UButton
-              :variant="item.variant"
-              :color="item.color || (item.primary ? 'black' : 'gray')"
-              :icon="item.icon"
-              class="h-full px-3 sm:px-4 !rounded-lg text-xs sm:text-sm md:text-base lg:text-lg shadow-lg text-black dark:text-white !bg-gray-50 dark:!bg-black hover:scale-105" :class="[
-                shapeClass,
-                hasPrimaryAccentColor ? 'text-current' : 'text-black dark:text-white',
-              ]"
-              :style="accentTextStyle"
-              @click="navigate"
-            >
-              {{ item.label }}
-            </UButton>
-          </NuxtLink>
+          <UButton
+            v-if="item.to"
+            :to="item.to"
+            :target="item.target"
+            :variant="item.variant"
+            :color="item.color || (item.primary ? 'black' : 'gray')"
+            :icon="item.icon"
+            class="h-full px-3 sm:px-4 !rounded-lg text-xs sm:text-sm md:text-base lg:text-lg shadow-lg text-black dark:text-white !bg-gray-50 dark:!bg-black hover:scale-105" :class="[
+              shapeClass,
+              hasPrimaryAccentColor ? 'text-current' : 'text-black dark:text-white',
+            ]"
+            :style="accentTextStyle"
+          >
+            {{ item.label }}
+          </UButton>
           <UButton
             v-else
             :variant="item.variant"

@@ -87,6 +87,13 @@ const isPopupOpen = computed(() =>
   || (!isMobile.value && !!filterStore.selectedFeature),
 )
 
+// Placeholder pin for the chosen (not yet submitted) entry location — only
+// while the contribute flow is actually open, so a stale coordinate never
+// lingers on the map after the flow closes.
+const contributePin = computed(() =>
+  (showContribute.value || mobileView.value === 'more') ? contributeCoordinate.value : null,
+)
+
 // The flow asks us to hide it so the user can tap the map for a location pin.
 function startContributePick() {
   pickingContributeLocation.value = true
@@ -169,6 +176,7 @@ const leftItems = ref([
     label: 'MNC',
     color: 'black',
     to: 'https://mobilecreativity.net',
+    target: '_blank',
   },
 ])
 
@@ -240,14 +248,12 @@ onMounted(() => {
         :show-all-plus-icons="true"
         :show-comment-icons="false"
         :picking-location="pickingContributeLocation"
+        :contribute-pin="contributePin"
         @select-feature="selectMobileFeature"
         @pick-location="onContributePicked"
         @add-entry-at="onMapAddEntry"
       />
-      <MobileHeader
-        v-if="isMobile"
-        :color="headerPrimaryAccentColor"
-      />
+      <MobileHeader v-if="isMobile" />
       <GeneralizedHeader
         v-else
         class="z-20"
