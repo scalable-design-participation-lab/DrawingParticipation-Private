@@ -1,12 +1,12 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { createPinia, setActivePinia } from 'pinia'
 import { deleteApp, initializeApp } from 'firebase/app'
-import { createUserWithEmailAndPassword, getAuth, signOut } from 'firebase/auth'
+import { createUserWithEmailAndPassword, signOut } from 'firebase/auth'
 import { deleteDoc, getDocs, setDoc, updateDoc } from 'firebase/firestore'
 import { useAdminUsersStore } from '../../adminUsers'
 import { roleFromAdminDoc, useAuthStore } from '../../auth'
 
-// Mock the Firebase SDK surface the store touches. None of these hit a real
+// Mock the Firebase SDK surface the stores touch. None of these hit a real
 // backend, so the test runs without any FIREBASE_* env / live project.
 vi.mock('firebase/app', () => ({
   getApp: vi.fn(() => ({ options: { projectId: 'test' } })),
@@ -40,6 +40,11 @@ vi.mock('firebase/firestore', () => ({
   serverTimestamp: vi.fn(() => '__serverTimestamp__'),
 }))
 
+/** Make getDocs answer per collection name (fetchAccounts pulls two lists). */
+function mockCollections(data: Record<string, Array<{ id: string, data: () => any }>>) {
+  vi.mocked(getDocs).mockImplementation(async (ref: any) => ({ docs: data[ref.name] ?? [] }) as any)
+}
+
 describe('roleFromAdminDoc', () => {
   it('reads the stored role and defaults legacy docs to admin', () => {
     expect(roleFromAdminDoc({ role: 'moderator' })).toBe('moderator')
@@ -53,6 +58,7 @@ describe('roleFromAdminDoc', () => {
 describe('adminUsers store', () => {
   beforeEach(() => {
     vi.clearAllMocks()
+    vi.mocked(getDocs).mockImplementation(async () => ({ docs: [] }) as any)
     setActivePinia(createPinia())
     useAuthStore().uid = 'me'
   })
@@ -88,19 +94,49 @@ describe('adminUsers store', () => {
     expect(setDoc).not.toHaveBeenCalled()
   })
 
-  it('lists accounts sorted by email with legacy docs defaulting to admin', async () => {
-    vi.mocked(getDocs).mockResolvedValueOnce({
-      docs: [
+  it('lists accounts and registrations, with legacy admin docs defaulting to admin', async () => {
+    mockCollections({
+      admins: [
         { id: 'u2', data: () => ({ email: 'zoe@example.com', role: 'moderator' }) },
         { id: 'u1', data: () => ({}) }, // legacy console-created doc
       ],
-    } as any)
+      accounts: [
+        { id: 'r1', data: () => ({ email: 'newbie@example.com' }) },
+        { id: 'u2', data: () => ({ email: 'zoe@example.com' }) }, // already promoted
+      ],
+    })
     const store = useAdminUsersStore()
     await store.fetchAccounts()
     expect(store.accounts).toEqual([
       expect.objectContaining({ uid: 'u1', email: '', role: 'admin' }),
       expect.objectContaining({ uid: 'u2', email: 'zoe@example.com', role: 'moderator' }),
     ])
+    // Registrations that already hold rights don't show up as pending.
+    expect(store.pendingRegistrations).toEqual([
+      expect.objectContaining({ uid: 'r1', email: 'newbie@example.com' }),
+    ])
+  })
+
+  it('promotes a registration by writing its rights doc', async () => {
+    const store = useAdminUsersStore()
+    store.registrations = [{ uid: 'r1', email: 'newbie@example.com' }]
+
+    await store.promote({ uid: 'r1', email: 'newbie@example.com' }, 'moderator')
+    expect(setDoc).toHaveBeenCalledWith(
+      { coll: 'admins', id: 'r1' },
+      { email: 'newbie@example.com', role: 'moderator', createdAt: '__serverTimestamp__', createdBy: 'me' },
+    )
+    // Now an account — and therefore no longer pending.
+    expect(store.accounts).toEqual([expect.objectContaining({ uid: 'r1', role: 'moderator' })])
+    expect(store.pendingRegistrations).toEqual([])
+  })
+
+  it('removes an unrecognized registration', async () => {
+    const store = useAdminUsersStore()
+    store.registrations = [{ uid: 'r1', email: 'spam@example.com' }]
+    await store.removeRegistration('r1')
+    expect(deleteDoc).toHaveBeenCalledWith({ coll: 'accounts', id: 'r1' })
+    expect(store.registrations).toEqual([])
   })
 
   it('changes roles and revokes access, but never for the signed-in admin', async () => {

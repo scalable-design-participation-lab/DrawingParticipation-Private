@@ -42,6 +42,22 @@ service cloud.firestore {
       allow delete: if isSuperAdmin() && request.auth.uid != uid;
     }
 
+    // Self-registrations (plain logins awaiting a rights decision on /admin).
+    // A signed-in user may register themselves exactly once; admins see the
+    // list and may clean up registrations they don't recognize. No rights are
+    // conferred by this collection — only admins/* grants anything.
+    match /accounts/{uid} {
+      allow get: if (request.auth != null && request.auth.uid == uid) || isAdmin();
+      allow list: if isAdmin();
+      allow create: if request.auth != null
+        && request.auth.uid == uid
+        && request.resource.data.email is string
+        && request.resource.data.email.size() <= 200
+        && request.resource.data.createdAt == request.time;
+      allow update: if false;
+      allow delete: if isSuperAdmin();
+    }
+
     function isValidContribution(data) {
       return data.projectId is string
         && data.projectId.size() > 0

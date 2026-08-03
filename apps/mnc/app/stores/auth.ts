@@ -1,5 +1,5 @@
-import { getAuth, onAuthStateChanged, signInWithEmailAndPassword, signOut as fbSignOut } from 'firebase/auth'
-import { doc, getDoc, getFirestore } from 'firebase/firestore'
+import { createUserWithEmailAndPassword, getAuth, onAuthStateChanged, signInWithEmailAndPassword, signOut as fbSignOut } from 'firebase/auth'
+import { doc, getDoc, getFirestore, serverTimestamp, setDoc } from 'firebase/firestore'
 import { defineStore } from 'pinia'
 import { computed, ref } from 'vue'
 
@@ -80,11 +80,26 @@ export const useAuthStore = defineStore('auth', () => {
     await refreshAdmin(cred.user)
   }
 
+  /**
+   * Self-registration (a plain account, no rights). The registration is
+   * mirrored to `accounts/<uid>` so it shows up on the /admin page, where an
+   * administrator can then grant moderator/admin access. The password goes
+   * only to Firebase Auth (scrypt hash), never to Firestore.
+   */
+  async function register(e: string, pw: string) {
+    const cred = await createUserWithEmailAndPassword(getAuth(), e, pw)
+    await setDoc(doc(getFirestore(), 'accounts', cred.user.uid), {
+      email: e,
+      createdAt: serverTimestamp(),
+    })
+    await refreshAdmin(cred.user)
+  }
+
   async function signOut() {
     await fbSignOut(getAuth())
     isAdmin.value = false
     role.value = null
   }
 
-  return { uid, email, isAnonymous, isAdmin, isSuperAdmin, role, ready, init, signIn, signOut }
+  return { uid, email, isAnonymous, isAdmin, isSuperAdmin, role, ready, init, signIn, register, signOut }
 })
