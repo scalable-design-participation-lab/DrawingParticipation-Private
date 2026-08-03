@@ -173,6 +173,17 @@ async function removeC(c: Contribution) {
         </h3>
       </div>
       <div class="flex items-center gap-1">
+        <!-- Account management lives on its own page; only the 'admin' role sees it. -->
+        <UButton
+          v-if="auth.isSuperAdmin"
+          size="xs"
+          color="gray"
+          variant="ghost"
+          icon="i-heroicons-users"
+          to="/admin"
+          :aria-label="$t('admin.accounts')"
+          :title="$t('admin.accounts')"
+        />
         <UButton size="xs" color="gray" variant="ghost" @click="doSignOut">{{ $t('mod.signOut') }}</UButton>
         <UButton
           size="xs"
