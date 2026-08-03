@@ -75,9 +75,37 @@ export const useAuthStore = defineStore('auth', () => {
     })
   }
 
+  /**
+   * Mirror a signed-in (non-anonymous, non-admin) login into `accounts/<uid>`
+   * so it shows up for review on /admin. Safe to call repeatedly: writes only
+   * when the doc is missing. Returns false when the mirror could not be
+   * written (e.g. Firestore rules not deployed yet) — the login still exists
+   * in Firebase Auth, and the next successful sign-in heals the mirror.
+   */
+  async function ensureAccountDoc(u: { uid: string, email: string | null, isAnonymous: boolean }): Promise<boolean> {
+    if (u.isAnonymous || isAdmin.value)
+      return true
+    try {
+      const ref = doc(getFirestore(), 'accounts', u.uid)
+      if (!(await getDoc(ref)).exists()) {
+        await setDoc(ref, {
+          email: u.email ?? '',
+          createdAt: serverTimestamp(),
+        })
+      }
+      return true
+    }
+    catch {
+      return false
+    }
+  }
+
   async function signIn(e: string, pw: string) {
     const cred = await signInWithEmailAndPassword(getAuth(), e, pw)
     await refreshAdmin(cred.user)
+    // Self-heal: a login whose registration mirror failed at register time
+    // gets its accounts/<uid> doc created here instead.
+    await ensureAccountDoc(cred.user)
   }
 
   /**
@@ -88,11 +116,12 @@ export const useAuthStore = defineStore('auth', () => {
    */
   async function register(e: string, pw: string) {
     const cred = await createUserWithEmailAndPassword(getAuth(), e, pw)
-    await setDoc(doc(getFirestore(), 'accounts', cred.user.uid), {
-      email: e,
-      createdAt: serverTimestamp(),
-    })
     await refreshAdmin(cred.user)
+    // The login now exists either way; flag a failed mirror distinctly so the
+    // UI can say "created, but not visible to admins yet" instead of a
+    // generic failure.
+    if (!(await ensureAccountDoc(cred.user)))
+      throw new Error('registration-incomplete')
   }
 
   async function signOut() {

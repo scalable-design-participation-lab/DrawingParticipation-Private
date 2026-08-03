@@ -1,6 +1,6 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { createPinia, setActivePinia } from 'pinia'
-import { createUserWithEmailAndPassword } from 'firebase/auth'
+import { createUserWithEmailAndPassword, signInWithEmailAndPassword } from 'firebase/auth'
 import { getDoc, setDoc } from 'firebase/firestore'
 import { useAuthStore } from '../../auth'
 
@@ -8,8 +8,12 @@ const primaryAuth = { currentUser: null }
 vi.mock('firebase/auth', () => ({
   getAuth: vi.fn(() => primaryAuth),
   onAuthStateChanged: vi.fn(),
-  signInWithEmailAndPassword: vi.fn(),
-  createUserWithEmailAndPassword: vi.fn(async () => ({ user: { uid: 'reg-uid', isAnonymous: false } })),
+  signInWithEmailAndPassword: vi.fn(async () => ({
+    user: { uid: 'reg-uid', email: 'new@example.com', isAnonymous: false },
+  })),
+  createUserWithEmailAndPassword: vi.fn(async () => ({
+    user: { uid: 'reg-uid', email: 'new@example.com', isAnonymous: false },
+  })),
   signOut: vi.fn(async () => {}),
 }))
 
@@ -42,5 +46,31 @@ describe('auth store register', () => {
     expect(getDoc).toHaveBeenCalledWith({ coll: 'admins', id: 'reg-uid' })
     expect(auth.isAdmin).toBe(false)
     expect(auth.role).toBe(null)
+  })
+
+  it('flags the registration as incomplete when the mirror write is rejected', async () => {
+    // e.g. Firestore rules not deployed yet: the login exists in Firebase
+    // Auth, but the accounts/<uid> doc can't be written.
+    vi.mocked(setDoc).mockRejectedValueOnce({ code: 'permission-denied' })
+    const auth = useAuthStore()
+    await expect(auth.register('new@example.com', 'secret123')).rejects.toThrow('registration-incomplete')
+  })
+
+  it('self-heals a missing registration mirror on sign-in', async () => {
+    const auth = useAuthStore()
+    await auth.signIn('new@example.com', 'secret123')
+    expect(signInWithEmailAndPassword).toHaveBeenCalledWith(primaryAuth, 'new@example.com', 'secret123')
+    expect(setDoc).toHaveBeenCalledWith(
+      { coll: 'accounts', id: 'reg-uid' },
+      { email: 'new@example.com', createdAt: '__serverTimestamp__' },
+    )
+  })
+
+  it('does not touch the mirror when it already exists', async () => {
+    vi.mocked(getDoc).mockImplementation(async ref =>
+      ({ exists: () => (ref as any).coll === 'accounts', data: () => ({}) }) as any)
+    const auth = useAuthStore()
+    await auth.signIn('new@example.com', 'secret123')
+    expect(setDoc).not.toHaveBeenCalled()
   })
 })

@@ -145,6 +145,8 @@
     "registerHint": "Crie uma conta simples com seu e-mail — ela não concede nenhum direito por si só. Um administrador concederá o acesso de moderação aqui.",
     "newPassword": "Senha (mín. 6 caracteres)",
     "errRegister": "Falha no registro. Tente novamente.",
+    "errRegisterIncomplete": "Seu login foi criado, mas ainda não pôde ser listado para revisão. Entre novamente mais tarde ou contate um administrador.",
+    "errEmailInUseRegister": "Este e-mail já possui um login — mude para “Entrar”. Seu registro é concluído automaticamente ao entrar.",
     "pendingTitle": "Sua conta está registrada",
     "pendingBody": "Conectado como {email}. Um administrador precisa conceder o acesso de moderação antes que você possa revisar envios.",
     "registrations": "Novos registros",

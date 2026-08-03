@@ -44,10 +44,11 @@ async function submitAuth() {
   }
   catch (e: any) {
     authErr.value
-      = e?.code === 'auth/email-already-in-use' ? t('admin.errEmailInUse')
-        : e?.code === 'auth/invalid-email' ? t('admin.errInvalidEmail')
-          : e?.code === 'auth/weak-password' ? t('admin.errWeakPassword')
-            : mode.value === 'register' ? t('admin.errRegister') : t('mod.signInFailed')
+      = e?.message === 'registration-incomplete' ? t('admin.errRegisterIncomplete')
+        : e?.code === 'auth/email-already-in-use' ? t('admin.errEmailInUseRegister')
+          : e?.code === 'auth/invalid-email' ? t('admin.errInvalidEmail')
+            : e?.code === 'auth/weak-password' ? t('admin.errWeakPassword')
+              : mode.value === 'register' ? t('admin.errRegister') : t('mod.signInFailed')
   }
   finally {
     authBusy.value = false
