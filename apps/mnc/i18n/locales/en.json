@@ -145,6 +145,7 @@
     "registerHint": "Create a plain account with your email — it carries no rights by itself. An administrator will then grant you moderation access here.",
     "newPassword": "Password (min. 6 characters)",
     "errRegister": "Registration failed. Please try again.",
+    "errProviderDisabled": "Email/password sign-in is not enabled for this Firebase project (console → Authentication → Sign-in method).",
     "errRegisterIncomplete": "Your login was created, but it could not be listed for review yet. Sign in again later or contact an administrator.",
     "errEmailInUseRegister": "This email already has a login — switch to “Sign in”. Your registration is completed automatically on sign-in.",
     "pendingTitle": "Your account is registered",

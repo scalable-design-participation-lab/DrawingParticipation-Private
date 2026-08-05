@@ -95,7 +95,10 @@ export const useAuthStore = defineStore('auth', () => {
       }
       return true
     }
-    catch {
+    catch (e) {
+      // Swallowed by design (best-effort mirror), but keep the cause visible
+      // for whoever is debugging a failed registration.
+      console.warn('[auth] could not mirror registration to accounts/<uid>', e)
       return false
     }
   }

@@ -43,12 +43,19 @@ async function submitAuth() {
     password.value = ''
   }
   catch (e: any) {
+    // Keep the raw error inspectable — the UI text below intentionally
+    // compresses unknown failures.
+    console.warn('[admin] sign-in/register failed', e)
     authErr.value
       = e?.message === 'registration-incomplete' ? t('admin.errRegisterIncomplete')
         : e?.code === 'auth/email-already-in-use' ? t('admin.errEmailInUseRegister')
           : e?.code === 'auth/invalid-email' ? t('admin.errInvalidEmail')
             : e?.code === 'auth/weak-password' ? t('admin.errWeakPassword')
-              : mode.value === 'register' ? t('admin.errRegister') : t('mod.signInFailed')
+              : e?.code === 'auth/operation-not-allowed' ? t('admin.errProviderDisabled')
+                : (mode.value === 'register' ? t('admin.errRegister') : t('mod.signInFailed'))
+                  // Unrecognized failure: surface the underlying code so a tester's
+                  // screenshot is enough to diagnose (config/domain/key issues).
+                  + (e?.code ? ` [${e.code}]` : e?.message ? ` [${e.message}]` : '')
   }
   finally {
     authBusy.value = false
@@ -78,11 +85,13 @@ async function doCreate() {
     form.role = 'moderator'
   }
   catch (e: any) {
+    console.warn('[admin] account creation failed', e)
     createErr.value
       = e?.code === 'auth/email-already-in-use' ? t('admin.errEmailInUse')
         : e?.code === 'auth/invalid-email' ? t('admin.errInvalidEmail')
           : e?.code === 'auth/weak-password' ? t('admin.errWeakPassword')
-            : t('admin.errCreate')
+            : e?.code === 'auth/operation-not-allowed' ? t('admin.errProviderDisabled')
+              : t('admin.errCreate') + (e?.code ? ` [${e.code}]` : '')
   }
   finally {
     createBusy.value = false
