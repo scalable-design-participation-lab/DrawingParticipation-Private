@@ -66,6 +66,34 @@ describe('auth store register', () => {
     )
   })
 
+  it('claimAdmin writes the caller its own admin doc and refreshes the role', async () => {
+    // The rules decide who may do this; the store just writes and re-reads.
+    vi.mocked(getDoc).mockImplementation(async ref =>
+      ({ exists: () => (ref as any).coll === 'admins', data: () => ({ role: 'admin' }) }) as any)
+    primaryAuth.currentUser = { uid: 'owner-uid', email: 'owner@example.com', isAnonymous: false } as any
+    const auth = useAuthStore()
+
+    await auth.claimAdmin()
+
+    expect(setDoc).toHaveBeenCalledWith(
+      { coll: 'admins', id: 'owner-uid' },
+      { email: 'owner@example.com', role: 'admin', createdAt: '__serverTimestamp__' },
+    )
+    expect(auth.isAdmin).toBe(true)
+    expect(auth.role).toBe('admin')
+    primaryAuth.currentUser = null
+  })
+
+  it('claimAdmin propagates a rules rejection instead of faking success', async () => {
+    vi.mocked(setDoc).mockRejectedValueOnce({ code: 'permission-denied' })
+    primaryAuth.currentUser = { uid: 'nobody', email: 'nobody@example.com', isAnonymous: false } as any
+    const auth = useAuthStore()
+
+    await expect(auth.claimAdmin()).rejects.toMatchObject({ code: 'permission-denied' })
+    expect(auth.isAdmin).toBe(false)
+    primaryAuth.currentUser = null
+  })
+
   it('does not touch the mirror when it already exists', async () => {
     vi.mocked(getDoc).mockImplementation(async ref =>
       ({ exists: () => (ref as any).coll === 'accounts', data: () => ({}) }) as any)

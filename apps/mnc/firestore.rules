@@ -30,13 +30,37 @@ service cloud.firestore {
         && d.get('email', '').size() <= 200;
     }
 
+    // Bootstrap allowlist. The first administrator has nobody to grant them
+    // access, so the project owners named here may claim their own admins doc
+    // once, from the /admin page — no Firebase console needed. Everyone else
+    // is granted by an existing admin. request.auth.token.email is issued by
+    // Firebase Auth and cannot be spoofed by the client.
+    //
+    // EDIT THIS LIST to match whoever owns the project.
+    function isProjectOwner() {
+      return request.auth != null
+        && request.auth.token.email in [
+          'kong.dez@northeastern.edu',
+          'ce.sandoval09@gmail.com'
+        ];
+    }
+
     // Admin allowlist + roles. Anyone signed in may check their own status;
     // moderators may see the list. Only super admins manage accounts — and
     // never their own doc, so they can't lock themselves out or self-demote.
     match /admins/{uid} {
       allow get: if (request.auth != null && request.auth.uid == uid) || isAdmin();
       allow list: if isAdmin();
-      allow create, update: if isSuperAdmin()
+      // `create` only fires when the doc is absent, so an owner's self-claim
+      // works exactly once; changing it afterwards needs another admin.
+      allow create: if isValidAdminDoc(request.resource.data)
+        && (
+          (isSuperAdmin() && request.auth.uid != uid)
+          || (isProjectOwner()
+              && request.auth.uid == uid
+              && request.resource.data.role == 'admin')
+        );
+      allow update: if isSuperAdmin()
         && request.auth.uid != uid
         && isValidAdminDoc(request.resource.data);
       allow delete: if isSuperAdmin() && request.auth.uid != uid;

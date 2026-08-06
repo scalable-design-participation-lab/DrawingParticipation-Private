@@ -127,11 +127,29 @@ export const useAuthStore = defineStore('auth', () => {
       throw new Error('registration-incomplete')
   }
 
+  /**
+   * Bootstrap the very first administrator without the Firebase console: the
+   * project owners named in firestore.rules (isProjectOwner) may create their
+   * own `admins/<uid>` doc once. The rules reject this for everyone else, and
+   * reject a second attempt, so there is nothing to guard client-side.
+   */
+  async function claimAdmin() {
+    const u = getAuth().currentUser
+    if (!u)
+      throw new Error('not-signed-in')
+    await setDoc(doc(getFirestore(), 'admins', u.uid), {
+      email: u.email ?? '',
+      role: 'admin',
+      createdAt: serverTimestamp(),
+    })
+    await refreshAdmin(u)
+  }
+
   async function signOut() {
     await fbSignOut(getAuth())
     isAdmin.value = false
     role.value = null
   }
 
-  return { uid, email, isAnonymous, isAdmin, isSuperAdmin, role, ready, init, signIn, register, signOut }
+  return { uid, email, isAnonymous, isAdmin, isSuperAdmin, role, ready, init, signIn, register, claimAdmin, signOut }
 })

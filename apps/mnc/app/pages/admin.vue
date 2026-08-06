@@ -105,6 +105,28 @@ async function doCreate() {
 // where, confusingly, no "admin" flag exists at all.
 const showBootstrap = ref(false)
 const uidCopied = ref(false)
+const claimBusy = ref(false)
+const claimErr = ref('')
+
+// One-click path for a project owner (the allowlist lives in firestore.rules).
+// Anyone else is rejected by the rules, which is exactly when the manual steps
+// below are the answer — so failure is a normal outcome here, not a bug.
+async function doClaim() {
+  claimBusy.value = true
+  claimErr.value = ''
+  try {
+    await auth.claimAdmin()
+    if (auth.isSuperAdmin)
+      users.fetchAccounts()
+  }
+  catch (e: any) {
+    console.warn('[admin] admin claim rejected', e)
+    claimErr.value = t('admin.claimFailed')
+  }
+  finally {
+    claimBusy.value = false
+  }
+}
 
 async function copyUid() {
   if (!auth.uid)
@@ -259,13 +281,31 @@ function sendReset(a: AdminAccount) {
             <UIcon :name="showBootstrap ? 'i-heroicons-chevron-down' : 'i-heroicons-chevron-right'" class="h-3 w-3" />
             {{ $t('admin.bootstrapToggle') }}
           </button>
-          <ol v-if="showBootstrap" class="mt-2 list-decimal space-y-1 pl-5 text-xs text-gray-600 dark:text-gray-300">
-            <li>{{ $t('admin.bootstrapStep1') }}</li>
-            <li>{{ $t('admin.bootstrapStep2') }}</li>
-            <li>{{ $t('admin.bootstrapStep3') }}</li>
-            <li>{{ $t('admin.bootstrapStep4') }}</li>
-          </ol>
-          <p v-if="showBootstrap" class="mt-2 text-[11px] text-gray-400">{{ $t('admin.bootstrapNote') }}</p>
+          <template v-if="showBootstrap">
+            <!-- Fast path: a project owner grants themselves access here. -->
+            <p class="mt-2 text-xs text-gray-600 dark:text-gray-300">{{ $t('admin.claimHint') }}</p>
+            <UButton
+              class="mt-2"
+              size="xs"
+              color="primary"
+              icon="i-heroicons-key"
+              :loading="claimBusy"
+              @click="doClaim"
+            >
+              {{ $t('admin.claimAdmin') }}
+            </UButton>
+            <p v-if="claimErr" class="mt-1.5 text-xs text-red-500">{{ claimErr }}</p>
+
+            <!-- Fallback: do it by hand in the console. -->
+            <p class="mt-3 text-[11px] font-semibold uppercase tracking-wide text-gray-400">{{ $t('admin.claimOrManual') }}</p>
+            <ol class="mt-1 list-decimal space-y-1 pl-5 text-xs text-gray-600 dark:text-gray-300">
+              <li>{{ $t('admin.bootstrapStep1') }}</li>
+              <li>{{ $t('admin.bootstrapStep2') }}</li>
+              <li>{{ $t('admin.bootstrapStep3') }}</li>
+              <li>{{ $t('admin.bootstrapStep4') }}</li>
+            </ol>
+            <p class="mt-2 text-[11px] text-gray-400">{{ $t('admin.bootstrapNote') }}</p>
+          </template>
         </div>
       </div>
 
