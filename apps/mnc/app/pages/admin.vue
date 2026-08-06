@@ -98,6 +98,28 @@ async function doCreate() {
   }
 }
 
+// --- Bootstrap helper ---
+// The very first administrator has nobody to grant them access, so a project
+// owner has to create their admins/<uid> doc by hand once. Surfacing the uid
+// here saves hunting for it in the Firebase console's Authentication tab —
+// where, confusingly, no "admin" flag exists at all.
+const showBootstrap = ref(false)
+const uidCopied = ref(false)
+
+async function copyUid() {
+  if (!auth.uid)
+    return
+  try {
+    await navigator.clipboard.writeText(auth.uid)
+    uidCopied.value = true
+    setTimeout(() => (uidCopied.value = false), 2000)
+  }
+  catch {
+    // Clipboard blocked (insecure context / permission): the uid is on screen
+    // and selectable, so there is nothing to recover from.
+  }
+}
+
 // --- Row actions ---
 const rowBusy = ref<string | null>(null)
 const rowErr = ref('')
@@ -205,10 +227,46 @@ function sendReset(a: AdminAccount) {
       </div>
 
       <!-- Signed in with a plain account: waiting for an admin to grant access -->
-      <div v-else-if="!auth.isAdmin" class="mx-auto max-w-sm rounded-2xl border border-gray-200 bg-white p-6 text-center shadow-sm dark:border-zinc-700 dark:bg-zinc-900">
-        <UIcon name="i-heroicons-clock" class="mx-auto mb-2 h-8 w-8 text-amber-500" />
-        <h2 class="text-sm font-semibold text-gray-900 dark:text-white">{{ $t('admin.pendingTitle') }}</h2>
-        <p class="mt-1 text-sm text-gray-600 dark:text-gray-300">{{ $t('admin.pendingBody', { email: auth.email }) }}</p>
+      <div v-else-if="!auth.isAdmin" class="mx-auto max-w-md rounded-2xl border border-gray-200 bg-white p-6 shadow-sm dark:border-zinc-700 dark:bg-zinc-900">
+        <div class="text-center">
+          <UIcon name="i-heroicons-clock" class="mx-auto mb-2 h-8 w-8 text-amber-500" />
+          <h2 class="text-sm font-semibold text-gray-900 dark:text-white">{{ $t('admin.pendingTitle') }}</h2>
+          <p class="mt-1 text-sm text-gray-600 dark:text-gray-300">{{ $t('admin.pendingBody', { email: auth.email }) }}</p>
+        </div>
+
+        <!-- Bootstrap escape hatch: with no admin yet, nobody can grant anyone
+             access from this page — a project owner has to do it once by hand. -->
+        <div class="mt-5 rounded-xl bg-gray-50 p-3 dark:bg-zinc-800/60">
+          <p class="text-[11px] font-semibold uppercase tracking-wide text-gray-400">{{ $t('admin.yourUid') }}</p>
+          <div class="mt-1 flex items-center gap-2">
+            <code class="min-w-0 flex-1 truncate rounded bg-white px-2 py-1 text-xs text-gray-700 dark:bg-zinc-900 dark:text-gray-200">{{ auth.uid }}</code>
+            <UButton
+              size="xs"
+              color="gray"
+              variant="ghost"
+              :icon="uidCopied ? 'i-heroicons-check' : 'i-heroicons-clipboard-document'"
+              :aria-label="$t('admin.copyUid')"
+              :title="$t('admin.copyUid')"
+              @click="copyUid"
+            />
+          </div>
+
+          <button
+            type="button"
+            class="mt-2 flex items-center gap-1 text-xs font-medium text-teal-600 hover:underline dark:text-teal-400"
+            @click="showBootstrap = !showBootstrap"
+          >
+            <UIcon :name="showBootstrap ? 'i-heroicons-chevron-down' : 'i-heroicons-chevron-right'" class="h-3 w-3" />
+            {{ $t('admin.bootstrapToggle') }}
+          </button>
+          <ol v-if="showBootstrap" class="mt-2 list-decimal space-y-1 pl-5 text-xs text-gray-600 dark:text-gray-300">
+            <li>{{ $t('admin.bootstrapStep1') }}</li>
+            <li>{{ $t('admin.bootstrapStep2') }}</li>
+            <li>{{ $t('admin.bootstrapStep3') }}</li>
+            <li>{{ $t('admin.bootstrapStep4') }}</li>
+          </ol>
+          <p v-if="showBootstrap" class="mt-2 text-[11px] text-gray-400">{{ $t('admin.bootstrapNote') }}</p>
+        </div>
       </div>
 
       <!-- Review-only moderator: no account management -->
