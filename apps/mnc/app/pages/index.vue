@@ -191,21 +191,22 @@ const leftItems = ref([
   },
 ])
 
-// Persistent language switcher in the header: cycles through the configured
-// locales (en → pt → es → …); the label shows the language a click switches to.
+// Persistent language switcher in the header: the button shows the CURRENT
+// language and opens a dropdown listing all configured locales.
 const { locale, locales, setLocale } = useI18n()
-function nextLocale() {
-  const codes = locales.value.map((l: any) => l.code)
-  return codes[(codes.indexOf(locale.value) + 1) % codes.length]
-}
-function toggleLocale() {
-  setLocale(nextLocale())
-}
 
 const rightItems = ref([
   {
-    label: computed(() => nextLocale().toUpperCase()),
-    onClick: toggleLocale,
+    label: computed(() => String(locale.value).toUpperCase()),
+    dropdown: {
+      items: computed(() => [
+        locales.value.map((l: any) => ({
+          label: l.name,
+          icon: locale.value === l.code ? 'i-heroicons-check' : undefined,
+          click: () => setLocale(l.code),
+        })),
+      ]),
+    },
   },
   {
     icon: computed(() =>

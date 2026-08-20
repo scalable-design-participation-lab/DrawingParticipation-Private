@@ -46,7 +46,7 @@ function handleUploaded() {
 
 
 // Entry text in the current UI language (falls back to the original).
-const { lf } = useLocalizedEntry()
+const { lf, linkLabel } = useLocalizedEntry()
 
 // Photos come from the project's manifest; user-submitted pins have none and
 // fall through to the carousel's empty state (no broken /Solution_Photos URL).
@@ -213,8 +213,8 @@ function toggleState() {
                 target="_blank"
                 rel="noopener noreferrer"
                 class="text-white text-xs underline decoration-white/40 hover:decoration-white"
-              >{{ link.label }}</a>
-              <span v-else class="text-white text-xs">{{ link.label }}</span>
+              >{{ linkLabel(link.label) }}</a>
+              <span v-else class="text-white text-xs">{{ linkLabel(link.label) }}</span>
 
             </li>
           </ul>

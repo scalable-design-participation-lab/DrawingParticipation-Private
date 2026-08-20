@@ -23,15 +23,16 @@ function toggleMapType() {
   mapStore.setMapType(mapType.value === 'vector' ? 'satellite' : 'vector')
 }
 
-// Cycles through the configured locales; the label shows the next language.
+// Language dropdown: the button shows the CURRENT language; the menu lists
+// all configured locales with a check on the active one.
 const { locale, locales, setLocale } = useI18n()
-function nextLocale() {
-  const codes = locales.value.map((l: any) => l.code)
-  return codes[(codes.indexOf(locale.value) + 1) % codes.length]
-}
-function toggleLocale() {
-  setLocale(nextLocale())
-}
+const localeItems = computed(() => [
+  locales.value.map((l: any) => ({
+    label: l.name,
+    icon: locale.value === l.code ? 'i-heroicons-check' : undefined,
+    click: () => setLocale(l.code),
+  })),
+])
 </script>
 
 <template>
@@ -56,14 +57,15 @@ function toggleLocale() {
     </a>
 
     <div class="pointer-events-auto flex items-center gap-2">
-      <button
-        type="button"
-        :aria-label="$t('lang.label')"
-        class="flex h-10 min-w-10 items-center justify-center rounded-full bg-white/90 dark:bg-black/80 px-3 text-xs font-bold text-gray-700 dark:text-gray-200 shadow-md backdrop-blur"
-        @click="toggleLocale"
-      >
-        {{ nextLocale().toUpperCase() }}
-      </button>
+      <UDropdown :items="localeItems">
+        <button
+          type="button"
+          :aria-label="$t('lang.label')"
+          class="flex h-10 min-w-10 items-center justify-center rounded-full bg-white/90 dark:bg-black/80 px-3 text-xs font-bold text-gray-700 dark:text-gray-200 shadow-md backdrop-blur"
+        >
+          {{ String(locale).toUpperCase() }}
+        </button>
+      </UDropdown>
       <button
         type="button"
         :aria-label="mapType === 'vector' ? $t('nav.satelliteOn') : $t('nav.satelliteOff')"

@@ -69,4 +69,31 @@ if (doCatalog) {
     }
   }
   console.log(`Catalog: ${Object.keys(existing).length}/${catalog.length} entries in ${outPath}.`)
+
+  // "Learn More" link labels (mncLinks.json): a single global label→translation
+  // dictionary per language — labels repeat across entries, so this dedupes.
+  const links = JSON.parse(await readFile('../content/mncLinks.json', 'utf8'))
+  const labels = [...new Set(Object.values(links).flat().map(l => l.label).filter(Boolean))]
+  const labelsPath = '../content/mncLinks.i18n.json'
+  const dict = JSON.parse(await readFile(labelsPath, 'utf8').catch(() => '{}'))
+  const { v2 } = await import('@google-cloud/translate')
+  const client = new v2.Translate()
+  for (const lang of ['pt', 'es']) {
+    dict[lang] ||= {}
+    const missing = labels.filter(l => !dict[lang][l])
+    if (!missing.length)
+      continue
+    // The API caps array size per request; 50 short labels per call is safe.
+    for (let i = 0; i < missing.length; i += 50) {
+      const batch = missing.slice(i, i + 50)
+      const [translated] = await client.translate(batch, lang)
+      const list = Array.isArray(translated) ? translated : [translated]
+      batch.forEach((label, j) => {
+        dict[lang][label] = list[j]
+      })
+    }
+    console.log(`link labels → ${lang}: ${missing.length} translated`)
+  }
+  await writeFile(labelsPath, `${JSON.stringify(dict, null, 2)}\n`)
+  console.log(`Link labels: ${labels.length} distinct labels in ${labelsPath}.`)
 }
