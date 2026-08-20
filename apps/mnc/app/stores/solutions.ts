@@ -44,6 +44,9 @@ export interface ModeratedSolution {
   primaryTag: string
   location: string
   approved: boolean
+  // Stored translations (written by the translate Cloud Function) so the
+  // review queue can show the trilingual content before approving.
+  i18n?: Properties['i18n']
 }
 
 function slugify(s: string): string {
@@ -234,6 +237,7 @@ export const useSolutionsStore = defineStore('solutions', () => {
                 primaryTag: data.primaryTag || '',
                 location: data.location || '',
                 approved,
+                i18n: data.i18n,
               })
             }
             // A custom (user-created) theme isn't in the default visible set;

@@ -237,6 +237,14 @@ async function removeC(c: Contribution) {
           <div class="min-w-0">
             <p class="truncate text-sm font-medium text-gray-900 dark:text-white">{{ m.title }}</p>
             <p class="truncate text-xs text-gray-400">{{ m.location || m.primaryTag }}</p>
+            <!-- Stored translations, so the reviewer can check them before
+                 approving. Written by the Cloud Function a few seconds after
+                 submission — absent until then. -->
+            <div v-if="m.i18n" class="mt-1 space-y-0.5">
+              <p v-for="(tr, code) in m.i18n" :key="code" class="truncate text-[11px] text-gray-500 dark:text-gray-400">
+                <span class="font-semibold uppercase text-gray-400">{{ code }}</span> {{ tr.title }}
+              </p>
+            </div>
           </div>
           <span
             class="shrink-0 rounded-full px-2 py-0.5 text-[10px] font-semibold"
