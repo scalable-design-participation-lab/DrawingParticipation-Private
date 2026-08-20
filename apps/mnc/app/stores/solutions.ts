@@ -1,4 +1,4 @@
-import { addDoc, collection, deleteDoc, doc, getDocs, getFirestore, query, serverTimestamp, updateDoc, where } from 'firebase/firestore'
+import { addDoc, collection, deleteDoc, doc, getFirestore, onSnapshot, query, serverTimestamp, updateDoc, where } from 'firebase/firestore'
 import { getAuth } from 'firebase/auth'
 import { defineStore } from 'pinia'
 import { ref } from 'vue'
@@ -23,6 +23,7 @@ export interface SolutionInput {
   mncConnection?: string // "why is this a good example of MNC"
   date?: string
   photos?: string[] // uploaded photo URLs — the entry's own gallery
+  audio?: string[] // recorded/uploaded voice-note URLs
 }
 
 /** Personal contact info from the "Join Our Research" step. Stored in a
@@ -91,6 +92,7 @@ export const useSolutionsStore = defineStore('solutions', () => {
     mncConnection?: string
     date?: string
     photos?: string[]
+    audio?: string[]
   }) {
     if (features.some(f => (f.properties as any)?.string_id === s.string_id))
       return
@@ -108,6 +110,7 @@ export const useSolutionsStore = defineStore('solutions', () => {
       [],
       s.photos || [],
     )
+    properties.audio = s.audio || []
     // Mark pins that are still awaiting approval so the map can distinguish them.
     properties.pending = s.approved === false
     addFeature({
@@ -143,6 +146,7 @@ export const useSolutionsStore = defineStore('solutions', () => {
       mncConnection: input.mncConnection,
       date: input.date,
       photos: input.photos,
+      audio: input.audio,
     })
     isPlacing.value = false
 
@@ -159,6 +163,7 @@ export const useSolutionsStore = defineStore('solutions', () => {
         mncConnection: input.mncConnection || '',
         date: input.date || '',
         photos: input.photos || [],
+        audio: input.audio || [],
         lon,
         lat,
         userId: getAuth().currentUser?.uid || 'anonymous',
@@ -197,51 +202,82 @@ export const useSolutionsStore = defineStore('solutions', () => {
     }
   }
 
-  /** Load solutions from Firestore onto the map. The public sees only approved
-   *  ones; a signed-in admin sees everything and can moderate. */
-  async function fetchSolutions(): Promise<void> {
+  /** Watch solutions in Firestore and keep the map in sync. The public sees
+   *  only approved ones; a signed-in admin sees everything and can moderate.
+   *  A live listener (not a one-shot read) is what makes entries approved
+   *  during a session appear for everyone without a reload. Re-calling this
+   *  (e.g. after moderator sign-in) replaces the previous subscription. */
+  let unsubscribe: (() => void) | null = null
+  function fetchSolutions(): Promise<void> {
     const authStore = useAuthStore()
     const admin = authStore.isAdmin
-    try {
-      const db = getFirestore()
-      const col = collection(db, COLLECTION)
-      const snapshot = await getDocs(admin ? col : query(col, where('approved', '==', true)))
-      moderation.value = []
-      snapshot.docs.forEach((d) => {
-        const data = d.data() as any
-        if (typeof data.lon !== 'number' || typeof data.lat !== 'number')
-          return
-        const approved = data.approved === true
-        if (admin) {
-          moderation.value.push({
-            id: d.id,
-            string_id: data.string_id || d.id,
-            title: data.title || 'Untitled',
-            primaryTag: data.primaryTag || '',
-            location: data.location || '',
-            approved,
+    unsubscribe?.()
+    const col = collection(getFirestore(), COLLECTION)
+    // Resolves on the first snapshot so app init can await the initial load.
+    return new Promise((resolve) => {
+      unsubscribe = onSnapshot(
+        admin ? query(col) : query(col, where('approved', '==', true)),
+        (snapshot) => {
+          moderation.value = []
+          snapshot.docs.forEach((d) => {
+            const data = d.data() as any
+            if (typeof data.lon !== 'number' || typeof data.lat !== 'number')
+              return
+            const approved = data.approved === true
+            if (admin) {
+              moderation.value.push({
+                id: d.id,
+                string_id: data.string_id || d.id,
+                title: data.title || 'Untitled',
+                primaryTag: data.primaryTag || '',
+                location: data.location || '',
+                approved,
+              })
+            }
+            // A custom (user-created) theme isn't in the default visible set;
+            // without this the entry loads but is filtered straight off the map.
+            filterStore.ensureTagVisible(data.primaryTag || '')
+            const string_id = data.string_id || d.id
+            const existing = features.find(f => (f.properties as any)?.string_id === string_id)
+            if (existing) {
+              // Already on the map — just propagate an approval flip.
+              ;(existing.properties as any).pending = !approved
+              return
+            }
+            // Public: only approved reach here (query already filtered). Admin:
+            // show all, including pending, so they can review them on the map.
+            addSolutionFeature({
+              string_id,
+              title: data.title || 'Untitled',
+              shortDesc: data.shortDesc || '',
+              description: data.description || '',
+              primaryTag: data.primaryTag || '',
+              location: data.location || '',
+              coordinate: fromLonLat([data.lon, data.lat]) as [number, number],
+              approved,
+              mncConnection: data.mncConnection || '',
+              date: data.date || '',
+              photos: Array.isArray(data.photos) ? data.photos : [],
+              audio: Array.isArray(data.audio) ? data.audio : [],
+            })
           })
-        }
-        // Public: only approved reach here (query already filtered). Admin: show
-        // all, including pending, so they can review them on the map.
-        addSolutionFeature({
-          string_id: data.string_id || d.id,
-          title: data.title || 'Untitled',
-          shortDesc: data.shortDesc || '',
-          description: data.description || '',
-          primaryTag: data.primaryTag || '',
-          location: data.location || '',
-          coordinate: fromLonLat([data.lon, data.lat]) as [number, number],
-          approved,
-          mncConnection: data.mncConnection || '',
-          date: data.date || '',
-          photos: Array.isArray(data.photos) ? data.photos : [],
-        })
-      })
-    }
-    catch (err) {
-      console.warn('Could not load user solutions:', err)
-    }
+          // Docs that left the query (deleted, or un-approved): drop their pins.
+          snapshot.docChanges().forEach((c) => {
+            if (c.type !== 'removed')
+              return
+            const sid = (c.doc.data() as any).string_id || c.doc.id
+            const idx = features.findIndex(f => (f.properties as any)?.string_id === sid)
+            if (idx !== -1)
+              features.splice(idx, 1)
+          })
+          resolve()
+        },
+        (err) => {
+          console.warn('Could not load user solutions:', err)
+          resolve()
+        },
+      )
+    })
   }
 
   /** Moderator: approve a pending solution so it becomes public. */

@@ -125,7 +125,7 @@ const tagChipStyle = computed(() => ({
             v-if="props.imagePath"
             :src="props.imagePath"
             :alt="props.title"
-            class="h-full w-full object-cover"
+            class="h-full w-full object-contain"
           >
           <div
             v-else

@@ -15,6 +15,7 @@ vi.mock('firebase/auth', () => ({
     user: { uid: 'reg-uid', email: 'new@example.com', isAnonymous: false },
   })),
   signOut: vi.fn(async () => {}),
+  sendPasswordResetEmail: vi.fn(async () => {}),
 }))
 
 vi.mock('firebase/firestore', () => ({

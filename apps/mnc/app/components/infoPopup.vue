@@ -67,8 +67,15 @@
                 :images="galleryImages"
                 :caption="captionText"
                 :alt="title"
-                height="280px"
+                height="340px"
               />
+
+              <div v-if="audio.length" class="space-y-2 rounded-2xl bg-teal-50/70 p-4 dark:bg-teal-950/30">
+                <p class="text-xs font-semibold uppercase tracking-wide text-teal-700 dark:text-teal-400">
+                  {{ $t('detail.voiceNotes') }}
+                </p>
+                <audio v-for="url in audio" :key="url" :src="url" controls class="w-full" />
+              </div>
 
               <div v-if="connection" class="rounded-2xl bg-teal-50/70 p-5 dark:bg-teal-950/30">
                 <p class="mb-2 text-xs font-semibold uppercase tracking-wide text-teal-700 dark:text-teal-400">
@@ -302,6 +309,8 @@ interface Props {
   links?: Link[]
   // All photo paths for this project; rendered as a carousel.
   photos?: string[]
+  // Voice notes recorded with the entry; rendered as audio players.
+  audio?: string[]
   // Stable MNC project id (mncData.json `string_id`). Used to load and save
   // community contributions for this project.
   stringId?: string
@@ -319,6 +328,7 @@ const props = withDefaults(defineProps<Props>(), {
   secondaryTag: '',
   links: () => [],
   photos: () => [],
+  audio: () => [],
   stringId: '',
 })
 

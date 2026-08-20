@@ -65,6 +65,7 @@
     :date-published="selectedFeature.properties?.date || ''"
     :imagePath="'/Solution_Photos/'+ selectedFeature.properties?.string_id +'/1.png'"
     :photos="selectedFeature.properties?.photos || []"
+    :audio="selectedFeature.properties?.audio || []"
     :location="selectedFeature.properties?.location || ''"
     :caption="selectedFeature.properties?.mediaCaptions || ''"
     :description="selectedFeature.properties?.description || ''"

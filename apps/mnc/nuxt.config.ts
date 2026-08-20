@@ -34,7 +34,7 @@ export default defineNuxtConfig({
     '@nuxtjs/i18n'
   ],
 
-  // Automatic English/Portuguese: detects the browser language on first visit,
+  // Automatic language pick: detects the browser/OS language on first visit,
   // then remembers the user's choice from the header switcher. `no_prefix`
   // keeps the URLs clean (this is a single-page map app).
   i18n: {
@@ -43,6 +43,7 @@ export default defineNuxtConfig({
     locales: [
       { code: 'en', language: 'en-US', name: 'English', file: 'en.json' },
       { code: 'pt', language: 'pt-BR', name: 'Português', file: 'pt.json' },
+      { code: 'es', language: 'es-ES', name: 'Español', file: 'es.json' },
     ],
     detectBrowserLanguage: {
       useCookie: true,

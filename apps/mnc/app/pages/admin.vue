@@ -31,6 +31,24 @@ const email = ref('')
 const password = ref('')
 const authErr = ref('')
 const authBusy = ref(false)
+const resetOk = ref('')
+
+async function doReset() {
+  authErr.value = ''
+  resetOk.value = ''
+  if (!email.value.trim()) {
+    authErr.value = t('mod.enterEmailForReset')
+    return
+  }
+  try {
+    await auth.resetPassword(email.value.trim())
+    resetOk.value = t('mod.resetSent')
+  }
+  catch (e: any) {
+    console.warn('[admin] password reset failed', e)
+    authErr.value = t('mod.errReset') + (e?.code ? ` [${e.code}]` : '')
+  }
+}
 
 async function submitAuth() {
   authBusy.value = true
@@ -242,9 +260,18 @@ function sendReset(a: AdminAccount) {
             minlength="6"
           />
           <p v-if="authErr" class="text-xs text-red-500">{{ authErr }}</p>
+          <p v-if="resetOk" class="text-xs text-emerald-600 dark:text-emerald-400">{{ resetOk }}</p>
           <UButton type="submit" color="primary" block :loading="authBusy">
             {{ mode === 'signIn' ? $t('mod.signIn') : $t('admin.register') }}
           </UButton>
+          <button
+            v-if="mode === 'signIn'"
+            type="button"
+            class="block w-full text-center text-xs text-gray-500 underline hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"
+            @click="doReset"
+          >
+            {{ $t('mod.forgotPassword') }}
+          </button>
         </form>
       </div>
 

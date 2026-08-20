@@ -16,7 +16,9 @@ const props = withDefaults(defineProps<{
   hint?: string
   maxSizeMb?: number
 }>(), {
-  accept: 'image/png,image/jpeg,application/pdf',
+  // storage.rules only allows image/* and audio/* — PDF would pass here and
+  // then fail the Storage write, so it is deliberately not accepted.
+  accept: 'image/*,audio/*',
   hint: '',
   maxSizeMb: 10,
 })

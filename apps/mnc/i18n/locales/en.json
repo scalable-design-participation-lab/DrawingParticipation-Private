@@ -40,7 +40,8 @@
     "justNow": "just now",
     "minutesAgo": "{n}m ago",
     "hoursAgo": "{n}h ago",
-    "daysAgo": "{n}d ago"
+    "daysAgo": "{n}d ago",
+    "voiceNotes": "Voice notes"
   },
   "photo": {
     "noPhoto": "No photo yet",
@@ -88,7 +89,8 @@
   "lang": {
     "label": "Language",
     "en": "English",
-    "pt": "Português"
+    "pt": "Português",
+    "es": "Español"
   },
   "mDetail": {
     "close": "Close",
@@ -119,6 +121,10 @@
     "signIn": "Sign in",
     "notModerator": "Signed in, but this account is not a moderator.",
     "signInFailed": "Sign-in failed. Check your email and password.",
+    "forgotPassword": "Forgot password?",
+    "enterEmailForReset": "Enter your email above first.",
+    "resetSent": "Password-reset email sent. Check your inbox.",
+    "errReset": "Could not send the reset email. Check the address and try again.",
     "reviewEntries": "Review entries",
     "signOut": "Sign out",
     "noEntries": "No submissions to review.",
@@ -241,9 +247,54 @@
   },
   "fileUpload": {
     "prompt": "Select a file or drag and drop here",
-    "hint": "JPG, PNG, or PDF, file size no more than 10 MB",
+    "hint": "Photos or audio, file size no more than 10 MB",
     "removeFile": "Remove file",
     "tooLarge": "\"{name}\" is larger than {max} MB.",
     "unsupported": "\"{name}\" is not a supported file type."
+  },
+  "voice": {
+    "record": "Record a voice note instead",
+    "stop": "Stop recording",
+    "micDenied": "Microphone access was blocked. Allow it in your browser to record."
+  },
+  "menu": {
+    "home": "Home",
+    "about": "About Us",
+    "support": "Support"
+  },
+  "about": {
+    "backToMap": "Back to Map",
+    "heroTitle": "How communities reinvent technology to meet their own needs",
+    "heroIntro": "An interactive atlas of real-world examples — from motorcycle taxis in the Philippines to a book written entirely over WhatsApp — of how people creatively adapt mobile and networked technology to the realities of their place and moment.",
+    "exploreMap": "Explore the map",
+    "whatTitle": "What is Mobile Networked Creativity?",
+    "what1": "Mobile Networked Creativity (MNC) is not only about the final product or device. It is also about the micro-process of creation — the network of relationships developed among people and technologies in a particular space and time.",
+    "what2": "Across the world, communities — often in resource-constrained or crisis settings — combine everyday objects, mobile devices, and networks to solve problems that formal systems leave unmet. This project collects those stories on a single map so they can be explored, compared, and added to.",
+    "themesTitle": "Themes you can explore",
+    "participateTitle": "Add your own example",
+    "participate1": "Know an example we are missing, or have a photo of one already on the map? Open any case study and use “Add photo or comment” to contribute your own images and reflections.",
+    "startContributing": "Start contributing",
+    "themes": {
+      "transport": {
+        "title": "Transportation & Mobility",
+        "description": "Improvised vehicles and transit that keep people and goods moving."
+      },
+      "health": {
+        "title": "Health & Crisis Response",
+        "description": "Mobile care and rapid responses where formal services fall short."
+      },
+      "digital": {
+        "title": "Digital Access & Connectivity",
+        "description": "Grassroots ways of getting communities online and connected."
+      },
+      "mapping": {
+        "title": "Community Mapping & Visibility",
+        "description": "Making overlooked places and people visible on the map."
+      },
+      "art": {
+        "title": "Art & Cultural Expression",
+        "description": "Creative and cultural practices carried through mobile networks."
+      }
+    }
   }
 }

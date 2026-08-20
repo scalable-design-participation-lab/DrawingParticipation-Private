@@ -117,18 +117,28 @@ async function onContributeSubmit(payload: any) {
     // the entry's own photo gallery — approved/deleted with the entry, not a
     // separate pending contribution.
     const f = payload.files || {}
-    const allFiles: File[] = [...(f.example || []), ...(f.why || []), ...(f.media || []), ...(f.additional || [])]
+    const allFiles: File[] = [
+      ...(f.example || []),
+      ...(f.why || []),
+      ...(f.media || []),
+      ...(f.additional || []),
+      ...(f.voiceExample || []),
+      ...(f.voiceWhy || []),
+    ]
     const photos: string[] = []
+    const audio: string[] = []
     if (allFiles.length) {
       const slug = (payload.title || '').toLowerCase().replace(/[^a-z0-9]+/g, '_').replace(/^_+|_+$/g, '').slice(0, 30)
       const folder = `entry_${slug || 'untitled'}_${Math.floor(Math.random() * 100000)}`
       for (const file of allFiles) {
         try {
           const m = await contributionsStore.uploadFile(folder, file)
-          photos.push(m.url)
+          // Voice notes must never land in photos — every photos consumer
+          // renders an <img>.
+          ;(m.kind === 'audio' ? audio : photos).push(m.url)
         }
         catch (e) {
-          console.warn('Could not upload entry photo:', e)
+          console.warn('Could not upload entry file:', e)
         }
       }
     }
@@ -143,6 +153,7 @@ async function onContributeSubmit(payload: any) {
       mncConnection: payload.why || '',
       date: payload.date || '',
       photos,
+      audio,
     })
 
     // Personal contact info goes to the admin-only collection, never the pin.
@@ -180,15 +191,20 @@ const leftItems = ref([
   },
 ])
 
-// Persistent language switcher (English / Portuguese) in the header.
-const { locale, setLocale } = useI18n()
+// Persistent language switcher in the header: cycles through the configured
+// locales (en → pt → es → …); the label shows the language a click switches to.
+const { locale, locales, setLocale } = useI18n()
+function nextLocale() {
+  const codes = locales.value.map((l: any) => l.code)
+  return codes[(codes.indexOf(locale.value) + 1) % codes.length]
+}
 function toggleLocale() {
-  setLocale(locale.value === 'en' ? 'pt' : 'en')
+  setLocale(nextLocale())
 }
 
 const rightItems = ref([
   {
-    label: computed(() => (locale.value === 'en' ? 'PT' : 'EN')),
+    label: computed(() => nextLocale().toUpperCase()),
     onClick: toggleLocale,
   },
   {

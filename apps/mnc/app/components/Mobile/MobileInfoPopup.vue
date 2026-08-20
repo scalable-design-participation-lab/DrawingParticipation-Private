@@ -48,6 +48,7 @@ function handleUploaded() {
 // Photos come from the project's manifest; user-submitted pins have none and
 // fall through to the carousel's empty state (no broken /Solution_Photos URL).
 const galleryImages = computed(() => (Array.isArray(p.value?.photos) ? p.value.photos : []))
+const voiceNotes = computed(() => (Array.isArray((p.value as any)?.audio) ? (p.value as any).audio as string[] : []))
 
 const parsedLinks = computed(() => {
   // Prefer the structured list (real URLs from mncLinks.csv).
@@ -188,7 +189,13 @@ function toggleState() {
           v-if="galleryImages.length"
           class="overflow-hidden rounded-2xl border-2 border-white"
         >
-          <PhotoCarousel :images="galleryImages" :alt="feature.comment" height="200px" />
+          <PhotoCarousel :images="galleryImages" :alt="feature.comment" height="320px" />
+        </div>
+
+        <!-- Voice notes recorded with the entry -->
+        <div v-if="voiceNotes.length" class="space-y-2">
+          <p class="text-sm font-bold text-white">{{ $t('detail.voiceNotes') }}</p>
+          <audio v-for="url in voiceNotes" :key="url" :src="url" controls class="w-full" />
         </div>
 
         <!-- Links -->

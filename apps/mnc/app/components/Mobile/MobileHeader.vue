@@ -23,9 +23,14 @@ function toggleMapType() {
   mapStore.setMapType(mapType.value === 'vector' ? 'satellite' : 'vector')
 }
 
-const { locale, setLocale } = useI18n()
+// Cycles through the configured locales; the label shows the next language.
+const { locale, locales, setLocale } = useI18n()
+function nextLocale() {
+  const codes = locales.value.map((l: any) => l.code)
+  return codes[(codes.indexOf(locale.value) + 1) % codes.length]
+}
 function toggleLocale() {
-  setLocale(locale.value === 'en' ? 'pt' : 'en')
+  setLocale(nextLocale())
 }
 </script>
 
@@ -57,7 +62,7 @@ function toggleLocale() {
         class="flex h-10 min-w-10 items-center justify-center rounded-full bg-white/90 dark:bg-black/80 px-3 text-xs font-bold text-gray-700 dark:text-gray-200 shadow-md backdrop-blur"
         @click="toggleLocale"
       >
-        {{ locale === 'en' ? 'PT' : 'EN' }}
+        {{ nextLocale().toUpperCase() }}
       </button>
       <button
         type="button"

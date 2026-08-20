@@ -39,10 +39,12 @@ function prev() {
     :style="{ height }"
   >
     <template v-if="hasImages">
+      <!-- object-contain: user photos are mostly portrait phone shots — cover
+           was cropping away the subject. The container bg acts as letterbox. -->
       <img
         :src="images[current]"
         :alt="alt"
-        class="h-full w-full object-cover"
+        class="h-full w-full object-contain"
       />
 
       <!-- Prev / next controls (only when there is more than one photo) -->

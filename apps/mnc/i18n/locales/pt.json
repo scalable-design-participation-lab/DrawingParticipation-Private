@@ -40,7 +40,8 @@
     "justNow": "agora mesmo",
     "minutesAgo": "há {n}min",
     "hoursAgo": "há {n}h",
-    "daysAgo": "há {n}d"
+    "daysAgo": "há {n}d",
+    "voiceNotes": "Notas de voz"
   },
   "photo": {
     "noPhoto": "Ainda sem foto",
@@ -88,7 +89,8 @@
   "lang": {
     "label": "Idioma",
     "en": "English",
-    "pt": "Português"
+    "pt": "Português",
+    "es": "Español"
   },
   "mDetail": {
     "close": "Fechar",
@@ -119,6 +121,10 @@
     "signIn": "Entrar",
     "notModerator": "Conectado, mas esta conta não é de moderador.",
     "signInFailed": "Falha ao entrar. Verifique seu e-mail e senha.",
+    "forgotPassword": "Esqueceu a senha?",
+    "enterEmailForReset": "Digite seu e-mail acima primeiro.",
+    "resetSent": "E-mail de redefinição de senha enviado. Verifique sua caixa de entrada.",
+    "errReset": "Não foi possível enviar o e-mail de redefinição. Verifique o endereço e tente novamente.",
     "reviewEntries": "Revisar registros",
     "signOut": "Sair",
     "noEntries": "Nenhum envio para revisar.",
@@ -241,9 +247,54 @@
   },
   "fileUpload": {
     "prompt": "Selecione um arquivo ou arraste e solte aqui",
-    "hint": "JPG, PNG ou PDF, tamanho máximo de 10 MB",
+    "hint": "Fotos ou áudio, tamanho máximo de 10 MB",
     "removeFile": "Remover arquivo",
     "tooLarge": "\"{name}\" excede {max} MB.",
     "unsupported": "\"{name}\" não é um tipo de arquivo compatível."
+  },
+  "voice": {
+    "record": "Gravar uma nota de voz",
+    "stop": "Parar gravação",
+    "micDenied": "O acesso ao microfone foi bloqueado. Permita-o no navegador para gravar."
+  },
+  "menu": {
+    "home": "Início",
+    "about": "Sobre nós",
+    "support": "Suporte"
+  },
+  "about": {
+    "backToMap": "Voltar ao mapa",
+    "heroTitle": "Como as comunidades reinventam a tecnologia para atender às suas próprias necessidades",
+    "heroIntro": "Um atlas interativo de exemplos reais — de mototáxis nas Filipinas a um livro escrito inteiramente pelo WhatsApp — de como as pessoas adaptam criativamente a tecnologia móvel e em rede às realidades do seu lugar e momento.",
+    "exploreMap": "Explorar o mapa",
+    "whatTitle": "O que é a Criatividade Móvel em Rede?",
+    "what1": "A Criatividade Móvel em Rede (MNC) não se resume ao produto ou dispositivo final. Trata-se também do microprocesso de criação — a rede de relações desenvolvida entre pessoas e tecnologias em um espaço e tempo específicos.",
+    "what2": "Pelo mundo todo, comunidades — muitas vezes em contextos de escassez de recursos ou de crise — combinam objetos do cotidiano, dispositivos móveis e redes para resolver problemas que os sistemas formais deixam sem resposta. Este projeto reúne essas histórias em um único mapa para que possam ser exploradas, comparadas e ampliadas.",
+    "themesTitle": "Temas para explorar",
+    "participateTitle": "Adicione seu próprio exemplo",
+    "participate1": "Conhece um exemplo que está faltando, ou tem uma foto de um que já está no mapa? Abra qualquer estudo de caso e use “Adicionar foto ou comentário” para contribuir com suas próprias imagens e reflexões.",
+    "startContributing": "Comece a contribuir",
+    "themes": {
+      "transport": {
+        "title": "Transporte e Mobilidade",
+        "description": "Veículos e transportes improvisados que mantêm pessoas e mercadorias em movimento."
+      },
+      "health": {
+        "title": "Saúde e Resposta a Crises",
+        "description": "Cuidados móveis e respostas rápidas onde os serviços formais não chegam."
+      },
+      "digital": {
+        "title": "Acesso Digital e Conectividade",
+        "description": "Formas comunitárias de conectar pessoas à internet e entre si."
+      },
+      "mapping": {
+        "title": "Mapeamento Comunitário e Visibilidade",
+        "description": "Tornar visíveis no mapa lugares e pessoas esquecidos."
+      },
+      "art": {
+        "title": "Arte e Expressão Cultural",
+        "description": "Práticas criativas e culturais transmitidas pelas redes móveis."
+      }
+    }
   }
 }

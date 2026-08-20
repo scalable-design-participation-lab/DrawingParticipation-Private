@@ -1,4 +1,4 @@
-import { createUserWithEmailAndPassword, getAuth, onAuthStateChanged, signInWithEmailAndPassword, signOut as fbSignOut } from 'firebase/auth'
+import { createUserWithEmailAndPassword, getAuth, onAuthStateChanged, sendPasswordResetEmail, signInWithEmailAndPassword, signOut as fbSignOut } from 'firebase/auth'
 import { doc, getDoc, getFirestore, serverTimestamp, setDoc } from 'firebase/firestore'
 import { defineStore } from 'pinia'
 import { computed, ref } from 'vue'
@@ -145,11 +145,16 @@ export const useAuthStore = defineStore('auth', () => {
     await refreshAdmin(u)
   }
 
+  /** Self-service "forgot password": Firebase emails a reset link. */
+  async function resetPassword(e: string) {
+    await sendPasswordResetEmail(getAuth(), e)
+  }
+
   async function signOut() {
     await fbSignOut(getAuth())
     isAdmin.value = false
     role.value = null
   }
 
-  return { uid, email, isAnonymous, isAdmin, isSuperAdmin, role, ready, init, signIn, register, claimAdmin, signOut }
+  return { uid, email, isAnonymous, isAdmin, isSuperAdmin, role, ready, init, signIn, register, resetPassword, claimAdmin, signOut }
 })
