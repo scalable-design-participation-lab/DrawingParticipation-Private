@@ -11,6 +11,7 @@ import { categoryMeta } from '../composables/categoryMeta'
 
 const filterStore = useFilterStore()
 const search = ref('')
+const { lf } = useLocalizedEntry()
 
 const ICONS: Record<string, string> = {
   'Health & Crisis Response': healthIcon,
@@ -65,7 +66,7 @@ function itemMeta(feature: Feature): string {
   const p = (feature.properties as any) ?? {}
   const parts: string[] = []
   if (p.location)
-    parts.push(p.location)
+    parts.push(lf(p, 'location', p.location))
   if (p.date)
     parts.push(String(p.date))
   return parts.join(' · ')
@@ -147,7 +148,7 @@ function select(feature: Feature) {
                 {{ primaryTag(feature) }}
               </span>
               <p class="line-clamp-2 text-sm font-semibold leading-snug text-gray-900 dark:text-white">
-                {{ feature.comment || $t('list.untitled') }}
+                {{ lf(feature.properties, 'title', feature.comment) || $t('list.untitled') }}
               </p>
               <p v-if="itemMeta(feature)" class="mt-auto truncate text-xs text-gray-400">
                 {{ itemMeta(feature) }}

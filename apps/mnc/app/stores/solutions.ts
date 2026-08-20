@@ -93,6 +93,7 @@ export const useSolutionsStore = defineStore('solutions', () => {
     date?: string
     photos?: string[]
     audio?: string[]
+    i18n?: Properties['i18n']
   }) {
     if (features.some(f => (f.properties as any)?.string_id === s.string_id))
       return
@@ -111,6 +112,7 @@ export const useSolutionsStore = defineStore('solutions', () => {
       s.photos || [],
     )
     properties.audio = s.audio || []
+    properties.i18n = s.i18n
     // Mark pins that are still awaiting approval so the map can distinguish them.
     properties.pending = s.approved === false
     addFeature({
@@ -240,8 +242,11 @@ export const useSolutionsStore = defineStore('solutions', () => {
             const string_id = data.string_id || d.id
             const existing = features.find(f => (f.properties as any)?.string_id === string_id)
             if (existing) {
-              // Already on the map — just propagate an approval flip.
+              // Already on the map — propagate an approval flip, and pick up
+              // the i18n map the translate function writes moments after create.
               ;(existing.properties as any).pending = !approved
+              if (data.i18n)
+                (existing.properties as any).i18n = data.i18n
               return
             }
             // Public: only approved reach here (query already filtered). Admin:
@@ -259,6 +264,7 @@ export const useSolutionsStore = defineStore('solutions', () => {
               date: data.date || '',
               photos: Array.isArray(data.photos) ? data.photos : [],
               audio: Array.isArray(data.audio) ? data.audio : [],
+              i18n: data.i18n,
             })
           })
           // Docs that left the query (deleted, or un-approved): drop their pins.

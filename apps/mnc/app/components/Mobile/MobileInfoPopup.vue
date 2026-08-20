@@ -45,6 +45,9 @@ function handleUploaded() {
 }
 
 
+// Entry text in the current UI language (falls back to the original).
+const { lf } = useLocalizedEntry()
+
 // Photos come from the project's manifest; user-submitted pins have none and
 // fall through to the carousel's empty state (no broken /Solution_Photos URL).
 const galleryImages = computed(() => (Array.isArray(p.value?.photos) ? p.value.photos : []))
@@ -115,10 +118,10 @@ function toggleState() {
           </div>
 
           <div class="flex-1 min-w-0">
-            <p class="font-bold text-gray-900 dark:text-white text-sm leading-tight">{{ feature.comment }}</p>
+            <p class="font-bold text-gray-900 dark:text-white text-sm leading-tight">{{ lf(p, 'title', feature.comment) }}</p>
             <p v-if="p?.primaryTag" class="text-xs text-teal-500 mt-1 font-medium">{{ p.primaryTag }}</p>
             <p class="text-xs text-gray-500 dark:text-gray-400 mt-2 line-clamp-3">
-              {{ p?.shortDesc || p?.description }}
+              {{ lf(p, 'shortDesc', p?.shortDesc) || lf(p, 'description', p?.description) }}
             </p>
           </div>
         </div>
@@ -157,7 +160,7 @@ function toggleState() {
       <div class="overflow-y-auto px-6 pb-6 pt-2 space-y-4">
         <!-- Title -->
         <h2 class="text-2xl font-bold text-white leading-tight">
-          {{ feature.comment }}
+          {{ lf(p, 'title', feature.comment) }}
         </h2>
 
         <!-- Date pill -->
@@ -173,7 +176,7 @@ function toggleState() {
           <span class="border-2 border-white rounded-full px-4 py-1 text-sm text-white font-medium whitespace-nowrap">
             {{ $t('mDetail.location') }}
           </span>
-          <span class="text-white text-sm">{{ p?.location }}</span>
+          <span class="text-white text-sm">{{ lf(p, 'location', p?.location) }}</span>
         </div>
 
         <!-- Description pill + text -->
@@ -181,7 +184,7 @@ function toggleState() {
           <span class="inline-block border-2 border-white rounded-full px-4 py-1 text-sm text-white font-medium">
             {{ $t('mDetail.description') }}
           </span>
-          <p class="whitespace-pre-line text-white text-sm leading-relaxed mt-3">{{ p?.description }}</p>
+          <p class="whitespace-pre-line text-white text-sm leading-relaxed mt-3">{{ lf(p, 'description', p?.description) }}</p>
         </div>
 
         <!-- Photo carousel with white border -->
