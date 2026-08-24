@@ -284,10 +284,13 @@ onMounted(() => {
         @pick-location="onContributePicked"
         @add-entry-at="onMapAddEntry"
       />
-      <!-- Hidden behind the welcome modal: the dimmer (z-40) covers the header
-           (z-20), so its language pill is a dead decoy next to the modal's live
-           language chips. -->
-      <MobileHeader v-if="isMobile" :class="{ hidden: showOnboarding }" />
+      <!-- Hidden in two states. Behind the welcome modal: the dimmer (z-40)
+           covers the header (z-20), so its language pill is a dead decoy next to
+           the modal's live language chips. During the contribute flow: the
+           wizard draws its own header, and on its transparent step-1 map this
+           one showed through — two stacked "MNC" links off the site, right where
+           someone is adding an entry (issue #41). -->
+      <MobileHeader v-if="isMobile" :class="{ hidden: showOnboarding || mobileView === 'more' }" />
       <GeneralizedHeader
         v-else
         class="z-20"

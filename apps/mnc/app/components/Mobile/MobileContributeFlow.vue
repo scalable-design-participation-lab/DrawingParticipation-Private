@@ -257,7 +257,7 @@ function prettyCoord(coord: [number, number]): string {
         ? 'relative flex w-full flex-1 flex-col'
         : 'pointer-events-auto relative flex max-h-[88vh] w-full max-w-xl flex-col overflow-hidden rounded-2xl bg-white shadow-2xl dark:bg-zinc-900'"
     >
-      <MobileHeader v-if="isMobile" />
+      <MobileHeader v-if="isMobile" :title-link="false" />
 
       <!-- Close button. Solid white circle so it stays visible over the map on
            step 1. On mobile it sits below the header row (whose language + map
