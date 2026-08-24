@@ -117,6 +117,11 @@ async function onContributeSubmit(payload: any) {
     // the entry's own photo gallery — approved/deleted with the entry, not a
     // separate pending contribution.
     const f = payload.files || {}
+    // The wizard collects files across six separate questions. Attaching the
+    // same photo to two of them used to upload it twice, so the gallery counter
+    // said "2" while both slides showed the same picture (issue #42). Identity
+    // is name + size + lastModified — what the browser gives us for free.
+    const seenFiles = new Set<string>()
     const allFiles: File[] = [
       ...(f.example || []),
       ...(f.why || []),
@@ -124,7 +129,13 @@ async function onContributeSubmit(payload: any) {
       ...(f.additional || []),
       ...(f.voiceExample || []),
       ...(f.voiceWhy || []),
-    ]
+    ].filter((file: File) => {
+      const key = `${file.name}|${file.size}|${file.lastModified}`
+      if (seenFiles.has(key))
+        return false
+      seenFiles.add(key)
+      return true
+    })
     const photos: string[] = []
     const audio: string[] = []
     if (allFiles.length) {
@@ -133,9 +144,12 @@ async function onContributeSubmit(payload: any) {
       for (const file of allFiles) {
         try {
           const m = await contributionsStore.uploadFile(folder, file)
-          // Voice notes must never land in photos — every photos consumer
-          // renders an <img>.
-          ;(m.kind === 'audio' ? audio : photos).push(m.url)
+          // Only real images go in photos — every photos consumer renders an
+          // <img>, so a voice note (or any future kind) must not land there.
+          if (m.kind === 'audio')
+            audio.push(m.url)
+          else if (m.kind === 'image')
+            photos.push(m.url)
         }
         catch (e) {
           console.warn('Could not upload entry file:', e)
@@ -270,7 +284,10 @@ onMounted(() => {
         @pick-location="onContributePicked"
         @add-entry-at="onMapAddEntry"
       />
-      <MobileHeader v-if="isMobile" />
+      <!-- Hidden behind the welcome modal: the dimmer (z-40) covers the header
+           (z-20), so its language pill is a dead decoy next to the modal's live
+           language chips. -->
+      <MobileHeader v-if="isMobile" :class="{ hidden: showOnboarding }" />
       <GeneralizedHeader
         v-else
         class="z-20"

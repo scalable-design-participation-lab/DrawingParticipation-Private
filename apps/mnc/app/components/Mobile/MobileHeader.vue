@@ -36,7 +36,12 @@ const localeItems = computed(() => [
 </script>
 
 <template>
-  <header class="fixed top-4 left-0 right-0 z-20 flex items-center justify-between px-4 pointer-events-none">
+  <!-- viewport-fit=cover (layouts/default.vue) lets the page run under the
+       notch in landscape, so the edge buttons need the horizontal insets. -->
+  <header
+    class="fixed top-4 left-0 right-0 z-20 flex items-center justify-between px-4 pointer-events-none"
+    style="padding-left: max(1rem, env(safe-area-inset-left, 0px)); padding-right: max(1rem, env(safe-area-inset-right, 0px));"
+  >
     <a
       href="https://scalabledesignparticipation.org/"
       target="_blank"

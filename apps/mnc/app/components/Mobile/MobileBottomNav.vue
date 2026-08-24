@@ -18,12 +18,14 @@ const defaultNavItems = [
   { view: 'map' as MapView, icon: 'i-heroicons-map', labelKey: 'nav.map' },
   { view: 'list' as MapView, icon: 'i-heroicons-square-3-stack-3d', labelKey: 'nav.list' },
   { view: 'info' as MapView, icon: 'i-heroicons-information-circle', labelKey: 'nav.info' },
-  { view: 'more' as MapView, icon: 'i-heroicons-plus', labelKey: 'nav.addEntry' },
+  // Not nav.addEntry: that label offers "or click anywhere on the map", which is
+  // a desktop-only shortcut — BackgroundMap ignores map clicks on mobile.
+  { view: 'more' as MapView, icon: 'i-heroicons-plus', labelKey: 'nav.addEntryMobile' },
 ]
 </script>
 
 <template>
-  <div class="fixed bottom-6 left-0 right-0 flex justify-center z-50 pointer-events-none">
+  <div class="fixed bottom-6 safe-bottom left-0 right-0 flex justify-center z-50 pointer-events-none">
     <div
       class="pointer-events-auto touch-manipulation flex items-center gap-2 bg-white dark:bg-zinc-900 rounded-full px-4 py-2 shadow-lg"
       style="border: 2px solid #e5e7eb;"

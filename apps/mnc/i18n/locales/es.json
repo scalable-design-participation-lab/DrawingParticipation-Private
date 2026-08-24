@@ -1,15 +1,16 @@
 {
   "onboarding": {
     "title": "Bienvenido a Mobile Networked Creativity",
-    "intro": "Mobile Networked Creativity (MNC) mapea ejemplos reales de cómo comunidades de todo el mundo adaptan creativamente la tecnología móvil y en red para responder a necesidades locales.",
+    "intro": "Mobile Networked Creativity (MNC) mapea ejemplos reales de cómo comunidades de todo el mundo adaptan creativamente la tecnología móvil y las redes para responder a sus propias necesidades.",
     "point1": "Explora casos de estudio en todo el mundo, por ubicación y por tema",
-    "point2": "Haz clic en cualquier pin para leer cómo una comunidad adaptó la tecnología a sus necesidades",
+    "point2": "Haz clic en cualquier pin para ver cómo una comunidad adaptó la tecnología a sus necesidades",
     "point3": "Agrega tus propias fotos y comentarios para aportar ejemplos relacionados",
     "getStarted": "Comenzar",
     "footer": "Mobile Networked Creativity es un proyecto del Scalable Design Participation Lab de Northeastern University"
   },
   "nav": {
     "addEntry": "Agregar una contribución — o haz clic en cualquier punto del mapa",
+    "addEntryMobile": "Agregar una contribución",
     "filter": "Selección filtrada",
     "list": "Lista de registros",
     "map": "Mapa",
@@ -276,23 +277,23 @@
     "startContributing": "Empieza a contribuir",
     "themes": {
       "transport": {
-        "title": "Transporte y Movilidad",
+        "title": "Transporte y movilidad",
         "description": "Vehículos y transportes improvisados que mantienen en movimiento a personas y mercancías."
       },
       "health": {
-        "title": "Salud y Respuesta a Crisis",
+        "title": "Salud y gestión de crisis",
         "description": "Atención móvil y respuestas rápidas donde los servicios formales no alcanzan."
       },
       "digital": {
-        "title": "Acceso Digital y Conectividad",
+        "title": "Acceso digital y conectividad",
         "description": "Formas comunitarias de conectar a la gente a internet y entre sí."
       },
       "mapping": {
-        "title": "Mapeo Comunitario y Visibilidad",
+        "title": "Mapas comunitarios y visibilidad",
         "description": "Hacer visibles en el mapa lugares y personas ignorados."
       },
       "art": {
-        "title": "Arte y Expresión Cultural",
+        "title": "Arte y expresiones culturales",
         "description": "Prácticas creativas y culturales transmitidas a través de las redes móviles."
       }
     }

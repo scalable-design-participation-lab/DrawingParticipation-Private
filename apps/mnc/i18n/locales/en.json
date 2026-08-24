@@ -10,6 +10,7 @@
   },
   "nav": {
     "addEntry": "Add a contribution — or click anywhere on the map",
+    "addEntryMobile": "Add a contribution",
     "filter": "Filtered selection",
     "list": "List of entries",
     "map": "Map",
@@ -253,7 +254,7 @@
     "unsupported": "\"{name}\" is not a supported file type."
   },
   "voice": {
-    "record": "Record a voice note instead",
+    "record": "Record a voice note",
     "stop": "Stop recording",
     "micDenied": "Microphone access was blocked. Allow it in your browser to record."
   },

@@ -51,6 +51,10 @@
         />
       </div>
 
+      <!-- Record a voice note right here. On a phone the file picker cannot
+           record, so without this a voice comment means leaving the app. -->
+      <ContributeVoiceRecorder v-model="recordings" class="mb-3" />
+
       <!-- Per-file upload status with real progress -->
       <div v-for="(item, index) in items" :key="`progress-${index}`" class="mb-2">
         <div class="flex justify-between items-center text-white text-sm mb-1">
@@ -119,7 +123,7 @@
 </template>
 
 <script setup>
-import { computed, ref } from 'vue'
+import { computed, ref, watch } from 'vue'
 import { useContributionsStore } from '../stores/contributions'
 
 const props = defineProps({
@@ -138,6 +142,11 @@ const contributions = useContributionsStore()
 
 // View-models tracking each selected file's real upload progress + result.
 const items = ref([])
+
+// What makes two picked files "the same file" for de-duplication.
+function fileKey(file) {
+  return `${file.name}|${file.size}|${file.lastModified}`
+}
 const localComment = ref('')
 const isSubmitting = ref(false)
 const errorMessage = ref('')
@@ -151,6 +160,52 @@ const canSubmit = computed(() => {
   return !isSubmitting.value && !anyUploading && (hasMedia || hasComment)
 })
 
+// Upload one file and track it in `items`. Shared by the file picker and the
+// in-page voice recorder. `recorded` marks the ones the recorder owns, so a
+// recording the user deletes there can be dropped again here.
+async function addFile(file, recorded = false) {
+  // Skip anything already attached this session: picking the same photo twice
+  // used to upload it twice and show it twice (issue #42).
+  if (items.value.some(i => i.fileKey === fileKey(file)))
+    return
+
+  items.value.push({
+    fileName: file.name,
+    fileKey: fileKey(file),
+    recorded,
+    label: `${file.name} (${(file.size / (1024 * 1024)).toFixed(1)} MB)`,
+    previewUrl: URL.createObjectURL(file),
+    isAudio: file.type.startsWith('audio/'),
+    progress: 0,
+    status: 'uploading',
+    media: null,
+  })
+  // Grab the reactive proxy for the item we just pushed. Mutating this proxy
+  // (not the raw object literal) is what triggers Vue 3 reactivity, so the
+  // progress bar, status icon, and `canSubmit` actually update. The proxy
+  // reference stays valid even if the array is spliced (e.g. removeItem).
+  const item = items.value[items.value.length - 1]
+
+  // Kick off the real Firebase Storage upload and stream progress.
+  try {
+    const media = await contributions.uploadFile(
+      props.projectId,
+      file,
+      (percent) => {
+        item.progress = percent
+      },
+    )
+    item.media = media
+    item.progress = 100
+    item.status = 'success'
+  }
+  catch (err) {
+    console.error('Image upload failed:', err)
+    item.status = 'error'
+    errorMessage.value = t('upload.uploadError')
+  }
+}
+
 async function handleImageSelect(event) {
   const fileInput = event.target
   if (!fileInput.files || fileInput.files.length === 0)
@@ -163,45 +218,24 @@ async function handleImageSelect(event) {
     file.type.startsWith('image/') || file.type.startsWith('audio/'),
   )
 
-  for (const file of picked) {
-    items.value.push({
-      fileName: file.name,
-      label: `${file.name} (${(file.size / (1024 * 1024)).toFixed(1)} MB)`,
-      previewUrl: URL.createObjectURL(file),
-      isAudio: file.type.startsWith('audio/'),
-      progress: 0,
-      status: 'uploading',
-      media: null,
-    })
-    // Grab the reactive proxy for the item we just pushed. Mutating this proxy
-    // (not the raw object literal) is what triggers Vue 3 reactivity, so the
-    // progress bar, status icon, and `canSubmit` actually update. The proxy
-    // reference stays valid even if the array is spliced (e.g. removeItem).
-    const item = items.value[items.value.length - 1]
-
-    // Kick off the real Firebase Storage upload and stream progress.
-    try {
-      const media = await contributions.uploadFile(
-        props.projectId,
-        file,
-        (percent) => {
-          item.progress = percent
-        },
-      )
-      item.media = media
-      item.progress = 100
-      item.status = 'success'
-    }
-    catch (err) {
-      console.error('Image upload failed:', err)
-      item.status = 'error'
-      errorMessage.value = t('upload.uploadError')
-    }
-  }
+  for (const file of picked)
+    await addFile(file)
 
   // Allow re-selecting the same file again later.
   fileInput.value = ''
 }
+
+// Voice notes recorded in place — the same feature the contribute wizard offers
+// for a NEW entry, now available on an entry that already exists (issue #43).
+const recordings = ref([])
+
+watch(recordings, (files) => {
+  const keys = new Set(files.map(fileKey))
+  // A recording deleted in the recorder should not stay attached here.
+  items.value = items.value.filter(i => !i.recorded || keys.has(i.fileKey))
+  for (const file of files)
+    addFile(file, true)
+})
 
 async function submitContribution() {
   if (!canSubmit.value)

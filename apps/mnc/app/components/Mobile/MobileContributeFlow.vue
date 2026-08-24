@@ -4,6 +4,7 @@ import { toLonLat } from 'ol/proj'
 import MobileHeader from './MobileHeader.vue'
 import ContributeFileUpload from './ContributeFileUpload.vue'
 import { PRIMARY_TAGS } from '../../stores/filter'
+import { useLocalizedEntry } from '../../composables/useLocalizedEntry'
 import { useIsMobile } from '../../composables/useIsMobile'
 
 /**
@@ -53,6 +54,7 @@ interface ContributePayload {
 
 const { isMobile } = useIsMobile()
 const { locale } = useI18n()
+const { tagLabel } = useLocalizedEntry()
 
 const TOTAL_STEPS = 7
 const step = ref(1)
@@ -78,10 +80,25 @@ const form = reactive({
   city: '',
 })
 
-// Theme options (pick an existing one or type to create a new one).
+// Theme options (pick an existing one or type to create a new one). The VALUE
+// stays the English key — it is what gets stored on the entry and filtered on —
+// while the label follows the UI language.
 const themes = ref<string[]>([...PRIMARY_TAGS])
-function onCreateTheme(newTheme: string) {
-  if (newTheme && !themes.value.includes(newTheme))
+const themeOptions = computed(() => {
+  const list = themes.value.map(t => ({ label: tagLabel(t), value: t }))
+  // A theme the user typed is set on the model directly, without going through
+  // the list — keep an option for it or the field would render as empty.
+  if (form.primaryTag && !themes.value.includes(form.primaryTag))
+    list.push({ label: form.primaryTag, value: form.primaryTag })
+  return list
+})
+// USelectMenu hands back the raw query for a plain option list and an object
+// once option-attribute/value-attribute are set — accept both shapes.
+function onCreateTheme(option: string | { label?: string, value?: string }) {
+  const newTheme = (typeof option === 'string' ? option : option?.value ?? option?.label ?? '').trim()
+  if (!newTheme)
+    return
+  if (!themes.value.includes(newTheme))
     themes.value.push(newTheme)
   form.primaryTag = newTheme
 }
@@ -347,7 +364,9 @@ function prettyCoord(coord: [number, number]): string {
           />
           <USelectMenu
             v-model="form.primaryTag"
-            :options="themes"
+            :options="themeOptions"
+            value-attribute="value"
+            option-attribute="label"
             searchable
             creatable
             :placeholder="$t('add.themePlaceholder')"
@@ -496,7 +515,7 @@ function prettyCoord(coord: [number, number]): string {
            an in-card footer on desktop. -->
       <div
         class="pointer-events-auto flex items-center justify-center gap-6"
-        :class="isMobile ? 'absolute inset-x-0 bottom-24' : 'shrink-0 border-t border-gray-100 py-4 dark:border-zinc-800'"
+        :class="isMobile ? 'absolute inset-x-0 bottom-24 safe-bottom' : 'shrink-0 border-t border-gray-100 py-4 dark:border-zinc-800'"
       >
         <button
           v-if="step > 1"

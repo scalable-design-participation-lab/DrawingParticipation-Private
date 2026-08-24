@@ -4,12 +4,14 @@ import { toLonLat } from 'ol/proj'
 import type { Feature } from '@base/stores/types/store'
 import { useFilterStore } from '../../stores/filter'
 import { categoryMeta } from '../../composables/categoryMeta'
+import { useLocalizedEntry } from '../../composables/useLocalizedEntry'
 
 const emit = defineEmits<{
   'select-feature': [feature: Feature]
 }>()
 
 const { t } = useI18n()
+const { lf } = useLocalizedEntry()
 const filterStore = useFilterStore()
 
 // The user's location, once granted. null until resolved / if denied.
@@ -54,10 +56,27 @@ function distanceLabel(feature: Feature): string {
   return t('list.kmAway', { d: value })
 }
 
+// Free-text search over the same fields the desktop "All Solutions" panel uses,
+// plus the title in the current language so a Spanish/Portuguese search matches.
+const search = ref('')
+
+const matchingFeatures = computed(() => {
+  const q = search.value.trim().toLowerCase()
+  if (!q)
+    return filterStore.mncFeatures
+  return filterStore.mncFeatures.filter((f) => {
+    const p = (f.properties as any) ?? {}
+    return (f.comment || '').toLowerCase().includes(q)
+      || lf(p, 'title', '').toLowerCase().includes(q)
+      || (p.location || '').toLowerCase().includes(q)
+      || (p.primaryTag || '').toLowerCase().includes(q)
+  })
+})
+
 // Sorted by real proximity when we have the user's location, else by date
 // (newest first) as a stable fallback. Uses the de-duplicated catalog.
 const sortedFeatures = computed(() => {
-  const list = [...filterStore.mncFeatures]
+  const list = matchingFeatures.value.slice()
   if (userLonLat.value) {
     return list.sort((a, b) => (distanceKm(a) ?? Infinity) - (distanceKm(b) ?? Infinity))
   }
@@ -70,7 +89,7 @@ const sortedFeatures = computed(() => {
 </script>
 
 <template>
-  <div class="fixed bottom-24 left-0 right-0 z-40 flex justify-center pointer-events-none">
+  <div class="fixed bottom-24 safe-bottom left-0 right-0 z-40 flex justify-center pointer-events-none">
     <UCard
       class="pointer-events-auto touch-manipulation w-full max-w-sm shadow-xl"
       style="max-height: 60dvh;"
@@ -88,11 +107,18 @@ const sortedFeatures = computed(() => {
             {{ userLonLat ? $t('list.nearest') : $t('list.all') }}
             <span class="text-gray-400">· {{ sortedFeatures.length }}</span>
           </p>
+          <UInput
+            v-model="search"
+            icon="i-heroicons-magnifying-glass"
+            :placeholder="$t('list.search')"
+            :ui="{ rounded: 'rounded-full' }"
+            class="w-full"
+          />
         </div>
       </template>
 
       <!-- One scrollable list (no pagination) -->
-      <div class="overflow-y-auto" style="max-height: calc(60dvh - 88px);">
+      <div class="overflow-y-auto" style="max-height: calc(60dvh - 140px);">
         <button
           v-for="feature in sortedFeatures"
           :key="feature.id"
@@ -121,7 +147,7 @@ const sortedFeatures = computed(() => {
         </button>
 
         <p v-if="sortedFeatures.length === 0" class="text-center text-gray-400 py-8 text-sm">
-          {{ $t('list.emptyList') }}
+          {{ search.trim() ? $t('list.empty', { q: search }) : $t('list.emptyList') }}
         </p>
       </div>
     </UCard>

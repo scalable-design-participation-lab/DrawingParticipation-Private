@@ -11,7 +11,7 @@ import { categoryMeta } from '../composables/categoryMeta'
 
 const filterStore = useFilterStore()
 const search = ref('')
-const { lf } = useLocalizedEntry()
+const { lf, tagLabel } = useLocalizedEntry()
 
 const ICONS: Record<string, string> = {
   'Health & Crisis Response': healthIcon,
@@ -145,7 +145,7 @@ function select(feature: Feature) {
                 :style="tagChipStyle(primaryTag(feature))"
               >
                 <UIcon :name="categoryMeta(primaryTag(feature)).icon" class="h-3 w-3" />
-                {{ primaryTag(feature) }}
+                {{ tagLabel(primaryTag(feature)) }}
               </span>
               <p class="line-clamp-2 text-sm font-semibold leading-snug text-gray-900 dark:text-white">
                 {{ lf(feature.properties, 'title', feature.comment) || $t('list.untitled') }}

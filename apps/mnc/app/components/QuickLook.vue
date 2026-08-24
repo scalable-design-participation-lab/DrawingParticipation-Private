@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { computed, type PropType } from 'vue'
 import { categoryMeta } from '../composables/categoryMeta'
+import { useLocalizedEntry } from '../composables/useLocalizedEntry'
 
 interface MarkerPosition {
   x: number
@@ -56,6 +57,8 @@ const props = defineProps({
 
 const emit = defineEmits(['click-expand', 'click-close', 'click-previous', 'click-next'])
 
+const { tagLabel } = useLocalizedEntry()
+
 const normalizedCaption = computed(() => {
   if (Array.isArray(props.caption)) {
     return props.caption[0] || ''
@@ -98,7 +101,7 @@ const tagChipStyle = computed(() => ({
           :style="tagChipStyle"
         >
           <UIcon :name="primaryMeta.icon" class="h-3.5 w-3.5" />
-          {{ props.primaryTag }}
+          {{ tagLabel(props.primaryTag) }}
         </span>
       </div>
       <div class="px-4 pb-3 space-y-3">

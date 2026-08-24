@@ -2,10 +2,11 @@
 import { onBeforeUnmount, ref } from 'vue'
 
 /**
- * In-browser voice recorder for the contribute wizard, for people who can't
- * (or don't want to) type their description. Recordings are collected as File
- * objects into a v-model array and uploaded on submit exactly like the other
- * wizard files — uploadFile() tags them kind:'audio' by MIME type.
+ * In-browser voice recorder, for people who can't (or don't want to) type.
+ * Used by the contribute wizard (new entries) and by ImageUploadModal (voice
+ * comments on an entry that already exists). Recordings are collected as File
+ * objects into a v-model array and uploaded exactly like any other file —
+ * uploadFile() tags them kind:'audio' by MIME type.
  */
 const props = defineProps<{ modelValue: File[] }>()
 const emit = defineEmits<{ 'update:modelValue': [files: File[]] }>()
