@@ -1,0 +1,300 @@
+{
+  "onboarding": {
+    "title": "Welcome to Mobile Networked Creativity",
+    "intro": "Mobile Networked Creativity (MNC) maps real-world examples of how communities around the world creatively adapt mobile and networked technology to meet local needs.",
+    "point1": "Explore case studies across the globe, by location and by theme",
+    "point2": "Click any pin to read how a community adapted technology to its needs",
+    "point3": "Add your own photos and comments to contribute related examples",
+    "getStarted": "Get Started",
+    "footer": "Mobile Networked Creativity is a project of the Scalable Design Participation Lab at Northeastern University"
+  },
+  "nav": {
+    "addEntry": "Add a contribution — or click anywhere on the map",
+    "filter": "Filtered selection",
+    "list": "List of entries",
+    "map": "Map",
+    "info": "About this map",
+    "help": "Help",
+    "satelliteOn": "Switch to satellite view",
+    "satelliteOff": "Switch to map view"
+  },
+  "detail": {
+    "description": "Description",
+    "tags": "Tags",
+    "learnMore": "Learn More",
+    "contributions": "Community Contributions",
+    "add": "Add",
+    "addPhoto": "Add photo or comment",
+    "noContributions": "No community contributions yet. Be the first to add a photo or comment.",
+    "showAll": "Show all {tag} entries",
+    "close": "Close",
+    "connection": "Connection to Mobile Networked Creativity",
+    "readMore": "Read more",
+    "readLess": "Read less",
+    "loading": "Loading…",
+    "pending": "Pending",
+    "approve": "Approve",
+    "delete": "Delete",
+    "anonymous": "Anonymous",
+    "contributor": "Contributor",
+    "justNow": "just now",
+    "minutesAgo": "{n}m ago",
+    "hoursAgo": "{n}h ago",
+    "daysAgo": "{n}d ago",
+    "voiceNotes": "Voice notes"
+  },
+  "photo": {
+    "noPhoto": "No photo yet",
+    "beFirst": "Be the first to add one",
+    "prevPhoto": "Previous photo",
+    "nextPhoto": "Next photo",
+    "goToPhoto": "Go to photo {n}"
+  },
+  "add": {
+    "title": "Add an entry",
+    "titleLabel": "Title",
+    "titlePlaceholder": "e.g. Solar-powered community water pump",
+    "theme": "Theme",
+    "themePlaceholder": "Select a theme — or type to create a new one",
+    "location": "Location",
+    "locationHint": "Auto-filled from where you tapped the map — edit if needed.",
+    "detecting": "detecting…",
+    "shortDesc": "Short description",
+    "shortDescPlaceholder": "One-line summary",
+    "fullDesc": "Full description (optional)",
+    "media": "Photos or audio (optional)",
+    "filesSelected": "{n} file(s) selected",
+    "pinNote": "Pin location is set from where you tapped the map.",
+    "required": "A title, a theme, and a location are required.",
+    "cancel": "Cancel",
+    "submit": "Add to map",
+    "placeBanner": "Click the map to place your solution",
+    "pickBanner": "Tap the map to drop your pin",
+    "locationPlaceholder": "e.g. Nairobi, Kenya",
+    "chooseFiles": "Choose files",
+    "noFile": "No file chosen",
+    "submitted": "Submitted for review — it will appear on the map once a moderator approves it."
+  },
+  "list": {
+    "title": "All Solutions",
+    "search": "Search solutions…",
+    "empty": "No solutions match “{q}”.",
+    "nearest": "Nearest to you",
+    "all": "All entries",
+    "close": "Close",
+    "untitled": "Untitled",
+    "emptyList": "No projects loaded yet.",
+    "kmAway": "{d} km away"
+  },
+  "lang": {
+    "label": "Language",
+    "en": "English",
+    "pt": "Português",
+    "es": "Español"
+  },
+  "mDetail": {
+    "close": "Close",
+    "tapToExpand": "Tap to expand",
+    "datePublished": "Date published:",
+    "location": "Location:",
+    "description": "Description:",
+    "learnMore": "Learn More:",
+    "community": "Community",
+    "beFirst": "Be the first to add a photo or comment."
+  },
+  "quick": {
+    "noImage": "No image available"
+  },
+  "upload": {
+    "clickToSelect": "Click to select photos or audio",
+    "hint": "Photos or audio · up to 10 MB each",
+    "commentPlaceholder": "Write a comment",
+    "publicNote": "Anything you add is shown publicly on this project.",
+    "close": "Close",
+    "uploadError": "One or more uploads failed. Please try again.",
+    "saveError": "Could not save your contribution. Please try again."
+  },
+  "mod": {
+    "signInTitle": "Moderator sign in",
+    "email": "Email",
+    "password": "Password",
+    "signIn": "Sign in",
+    "notModerator": "Signed in, but this account is not a moderator.",
+    "signInFailed": "Sign-in failed. Check your email and password.",
+    "forgotPassword": "Forgot password?",
+    "enterEmailForReset": "Enter your email above first.",
+    "resetSent": "Password-reset email sent. Check your inbox.",
+    "errReset": "Could not send the reset email. Check the address and try again.",
+    "reviewEntries": "Review entries",
+    "signOut": "Sign out",
+    "noEntries": "No submissions to review.",
+    "live": "Live",
+    "pending": "Pending",
+    "approve": "Approve",
+    "delete": "Delete",
+    "moderate": "Moderate",
+    "close": "Close",
+    "review": "Review",
+    "entries": "Submissions",
+    "contributions": "Contributions",
+    "noContributions": "No pending contributions.",
+    "showOnMap": "Show on the map",
+    "collapse": "Collapse",
+    "expand": "Expand"
+  },
+  "admin": {
+    "title": "Account management",
+    "subtitle": "Register, then an administrator grants moderation access — no Firebase console needed.",
+    "backToMap": "Back to map",
+    "loading": "Loading…",
+    "register": "Register",
+    "registerHint": "Create a plain account with your email — it carries no rights by itself. An administrator will then grant you moderation access here.",
+    "newPassword": "Password (min. 6 characters)",
+    "errRegister": "Registration failed. Please try again.",
+    "errProviderDisabled": "Email/password sign-in is not enabled for this Firebase project (console → Authentication → Sign-in method).",
+    "errRegisterIncomplete": "Your login was created, but it could not be listed for review yet. Sign in again later or contact an administrator.",
+    "errEmailInUseRegister": "This email already has a login — switch to “Sign in”. Your registration is completed automatically on sign-in.",
+    "pendingTitle": "Your account is registered",
+    "pendingBody": "Signed in as {email}. An administrator needs to grant you moderation access before you can review submissions.",
+    "yourUid": "Your account ID (UID)",
+    "copyUid": "Copy account ID",
+    "bootstrapToggle": "Setting up the very first administrator?",
+    "claimHint": "If this account is one of the project owners listed in the security rules, you can grant yourself access right here.",
+    "claimAdmin": "Claim administrator access",
+    "claimFailed": "This account is not on the project-owner list, so it cannot grant itself access. Use the manual steps below, or ask an existing administrator.",
+    "claimOrManual": "Or set it up manually",
+    "bootstrapStep1": "Firebase console → Firestore Database → Data (not Authentication — moderation rights are not stored there).",
+    "bootstrapStep2": "Open the “admins” collection, or start it if it does not exist yet.",
+    "bootstrapStep3": "Add a document whose Document ID is exactly the account ID above.",
+    "bootstrapStep4": "Give it a field named “role” of type string with the value “admin”, save, then reload this page.",
+    "bootstrapNote": "Only needed once. After that, every other account is granted from this page.",
+    "registrations": "New registrations",
+    "registrationsHint": "People who registered an account and are waiting for access. Promote the ones you recognize; remove the rest.",
+    "noRegistrations": "No new registrations.",
+    "removeRegistration": "Remove registration",
+    "promoted": "Access granted to {email}.",
+    "moderatorOnly": "You are signed in as a moderator. Reviewing submissions happens on the map; only administrators can manage accounts.",
+    "createTitle": "Create account directly",
+    "createHint": "Fallback for when the person can't register themselves. The password is stored only as a hash by Firebase Authentication — share the temporary password securely and ask them to change it via “password reset”.",
+    "tempPassword": "Temporary password (min. 6 characters)",
+    "create": "Create",
+    "created": "Account for {email} created.",
+    "errEmailInUse": "An account with this email already exists.",
+    "errInvalidEmail": "That email address is not valid.",
+    "errWeakPassword": "Password is too weak — use at least 6 characters.",
+    "errCreate": "Could not create the account. Please try again.",
+    "accounts": "Accounts",
+    "refresh": "Refresh",
+    "noAccounts": "No accounts yet.",
+    "you": "you",
+    "roleAdmin": "Admin",
+    "roleModerator": "Moderator",
+    "makeAdmin": "Make admin",
+    "makeModerator": "Make moderator",
+    "sendReset": "Send password-reset email",
+    "resetSent": "Password-reset email sent to {email}.",
+    "revoke": "Revoke access",
+    "revokeConfirm": "Remove moderation access for {email}? They will no longer be able to review submissions or sign in as a moderator.",
+    "revoked": "Access revoked for {email}.",
+    "revokeNote": "Admins can review submissions and manage accounts; moderators can only review. Revoking removes all moderation rights immediately.",
+    "errAction": "That action failed. Please try again."
+  },
+  "contribute": {
+    "title": "Join Our Research",
+    "thankYou": "Thank you",
+    "received": "Your submission has been received and will be reviewed by our team.",
+    "inTouch": "We will be in touch and contact you soon!",
+    "anotherStory": "Tell us another story",
+    "close": "Close",
+    "back": "Back",
+    "next": "Next",
+    "submit": "Submit",
+    "descPlaceholder": "Type your description here",
+    "step1": {
+      "prompt": "Want to add a creation? Where did this event happen?",
+      "placeholder": "Enter location here or tap to drop pin in map",
+      "dropPin": "Tap to drop a pin on the map",
+      "pinDropped": "Pin dropped ({coord})",
+      "confirmPinPrompt": "Here's your dropped pin — does the location look right?",
+      "movePin": "Not quite right? Tap to choose a different spot"
+    },
+    "step2": {
+      "prompt": "Briefly describe an example of Mobile Networked Creativity below:"
+    },
+    "step3": {
+      "prompt": "Why do you think this is a good example of Mobile Networked Creativity?"
+    },
+    "step4": {
+      "prompt": "Do you have any images or videos to illustrate your example above? If so, please upload it here:"
+    },
+    "step5": {
+      "prompt": "When did this event happen?"
+    },
+    "step6": {
+      "prompt": "Is there any additional information you'd like to share about your submission? Please enter it below."
+    },
+    "step7": {
+      "prompt": "Do you want your personal information connected to your submission?",
+      "yes": "Yes, I want my name identified in my submission",
+      "no": "No, I want to submit anonymously",
+      "ifYes": "If yes, please tell us your name, city and country.",
+      "fullName": "Full Name",
+      "email": "Email Address",
+      "country": "Country",
+      "city": "City",
+      "privacy": "Your example and any media may be shown publicly on the map. Your name is shown only if you choose \"Yes\" above. Your email is used only so we can contact you — it is never shown publicly."
+    }
+  },
+  "fileUpload": {
+    "prompt": "Select a file or drag and drop here",
+    "hint": "Photos or audio, file size no more than 10 MB",
+    "removeFile": "Remove file",
+    "tooLarge": "\"{name}\" is larger than {max} MB.",
+    "unsupported": "\"{name}\" is not a supported file type."
+  },
+  "voice": {
+    "record": "Record a voice note instead",
+    "stop": "Stop recording",
+    "micDenied": "Microphone access was blocked. Allow it in your browser to record."
+  },
+  "menu": {
+    "home": "Home",
+    "about": "About Us",
+    "support": "Support"
+  },
+  "about": {
+    "backToMap": "Back to Map",
+    "heroTitle": "How communities reinvent technology to meet their own needs",
+    "heroIntro": "An interactive atlas of real-world examples — from motorcycle taxis in the Philippines to a book written entirely over WhatsApp — of how people creatively adapt mobile and networked technology to the realities of their place and moment.",
+    "exploreMap": "Explore the map",
+    "whatTitle": "What is Mobile Networked Creativity?",
+    "what1": "Mobile Networked Creativity (MNC) is not only about the final product or device. It is also about the micro-process of creation — the network of relationships developed among people and technologies in a particular space and time.",
+    "what2": "Across the world, communities — often in resource-constrained or crisis settings — combine everyday objects, mobile devices, and networks to solve problems that formal systems leave unmet. This project collects those stories on a single map so they can be explored, compared, and added to.",
+    "themesTitle": "Themes you can explore",
+    "participateTitle": "Add your own example",
+    "participate1": "Know an example we are missing, or have a photo of one already on the map? Open any case study and use “Add photo or comment” to contribute your own images and reflections.",
+    "startContributing": "Start contributing",
+    "themes": {
+      "transport": {
+        "title": "Transportation & Mobility",
+        "description": "Improvised vehicles and transit that keep people and goods moving."
+      },
+      "health": {
+        "title": "Health & Crisis Response",
+        "description": "Mobile care and rapid responses where formal services fall short."
+      },
+      "digital": {
+        "title": "Digital Access & Connectivity",
+        "description": "Grassroots ways of getting communities online and connected."
+      },
+      "mapping": {
+        "title": "Community Mapping & Visibility",
+        "description": "Making overlooked places and people visible on the map."
+      },
+      "art": {
+        "title": "Art & Cultural Expression",
+        "description": "Creative and cultural practices carried through mobile networks."
+      }
+    }
+  }
+}

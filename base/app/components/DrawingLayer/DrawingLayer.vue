@@ -3,27 +3,32 @@ import { computed } from 'vue'
 import { useRouteFeatureStore } from '../../stores/route-features'
 import { useSideBarStore } from '../../stores/sidebar'
 import { useDrawingStore } from '../../stores/drawing'
-import IconLayer from './IconLayer.vue'
-import PolygonLayer from './PolygonLayer.vue'
+
+import redIcon from '../../assets/icons/red.svg'
+import greenIcon from '../../assets/icons/green.svg'
+import blueIcon from '../../assets/icons/blue.svg'
+import yellowIcon from '../../assets/icons/yellow.svg'
+import purpleIcon from '../../assets/icons/purple.svg'
+import dislikeIcon from '../../assets/icons/dislike.svg'
+import heartIcon from '../../assets/icons/heart.svg'
+import smileIcon from '../../assets/icons/smile.svg'
+import brokenIcon from '../../assets/icons/broken.svg'
+import calmIcon from '../../assets/icons/calm.svg'
+import lockIcon from '../../assets/icons/lock.svg'
+import pollutionIcon from '../../assets/icons/pollution.svg'
+import leafIcon from '../../assets/icons/leaf.svg'
+import prohibitIcon from '../../assets/icons/prohibit.svg'
+import trashIcon from '../../assets/icons/trash.svg'
+import healthIcon from '../../assets/icons/Health.svg'
+import transportIcon from '../../assets/icons/Transportation.svg'
+import connectivityIcon from '../../assets/icons/Connectivity.svg'
+import artIcon from '../../assets/icons/Art.svg'
+import communityIcon from '../../assets/icons/Community.svg'
 import LineStringLayer from './LineStringLayer.vue'
+import PolygonLayer from './PolygonLayer.vue'
+import IconLayer from './IconLayer.vue'
 
-import redIcon from '@/assets/icons/red.svg'
-import greenIcon from '@/assets/icons/green.svg'
-import blueIcon from '@/assets/icons/blue.svg'
-import yellowIcon from '@/assets/icons/yellow.svg'
-import purpleIcon from '@/assets/icons/purple.svg'
-import dislikeIcon from '@/assets/icons/dislike.svg'
-import heartIcon from '@/assets/icons/heart.svg'
-import smileIcon from '@/assets/icons/smile.svg'
-import brokenIcon from '@/assets/icons/broken.svg'
-import calmIcon from '@/assets/icons/calm.svg'
-import lockIcon from '@/assets/icons/lock.svg'
-import pollutionIcon from '@/assets/icons/pollution.svg'
-import leafIcon from '@/assets/icons/leaf.svg'
-import prohibitIcon from '@/assets/icons/prohibit.svg'
-import trashIcon from '@/assets/icons/trash.svg'
-
-defineProps({
+const props = defineProps({
   projection: {
     type: String,
     required: true,
@@ -31,10 +36,6 @@ defineProps({
   showAllPlusIcons: {
     type: Boolean,
     default: undefined,
-  },
-  enableClick: {
-    type: Boolean,
-    default: false,
   },
   isMapPage: {
     type: Boolean,
@@ -47,6 +48,10 @@ defineProps({
   showCommentIcons: {
     type: Boolean,
     default: true,
+  },
+  featureFilter: {
+    type: Function,
+    default: null,
   },
 })
 
@@ -66,7 +71,8 @@ const currentColor = computed(() => sidebarStore.currentColor)
 
 const pointFeatures = computed(() => {
   const data = routeFeatureStore.getDataForRoute()
-  return data.filter(feature => feature.type === 'Point')
+  const points = data.filter(feature => feature.type === 'Point')
+  return props.featureFilter ? points.filter(props.featureFilter) : points
 },
 )
 
@@ -136,6 +142,11 @@ function getIconForFeature(feature) {
     'smile': smileIcon,
     'positive': smileIcon,
     'trash': trashIcon,
+    'Health & Crisis Response': healthIcon,
+    'Transportation & Mobility': transportIcon,
+    'Digital Access & Connectivity': connectivityIcon,
+    'Community Mapping & Visibility': communityIcon,
+    'Art & Cultural Expression': artIcon
   }
 
   if (feature.iconName && iconMap[feature.iconName]) {
@@ -184,7 +195,6 @@ function getIconForFeature(feature) {
         :get-icon-for-feature="getIconForFeature"
         :show-all-plus-icons="showAllPlusIcons"
         :show-comment-icons="showCommentIcons"
-        :enable-click="enableClick"
         :is-map-page="isMapPage"
         :show-delete-button="showDeleteButton"
         @toggle-comment-popup="toggleCommentModal"
@@ -195,7 +205,6 @@ function getIconForFeature(feature) {
       <PolygonLayer
         :show-all-plus-icons="showAllPlusIcons"
         :show-comment-icons="showCommentIcons"
-        :enable-click="enableClick"
         :is-map-page="isMapPage"
         :show-delete-button="showDeleteButton"
         @toggle-comment-popup="toggleCommentModal"
@@ -203,7 +212,6 @@ function getIconForFeature(feature) {
       />
       <LineStringLayer
         :show-comment-icons="showCommentIcons"
-        :enable-click="enableClick"
         :is-map-page="isMapPage"
         :show-delete-button="showDeleteButton"
         @toggle-comment-popup="toggleCommentModal"
