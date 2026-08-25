@@ -88,9 +88,9 @@ const props = defineProps({
 
 const emit = defineEmits(['close'])
 
-// Language switcher state (English / Portuguese).
-const { locale, setLocale } = useI18n()
-const langs = [{ code: 'en' }, { code: 'pt' }] as const
+// Language switcher chips, driven by the locales configured in nuxt.config.
+const { locale, locales, setLocale } = useI18n()
+const langs = locales
 </script>
 
 <style scoped>

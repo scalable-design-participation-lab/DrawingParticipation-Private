@@ -55,6 +55,23 @@ const email = ref('')
 const password = ref('')
 const err = ref('')
 const busy = ref(false)
+const resetOk = ref('')
+
+async function doReset() {
+  err.value = ''
+  resetOk.value = ''
+  if (!email.value.trim()) {
+    err.value = t('mod.enterEmailForReset')
+    return
+  }
+  try {
+    await auth.resetPassword(email.value.trim())
+    resetOk.value = t('mod.resetSent')
+  }
+  catch {
+    err.value = t('mod.errReset')
+  }
+}
 
 const pendingEntries = computed(() => solutions.moderation.filter(m => !m.approved).length)
 const pendingCount = computed(() => pendingEntries.value + contributions.pending.length)
@@ -144,7 +161,11 @@ async function removeC(c: Contribution) {
       <UInput v-model="email" type="email" :placeholder="$t('mod.email')" autocomplete="username" />
       <UInput v-model="password" type="password" :placeholder="$t('mod.password')" autocomplete="current-password" />
       <p v-if="err" class="text-xs text-red-500">{{ err }}</p>
+      <p v-if="resetOk" class="text-xs text-emerald-600 dark:text-emerald-400">{{ resetOk }}</p>
       <UButton type="submit" color="primary" block :loading="busy">{{ $t('mod.signIn') }}</UButton>
+      <button type="button" class="block w-full text-center text-xs text-gray-500 underline hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200" @click="doReset">
+        {{ $t('mod.forgotPassword') }}
+      </button>
     </form>
   </AppModal>
 
@@ -173,6 +194,17 @@ async function removeC(c: Contribution) {
         </h3>
       </div>
       <div class="flex items-center gap-1">
+        <!-- Account management lives on its own page; only the 'admin' role sees it. -->
+        <UButton
+          v-if="auth.isSuperAdmin"
+          size="xs"
+          color="gray"
+          variant="ghost"
+          icon="i-heroicons-users"
+          to="/admin"
+          :aria-label="$t('admin.accounts')"
+          :title="$t('admin.accounts')"
+        />
         <UButton size="xs" color="gray" variant="ghost" @click="doSignOut">{{ $t('mod.signOut') }}</UButton>
         <UButton
           size="xs"
@@ -205,6 +237,14 @@ async function removeC(c: Contribution) {
           <div class="min-w-0">
             <p class="truncate text-sm font-medium text-gray-900 dark:text-white">{{ m.title }}</p>
             <p class="truncate text-xs text-gray-400">{{ m.location || m.primaryTag }}</p>
+            <!-- Stored translations, so the reviewer can check them before
+                 approving. Written by the Cloud Function a few seconds after
+                 submission — absent until then. -->
+            <div v-if="m.i18n" class="mt-1 space-y-0.5">
+              <p v-for="(tr, code) in m.i18n" :key="code" class="truncate text-[11px] text-gray-500 dark:text-gray-400">
+                <span class="font-semibold uppercase text-gray-400">{{ code }}</span> {{ tr.title }}
+              </p>
+            </div>
           </div>
           <span
             class="shrink-0 rounded-full px-2 py-0.5 text-[10px] font-semibold"

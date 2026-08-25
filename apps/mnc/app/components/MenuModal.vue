@@ -26,6 +26,7 @@ import SupportModal from './SupportModal.vue'
 
 const router = useRouter()
 const showSupportModal = ref(false)
+const { t } = useI18n()
 
 const props = defineProps({
   modelValue: {
@@ -41,20 +42,20 @@ const isOpen = computed({
   set: (value) => emit('update:modelValue', value),
 })
 
-const menuItems = [
+const menuItems = computed(() => [
   {
-    label: 'Home',
+    label: t('menu.home'),
     action: 'home',
   },
   {
-    label: 'About Us',
+    label: t('menu.about'),
     action: 'about',
   },
   {
-    label: 'Support',
+    label: t('menu.support'),
     action: 'help',
   }
-]
+])
 
 const closeModal = () => {
   isOpen.value = false

@@ -67,8 +67,15 @@
                 :images="galleryImages"
                 :caption="captionText"
                 :alt="title"
-                height="280px"
+                height="340px"
               />
+
+              <div v-if="audio.length" class="space-y-2 rounded-2xl bg-teal-50/70 p-4 dark:bg-teal-950/30">
+                <p class="text-xs font-semibold uppercase tracking-wide text-teal-700 dark:text-teal-400">
+                  {{ $t('detail.voiceNotes') }}
+                </p>
+                <audio v-for="url in audio" :key="url" :src="url" controls class="w-full" />
+              </div>
 
               <div v-if="connection" class="rounded-2xl bg-teal-50/70 p-5 dark:bg-teal-950/30">
                 <p class="mb-2 text-xs font-semibold uppercase tracking-wide text-teal-700 dark:text-teal-400">
@@ -150,7 +157,7 @@
                     class="mt-0.5 h-4 w-4 shrink-0 text-gray-400 group-hover:text-teal-500"
                   />
                   <span class="min-w-0">
-                    <span class="block text-sm font-medium text-gray-700 group-hover:text-teal-700 dark:text-gray-200">{{ link.label }}</span>
+                    <span class="block text-sm font-medium text-gray-700 group-hover:text-teal-700 dark:text-gray-200">{{ linkLabel(link.label) }}</span>
                     <span class="block truncate text-xs text-gray-400">{{ linkHost(link.url) }}</span>
                   </span>
                 </a>
@@ -158,7 +165,7 @@
                   v-else
                   class="flex items-center rounded-xl border border-gray-200 px-4 py-2.5 text-sm text-gray-500 dark:border-zinc-700"
                 >
-                  {{ link.label }}
+                  {{ linkLabel(link.label) }}
                 </span>
               </template>
             </div>
@@ -302,6 +309,8 @@ interface Props {
   links?: Link[]
   // All photo paths for this project; rendered as a carousel.
   photos?: string[]
+  // Voice notes recorded with the entry; rendered as audio players.
+  audio?: string[]
   // Stable MNC project id (mncData.json `string_id`). Used to load and save
   // community contributions for this project.
   stringId?: string
@@ -319,6 +328,7 @@ const props = withDefaults(defineProps<Props>(), {
   secondaryTag: '',
   links: () => [],
   photos: () => [],
+  audio: () => [],
   stringId: '',
 })
 
@@ -378,6 +388,9 @@ const secondaryTagList = computed<string[]>(() => {
     return s.split(',').map(x => x.trim()).filter(Boolean)
   return []
 })
+
+// Translated "Learn More" link labels (falls back to the original label).
+const { linkLabel } = useLocalizedEntry()
 
 // Carousel images come from the project's photo manifest. User-submitted pins
 // (and the few catalog entries without photos) have none, so the carousel shows

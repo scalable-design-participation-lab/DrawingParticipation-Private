@@ -112,7 +112,7 @@ const sortedFeatures = computed(() => {
           </div>
 
           <div class="flex-1 min-w-0">
-            <p class="font-semibold text-gray-900 dark:text-white truncate text-sm">{{ feature.comment }}</p>
+            <p class="font-semibold text-gray-900 dark:text-white truncate text-sm">{{ lf(feature.properties, 'title', feature.comment) }}</p>
             <p class="text-gray-400 text-xs mt-0.5 truncate">
               <span v-if="distanceLabel(feature)">{{ distanceLabel(feature) }}</span>
               <span v-else>{{ (feature.properties as any)?.location || '' }}</span>

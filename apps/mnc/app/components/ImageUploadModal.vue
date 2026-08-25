@@ -16,7 +16,7 @@
             v-if="!item.isAudio"
             :src="item.previewUrl"
             :alt="item.fileName"
-            class="h-16 w-full object-cover rounded"
+            class="h-16 w-full object-contain rounded bg-slate-800"
           />
           <div
             v-else

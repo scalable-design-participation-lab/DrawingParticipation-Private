@@ -6,17 +6,80 @@ service cloud.firestore {
   match /databases/{database}/documents {
 
     // A signed-in user is a moderator when an admins/<uid> document exists.
-    // Bootstrap the first admin by creating that document from the console.
+    // Bootstrap the first admin by creating that document from the console
+    // with { role: 'admin' }; after that, accounts are managed on /admin.
     function isAdmin() {
       return request.auth != null
         && exists(/databases/$(database)/documents/admins/$(request.auth.uid));
     }
 
-    // Admin allowlist: readable so the client can check its own status; only
-    // writable from the Firebase console (never from the app).
+    // The account-management tier: role 'admin' on the caller's own admins
+    // doc. Docs from before roles existed have no role field and keep full
+    // rights (they were bootstrapped by the team).
+    function isSuperAdmin() {
+      return isAdmin()
+        && get(/databases/$(database)/documents/admins/$(request.auth.uid))
+            .data.get('role', 'admin') == 'admin';
+    }
+
+    // email is optional (docs bootstrapped from the console may not have one)
+    // but must be a short string when present.
+    function isValidAdminDoc(d) {
+      return d.role in ['admin', 'moderator']
+        && d.get('email', '') is string
+        && d.get('email', '').size() <= 200;
+    }
+
+    // Bootstrap allowlist. The first administrator has nobody to grant them
+    // access, so the project owners named here may claim their own admins doc
+    // once, from the /admin page — no Firebase console needed. Everyone else
+    // is granted by an existing admin. request.auth.token.email is issued by
+    // Firebase Auth and cannot be spoofed by the client.
+    //
+    // EDIT THIS LIST to match whoever owns the project.
+    function isProjectOwner() {
+      return request.auth != null
+        && request.auth.token.email in [
+          'kong.dez@northeastern.edu',
+          'ce.sandoval09@gmail.com'
+        ];
+    }
+
+    // Admin allowlist + roles. Anyone signed in may check their own status;
+    // moderators may see the list. Only super admins manage accounts — and
+    // never their own doc, so they can't lock themselves out or self-demote.
     match /admins/{uid} {
-      allow read: if true;
-      allow write: if false;
+      allow get: if (request.auth != null && request.auth.uid == uid) || isAdmin();
+      allow list: if isAdmin();
+      // `create` only fires when the doc is absent, so an owner's self-claim
+      // works exactly once; changing it afterwards needs another admin.
+      allow create: if isValidAdminDoc(request.resource.data)
+        && (
+          (isSuperAdmin() && request.auth.uid != uid)
+          || (isProjectOwner()
+              && request.auth.uid == uid
+              && request.resource.data.role == 'admin')
+        );
+      allow update: if isSuperAdmin()
+        && request.auth.uid != uid
+        && isValidAdminDoc(request.resource.data);
+      allow delete: if isSuperAdmin() && request.auth.uid != uid;
+    }
+
+    // Self-registrations (plain logins awaiting a rights decision on /admin).
+    // A signed-in user may register themselves exactly once; admins see the
+    // list and may clean up registrations they don't recognize. No rights are
+    // conferred by this collection — only admins/* grants anything.
+    match /accounts/{uid} {
+      allow get: if (request.auth != null && request.auth.uid == uid) || isAdmin();
+      allow list: if isAdmin();
+      allow create: if request.auth != null
+        && request.auth.uid == uid
+        && request.resource.data.email is string
+        && request.resource.data.email.size() <= 200
+        && request.resource.data.createdAt == request.time;
+      allow update: if false;
+      allow delete: if isSuperAdmin();
     }
 
     function isValidContribution(data) {

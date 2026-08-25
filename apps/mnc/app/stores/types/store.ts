@@ -28,6 +28,14 @@ export class Properties {
   linkList?: { label: string, url: string }[]
   // All photo paths under /Solution_Photos/<string_id>/ for the gallery carousel.
   photos?: string[]
+  // Voice-note URLs recorded in the contribute wizard. Kept separate from
+  // photos so image consumers never receive an audio URL. Assigned after
+  // construction.
+  audio?: string[]
+  // Per-locale translations of the text fields, written once at entry creation
+  // (Cloud Function / backfill script) — display falls back to the original
+  // text when a locale or field is missing. Assigned after construction.
+  i18n?: Record<string, Partial<Record<'title' | 'shortDesc' | 'description' | 'mncConnection' | 'location', string>>>
   // Set on user-submitted pins awaiting moderator approval (admins only ever see
   // these) so the map can mark them as pending. Assigned after construction.
   pending?: boolean

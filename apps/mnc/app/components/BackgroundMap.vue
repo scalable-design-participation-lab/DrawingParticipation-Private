@@ -32,10 +32,10 @@
           :showPreviousArrow="false"
           :showNextArrow="false"
           :showExpand="true"
-          :title="selectedFeature.comment"
+          :title="lf(selectedFeature.properties, 'title', selectedFeature.comment)"
           :date-published="selectedFeature.properties?.date || ''"
           :imagePath="selectedFeature.properties?.photos?.[0] || ''"
-          :location="selectedFeature.properties?.location || ''"
+          :location="lf(selectedFeature.properties, 'location', selectedFeature.properties?.location || '')"
           :caption="selectedFeature.properties?.mediaCaptions || ''"
           :primary-tag="selectedFeature.properties?.primaryTag || ''"
           @click-expand="handleExpandedPopup"
@@ -60,15 +60,16 @@
   <!-- Info Popup -->
   <InfoPopup
     v-if="showPopup && selectedFeature && !isMobile"
-    :title="selectedFeature.comment"
+    :title="lf(selectedFeature.properties, 'title', selectedFeature.comment)"
     :string-id="selectedFeature.properties?.string_id || ''"
     :date-published="selectedFeature.properties?.date || ''"
     :imagePath="'/Solution_Photos/'+ selectedFeature.properties?.string_id +'/1.png'"
     :photos="selectedFeature.properties?.photos || []"
-    :location="selectedFeature.properties?.location || ''"
+    :audio="selectedFeature.properties?.audio || []"
+    :location="lf(selectedFeature.properties, 'location', selectedFeature.properties?.location || '')"
     :caption="selectedFeature.properties?.mediaCaptions || ''"
-    :description="selectedFeature.properties?.description || ''"
-    :connection="selectedFeature.properties?.mncConnection || ''"
+    :description="lf(selectedFeature.properties, 'description', selectedFeature.properties?.description || '')"
+    :connection="lf(selectedFeature.properties, 'mncConnection', selectedFeature.properties?.mncConnection || '')"
     :primary-tag="selectedFeature.properties?.primaryTag || 'N/A'"
     :secondary-tag="selectedFeature.properties?.secondaryTags || 'N/A'"
     :links="parsedLinks"
@@ -113,6 +114,7 @@ const emit = defineEmits<{
 
 const route = useRoute()
 const projection = ref('EPSG:3857')
+const { lf } = useLocalizedEntry()
 const isMapPage = computed(() => route.name === 'result')
 const baseMap = ref(null)
 const { isMobile } = useIsMobile()

@@ -96,6 +96,9 @@ const files = reactive({
   why: [] as File[],
   media: [] as File[],
   additional: [] as File[],
+  // Voice notes recorded in place of typing (steps 2 and 3).
+  voiceExample: [] as File[],
+  voiceWhy: [] as File[],
 })
 
 // Human-readable place for the dropped pin (reverse-geocoded); shown instead of
@@ -185,6 +188,8 @@ function submit() {
       why: [...files.why],
       media: [...files.media],
       additional: [...files.additional],
+      voiceExample: [...files.voiceExample],
+      voiceWhy: [...files.voiceWhy],
     },
   })
   submitted.value = true
@@ -213,6 +218,8 @@ function reset() {
   files.why = []
   files.media = []
   files.additional = []
+  files.voiceExample = []
+  files.voiceWhy = []
 }
 
 function prettyCoord(coord: [number, number]): string {
@@ -376,6 +383,7 @@ function prettyCoord(coord: [number, number]): string {
             :ui="{ rounded: 'rounded-2xl' }"
             class="contribute-textarea"
           />
+          <ContributeVoiceRecorder v-model="files.voiceExample" />
           <ContributeFileUpload v-model="files.example" />
         </div>
 
@@ -391,6 +399,7 @@ function prettyCoord(coord: [number, number]): string {
             :ui="{ rounded: 'rounded-2xl' }"
             class="contribute-textarea"
           />
+          <ContributeVoiceRecorder v-model="files.voiceWhy" />
           <ContributeFileUpload v-model="files.why" />
         </div>
 

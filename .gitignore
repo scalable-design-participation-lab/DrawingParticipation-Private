@@ -41,3 +41,6 @@ sandbox
 
 # Vitest coverage
 coverage
+
+# Never commit Google service-account keys
+service-account*.json
