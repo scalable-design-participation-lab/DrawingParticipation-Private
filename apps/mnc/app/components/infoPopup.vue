@@ -250,6 +250,8 @@
                       <img
                         :src="media.url"
                         :alt="media.name"
+                        loading="lazy"
+                        decoding="async"
                         class="h-28 w-full object-cover transition-transform duration-200 hover:scale-105"
                       />
                     </a>

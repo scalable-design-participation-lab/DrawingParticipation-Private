@@ -8,6 +8,7 @@ import artIcon from '@base/assets/icons/Art.svg'
 import communityIcon from '@base/assets/icons/Community.svg'
 import { useFilterStore } from '../stores/filter'
 import { categoryMeta } from '../composables/categoryMeta'
+import { photoThumb } from '../composables/photoThumb'
 
 const filterStore = useFilterStore()
 const search = ref('')
@@ -119,8 +120,10 @@ function select(feature: Feature) {
               </span>
               <img
                 v-if="coverImage(feature)"
-                :src="coverImage(feature)!"
+                :src="photoThumb(coverImage(feature))"
                 :alt="feature.comment"
+                loading="lazy"
+                decoding="async"
                 class="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
               />
               <div

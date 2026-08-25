@@ -289,7 +289,7 @@ async function removeC(c: Contribution) {
               class="block"
               @click.stop
             >
-              <img :src="m.url" :alt="m.name" class="h-16 w-full rounded object-cover" />
+              <img :src="m.url" :alt="m.name" loading="lazy" decoding="async" class="h-16 w-full rounded object-cover" />
             </a>
           </template>
         </div>

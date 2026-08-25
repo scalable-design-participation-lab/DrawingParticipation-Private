@@ -63,6 +63,7 @@ function prev() {
       <img
         :src="slides[current]"
         :alt="alt"
+        decoding="async"
         class="h-full w-full object-contain"
         @error="onImageError(slides[current])"
       />

@@ -263,7 +263,7 @@ function toggleState() {
                     target="_blank"
                     rel="noopener noreferrer"
                   >
-                    <img :src="m.url" :alt="m.name" class="h-16 w-full rounded object-cover" />
+                    <img :src="m.url" :alt="m.name" loading="lazy" decoding="async" class="h-16 w-full rounded object-cover" />
                   </a>
                 </template>
               </div>

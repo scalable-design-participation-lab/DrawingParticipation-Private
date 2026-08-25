@@ -2,6 +2,7 @@
 import { computed, type PropType } from 'vue'
 import { categoryMeta } from '../composables/categoryMeta'
 import { useLocalizedEntry } from '../composables/useLocalizedEntry'
+import { photoThumb } from '../composables/photoThumb'
 
 interface MarkerPosition {
   x: number
@@ -126,8 +127,9 @@ const tagChipStyle = computed(() => ({
         <div class="h-40 w-full overflow-hidden rounded-lg bg-teal-50 dark:bg-white/5">
           <img
             v-if="props.imagePath"
-            :src="props.imagePath"
+            :src="photoThumb(props.imagePath)"
             :alt="props.title"
+            decoding="async"
             class="h-full w-full object-contain"
           >
           <div
