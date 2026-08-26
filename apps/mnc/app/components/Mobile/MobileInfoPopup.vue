@@ -46,7 +46,7 @@ function handleUploaded() {
 
 
 // Entry text in the current UI language (falls back to the original).
-const { lf, linkLabel } = useLocalizedEntry()
+const { lf, linkLabel, tagLabel } = useLocalizedEntry()
 
 // Photos come from the project's manifest; user-submitted pins have none and
 // fall through to the carousel's empty state (no broken /Solution_Photos URL).
@@ -73,7 +73,7 @@ function toggleState() {
 
 <template>
   <div
-    class="fixed left-0 right-0 z-40 flex justify-center pointer-events-none transition-all duration-300 bottom-24 px-4"
+    class="fixed left-0 right-0 z-40 flex justify-center pointer-events-none transition-all duration-300 bottom-24 safe-bottom px-4"
   >
     <!-- Expanded state: compact summary card -->
     <UCard
@@ -119,7 +119,7 @@ function toggleState() {
 
           <div class="flex-1 min-w-0">
             <p class="font-bold text-gray-900 dark:text-white text-sm leading-tight">{{ lf(p, 'title', feature.comment) }}</p>
-            <p v-if="p?.primaryTag" class="text-xs text-teal-500 mt-1 font-medium">{{ p.primaryTag }}</p>
+            <p v-if="p?.primaryTag" class="text-xs text-teal-500 mt-1 font-medium">{{ tagLabel(p.primaryTag) }}</p>
             <p class="text-xs text-gray-500 dark:text-gray-400 mt-2 line-clamp-3">
               {{ lf(p, 'shortDesc', p?.shortDesc) || lf(p, 'description', p?.description) }}
             </p>
@@ -231,10 +231,10 @@ function toggleState() {
             </p>
             <button
               type="button"
-              class="flex items-center gap-1 rounded-full bg-white/20 px-3 py-1 text-xs font-medium text-white"
+              class="flex min-h-11 touch-manipulation items-center gap-1 rounded-full bg-white/20 px-4 text-sm font-medium text-white"
               @click="showUpload = true"
             >
-              <UIcon name="i-heroicons-plus" class="h-3.5 w-3.5" />
+              <UIcon name="i-heroicons-plus" class="h-4 w-4" />
               {{ $t('detail.add') }}
             </button>
           </div>
@@ -263,7 +263,7 @@ function toggleState() {
                     target="_blank"
                     rel="noopener noreferrer"
                   >
-                    <img :src="m.url" :alt="m.name" class="h-16 w-full rounded object-cover" />
+                    <img :src="m.url" :alt="m.name" loading="lazy" decoding="async" class="h-16 w-full rounded object-cover" />
                   </a>
                 </template>
               </div>

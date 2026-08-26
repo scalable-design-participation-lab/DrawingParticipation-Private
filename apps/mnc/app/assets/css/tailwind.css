@@ -7,3 +7,23 @@
     @apply font-medium;
   }
 }
+
+@layer utilities {
+  /*
+   * Clearance for bottom-anchored floating UI on phones.
+   *
+   * iOS Safari resolves `position: fixed` against the LARGE viewport, so a
+   * plain `bottom: 1.5rem` lands *behind* the bottom URL bar and cannot be
+   * tapped (issue #39). `100lvh - 100dvh` is exactly the browser chrome
+   * currently covering the page; env(safe-area-inset-bottom) is the home
+   * indicator when that chrome is hidden. max(), not a sum: the indicator sits
+   * inside the address bar's strip, so adding them double-counts.
+   *
+   * Applied as a margin so it composes with whatever `bottom-*` (including
+   * responsive `sm:bottom-*`) a component already uses. Collapses to 0 on
+   * Android and desktop. Needs viewport-fit=cover — see layouts/default.vue.
+   */
+  .safe-bottom {
+    margin-bottom: max(env(safe-area-inset-bottom, 0px), calc(100lvh - 100dvh));
+  }
+}

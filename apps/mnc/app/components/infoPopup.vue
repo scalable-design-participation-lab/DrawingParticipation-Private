@@ -250,6 +250,8 @@
                       <img
                         :src="media.url"
                         :alt="media.name"
+                        loading="lazy"
+                        decoding="async"
                         class="h-28 w-full object-cover transition-transform duration-200 hover:scale-105"
                       />
                     </a>
@@ -352,9 +354,13 @@ function onTagClick(tag: string) {
 const descriptionExpanded = ref(false)
 const connectionExpanded = ref(false)
 
+// Translated "Learn More" link labels and topic names (both fall back to the
+// original English text).
+const { linkLabel, tagLabel } = useLocalizedEntry()
+
 // Display text for the tag badges. `secondaryTag` may arrive as an array
 // (the parent passes `secondaryTags`), so normalize it to a readable string.
-const primaryTagText = computed(() => props.primaryTag || 'N/A')
+const primaryTagText = computed(() => tagLabel(props.primaryTag) || 'N/A')
 
 // Category accent (color + glyph) for the primary-tag chip, shared with the map
 // markers so a project reads the same on the pin and in the detail panel.
@@ -388,9 +394,6 @@ const secondaryTagList = computed<string[]>(() => {
     return s.split(',').map(x => x.trim()).filter(Boolean)
   return []
 })
-
-// Translated "Learn More" link labels (falls back to the original label).
-const { linkLabel } = useLocalizedEntry()
 
 // Carousel images come from the project's photo manifest. User-submitted pins
 // (and the few catalog entries without photos) have none, so the carousel shows

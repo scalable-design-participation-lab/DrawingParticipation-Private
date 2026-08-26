@@ -14,6 +14,15 @@ defineProps({
     type: String,
     default: 'MNC',
   },
+  // The wordmark links out to mobilecreativity.net on the map screen. Inside
+  // the contribute wizard it must not: the wizard renders its own copy of this
+  // header, and on the transparent step-1 map the page-level header sits right
+  // underneath, so the add-entry screen had two stacked ways to leave the site
+  // exactly where someone is trying to add an entry (issue #41).
+  titleLink: {
+    type: Boolean,
+    default: true,
+  },
 })
 
 const mapStore = useMapStore()
@@ -36,7 +45,12 @@ const localeItems = computed(() => [
 </script>
 
 <template>
-  <header class="fixed top-4 left-0 right-0 z-20 flex items-center justify-between px-4 pointer-events-none">
+  <!-- viewport-fit=cover (layouts/default.vue) lets the page run under the
+       notch in landscape, so the edge buttons need the horizontal insets. -->
+  <header
+    class="fixed top-4 left-0 right-0 z-20 flex items-center justify-between px-4 pointer-events-none"
+    style="padding-left: max(1rem, env(safe-area-inset-left, 0px)); padding-right: max(1rem, env(safe-area-inset-right, 0px));"
+  >
     <a
       href="https://scalabledesignparticipation.org/"
       target="_blank"
@@ -48,6 +62,7 @@ const localeItems = computed(() => [
     </a>
 
     <a
+      v-if="titleLink"
       href="https://mobilecreativity.net"
       target="_blank"
       rel="noopener noreferrer"
@@ -55,6 +70,14 @@ const localeItems = computed(() => [
     >
       {{ title }}
     </a>
+    <!-- No pointer-events-auto: over the wizard's click-through step-1 map this
+         must not swallow the tap that drops the pin. -->
+    <span
+      v-else
+      class="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 mnc-title"
+    >
+      {{ title }}
+    </span>
 
     <div class="pointer-events-auto flex items-center gap-2">
       <UDropdown :items="localeItems">

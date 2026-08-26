@@ -130,7 +130,7 @@ async function removeC(c: Contribution) {
   <!-- Trigger: sits above the mobile bottom nav (its own z-50 pill), bottom-left
        on desktop. Hidden on mobile while the panel is open so it doesn't overlap
        the sheet — the sheet has its own close button. -->
-  <div class="fixed bottom-28 left-4 z-40 sm:bottom-6 sm:left-6">
+  <div class="fixed bottom-28 safe-bottom left-4 z-40 sm:bottom-6 sm:left-6">
     <UButton
       v-if="!auth.isAdmin"
       icon="i-heroicons-lock-closed"
@@ -175,7 +175,7 @@ async function removeC(c: Contribution) {
        interactive behind it). -->
   <div
     v-if="auth.isAdmin && showPanel"
-    class="fixed z-40 flex flex-col rounded-2xl border border-gray-200 bg-white shadow-2xl dark:border-zinc-700 dark:bg-zinc-900 inset-x-3 bottom-28 max-h-[55dvh] sm:inset-x-auto sm:bottom-20 sm:left-6 sm:w-80 sm:max-w-[90vw] sm:max-h-[70vh]"
+    class="fixed z-40 flex flex-col rounded-2xl border border-gray-200 bg-white shadow-2xl dark:border-zinc-700 dark:bg-zinc-900 inset-x-3 bottom-28 safe-bottom max-h-[55dvh] sm:inset-x-auto sm:bottom-20 sm:left-6 sm:w-80 sm:max-w-[90vw] sm:max-h-[70vh]"
   >
     <div class="flex shrink-0 items-center justify-between gap-2 border-b border-gray-100 px-4 py-3 dark:border-zinc-800">
       <div class="flex min-w-0 items-center gap-1.5">
@@ -269,7 +269,30 @@ async function removeC(c: Contribution) {
       >
         <p class="truncate text-xs font-medium text-gray-500 dark:text-gray-300">{{ projectTitle(c.projectId) }}</p>
         <p v-if="c.comment" class="mt-0.5 line-clamp-2 text-sm text-gray-900 dark:text-white">{{ c.comment }}</p>
-        <p v-if="c.media.length" class="mt-0.5 text-xs text-gray-400">{{ c.media.length }} × media</p>
+        <!-- Show the media itself, not just a count: a moderator has to be able
+             to hear a voice comment (and see a photo) before approving it.
+             @click.stop keeps the card's flyTo from firing on the controls. -->
+        <div v-if="c.media.length" class="mt-2 space-y-1.5">
+          <template v-for="(m, mi) in c.media" :key="mi">
+            <audio
+              v-if="m.kind === 'audio'"
+              :src="m.url"
+              controls
+              class="h-8 w-full"
+              @click.stop
+            />
+            <a
+              v-else
+              :href="m.url"
+              target="_blank"
+              rel="noopener noreferrer"
+              class="block"
+              @click.stop
+            >
+              <img :src="m.url" :alt="m.name" loading="lazy" decoding="async" class="h-16 w-full rounded object-cover" />
+            </a>
+          </template>
+        </div>
         <div class="mt-2 flex gap-2">
           <UButton size="xs" color="primary" @click.stop="approveC(c)">{{ $t('mod.approve') }}</UButton>
           <UButton size="xs" color="red" variant="soft" @click.stop="removeC(c)">{{ $t('mod.delete') }}</UButton>

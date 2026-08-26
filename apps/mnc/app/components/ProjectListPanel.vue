@@ -8,10 +8,11 @@ import artIcon from '@base/assets/icons/Art.svg'
 import communityIcon from '@base/assets/icons/Community.svg'
 import { useFilterStore } from '../stores/filter'
 import { categoryMeta } from '../composables/categoryMeta'
+import { photoThumb } from '../composables/photoThumb'
 
 const filterStore = useFilterStore()
 const search = ref('')
-const { lf } = useLocalizedEntry()
+const { lf, tagLabel } = useLocalizedEntry()
 
 const ICONS: Record<string, string> = {
   'Health & Crisis Response': healthIcon,
@@ -119,8 +120,10 @@ function select(feature: Feature) {
               </span>
               <img
                 v-if="coverImage(feature)"
-                :src="coverImage(feature)!"
+                :src="photoThumb(coverImage(feature))"
                 :alt="feature.comment"
+                loading="lazy"
+                decoding="async"
                 class="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
               />
               <div
@@ -145,7 +148,7 @@ function select(feature: Feature) {
                 :style="tagChipStyle(primaryTag(feature))"
               >
                 <UIcon :name="categoryMeta(primaryTag(feature)).icon" class="h-3 w-3" />
-                {{ primaryTag(feature) }}
+                {{ tagLabel(primaryTag(feature)) }}
               </span>
               <p class="line-clamp-2 text-sm font-semibold leading-snug text-gray-900 dark:text-white">
                 {{ lf(feature.properties, 'title', feature.comment) || $t('list.untitled') }}

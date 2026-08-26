@@ -39,7 +39,7 @@ function isActive(key: string): boolean {
 </script>
 
 <template>
-  <div class="fixed bottom-6 left-0 right-0 z-50 flex justify-center pointer-events-none">
+  <div class="fixed bottom-6 safe-bottom left-0 right-0 z-50 flex justify-center pointer-events-none">
     <div
       class="pointer-events-auto flex items-center gap-2 rounded-full bg-white px-4 py-2 shadow-lg dark:bg-zinc-900"
       style="border: 2px solid #e5e7eb;"

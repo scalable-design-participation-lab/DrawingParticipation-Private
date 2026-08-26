@@ -7,8 +7,10 @@ import connectivityIcon from '@base/assets/icons/Connectivity.svg'
 import artIcon from '@base/assets/icons/Art.svg'
 import communityIcon from '@base/assets/icons/Community.svg'
 import { PRIMARY_TAGS, useFilterStore } from '../stores/filter'
+import { useLocalizedEntry } from '../composables/useLocalizedEntry'
 
 const filterStore = useFilterStore()
+const { tagLabel } = useLocalizedEntry()
 
 const isCollapsed = ref(false)
 const openCategories = ref<Set<string>>(new Set(PRIMARY_TAGS))
@@ -124,7 +126,7 @@ function itemLocationDate(feature: Feature): string {
           />
 
           <span class="flex-1 font-semibold text-sm text-gray-900 dark:text-white truncate">
-            {{ cat.tag }}
+            {{ tagLabel(cat.tag) }}
           </span>
 
           <span class="text-xs text-gray-400 whitespace-nowrap">
@@ -136,7 +138,7 @@ function itemLocationDate(feature: Feature): string {
             color="gray"
             variant="ghost"
             size="2xs"
-            :aria-label="filterStore.isTagVisible(cat.tag) ? `Hide ${cat.tag}` : `Show ${cat.tag}`"
+            :aria-label="filterStore.isTagVisible(cat.tag) ? `Hide ${tagLabel(cat.tag)}` : `Show ${tagLabel(cat.tag)}`"
             :ui="{ rounded: 'rounded-full' }"
             @click.stop="filterStore.toggleTag(cat.tag)"
           />

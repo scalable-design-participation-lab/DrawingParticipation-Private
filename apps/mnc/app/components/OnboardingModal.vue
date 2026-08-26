@@ -1,18 +1,22 @@
 <template>
   <UCard
     v-if="isVisible"
-    class="onboarding-card max-w-[90vw] w-[500px] max-h-[90vh] overflow-y-auto z-50 absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 rounded-xl shadow-xl dark:bg-black"
+    class="onboarding-card max-w-[90vw] w-[500px] max-h-[90dvh] overflow-y-auto z-50 absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 rounded-xl shadow-xl dark:bg-black"
   >
     <template #header>
       <div class="flex flex-col gap-3">
         <!-- Language switcher, on its own row so it never overlaps the title -->
         <div class="flex justify-end">
           <div class="inline-flex rounded-full border border-gray-200 p-0.5 dark:border-zinc-700">
+            <!-- 44x44 is the WCAG 2.5.5 / iOS HIG minimum touch target; at the
+                 previous text-xs size these were 39x20 and a finger tap mostly
+                 missed them on a phone. Do not shrink them back. -->
             <button
               v-for="l in langs"
               :key="l.code"
               type="button"
-              class="rounded-full px-3 py-0.5 text-xs font-bold transition"
+              :aria-pressed="locale === l.code"
+              class="rounded-full px-4 min-h-11 min-w-11 text-sm font-bold transition touch-manipulation"
               :class="locale === l.code
                 ? 'bg-teal-500 text-white shadow-sm'
                 : 'text-gray-500 hover:text-gray-800 dark:text-gray-400 dark:hover:text-gray-100'"

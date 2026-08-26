@@ -10,6 +10,7 @@
   },
   "nav": {
     "addEntry": "Adicionar uma contribuição — ou clique em qualquer lugar do mapa",
+    "addEntryMobile": "Adicionar uma contribuição",
     "filter": "Seleção filtrada",
     "list": "Lista de registros",
     "map": "Mapa",
