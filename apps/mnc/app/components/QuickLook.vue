@@ -1,5 +1,8 @@
 <script setup lang="ts">
 import { computed, type PropType } from 'vue'
+import { categoryMeta } from '../composables/categoryMeta'
+import { useLocalizedEntry } from '../composables/useLocalizedEntry'
+import { photoThumb } from '../composables/photoThumb'
 
 interface MarkerPosition {
   x: number
@@ -55,6 +58,8 @@ const props = defineProps({
 
 const emit = defineEmits(['click-expand', 'click-close', 'click-previous', 'click-next'])
 
+const { tagLabel } = useLocalizedEntry()
+
 const normalizedCaption = computed(() => {
   if (Array.isArray(props.caption)) {
     return props.caption[0] || ''
@@ -64,6 +69,16 @@ const normalizedCaption = computed(() => {
 })
 
 const formattedDate = computed(() => String(props.datePublished || ''))
+
+// Category-colored tag chip, matching the detail panel. Uses the darkened `ink`
+// on the light card and the vivid color on the dark card so it stays legible in
+// both themes (the old `mnc_tag1` badge resolved to no background + black text).
+const primaryMeta = computed(() => categoryMeta(props.primaryTag))
+const colorMode = useColorMode()
+const tagChipStyle = computed(() => ({
+  backgroundColor: `${primaryMeta.value.color}22`,
+  color: colorMode.value === 'dark' ? primaryMeta.value.color : primaryMeta.value.ink,
+}))
 
 </script>
 
@@ -81,14 +96,17 @@ const formattedDate = computed(() => String(props.datePublished || ''))
   >
     <template #quickBody>
       <div class="px-4 pb-3 space-y-3">
-        <span v-if="props.primaryTag" >
-          <UBadge color = "mnc_tag1" class="rounded-xl">
-            <p class="text-sm text-black">{{ props.primaryTag }}</p>
-          </UBadge>
+        <span
+          v-if="props.primaryTag"
+          class="inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-sm font-medium"
+          :style="tagChipStyle"
+        >
+          <UIcon :name="primaryMeta.icon" class="h-3.5 w-3.5" />
+          {{ tagLabel(props.primaryTag) }}
         </span>
       </div>
       <div class="px-4 pb-3 space-y-3">
-        <h2 class="font-semibold leading-tight text-black dark:text-white">
+        <h2 class="line-clamp-2 font-semibold leading-tight text-black dark:text-white">
           {{ props.title }}
         </h2>
 
@@ -106,18 +124,19 @@ const formattedDate = computed(() => String(props.datePublished || ''))
           </span>
         </div>
 
-        <div class="h-40 w-full overflow-hidden rounded-lg bg-teal-50">
+        <div class="h-40 w-full overflow-hidden rounded-lg bg-teal-50 dark:bg-white/5">
           <img
             v-if="props.imagePath"
-            :src="props.imagePath"
+            :src="photoThumb(props.imagePath)"
             :alt="props.title"
-            class="h-full w-full object-cover"
+            decoding="async"
+            class="h-full w-full object-contain"
           >
           <div
             v-else
-            class="flex h-full w-full items-center justify-center px-2 text-center text-xs text-teal-700"
+            class="flex h-full w-full items-center justify-center px-2 text-center text-xs text-teal-700 dark:text-teal-300"
           >
-            {{ normalizedCaption || 'No image available' }}
+            {{ normalizedCaption || $t('quick.noImage') }}
           </div>
         </div>
       </div>

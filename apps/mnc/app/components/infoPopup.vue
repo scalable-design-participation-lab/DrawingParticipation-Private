@@ -5,7 +5,7 @@
       style="background: conic-gradient(from 220deg at 50% 50%, #f4878e 0deg, #53c3be 130deg, #d7d84f 250deg, #f4878e 360deg);"
     >
       <UCard
-        class="mnc-popup-scroll max-h-[92vh] overflow-y-auto rounded-[28px] bg-white"
+        class="mnc-popup-scroll max-h-[92vh] overflow-y-auto rounded-[28px] bg-white dark:bg-zinc-900"
         :ui="{
           body: { padding: 'p-5 sm:p-7' },
           header: { padding: 'p-5 sm:p-7 pb-4' },
@@ -13,7 +13,7 @@
       >
         <template #header>
           <div class="flex items-start justify-between gap-4">
-            <h2 class="text-2xl font-bold leading-tight text-gray-900 sm:text-4xl sm:leading-[1.1]">
+            <h2 class="text-2xl font-bold leading-tight text-gray-900 dark:text-white sm:text-4xl sm:leading-[1.1]">
               {{ title }}
             </h2>
             <div class="flex shrink-0 items-center gap-2">
@@ -26,11 +26,11 @@
                 class="rounded-full"
                 @click="showUpload = !showUpload"
               >
-                <span class="hidden sm:inline">Add photo or comment</span>
-                <span class="sm:hidden">Add</span>
+                <span class="hidden sm:inline">{{ $t('detail.addPhoto') }}</span>
+                <span class="sm:hidden">{{ $t('detail.add') }}</span>
               </UButton>
               <UButton
-                aria-label="Close"
+                :aria-label="$t('detail.close')"
                 color="gray"
                 variant="ghost"
                 icon="i-heroicons-x-mark"
@@ -67,14 +67,21 @@
                 :images="galleryImages"
                 :caption="captionText"
                 :alt="title"
-                height="280px"
+                height="340px"
               />
+
+              <div v-if="audio.length" class="space-y-2 rounded-2xl bg-teal-50/70 p-4 dark:bg-teal-950/30">
+                <p class="text-xs font-semibold uppercase tracking-wide text-teal-700 dark:text-teal-400">
+                  {{ $t('detail.voiceNotes') }}
+                </p>
+                <audio v-for="url in audio" :key="url" :src="url" controls class="w-full" />
+              </div>
 
               <div v-if="connection" class="rounded-2xl bg-teal-50/70 p-5 dark:bg-teal-950/30">
                 <p class="mb-2 text-xs font-semibold uppercase tracking-wide text-teal-700 dark:text-teal-400">
-                  Connection to Mobile Networked Creativity
+                  {{ $t('detail.connection') }}
                 </p>
-                <p :class="['text-sm leading-6 text-gray-700 dark:text-gray-300', { 'line-clamp-6': !connectionExpanded }]">
+                <p :class="['whitespace-pre-line text-sm leading-6 text-gray-700 dark:text-gray-300', { 'line-clamp-6': !connectionExpanded }]">
                   {{ connection }}
                 </p>
                 <button
@@ -82,7 +89,7 @@
                   class="mt-2 text-sm font-semibold text-teal-700 hover:underline dark:text-teal-400"
                   @click="connectionExpanded = !connectionExpanded"
                 >
-                  {{ connectionExpanded ? 'Read less' : 'Read more' }}
+                  {{ connectionExpanded ? $t('detail.readLess') : $t('detail.readMore') }}
                 </button>
               </div>
             </section>
@@ -91,9 +98,9 @@
             <section class="space-y-5">
               <div v-if="description" class="rounded-2xl bg-gray-50 p-5 dark:bg-zinc-800/50">
                 <p class="mb-2 text-xs font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400">
-                  Description
+                  {{ $t('detail.description') }}
                 </p>
-                <p :class="['text-sm leading-6 text-gray-700 dark:text-gray-300', { 'line-clamp-[12]': !descriptionExpanded }]">
+                <p :class="['whitespace-pre-line text-sm leading-6 text-gray-700 dark:text-gray-300', { 'line-clamp-[12]': !descriptionExpanded }]">
                   {{ description }}
                 </p>
                 <button
@@ -101,19 +108,25 @@
                   class="mt-2 text-sm font-semibold text-teal-700 hover:underline dark:text-teal-400"
                   @click="descriptionExpanded = !descriptionExpanded"
                 >
-                  {{ descriptionExpanded ? 'Read less' : 'Read more' }}
+                  {{ descriptionExpanded ? $t('detail.readLess') : $t('detail.readMore') }}
                 </button>
               </div>
 
               <div>
                 <p class="mb-2 text-xs font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400">
-                  Tags
+                  {{ $t('detail.tags') }}
                 </p>
                 <div class="flex flex-wrap gap-2">
-                  <span class="inline-flex items-center gap-1.5 rounded-full bg-teal-100 px-3.5 py-1.5 text-sm font-medium text-teal-800 dark:bg-teal-900/40 dark:text-teal-300">
-                    <UIcon name="i-heroicons-tag" class="h-3.5 w-3.5" />
+                  <button
+                    type="button"
+                    class="inline-flex items-center gap-1.5 rounded-full px-3.5 py-1.5 text-sm font-medium transition hover:brightness-95"
+                    :style="tagChipStyle"
+                    :title="$t('detail.showAll', { tag: primaryTagText })"
+                    @click="onTagClick(primaryTag)"
+                  >
+                    <UIcon :name="primaryMeta.icon" class="h-3.5 w-3.5" />
                     {{ primaryTagText }}
-                  </span>
+                  </button>
                   <span
                     v-for="(tag, i) in secondaryTagList"
                     :key="i"
@@ -128,28 +141,31 @@
 
           <section v-if="links && links.length">
             <p class="mb-2 text-xs font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400">
-              Learn More
+              {{ $t('detail.learnMore') }}
             </p>
-            <div class="flex flex-wrap gap-2">
+            <div class="grid gap-2 sm:grid-cols-2">
               <template v-for="(link, index) in links" :key="index">
                 <a
                   v-if="link.url"
                   :href="link.url"
                   target="_blank"
                   rel="noopener noreferrer"
-                  class="group inline-flex max-w-[320px] items-center gap-1.5 rounded-full border border-gray-200 px-4 py-1.5 text-sm text-gray-700 transition hover:border-teal-300 hover:bg-teal-50 hover:text-teal-700 dark:border-zinc-700 dark:text-gray-300 dark:hover:bg-teal-950/30"
+                  class="group flex items-start gap-2.5 rounded-xl border border-gray-200 px-4 py-2.5 transition hover:border-teal-300 hover:bg-teal-50 dark:border-zinc-700 dark:hover:bg-teal-950/30"
                 >
                   <UIcon
                     name="i-heroicons-arrow-top-right-on-square"
-                    class="h-3.5 w-3.5 shrink-0 text-gray-400 group-hover:text-teal-500"
+                    class="mt-0.5 h-4 w-4 shrink-0 text-gray-400 group-hover:text-teal-500"
                   />
-                  <span class="truncate">{{ link.label }}</span>
+                  <span class="min-w-0">
+                    <span class="block text-sm font-medium text-gray-700 group-hover:text-teal-700 dark:text-gray-200">{{ linkLabel(link.label) }}</span>
+                    <span class="block truncate text-xs text-gray-400">{{ linkHost(link.url) }}</span>
+                  </span>
                 </a>
                 <span
                   v-else
-                  class="inline-flex max-w-[320px] items-center rounded-full border border-gray-200 px-4 py-1.5 text-sm text-gray-500 dark:border-zinc-700"
+                  class="flex items-center rounded-xl border border-gray-200 px-4 py-2.5 text-sm text-gray-500 dark:border-zinc-700"
                 >
-                  <span class="truncate">{{ link.label }}</span>
+                  {{ linkLabel(link.label) }}
                 </span>
               </template>
             </div>
@@ -159,7 +175,7 @@
           <section v-if="stringId" class="border-t border-gray-100 pt-6 dark:border-zinc-800">
             <div class="mb-3 flex items-center justify-between gap-3">
               <h3 class="text-lg font-semibold text-gray-900 dark:text-white">
-                Community Contributions
+                {{ $t('detail.contributions') }}
                 <span v-if="projectContributions.length" class="font-normal text-gray-400">
                   ({{ projectContributions.length }})
                 </span>
@@ -172,7 +188,7 @@
                 class="shrink-0 rounded-full"
                 @click="showUpload = true"
               >
-                Add
+                {{ $t('detail.add') }}
               </UButton>
             </div>
 
@@ -181,7 +197,7 @@
               class="flex items-center gap-2 text-sm text-gray-400"
             >
               <UIcon name="i-heroicons-arrow-path" class="h-4 w-4 animate-spin" />
-              Loading…
+              {{ $t('detail.loading') }}
             </div>
 
             <div
@@ -190,7 +206,7 @@
             >
               <UIcon name="i-heroicons-camera" class="mx-auto mb-2 h-8 w-8 text-gray-300" />
               <p class="text-sm text-gray-500">
-                No community contributions yet. Be the first to add a photo or comment.
+                {{ $t('detail.noContributions') }}
               </p>
             </div>
 
@@ -202,33 +218,54 @@
               >
                 <div class="mb-2 flex items-center gap-1.5 text-xs text-gray-400">
                   <UIcon name="i-heroicons-user-circle" class="h-4 w-4" />
-                  <span>{{ contribution.userId === 'anonymous' ? 'Anonymous' : 'Contributor' }}</span>
+                  <span>{{ contribution.userId === 'anonymous' ? $t('detail.anonymous') : $t('detail.contributor') }}</span>
                   <span v-if="formatRelativeTime(contribution.createdAt)">
                     · {{ formatRelativeTime(contribution.createdAt) }}
+                  </span>
+                  <span
+                    v-if="!contribution.approved"
+                    class="rounded-full bg-amber-100 px-2 py-0.5 text-[10px] font-semibold text-amber-700 dark:bg-amber-900/40 dark:text-amber-300"
+                  >
+                    {{ $t('detail.pending') }}
                   </span>
                 </div>
                 <div
                   v-if="contribution.media.length"
                   class="mb-3 grid grid-cols-2 gap-2 sm:grid-cols-3"
                 >
-                  <a
-                    v-for="(media, mediaIndex) in contribution.media"
-                    :key="mediaIndex"
-                    :href="media.url"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    class="block overflow-hidden rounded-lg bg-teal-50"
-                  >
-                    <img
+                  <template v-for="(media, mediaIndex) in contribution.media" :key="mediaIndex">
+                    <audio
+                      v-if="media.kind === 'audio'"
                       :src="media.url"
-                      :alt="media.name"
-                      class="h-28 w-full object-cover transition-transform duration-200 hover:scale-105"
+                      controls
+                      class="col-span-full w-full"
                     />
-                  </a>
+                    <a
+                      v-else
+                      :href="media.url"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      class="block overflow-hidden rounded-lg bg-teal-50 dark:bg-teal-950/30"
+                    >
+                      <img
+                        :src="media.url"
+                        :alt="media.name"
+                        loading="lazy"
+                        decoding="async"
+                        class="h-28 w-full object-cover transition-transform duration-200 hover:scale-105"
+                      />
+                    </a>
+                  </template>
                 </div>
-                <p v-if="contribution.comment" class="text-sm leading-6 text-gray-700">
+                <p v-if="contribution.comment" class="text-sm leading-6 text-gray-700 dark:text-gray-300">
                   {{ contribution.comment }}
                 </p>
+
+                <!-- Moderator actions -->
+                <div v-if="auth.isAdmin" class="mt-3 flex gap-2 border-t border-gray-100 pt-2 dark:border-zinc-700">
+                  <UButton v-if="!contribution.approved" size="2xs" color="primary" @click="approveContribution(contribution)">{{ $t('detail.approve') }}</UButton>
+                  <UButton size="2xs" color="red" variant="soft" @click="deleteContribution(contribution)">{{ $t('detail.delete') }}</UButton>
+                </div>
               </article>
             </div>
           </section>
@@ -251,6 +288,10 @@
 <script setup lang="ts">
 import { computed, onMounted, ref, watch } from 'vue'
 import { useContributionsStore } from '../stores/contributions'
+import { useFilterStore } from '../stores/filter'
+import { useAuthStore } from '../stores/auth'
+import type { Contribution } from '../stores/types/contribution'
+import { categoryMeta } from '../composables/categoryMeta'
 
 interface Link {
   label: string
@@ -270,6 +311,8 @@ interface Props {
   links?: Link[]
   // All photo paths for this project; rendered as a carousel.
   photos?: string[]
+  // Voice notes recorded with the entry; rendered as audio players.
+  audio?: string[]
   // Stable MNC project id (mncData.json `string_id`). Used to load and save
   // community contributions for this project.
   stringId?: string
@@ -287,25 +330,61 @@ const props = withDefaults(defineProps<Props>(), {
   secondaryTag: '',
   links: () => [],
   photos: () => [],
+  audio: () => [],
   stringId: '',
 })
 
-defineEmits<{
+const emit = defineEmits<{
   close: []
 }>()
+
+const { t } = useI18n()
+
+// Clicking the primary tag filters the map to that theme and opens the list, so
+// the user can see every entry sharing the tag.
+const filter = useFilterStore()
+function onTagClick(tag: string) {
+  if (!tag || tag === 'N/A')
+    return
+  filter.showOnlyTag(tag)
+  filter.openList()
+  emit('close')
+}
 
 const descriptionExpanded = ref(false)
 const connectionExpanded = ref(false)
 
+// Translated "Learn More" link labels and topic names (both fall back to the
+// original English text).
+const { linkLabel, tagLabel } = useLocalizedEntry()
+
 // Display text for the tag badges. `secondaryTag` may arrive as an array
 // (the parent passes `secondaryTags`), so normalize it to a readable string.
-const primaryTagText = computed(() => props.primaryTag || 'N/A')
-const secondaryTagText = computed(() =>
-  Array.isArray(props.secondaryTag)
-    ? props.secondaryTag.join(', ')
-    : props.secondaryTag || 'N/A',
-)
+const primaryTagText = computed(() => tagLabel(props.primaryTag) || 'N/A')
 
+// Category accent (color + glyph) for the primary-tag chip, shared with the map
+// markers so a project reads the same on the pin and in the detail panel.
+const primaryMeta = computed(() => categoryMeta(props.primaryTag))
+
+// The readable source for a "Learn more" link, shown under its title so a vague
+// label like "Home Page" reveals where it actually points (e.g. who.int).
+function linkHost(url: string): string {
+  try {
+    return new URL(url).hostname.replace(/^www\./, '')
+  }
+  catch {
+    return url
+  }
+}
+
+// The chip tints its background with the accent in both themes, but the label
+// needs the darkened `ink` on the light card (the vivid color is too faint on
+// white) and the vivid color on the dark card.
+const colorMode = useColorMode()
+const tagChipStyle = computed(() => ({
+  backgroundColor: `${primaryMeta.value.color}22`,
+  color: colorMode.value === 'dark' ? primaryMeta.value.color : primaryMeta.value.ink,
+}))
 // Individual secondary tags, for rendering as separate chips.
 const secondaryTagList = computed<string[]>(() => {
   const s = props.secondaryTag
@@ -329,8 +408,16 @@ const captionText = computed(() => {
 
 // Community contributions (user-uploaded images + comments) for this project.
 const contributions = useContributionsStore()
+const auth = useAuthStore()
 const showUpload = ref(false)
 const projectContributions = computed(() => contributions.byProject[props.stringId] || [])
+
+async function approveContribution(c: Contribution) {
+  await contributions.approveContribution(c.id!, props.stringId)
+}
+async function deleteContribution(c: Contribution) {
+  await contributions.deleteContribution(c)
+}
 
 // Load contributions whenever a project is shown (and when it changes).
 function loadContributions() {
@@ -353,15 +440,15 @@ function formatRelativeTime(iso: string): string {
     return ''
   const mins = Math.floor((Date.now() - then) / 60000)
   if (mins < 1)
-    return 'just now'
+    return t('detail.justNow')
   if (mins < 60)
-    return `${mins}m ago`
+    return t('detail.minutesAgo', { n: mins })
   const hrs = Math.floor(mins / 60)
   if (hrs < 24)
-    return `${hrs}h ago`
+    return t('detail.hoursAgo', { n: hrs })
   const days = Math.floor(hrs / 24)
   if (days < 30)
-    return `${days}d ago`
+    return t('detail.daysAgo', { n: days })
   return new Date(iso).toLocaleDateString()
 }
 

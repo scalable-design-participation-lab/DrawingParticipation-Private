@@ -1,12 +1,8 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import type { Feature } from '@base/stores/types/store'
-import healthIcon from '@base/assets/icons/Health.svg'
-import transportIcon from '@base/assets/icons/Transportation.svg'
-import connectivityIcon from '@base/assets/icons/Connectivity.svg'
-import artIcon from '@base/assets/icons/Art.svg'
-import communityIcon from '@base/assets/icons/Community.svg'
 import { useFilterStore } from '../stores/filter'
+import { categoryMeta } from '../composables/categoryMeta'
 
 const emit = defineEmits<{
   'toggle-icon-details': [payload: { feature: Feature, markerPosition: { x: number, y: number } }]
@@ -17,17 +13,9 @@ const filterStore = useFilterStore()
 // Cluster any features whose centers are within this many EPSG:3857 meters.
 const CLUSTER_THRESHOLD_M = 250
 
-const ICONS: Record<string, string> = {
-  'Health & Crisis Response': healthIcon,
-  'Transportation & Mobility': transportIcon,
-  'Digital Access & Connectivity': connectivityIcon,
-  'Community Mapping & Visibility': communityIcon,
-  'Art & Cultural Expression': artIcon,
-}
-
-function iconFor(feature: Feature): string {
-  const tag = (feature.properties as any)?.primaryTag
-  return ICONS[tag] ?? healthIcon
+// Per-category accent color + glyph, shared with the detail panel and filters.
+function metaFor(feature: Feature) {
+  return categoryMeta((feature.properties as any)?.primaryTag)
 }
 
 interface Cluster {
@@ -85,74 +73,103 @@ function onPinClick(feature: Feature, event: MouseEvent) {
     v-for="cluster in clusters"
     :key="cluster.id"
     :position="cluster.centroid"
-    :stop-event="false"
-    positioning="center-center"
+    positioning="bottom-center"
   >
-    <div class="mnc-pin">
-        <button
-          v-for="member in cluster.members"
-          :key="member.id"
-          type="button"
-          class="mnc-pin__item"
-          :aria-label="member.comment || 'Map pin'"
-          @click.stop="onPinClick(member, $event)"
-        >
-          <img
-            :src="iconFor(member)"
-            :alt="(member.properties as any)?.primaryTag || ''"
-            class="mnc-pin__icon"
-          />
-        </button>
-      </div>
-    </ol-overlay>
+    <div class="mnc-pins">
+      <button
+        v-for="member in cluster.members"
+        :key="member.id"
+        type="button"
+        class="mnc-pin"
+        :class="{ 'mnc-pin--pending': (member.properties as any)?.pending }"
+        :style="{ '--pin-color': metaFor(member).color }"
+        :aria-label="(member.properties as any)?.pending ? `${member.comment || 'Map pin'} — pending review` : (member.comment || 'Map pin')"
+        @click.stop="onPinClick(member, $event)"
+      >
+        <UIcon
+          :name="metaFor(member).icon"
+          class="mnc-pin__icon"
+          :style="{ color: metaFor(member).color }"
+        />
+        <!-- Amber marker on pins still awaiting moderator approval (admins only) -->
+        <span v-if="(member.properties as any)?.pending" class="mnc-pin__pending" title="Pending review" />
+      </button>
+    </div>
+  </ol-overlay>
 </template>
 
 <style scoped>
-.mnc-pin {
+/* A cluster renders each member as its own category-colored pin, laid out in a
+   row so overlapping projects stay individually tappable. */
+.mnc-pins {
   display: inline-flex;
-  align-items: center;
-  gap: 2px;
-  padding: 4px;
-  border-radius: 999px;
-  border: 2.5px solid transparent;
-  background-image:
-    linear-gradient(white, white),
-    conic-gradient(
-      from 0deg,
-      #FB6D6D 0deg,
-      #57C9C0 90deg,
-      #f9d876 180deg,
-      #84e8a0 270deg,
-      #FB6D6D 360deg
-    );
-  background-origin: border-box;
-  background-clip: padding-box, border-box;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+  align-items: flex-end;
+  gap: 4px;
   pointer-events: auto;
 }
 
-.mnc-pin__item {
-  width: 36px;
-  height: 36px;
+/* Category-colored teardrop pin: a ringed circle over a downward tail. The dark
+   translucent fill keeps the colored ring + glyph legible on both the light and
+   dark basemaps. */
+.mnc-pin {
+  position: relative;
+  width: 40px;
+  height: 40px;
   border-radius: 50%;
+  border: 2.5px solid var(--pin-color);
+  background: rgba(24, 24, 27, 0.9);
   display: flex;
   align-items: center;
   justify-content: center;
-  background: transparent;
-  border: none;
   padding: 0;
+  margin-bottom: 8px; /* room for the tail */
   cursor: pointer;
-  transition: background 0.15s ease;
+  box-shadow:
+    0 2px 8px rgba(0, 0, 0, 0.35),
+    0 0 12px -2px var(--pin-color);
+  transition: transform 0.15s ease;
 }
 
-.mnc-pin__item:hover {
-  background: #f3f4f6;
+.mnc-pin:hover {
+  transform: translateY(-2px) scale(1.06);
+}
+
+/* Downward-pointing tail, colored to match the ring. */
+.mnc-pin::after {
+  content: '';
+  position: absolute;
+  bottom: -8px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 0;
+  height: 0;
+  border-left: 7px solid transparent;
+  border-right: 7px solid transparent;
+  border-top: 9px solid var(--pin-color);
 }
 
 .mnc-pin__icon {
-  width: 26px;
-  height: 26px;
-  object-fit: contain;
+  width: 22px;
+  height: 22px;
+  pointer-events: none;
+}
+
+/* Pins awaiting moderator approval: dashed ring, slightly faded, amber marker.
+   Only admins ever load these, so the public never sees the pending state. */
+.mnc-pin--pending {
+  border-style: dashed;
+  opacity: 0.9;
+}
+
+.mnc-pin__pending {
+  position: absolute;
+  top: -3px;
+  right: -3px;
+  width: 13px;
+  height: 13px;
+  border-radius: 50%;
+  background: #f59e0b;
+  border: 2px solid rgba(24, 24, 27, 0.9);
   pointer-events: none;
 }
 </style>

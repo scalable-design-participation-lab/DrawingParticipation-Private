@@ -74,7 +74,7 @@ const cardStyle = {
 
 <template>
   <UCard
-    class="w-[280px] z-[2000] pointer-events-auto"
+    class="w-[280px] max-h-[85vh] overflow-y-auto z-[2000] pointer-events-auto"
     :class="{ fixed: floating }"
     :ui="cardStyle"
     :style="floating ? positionStyle : undefined"

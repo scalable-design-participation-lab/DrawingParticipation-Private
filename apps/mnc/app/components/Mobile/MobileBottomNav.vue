@@ -15,33 +15,29 @@ const emit = defineEmits<{
 }>()
 
 const defaultNavItems = [
-  { view: 'map' as MapView, icon: 'i-heroicons-map', label: 'Map' },
-  { view: 'list' as MapView, icon: 'i-heroicons-bars-3', label: 'List' },
-  { view: 'info' as MapView, icon: 'i-heroicons-information-circle', label: 'Info' },
-  { view: 'more' as MapView, icon: 'i-heroicons-ellipsis-horizontal', label: 'More' },
-]
-
-const projectNavItems = [
-  { icon: 'i-heroicons-map-pin', label: 'Map', action: () => emit('show-on-map') },
-  { icon: 'i-heroicons-book-open', label: 'Read', action: () => emit('read-more') },
-  { icon: 'i-heroicons-arrow-right', label: 'Next', action: () => emit('next-project') },
-  { icon: 'i-heroicons-arrow-uturn-left', label: 'Close', action: () => emit('close-project') },
+  { view: 'map' as MapView, icon: 'i-heroicons-map', labelKey: 'nav.map' },
+  { view: 'list' as MapView, icon: 'i-heroicons-square-3-stack-3d', labelKey: 'nav.list' },
+  { view: 'info' as MapView, icon: 'i-heroicons-information-circle', labelKey: 'nav.info' },
+  // Not nav.addEntry: that label offers "or click anywhere on the map", which is
+  // a desktop-only shortcut — BackgroundMap ignores map clicks on mobile.
+  { view: 'more' as MapView, icon: 'i-heroicons-plus', labelKey: 'nav.addEntryMobile' },
 ]
 </script>
 
 <template>
-  <div class="fixed bottom-6 left-0 right-0 flex justify-center z-50 pointer-events-none">
+  <div class="fixed bottom-6 safe-bottom left-0 right-0 flex justify-center z-50 pointer-events-none">
     <div
-      class="pointer-events-auto flex items-center gap-2 bg-white rounded-full px-4 py-2 shadow-lg"
+      class="pointer-events-auto touch-manipulation flex items-center gap-2 bg-white dark:bg-zinc-900 rounded-full px-4 py-2 shadow-lg"
       style="border: 2px solid #e5e7eb;"
+      @pointerdown.stop
+      @touchstart.stop
     >
-      <!-- Default navigation (no project selected) -->
-      <template v-if="!projectSelected">
+      <!-- Default navigation stays visible even with a project open (the detail
+           popup has its own close/expand), so the user is never stranded. -->
+      <UTooltip v-for="item in defaultNavItems" :key="item.view" :text="$t(item.labelKey)">
         <UButton
-          v-for="item in defaultNavItems"
-          :key="item.view"
           :icon="item.icon"
-          :aria-label="item.label"
+          :aria-label="$t(item.labelKey)"
           variant="ghost"
           size="lg"
           class="rounded-full"
@@ -50,23 +46,7 @@ const projectNavItems = [
           :ui="{ rounded: 'rounded-full' }"
           @click="emit('update:activeView', item.view)"
         />
-      </template>
-
-      <!-- Project context navigation (project selected) -->
-      <template v-else>
-        <UButton
-          v-for="item in projectNavItems"
-          :key="item.label"
-          :icon="item.icon"
-          :aria-label="item.label"
-          variant="ghost"
-          size="lg"
-          class="rounded-full"
-          :style="{ color: '#9CA3AF' }"
-          :ui="{ rounded: 'rounded-full' }"
-          @click="item.action"
-        />
-      </template>
+      </UTooltip>
     </div>
   </div>
 </template>
@@ -79,5 +59,11 @@ const projectNavItems = [
     linear-gradient(135deg, #57C9C0, #84e8a0, #f9d876);
   background-origin: border-box;
   background-clip: padding-box, border-box;
+}
+
+.dark .active-icon {
+  background-image:
+    linear-gradient(#18181b, #18181b),
+    linear-gradient(135deg, #57C9C0, #84e8a0, #f9d876);
 }
 </style>

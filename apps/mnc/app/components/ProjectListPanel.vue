@@ -7,9 +7,12 @@ import connectivityIcon from '@base/assets/icons/Connectivity.svg'
 import artIcon from '@base/assets/icons/Art.svg'
 import communityIcon from '@base/assets/icons/Community.svg'
 import { useFilterStore } from '../stores/filter'
+import { categoryMeta } from '../composables/categoryMeta'
+import { photoThumb } from '../composables/photoThumb'
 
 const filterStore = useFilterStore()
 const search = ref('')
+const { lf, tagLabel } = useLocalizedEntry()
 
 const ICONS: Record<string, string> = {
   'Health & Crisis Response': healthIcon,
@@ -23,11 +26,11 @@ function categoryIcon(tag: string | undefined): string | null {
   return tag ? ICONS[tag] ?? null : null
 }
 
-// All case studies (curated + user-submitted), filtered by the search query,
-// sorted alphabetically by title.
+// Case studies matching the active theme filter (so a tag click / theme toggle
+// narrows this list too), filtered by the search query, sorted A→Z by title.
 const items = computed<Feature[]>(() => {
   const q = search.value.trim().toLowerCase()
-  const all = [...filterStore.mncFeatures].sort((a, b) =>
+  const all = [...filterStore.visibleFeatures].sort((a, b) =>
     (a.comment || '').localeCompare(b.comment || ''),
   )
   if (!q)
@@ -49,11 +52,22 @@ function primaryTag(feature: Feature): string {
   return (feature.properties as any)?.primaryTag || ''
 }
 
+// Category chip: tinted background in both themes, with the darkened ink on the
+// light card and the vivid color on the dark card so the label stays legible.
+const colorMode = useColorMode()
+function tagChipStyle(tag: string) {
+  const m = categoryMeta(tag)
+  return {
+    backgroundColor: `${m.color}22`,
+    color: colorMode.value === 'dark' ? m.color : m.ink,
+  }
+}
+
 function itemMeta(feature: Feature): string {
   const p = (feature.properties as any) ?? {}
   const parts: string[] = []
   if (p.location)
-    parts.push(p.location)
+    parts.push(lf(p, 'location', p.location))
   if (p.date)
     parts.push(String(p.date))
   return parts.join(' · ')
@@ -66,44 +80,28 @@ function select(feature: Feature) {
 </script>
 
 <template>
-  <div
-    class="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4"
-    @click.self="filterStore.toggleList()"
-  >
-    <div
-      class="flex max-h-[88vh] w-full max-w-5xl flex-col overflow-hidden rounded-3xl bg-white shadow-2xl dark:bg-zinc-900"
-    >
-      <!-- Header -->
-      <div class="flex flex-col gap-3 border-b border-gray-100 px-6 py-4 dark:border-zinc-800">
-        <div class="flex items-center justify-between">
-          <h2 class="text-xl font-bold text-gray-900 dark:text-white">
-            All Solutions
-            <span class="font-normal text-gray-400">({{ items.length }})</span>
-          </h2>
-          <UButton
-            icon="i-heroicons-x-mark"
-            color="gray"
-            variant="ghost"
-            aria-label="Close"
-            :ui="{ rounded: 'rounded-full' }"
-            @click="filterStore.toggleList()"
-          />
-        </div>
+  <AppModal max-width="max-w-5xl" @close="filterStore.toggleList()">
+    <template #header>
+      <div class="min-w-0 flex-1">
+        <h2 class="text-xl font-bold text-gray-900 dark:text-white">
+          {{ $t('list.title') }}
+          <span class="font-normal text-gray-400">({{ items.length }})</span>
+        </h2>
         <UInput
           v-model="search"
           icon="i-heroicons-magnifying-glass"
-          placeholder="Search solutions…"
+          :placeholder="$t('list.search')"
           :ui="{ rounded: 'rounded-full' }"
+          class="mt-3"
         />
       </div>
+    </template>
 
-      <!-- Tiled grid -->
-      <div class="mnc-grid-scroll flex-1 overflow-y-auto p-6">
-        <p v-if="!items.length" class="py-12 text-center text-sm text-gray-400">
-          No solutions match “{{ search }}”.
-        </p>
+    <p v-if="!items.length" class="py-12 text-center text-sm text-gray-400">
+      {{ $t('list.empty', { q: search }) }}
+    </p>
 
-        <div v-else class="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+    <div v-else class="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
           <button
             v-for="feature in items"
             :key="feature.id"
@@ -113,10 +111,19 @@ function select(feature: Feature) {
           >
             <!-- Cover -->
             <div class="relative h-36 overflow-hidden bg-teal-50 dark:bg-teal-950/30">
+              <!-- Only admins ever load unapproved features, so this badge self-gates. -->
+              <span
+                v-if="(feature.properties as any)?.pending"
+                class="absolute right-2 top-2 z-10 rounded-full bg-amber-500 px-2 py-0.5 text-[10px] font-semibold text-white shadow"
+              >
+                {{ $t('mod.pending') }}
+              </span>
               <img
                 v-if="coverImage(feature)"
-                :src="coverImage(feature)!"
+                :src="photoThumb(coverImage(feature))"
                 :alt="feature.comment"
+                loading="lazy"
+                decoding="async"
                 class="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
               />
               <div
@@ -137,12 +144,14 @@ function select(feature: Feature) {
             <div class="flex flex-1 flex-col gap-1.5 p-4">
               <span
                 v-if="primaryTag(feature)"
-                class="inline-flex w-fit items-center gap-1 rounded-full bg-teal-100 px-2.5 py-0.5 text-xs font-medium text-teal-800 dark:bg-teal-900/40 dark:text-teal-300"
+                class="inline-flex w-fit items-center gap-1 rounded-full px-2.5 py-0.5 text-xs font-medium"
+                :style="tagChipStyle(primaryTag(feature))"
               >
-                {{ primaryTag(feature) }}
+                <UIcon :name="categoryMeta(primaryTag(feature)).icon" class="h-3 w-3" />
+                {{ tagLabel(primaryTag(feature)) }}
               </span>
               <p class="line-clamp-2 text-sm font-semibold leading-snug text-gray-900 dark:text-white">
-                {{ feature.comment || 'Untitled' }}
+                {{ lf(feature.properties, 'title', feature.comment) || $t('list.untitled') }}
               </p>
               <p v-if="itemMeta(feature)" class="mt-auto truncate text-xs text-gray-400">
                 {{ itemMeta(feature) }}
@@ -150,9 +159,7 @@ function select(feature: Feature) {
             </div>
           </button>
         </div>
-      </div>
-    </div>
-  </div>
+  </AppModal>
 </template>
 
 <style scoped>
@@ -162,22 +169,5 @@ function select(feature: Feature) {
   line-clamp: 2;
   -webkit-box-orient: vertical;
   overflow: hidden;
-}
-.mnc-grid-scroll::-webkit-scrollbar {
-  width: 10px;
-}
-.mnc-grid-scroll::-webkit-scrollbar-track {
-  background: transparent;
-  margin: 8px 0;
-}
-.mnc-grid-scroll::-webkit-scrollbar-thumb {
-  background-color: rgba(148, 163, 184, 0.45);
-  border-radius: 9999px;
-  border: 3px solid transparent;
-  background-clip: content-box;
-}
-.mnc-grid-scroll {
-  scrollbar-width: thin;
-  scrollbar-color: rgba(148, 163, 184, 0.45) transparent;
 }
 </style>

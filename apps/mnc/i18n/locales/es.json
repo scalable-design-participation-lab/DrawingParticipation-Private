@@ -1,0 +1,301 @@
+{
+  "onboarding": {
+    "title": "Bienvenido a Mobile Networked Creativity",
+    "intro": "Mobile Networked Creativity (MNC) mapea ejemplos reales de cómo comunidades de todo el mundo adaptan creativamente la tecnología móvil y las redes para responder a sus propias necesidades.",
+    "point1": "Explora casos de estudio en todo el mundo, por ubicación y por tema",
+    "point2": "Haz clic en cualquier pin para ver cómo una comunidad adaptó la tecnología a sus necesidades",
+    "point3": "Agrega tus propias fotos y comentarios para aportar ejemplos relacionados",
+    "getStarted": "Comenzar",
+    "footer": "Mobile Networked Creativity es un proyecto del Scalable Design Participation Lab de Northeastern University"
+  },
+  "nav": {
+    "addEntry": "Agregar una contribución — o haz clic en cualquier punto del mapa",
+    "addEntryMobile": "Agregar una contribución",
+    "filter": "Selección filtrada",
+    "list": "Lista de registros",
+    "map": "Mapa",
+    "info": "Acerca de este mapa",
+    "help": "Ayuda",
+    "satelliteOn": "Cambiar a vista satelital",
+    "satelliteOff": "Cambiar a vista de mapa"
+  },
+  "detail": {
+    "description": "Descripción",
+    "tags": "Etiquetas",
+    "learnMore": "Más información",
+    "contributions": "Contribuciones de la comunidad",
+    "add": "Agregar",
+    "addPhoto": "Agregar foto o comentario",
+    "noContributions": "Aún no hay contribuciones de la comunidad. Sé el primero en agregar una foto o comentario.",
+    "showAll": "Mostrar todos los registros de {tag}",
+    "close": "Cerrar",
+    "connection": "Conexión con Mobile Networked Creativity",
+    "readMore": "Leer más",
+    "readLess": "Leer menos",
+    "loading": "Cargando…",
+    "pending": "Pendiente",
+    "approve": "Aprobar",
+    "delete": "Eliminar",
+    "anonymous": "Anónimo",
+    "contributor": "Colaborador",
+    "justNow": "justo ahora",
+    "minutesAgo": "hace {n}min",
+    "hoursAgo": "hace {n}h",
+    "daysAgo": "hace {n}d",
+    "voiceNotes": "Notas de voz"
+  },
+  "photo": {
+    "noPhoto": "Aún no hay fotos",
+    "beFirst": "Sé el primero en agregar una",
+    "prevPhoto": "Foto anterior",
+    "nextPhoto": "Foto siguiente",
+    "goToPhoto": "Ir a la foto {n}"
+  },
+  "add": {
+    "title": "Agregar un registro",
+    "titleLabel": "Título",
+    "titlePlaceholder": "p. ej. Bomba de agua comunitaria solar",
+    "theme": "Tema",
+    "themePlaceholder": "Selecciona un tema — o escribe para crear uno nuevo",
+    "location": "Ubicación",
+    "locationHint": "Completado automáticamente desde donde tocaste el mapa — edítalo si es necesario.",
+    "detecting": "detectando…",
+    "shortDesc": "Descripción breve",
+    "shortDescPlaceholder": "Resumen de una línea",
+    "fullDesc": "Descripción completa (opcional)",
+    "media": "Fotos o audio (opcional)",
+    "filesSelected": "{n} archivo(s) seleccionado(s)",
+    "pinNote": "La ubicación del pin se toma de donde tocaste el mapa.",
+    "required": "Se requiere un título, un tema y una ubicación.",
+    "cancel": "Cancelar",
+    "submit": "Agregar al mapa",
+    "placeBanner": "Haz clic en el mapa para ubicar tu solución",
+    "pickBanner": "Toca el mapa para soltar tu pin",
+    "locationPlaceholder": "p. ej. Nairobi, Kenia",
+    "chooseFiles": "Elegir archivos",
+    "noFile": "Ningún archivo seleccionado",
+    "submitted": "Enviado para revisión — aparecerá en el mapa cuando un moderador lo apruebe."
+  },
+  "list": {
+    "title": "Todas las soluciones",
+    "search": "Buscar soluciones…",
+    "empty": "Ninguna solución coincide con “{q}”.",
+    "nearest": "Más cercanas a ti",
+    "all": "Todos los registros",
+    "close": "Cerrar",
+    "untitled": "Sin título",
+    "emptyList": "Aún no se han cargado proyectos.",
+    "kmAway": "a {d} km"
+  },
+  "lang": {
+    "label": "Idioma",
+    "en": "English",
+    "pt": "Português",
+    "es": "Español"
+  },
+  "mDetail": {
+    "close": "Cerrar",
+    "tapToExpand": "Toca para expandir",
+    "datePublished": "Fecha de publicación:",
+    "location": "Ubicación:",
+    "description": "Descripción:",
+    "learnMore": "Más información:",
+    "community": "Comunidad",
+    "beFirst": "Sé el primero en agregar una foto o comentario."
+  },
+  "quick": {
+    "noImage": "No hay imagen disponible"
+  },
+  "upload": {
+    "clickToSelect": "Haz clic para seleccionar fotos o audio",
+    "hint": "Fotos o audio · hasta 10 MB cada uno",
+    "commentPlaceholder": "Escribe un comentario",
+    "publicNote": "Todo lo que agregues se muestra públicamente en este proyecto.",
+    "close": "Cerrar",
+    "uploadError": "Falló uno o más envíos. Inténtalo de nuevo.",
+    "saveError": "No se pudo guardar tu contribución. Inténtalo de nuevo."
+  },
+  "mod": {
+    "signInTitle": "Iniciar sesión como moderador",
+    "email": "Correo electrónico",
+    "password": "Contraseña",
+    "signIn": "Iniciar sesión",
+    "notModerator": "Sesión iniciada, pero esta cuenta no es de moderador.",
+    "signInFailed": "No se pudo iniciar sesión. Verifica tu correo y contraseña.",
+    "forgotPassword": "¿Olvidaste tu contraseña?",
+    "enterEmailForReset": "Primero ingresa tu correo arriba.",
+    "resetSent": "Correo de restablecimiento enviado. Revisa tu bandeja de entrada.",
+    "errReset": "No se pudo enviar el correo de restablecimiento. Verifica la dirección e inténtalo de nuevo.",
+    "reviewEntries": "Revisar registros",
+    "signOut": "Cerrar sesión",
+    "noEntries": "No hay envíos para revisar.",
+    "live": "Publicado",
+    "pending": "Pendiente",
+    "approve": "Aprobar",
+    "delete": "Eliminar",
+    "moderate": "Moderar",
+    "close": "Cerrar",
+    "review": "Revisar",
+    "entries": "Envíos",
+    "contributions": "Contribuciones",
+    "noContributions": "No hay contribuciones pendientes.",
+    "showOnMap": "Mostrar en el mapa",
+    "collapse": "Contraer",
+    "expand": "Expandir"
+  },
+  "admin": {
+    "title": "Gestión de cuentas",
+    "subtitle": "Regístrate y luego un administrador concede acceso de moderación — sin necesidad de la consola de Firebase.",
+    "backToMap": "Volver al mapa",
+    "loading": "Cargando…",
+    "register": "Registrarse",
+    "registerHint": "Crea una cuenta simple con tu correo — por sí sola no otorga permisos. Luego un administrador te concederá acceso de moderación aquí.",
+    "newPassword": "Contraseña (mín. 6 caracteres)",
+    "errRegister": "El registro falló. Inténtalo de nuevo.",
+    "errProviderDisabled": "El inicio de sesión con correo/contraseña no está habilitado para este proyecto de Firebase (consola → Authentication → Sign-in method).",
+    "errRegisterIncomplete": "Tu cuenta fue creada, pero aún no pudo listarse para revisión. Inicia sesión más tarde o contacta a un administrador.",
+    "errEmailInUseRegister": "Este correo ya tiene una cuenta — cambia a “Iniciar sesión”. Tu registro se completa automáticamente al iniciar sesión.",
+    "pendingTitle": "Tu cuenta está registrada",
+    "pendingBody": "Sesión iniciada como {email}. Un administrador debe concederte acceso de moderación antes de que puedas revisar envíos.",
+    "yourUid": "Tu ID de cuenta (UID)",
+    "copyUid": "Copiar ID de cuenta",
+    "bootstrapToggle": "¿Configurando el primer administrador?",
+    "claimHint": "Si esta cuenta es de uno de los propietarios del proyecto listados en las reglas de seguridad, puedes concederte acceso aquí mismo.",
+    "claimAdmin": "Reclamar acceso de administrador",
+    "claimFailed": "Esta cuenta no está en la lista de propietarios del proyecto, así que no puede concederse acceso a sí misma. Usa los pasos manuales de abajo o pide ayuda a un administrador existente.",
+    "claimOrManual": "O configúralo manualmente",
+    "bootstrapStep1": "Consola de Firebase → Firestore Database → Data (no Authentication — los permisos de moderación no se guardan ahí).",
+    "bootstrapStep2": "Abre la colección “admins”, o créala si aún no existe.",
+    "bootstrapStep3": "Agrega un documento cuyo Document ID sea exactamente el ID de cuenta de arriba.",
+    "bootstrapStep4": "Dale un campo llamado “role” de tipo string con el valor “admin”, guarda y recarga esta página.",
+    "bootstrapNote": "Solo se necesita una vez. Después, todas las demás cuentas se conceden desde esta página.",
+    "registrations": "Registros nuevos",
+    "registrationsHint": "Personas que registraron una cuenta y esperan acceso. Promueve a quienes reconozcas; elimina el resto.",
+    "noRegistrations": "No hay registros nuevos.",
+    "removeRegistration": "Eliminar registro",
+    "promoted": "Acceso concedido a {email}.",
+    "moderatorOnly": "Iniciaste sesión como moderador. La revisión de envíos ocurre en el mapa; solo los administradores pueden gestionar cuentas.",
+    "createTitle": "Crear cuenta directamente",
+    "createHint": "Alternativa para cuando la persona no puede registrarse por sí misma. La contraseña se guarda solo como hash en Firebase Authentication — comparte la contraseña temporal de forma segura y pídele que la cambie mediante “restablecer contraseña”.",
+    "tempPassword": "Contraseña temporal (mín. 6 caracteres)",
+    "create": "Crear",
+    "created": "Cuenta para {email} creada.",
+    "errEmailInUse": "Ya existe una cuenta con este correo.",
+    "errInvalidEmail": "Esa dirección de correo no es válida.",
+    "errWeakPassword": "La contraseña es demasiado débil — usa al menos 6 caracteres.",
+    "errCreate": "No se pudo crear la cuenta. Inténtalo de nuevo.",
+    "accounts": "Cuentas",
+    "refresh": "Actualizar",
+    "noAccounts": "Aún no hay cuentas.",
+    "you": "tú",
+    "roleAdmin": "Administrador",
+    "roleModerator": "Moderador",
+    "makeAdmin": "Hacer administrador",
+    "makeModerator": "Hacer moderador",
+    "sendReset": "Enviar correo de restablecimiento de contraseña",
+    "resetSent": "Correo de restablecimiento enviado a {email}.",
+    "revoke": "Revocar acceso",
+    "revokeConfirm": "¿Quitar el acceso de moderación a {email}? Ya no podrá revisar envíos ni iniciar sesión como moderador.",
+    "revoked": "Acceso revocado para {email}.",
+    "revokeNote": "Los administradores pueden revisar envíos y gestionar cuentas; los moderadores solo pueden revisar. Revocar elimina todos los permisos de moderación de inmediato.",
+    "errAction": "Esa acción falló. Inténtalo de nuevo."
+  },
+  "contribute": {
+    "title": "Únete a nuestra investigación",
+    "thankYou": "Gracias",
+    "received": "Tu envío ha sido recibido y será revisado por nuestro equipo.",
+    "inTouch": "¡Nos pondremos en contacto contigo pronto!",
+    "anotherStory": "Cuéntanos otra historia",
+    "close": "Cerrar",
+    "back": "Atrás",
+    "next": "Siguiente",
+    "submit": "Enviar",
+    "descPlaceholder": "Escribe tu descripción aquí",
+    "step1": {
+      "prompt": "¿Quieres agregar una creación? ¿Dónde ocurrió este evento?",
+      "placeholder": "Ingresa la ubicación aquí o toca para soltar un pin en el mapa",
+      "dropPin": "Toca para soltar un pin en el mapa",
+      "pinDropped": "Pin colocado ({coord})",
+      "confirmPinPrompt": "Aquí está tu pin — ¿la ubicación se ve correcta?",
+      "movePin": "¿No es correcta? Toca para elegir otro lugar"
+    },
+    "step2": {
+      "prompt": "Describe brevemente un ejemplo de Creatividad Móvil en Red a continuación:"
+    },
+    "step3": {
+      "prompt": "¿Por qué crees que este es un buen ejemplo de Creatividad Móvil en Red?"
+    },
+    "step4": {
+      "prompt": "¿Tienes imágenes o videos para ilustrar tu ejemplo? Si es así, súbelos aquí:"
+    },
+    "step5": {
+      "prompt": "¿Cuándo ocurrió este evento?"
+    },
+    "step6": {
+      "prompt": "¿Hay información adicional que quieras compartir sobre tu envío? Escríbela a continuación."
+    },
+    "step7": {
+      "prompt": "¿Quieres que tu información personal quede vinculada a tu envío?",
+      "yes": "Sí, quiero que mi nombre aparezca en mi envío",
+      "no": "No, quiero enviarlo de forma anónima",
+      "ifYes": "Si es así, dinos tu nombre, ciudad y país.",
+      "fullName": "Nombre completo",
+      "email": "Correo electrónico",
+      "country": "País",
+      "city": "Ciudad",
+      "privacy": "Tu ejemplo y cualquier medio pueden mostrarse públicamente en el mapa. Tu nombre se muestra solo si eliges \"Sí\" arriba. Tu correo se usa únicamente para contactarte — nunca se muestra públicamente."
+    }
+  },
+  "fileUpload": {
+    "prompt": "Selecciona un archivo o arrástralo aquí",
+    "hint": "Fotos o audio, tamaño máximo de 10 MB",
+    "removeFile": "Quitar archivo",
+    "tooLarge": "\"{name}\" supera los {max} MB.",
+    "unsupported": "\"{name}\" no es un tipo de archivo compatible."
+  },
+  "voice": {
+    "record": "Grabar una nota de voz",
+    "stop": "Detener grabación",
+    "micDenied": "El acceso al micrófono fue bloqueado. Permítelo en tu navegador para grabar."
+  },
+  "menu": {
+    "home": "Inicio",
+    "about": "Sobre nosotros",
+    "support": "Soporte"
+  },
+  "about": {
+    "backToMap": "Volver al mapa",
+    "heroTitle": "Cómo las comunidades reinventan la tecnología para responder a sus propias necesidades",
+    "heroIntro": "Un atlas interactivo de ejemplos reales — desde mototaxis en Filipinas hasta un libro escrito completamente por WhatsApp — de cómo las personas adaptan creativamente la tecnología móvil y en red a las realidades de su lugar y momento.",
+    "exploreMap": "Explorar el mapa",
+    "whatTitle": "¿Qué es la Creatividad Móvil en Red?",
+    "what1": "La Creatividad Móvil en Red (MNC) no se trata solo del producto o dispositivo final. También se trata del microproceso de creación — la red de relaciones que se desarrolla entre personas y tecnologías en un espacio y tiempo particulares.",
+    "what2": "En todo el mundo, las comunidades — a menudo en contextos de recursos limitados o de crisis — combinan objetos cotidianos, dispositivos móviles y redes para resolver problemas que los sistemas formales dejan sin atender. Este proyecto reúne esas historias en un solo mapa para que puedan explorarse, compararse y ampliarse.",
+    "themesTitle": "Temas para explorar",
+    "participateTitle": "Agrega tu propio ejemplo",
+    "participate1": "¿Conoces un ejemplo que nos falta, o tienes una foto de uno que ya está en el mapa? Abre cualquier caso de estudio y usa “Agregar foto o comentario” para aportar tus propias imágenes y reflexiones.",
+    "startContributing": "Empieza a contribuir",
+    "themes": {
+      "transport": {
+        "title": "Transporte y movilidad",
+        "description": "Vehículos y transportes improvisados que mantienen en movimiento a personas y mercancías."
+      },
+      "health": {
+        "title": "Salud y gestión de crisis",
+        "description": "Atención móvil y respuestas rápidas donde los servicios formales no alcanzan."
+      },
+      "digital": {
+        "title": "Acceso digital y conectividad",
+        "description": "Formas comunitarias de conectar a la gente a internet y entre sí."
+      },
+      "mapping": {
+        "title": "Mapas comunitarios y visibilidad",
+        "description": "Hacer visibles en el mapa lugares y personas ignorados."
+      },
+      "art": {
+        "title": "Arte y expresiones culturales",
+        "description": "Prácticas creativas y culturales transmitidas a través de las redes móviles."
+      }
+    }
+  }
+}
