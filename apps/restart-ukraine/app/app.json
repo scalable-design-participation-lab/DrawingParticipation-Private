@@ -1,0 +1,14 @@
+{
+  "version": 1,
+  "name": "restart-ukraine",
+  "title": "Гуртомá - Платформа для покращення міст",
+  "description": "Платформа від команди Restart, яка спрощує комунікацію між містянами та урбаністами.",
+  "lang": "uk",
+  "routes": {
+    "/": "index.json",
+    "/about": "about.json",
+    "/result": "result.json",
+    "/dashboard": "dashboard.json"
+  },
+  "data": { "collection": "none" }
+}

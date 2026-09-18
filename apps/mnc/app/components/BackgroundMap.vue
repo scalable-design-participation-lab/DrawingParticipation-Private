@@ -1,95 +1,8 @@
-<template>
-  <GeneralizedBackgroundMap
-    ref="baseMap"
-    :mapbox-style-light="mapboxStyleLight"
-    :mapbox-style-dark="mapboxStyleDark"
-    @toggle-icon-details="handleShowQuickLook"
-    @map-click="handleMapClick"
-  >
-    <template #layers>
-      <DrawingLayer
-        :projection="projection"
-        :is-map-page="isMapPage"
-        :show-delete-button="false"
-        :showCommentIcons= "false"
-        :show-all-plus-icons="false"
-        :feature-filter="nonMncFeatureFilter"
-      />
-    </template>
-    <template #overlays>
-      <MncMapLayer :key="mncLayerKey" @toggle-icon-details="handleShowQuickLook" />
-
-      <!-- Quick Look. autoPan nudges the map so the whole card is visible when a
-           pin sits near the bottom/edge (otherwise the card would be clipped). -->
-      <ol-overlay
-        v-if="showQuickLook && !isMobile && quickLookCenter"
-        :position="quickLookCenter"
-        positioning="top-left"
-        :auto-pan="{ animation: { duration: 300 }, margin: 24 }"
-      >
-        <QuickLook
-          :floating="false"
-          :showPreviousArrow="false"
-          :showNextArrow="false"
-          :showExpand="true"
-          :title="lf(selectedFeature.properties, 'title', selectedFeature.comment)"
-          :date-published="selectedFeature.properties?.date || ''"
-          :imagePath="selectedFeature.properties?.photos?.[0] || ''"
-          :location="lf(selectedFeature.properties, 'location', selectedFeature.properties?.location || '')"
-          :caption="selectedFeature.properties?.mediaCaptions || ''"
-          :primary-tag="selectedFeature.properties?.primaryTag || ''"
-          @click-expand="handleExpandedPopup"
-          @click-close="handleCloseQuickLook"
-        />
-      </ol-overlay>
-
-      <!-- Contribute flow: placeholder pin at the chosen (not yet submitted)
-           entry location, so the user can see exactly where it landed. -->
-      <ol-overlay
-        v-if="contributePin"
-        :position="contributePin"
-        positioning="bottom-center"
-      >
-        <div class="contribute-pin" aria-hidden="true">
-          <UIcon name="i-heroicons-map-pin" class="contribute-pin__icon" />
-        </div>
-      </ol-overlay>
-    </template>
-  </GeneralizedBackgroundMap>
-
-  <!-- Info Popup -->
-  <InfoPopup
-    v-if="showPopup && selectedFeature && !isMobile"
-    :title="lf(selectedFeature.properties, 'title', selectedFeature.comment)"
-    :string-id="selectedFeature.properties?.string_id || ''"
-    :date-published="selectedFeature.properties?.date || ''"
-    :imagePath="'/Solution_Photos/'+ selectedFeature.properties?.string_id +'/1.png'"
-    :photos="selectedFeature.properties?.photos || []"
-    :audio="selectedFeature.properties?.audio || []"
-    :location="lf(selectedFeature.properties, 'location', selectedFeature.properties?.location || '')"
-    :caption="selectedFeature.properties?.mediaCaptions || ''"
-    :description="lf(selectedFeature.properties, 'description', selectedFeature.properties?.description || '')"
-    :connection="lf(selectedFeature.properties, 'mncConnection', selectedFeature.properties?.mncConnection || '')"
-    :primary-tag="selectedFeature.properties?.primaryTag || 'N/A'"
-    :secondary-tag="selectedFeature.properties?.secondaryTags || 'N/A'"
-    :links="parsedLinks"
-    @close="closePopup"
-  />
-
-  <!-- Contribute flow: prompt to tap the map to drop a location pin -->
-  <div
-    v-if="pickingLocation"
-    class="fixed left-1/2 top-24 z-[60] flex -translate-x-1/2 items-center gap-3 rounded-full bg-white px-5 py-2.5 shadow-lg dark:bg-black"
-    style="border: 2px solid #FB6D6D;"
-  >
-    <UIcon name="i-heroicons-map-pin" class="h-5 w-5" :style="{ color: '#FB6D6D' }" />
-    <span class="text-sm font-medium text-gray-900 dark:text-white">{{ $t('add.pickBanner') }}</span>
-  </div>
-</template>
-
 <script setup lang="ts">
 import { computed, ref, watch } from 'vue'
 import { useRoute } from 'nuxt/app'
+import { storeToRefs } from 'pinia'
+import { useMapStore } from '@base/stores/map'
 import { useFilterStore } from '../stores/filter'
 import { useIsMobile } from '../composables/useIsMobile'
 import InfoPopup from './infoPopup.vue'
@@ -111,6 +24,9 @@ const emit = defineEmits<{
   // A tap on the empty map: open the "Join Our Research" entry flow here.
   'add-entry-at': [coordinate: [number, number]]
 }>()
+
+// The base map no longer reads the map store itself; MNC keeps the store (MobileHeader toggles it).
+const { mapType } = storeToRefs(useMapStore())
 
 const route = useRoute()
 const projection = ref('EPSG:3857')
@@ -174,14 +90,16 @@ const FLY_DURATION_MS = 700
 
 function featureCenter(feature: any): [number, number] | null {
   const c = feature?.coordinates
-  if (!Array.isArray(c) || c.length === 0) return null
+  if (!Array.isArray(c) || c.length === 0)
+    return null
   // Point: [x, y]
   if (typeof c[0] === 'number' && typeof c[1] === 'number') {
     return [c[0], c[1]]
   }
   // Line/Polygon: arithmetic mean of vertex coordinates
   const pts = c.filter((p: any) => Array.isArray(p) && p.length === 2)
-  if (!pts.length) return null
+  if (!pts.length)
+    return null
   const sx = pts.reduce((s: number, p: any) => s + p[0], 0) / pts.length
   const sy = pts.reduce((s: number, p: any) => s + p[1], 0) / pts.length
   return [sx, sy]
@@ -190,7 +108,8 @@ function featureCenter(feature: any): [number, number] | null {
 function flyToFeature(feature: any) {
   const center = featureCenter(feature)
   const map = (baseMap.value as any)?.mapInstance
-  if (!center || !map) return
+  if (!center || !map)
+    return
   map.getView().animate({
     center,
     zoom: FEATURE_ZOOM,
@@ -213,7 +132,6 @@ const parsedLinks = computed(() => {
     .map((link: string) => link.trim())
     .filter((link: string) => link.length > 0)
     .map((link: string) => ({ label: link, url: '' }))
-
 })
 
 // Set just before a pin-click updates the selection so the selectedFeature
@@ -275,6 +193,96 @@ const mapboxStyleLight = 'restartukraine/cm3p0s3gw00yd01seasye5jdw'
 const mapboxStyleDark = 'restartukraine/cm3p4jqnj009y01s79ngdah4r'
 </script>
 
+<template>
+  <GeneralizedBackgroundMap
+    ref="baseMap"
+    :mapbox-style-light="mapboxStyleLight"
+    :mapbox-style-dark="mapboxStyleDark"
+    :map-type="mapType"
+    @toggle-icon-details="handleShowQuickLook"
+    @map-click="handleMapClick"
+  >
+    <template #layers>
+      <DrawingLayer
+        :projection="projection"
+        :is-map-page="isMapPage"
+        :show-delete-button="false"
+        :show-comment-icons="false"
+        :show-all-plus-icons="false"
+        :feature-filter="nonMncFeatureFilter"
+      />
+    </template>
+    <template #overlays>
+      <MncMapLayer :key="mncLayerKey" @toggle-icon-details="handleShowQuickLook" />
+
+      <!-- Quick Look. autoPan nudges the map so the whole card is visible when a
+           pin sits near the bottom/edge (otherwise the card would be clipped). -->
+      <ol-overlay
+        v-if="showQuickLook && !isMobile && quickLookCenter"
+        :position="quickLookCenter"
+        positioning="top-left"
+        :auto-pan="{ animation: { duration: 300 }, margin: 24 }"
+      >
+        <QuickLook
+          :floating="false"
+          :show-previous-arrow="false"
+          :show-next-arrow="false"
+          :show-expand="true"
+          :title="lf(selectedFeature.properties, 'title', selectedFeature.comment)"
+          :date-published="selectedFeature.properties?.date || ''"
+          :image-path="selectedFeature.properties?.photos?.[0] || ''"
+          :location="lf(selectedFeature.properties, 'location', selectedFeature.properties?.location || '')"
+          :caption="selectedFeature.properties?.mediaCaptions || ''"
+          :primary-tag="selectedFeature.properties?.primaryTag || ''"
+          @click-expand="handleExpandedPopup"
+          @click-close="handleCloseQuickLook"
+        />
+      </ol-overlay>
+
+      <!-- Contribute flow: placeholder pin at the chosen (not yet submitted)
+           entry location, so the user can see exactly where it landed. -->
+      <ol-overlay
+        v-if="contributePin"
+        :position="contributePin"
+        positioning="bottom-center"
+      >
+        <div class="contribute-pin" aria-hidden="true">
+          <UIcon name="i-heroicons-map-pin" class="contribute-pin__icon" />
+        </div>
+      </ol-overlay>
+    </template>
+  </GeneralizedBackgroundMap>
+
+  <!-- Info Popup -->
+  <InfoPopup
+    v-if="showPopup && selectedFeature && !isMobile"
+    :title="lf(selectedFeature.properties, 'title', selectedFeature.comment)"
+    :string-id="selectedFeature.properties?.string_id || ''"
+    :date-published="selectedFeature.properties?.date || ''"
+    :image-path="`/Solution_Photos/${selectedFeature.properties?.string_id}/1.png`"
+    :photos="selectedFeature.properties?.photos || []"
+    :audio="selectedFeature.properties?.audio || []"
+    :location="lf(selectedFeature.properties, 'location', selectedFeature.properties?.location || '')"
+    :caption="selectedFeature.properties?.mediaCaptions || ''"
+    :description="lf(selectedFeature.properties, 'description', selectedFeature.properties?.description || '')"
+    :connection="lf(selectedFeature.properties, 'mncConnection', selectedFeature.properties?.mncConnection || '')"
+    :primary-tag="selectedFeature.properties?.primaryTag || 'N/A'"
+    :secondary-tag="selectedFeature.properties?.secondaryTags || 'N/A'"
+    :links="parsedLinks"
+    @close="closePopup"
+  />
+
+  <!-- Contribute flow: prompt to tap the map to drop a location pin -->
+  <div
+    v-if="pickingLocation"
+    class="fixed left-1/2 top-24 z-[60] flex -translate-x-1/2 items-center gap-3 rounded-full bg-white px-5 py-2.5 shadow-lg dark:bg-black"
+    style="border: 2px solid #FB6D6D;"
+  >
+    <UIcon name="i-heroicons-map-pin" class="h-5 w-5" :style="{ color: '#FB6D6D' }" />
+    <span class="text-sm font-medium text-gray-900 dark:text-white">{{ $t('add.pickBanner') }}</span>
+  </div>
+</template>
+
 <style scoped>
 /* Contribute flow's placeholder pin: same coral used by the "tap to drop a
    pin" banner, with a soft pulse so it reads as provisional (not yet a real
@@ -285,12 +293,14 @@ const mapboxStyleDark = 'restartukraine/cm3p4jqnj009y01s79ngdah4r'
   height: 52px;
   border-radius: 50%;
   border: 3.5px solid white;
-  background: #FB6D6D;
+  background: #fb6d6d;
   display: flex;
   align-items: center;
   justify-content: center;
   margin-bottom: 12px;
-  box-shadow: 0 3px 12px rgba(0, 0, 0, 0.45), 0 0 0 5px rgba(251, 109, 109, 0.35);
+  box-shadow:
+    0 3px 12px rgba(0, 0, 0, 0.45),
+    0 0 0 5px rgba(251, 109, 109, 0.35);
   animation: contribute-pin-pulse 1.6s ease-in-out infinite;
 }
 
@@ -304,7 +314,7 @@ const mapboxStyleDark = 'restartukraine/cm3p4jqnj009y01s79ngdah4r'
   height: 0;
   border-left: 9px solid transparent;
   border-right: 9px solid transparent;
-  border-top: 12px solid #FB6D6D;
+  border-top: 12px solid #fb6d6d;
 }
 
 .contribute-pin__icon {
@@ -315,7 +325,12 @@ const mapboxStyleDark = 'restartukraine/cm3p4jqnj009y01s79ngdah4r'
 }
 
 @keyframes contribute-pin-pulse {
-  0%, 100% { transform: scale(1); }
-  50% { transform: scale(1.08); }
+  0%,
+  100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.08);
+  }
 }
 </style>

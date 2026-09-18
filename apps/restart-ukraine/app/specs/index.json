@@ -1,0 +1,80 @@
+{
+  "version": 1,
+  "state": {
+    "loading": true,
+    "mapType": "vector",
+    "menuOpen": false,
+    "supportOpen": false,
+    "showDownload": false,
+    "onboarding": true,
+    "registration": false,
+    "needsRegistration": true
+  },
+  "children": [
+    { "type": "LoadingScreen", "if": "$state.loading", "on": { "done": { "set": "loading", "value": false } } },
+
+    { "type": "SideBar" },
+
+    {
+      "type": "RuMap",
+      "props": { "showAllPlusIcons": true, "showCommentIcons": false },
+      "bind": { "mapType": "$state.mapType", "blurred": "$state.needsRegistration" }
+    },
+
+    {
+      "type": "Header",
+      "props": {
+        "z": 20,
+        "logoSrc": "/restart-logo-icon.svg",
+        "logoAlt": "Restart Agency Logo",
+        "logoLink": "https://www.restartfuture.org/",
+        "leftItems": [
+          { "label": "Drawing Participation", "color": "black", "to": "/about/" },
+          { "label": "Гуртомá", "color": "black", "to": "/about/" }
+        ],
+        "rightItems": [
+          { "icon": "i-heroicons-arrow-down-tray-20-solid", "onClick": { "$action": { "set": "showDownload", "value": true } } }
+        ]
+      },
+      "on": { "menu": { "set": "menuOpen", "value": true } },
+      "children": [
+        {
+          "slot": "right",
+          "type": "MapTypeToggle",
+          "bind": { "modelValue": "$state.mapType" },
+          "on": { "update:modelValue": { "set": "mapType" } }
+        }
+      ]
+    },
+    { "type": "MenuModal", "bind": { "modelValue": "$state.menuOpen" }, "on": { "update:modelValue": { "set": "menuOpen" } } },
+
+    { "type": "Footer", "on": { "support": { "set": "supportOpen", "value": true } } },
+    { "type": "SupportModal", "bind": { "modelValue": "$state.supportOpen" }, "on": { "update:modelValue": { "set": "supportOpen" } } },
+
+    {
+      "type": "OnboardingModal",
+      "bind": { "isVisible": "$state.onboarding" },
+      "on": { "showRegistration": [{ "set": "onboarding", "value": false }, { "set": "registration", "value": true }] }
+    },
+    {
+      "type": "RegistrationModal",
+      "bind": { "isVisible": "$state.registration" },
+      "on": {
+        "close": { "set": "registration", "value": false },
+        "registered": { "set": "needsRegistration", "value": false }
+      }
+    },
+    {
+      "type": "div",
+      "if": "$state.needsRegistration",
+      "style": "overlay",
+      "on": { "click": { "set": "registration", "value": true } }
+    },
+
+    {
+      "type": "ComingSoonModal",
+      "bind": { "modelValue": "$state.showDownload" },
+      "on": { "update:modelValue": { "set": "showDownload" }, "download": { "call": "downloadData" } }
+    }
+  ]
+}

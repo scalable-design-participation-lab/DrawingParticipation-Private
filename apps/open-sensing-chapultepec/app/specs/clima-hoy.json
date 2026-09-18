@@ -1,0 +1,48 @@
+{
+  "version": 1,
+  "state": { "answers": { "escuchan": "", "nubes": "", "cielo": "", "huele": "" } },
+  "children": [
+    {
+      "type": "div",
+      "style": "form-layout",
+      "children": [
+        {
+          "type": "Panel",
+          "style": "panel",
+          "props": { "as": "section", "padding": "md" },
+          "children": [
+            {
+              "type": "Stack",
+              "props": { "gap": "xl" },
+              "children": [
+                { "type": "Text", "props": { "as": "h1", "size": "sm", "weight": "bold", "align": "center", "text": "¿Cómo está el clima hoy?" } },
+                {
+                  "type": "FormFields",
+                  "props": {
+                    "variant": "underline",
+                    "layout": "inline",
+                    "gap": "gap-12",
+                    "labelClass": "font-bold",
+                    "fields": [
+                      { "name": "escuchan", "label": "Se escuchan", "placeholder": "_" },
+                      { "name": "nubes", "label": "Las nubes", "placeholder": "_" },
+                      { "name": "cielo", "label": "El cielo", "placeholder": "_" },
+                      { "name": "huele", "label": "Huele a", "placeholder": "_" }
+                    ]
+                  },
+                  "bind": { "modelValue": "$state.answers" },
+                  "on": { "update:modelValue": { "set": "answers" } }
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "PhotoDropZone",
+          "style": "panel",
+          "props": { "capture": "environment", "lines": ["Tomar foto", "o", "Arrastra tu\nfoto aquí"] }
+        }
+      ]
+    }
+  ]
+}

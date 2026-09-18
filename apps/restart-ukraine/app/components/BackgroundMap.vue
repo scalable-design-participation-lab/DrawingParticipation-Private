@@ -1,8 +1,10 @@
 <template>
+  <div :class="{ 'blur-md': blurred }">
   <GeneralizedBackgroundMap
     ref="baseMap"
     :mapbox-style-light="mapboxStyleLight"
     :mapbox-style-dark="mapboxStyleDark"
+    :map-type="mapType"
     @map-click="handleMapClick"
   >
     <template #layers>
@@ -52,6 +54,7 @@
       </ol-overlay>
     </template>
   </GeneralizedBackgroundMap>
+  </div>
 </template>
 
 <script setup lang="ts">
@@ -60,9 +63,7 @@ import CommentModal from './CommentModal.vue'
 import CommentDisplay from './CommentDisplay.vue'
 import { useFeatureStore } from '@base/stores/features'
 import { useDrawingStore } from '@base/stores/drawing'
-import { useMapStore } from '@base/stores/map'
 import { useSideBarStore } from '@base/stores/sidebar'
-import { storeToRefs } from 'pinia'
 import { useRoute } from 'nuxt/app'
 
 const props = defineProps({
@@ -82,13 +83,21 @@ const props = defineProps({
     type: Object,
     default: null,
   },
+  // 'vector' | 'satellite'; owned by the page (no map store).
+  mapType: {
+    type: String,
+    default: 'vector',
+  },
+  // Blur the map while registration is pending.
+  blurred: {
+    type: Boolean,
+    default: false,
+  },
 })
 
 const featureStore = useFeatureStore()
 const drawingStore = useDrawingStore()
-const mapStore = useMapStore()
 const sidebarStore = useSideBarStore()
-const { mapType } = storeToRefs(mapStore)
 const route = useRoute()
 
 const projection = ref('EPSG:3857')

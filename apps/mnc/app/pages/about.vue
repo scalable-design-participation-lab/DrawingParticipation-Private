@@ -1,6 +1,10 @@
 <template>
   <div class="leading-relaxed mb-24">
-    <GeneralizedHeader :left-items="headerLinks" />
+    <GeneralizedHeader :left-items="headerLinks">
+      <template #menu="{ open, close }">
+        <MenuModal :model-value="open" @update:model-value="(v) => !v && close()" />
+      </template>
+    </GeneralizedHeader>
 
     <div class="mx-auto mt-40 w-full max-w-[1100px] px-7">
       <!-- Hero -->

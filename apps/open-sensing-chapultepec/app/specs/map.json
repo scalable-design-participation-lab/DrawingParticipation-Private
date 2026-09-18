@@ -1,0 +1,164 @@
+{
+  "version": 1,
+  "state": {
+    "welcome": true
+  },
+  "dataSources": {
+    "readings": {
+      "kind": "static",
+      "contract": "reading",
+      "items": [
+        {
+          "position": [
+            -99.19,
+            19.424
+          ],
+          "reading": {
+            "humedad": 61.5,
+            "temperatura": 24,
+            "nubes": "cirrocumulus",
+            "lluvia": "moderada",
+            "viento": "leve",
+            "olor": "alto"
+          }
+        },
+        {
+          "position": [
+            -99.214,
+            19.42
+          ],
+          "reading": {
+            "humedad": 40,
+            "temperatura": 20,
+            "nubes": "cumulus",
+            "lluvia": "suave",
+            "viento": "moderada",
+            "olor": "bajo"
+          }
+        },
+        {
+          "position": [
+            -99.204,
+            19.409
+          ],
+          "reading": {
+            "humedad": 55,
+            "temperatura": 22,
+            "nubes": "cirrus",
+            "lluvia": "suave",
+            "viento": "suave",
+            "olor": "intermitente"
+          }
+        },
+        {
+          "position": [
+            -99.18,
+            19.41
+          ],
+          "reading": {
+            "humedad": 30,
+            "temperatura": 26,
+            "nubes": "stratus",
+            "lluvia": "suave",
+            "viento": "fuerte",
+            "olor": "bajo"
+          }
+        },
+        {
+          "position": [
+            -99.168,
+            19.428
+          ],
+          "reading": {
+            "humedad": 48,
+            "temperatura": 18,
+            "nubes": "cumulus",
+            "lluvia": "fuerte",
+            "viento": "leve",
+            "olor": "alto"
+          }
+        },
+        {
+          "position": [
+            -99.16,
+            19.404
+          ],
+          "reading": {
+            "humedad": 25,
+            "temperatura": 28,
+            "nubes": "cirrus",
+            "lluvia": "suave",
+            "viento": "moderada",
+            "olor": "intermitente"
+          }
+        }
+      ]
+    }
+  },
+  "children": [
+    {
+      "type": "div",
+      "style": "fill",
+      "children": [
+        {
+          "type": "BackgroundMap",
+          "props": {
+            "centerLonLat": [
+              -99.19,
+              19.42
+            ],
+            "zoom": 14,
+            "minZoom": 11,
+            "mapHeight": "100%",
+            "showZoomControl": false,
+            "mapboxStyleLight": "mapbox/light-v11",
+            "mapboxStyleDark": "mapbox/dark-v11"
+          },
+          "children": [
+            {
+              "slot": "overlays",
+              "type": "MarkerOverlay",
+              "bind": {
+                "items": "$data.readings"
+              },
+              "item": {
+                "type": "WeatherGlyph",
+                "bind": {
+                  "reading": "$item.reading"
+                },
+                "props": {
+                  "size": 180
+                }
+              }
+            }
+          ]
+        },
+        {
+          "type": "IntroModal",
+          "bind": {
+            "modelValue": "$state.welcome"
+          },
+          "on": {
+            "update:modelValue": {
+              "set": "welcome"
+            }
+          },
+          "props": {
+            "text": "Bienvenido a la bitácora de observación mediambiental objetiva. En esta parte de la bitácora llevarás un registro del comportamiento del medio ambiente tomando en cuenta las siguientes variables:",
+            "bodyClass": "panel relative border-2 p-3 text-center text-base font-bold leading-snug",
+            "ui": {
+              "width": "sm:max-w-xl",
+              "background": "bg-transparent dark:bg-transparent",
+              "shadow": "shadow-none",
+              "ring": "",
+              "rounded": "",
+              "overlay": {
+                "background": "bg-white/40 dark:bg-black/40 backdrop-blur-[2px]"
+              }
+            }
+          }
+        }
+      ]
+    }
+  ]
+}

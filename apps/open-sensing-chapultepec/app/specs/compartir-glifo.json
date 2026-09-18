@@ -1,0 +1,69 @@
+{
+  "version": 1,
+  "state": { "entry": { "descripcion": "", "fecha": "", "hora": "" } },
+  "children": [
+    {
+      "type": "div",
+      "style": "legend-layout",
+      "children": [
+        { "type": "GlyphLegend" },
+        {
+          "type": "Panel",
+          "style": "panel",
+          "props": { "as": "section" },
+          "children": [
+            {
+              "type": "Stack",
+              "props": { "gap": "none" },
+              "children": [
+                { "type": "div", "style": "canvas-slot", "children": [{ "type": "GlyphCanvas" }] },
+                {
+                  "type": "Stack",
+                  "props": { "gap": "lg", "as": "div" },
+                  "children": [
+                    {
+                      "type": "Panel",
+                      "props": { "padding": "md" },
+                      "children": [
+                        {
+                          "type": "Stack",
+                          "props": { "gap": "lg" },
+                          "children": [
+                            {
+                              "type": "FormFields",
+                              "props": {
+                                "variant": "underline",
+                                "fields": [{ "name": "descripcion", "label": "Descripción", "type": "textarea", "rows": 4, "class": "normal-case !border-0" }]
+                              },
+                              "bind": { "modelValue": "$state.entry" },
+                              "on": { "update:modelValue": { "set": "entry" } }
+                            },
+                            {
+                              "type": "FormFields",
+                              "props": {
+                                "variant": "underline",
+                                "layout": "inline",
+                                "direction": "row",
+                                "gap": "gap-12",
+                                "fields": [
+                                  { "name": "fecha", "label": "Fecha", "type": "date", "class": "w-36" },
+                                  { "name": "hora", "label": "Hora", "type": "time", "class": "w-28" }
+                                ]
+                              },
+                              "bind": { "modelValue": "$state.entry" },
+                              "on": { "update:modelValue": { "set": "entry" } }
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

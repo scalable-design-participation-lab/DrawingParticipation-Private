@@ -22,6 +22,9 @@
 <script setup>
 import { ref, onMounted } from 'vue'
 
+// Tells the page the fake progress finished, so the page can drop the screen.
+const emit = defineEmits(['done'])
+
 const progress = ref(0)
 const loadingMessage = ref('Ініціалізація...')
 
@@ -38,6 +41,7 @@ onMounted(() => {
     progress.value += 2
     if (progress.value >= 100) {
       clearInterval(interval)
+      emit('done')
       return
     }
 

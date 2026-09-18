@@ -1,0 +1,48 @@
+{
+  "version": 1,
+  "state": {
+    "mapType": "vector",
+    "menuOpen": false,
+    "supportOpen": false,
+    "showIntro": "$query.showIntro"
+  },
+  "children": [
+    {
+      "type": "div",
+      "style": "screen",
+      "children": [
+        {
+          "type": "Header",
+          "props": {
+            "z": 20,
+            "logoSrc": "/restart-logo-icon.svg",
+            "logoAlt": "Restart Agency Logo",
+            "logoLink": "https://www.restartfuture.org/",
+            "leftItems": [
+              { "label": "Drawing Participation", "variant": "solid", "color": "black" },
+              { "label": "Гуртомá", "variant": "solid", "color": "black" }
+            ]
+          },
+          "on": { "menu": { "set": "menuOpen", "value": true } },
+          "children": [
+            { "slot": "right", "type": "MapTypeToggle", "bind": { "modelValue": "$state.mapType" }, "on": { "update:modelValue": { "set": "mapType" } } }
+          ]
+        },
+        { "type": "MenuModal", "bind": { "modelValue": "$state.menuOpen" }, "on": { "update:modelValue": { "set": "menuOpen" } } },
+
+        {
+          "type": "div",
+          "style": "map-layer",
+          "children": [
+            { "type": "RuMap", "props": { "showAllPlusIcons": false, "showCommentIcons": true }, "bind": { "mapType": "$state.mapType" } }
+          ]
+        },
+
+        { "type": "Footer", "on": { "support": { "set": "supportOpen", "value": true } } },
+        { "type": "SupportModal", "bind": { "modelValue": "$state.supportOpen" }, "on": { "update:modelValue": { "set": "supportOpen" } } },
+
+        { "type": "MapIntroModal", "bind": { "modelValue": "$state.showIntro" }, "on": { "update:modelValue": { "set": "showIntro" } } }
+      ]
+    }
+  ]
+}

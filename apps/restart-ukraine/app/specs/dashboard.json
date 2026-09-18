@@ -1,0 +1,38 @@
+{
+  "version": 1,
+  "state": { "mapType": "vector", "menuOpen": false, "dashboard": true },
+  "children": [
+    {
+      "type": "Header",
+      "props": {
+        "z": 20,
+        "logoSrc": "/restart-logo-icon.svg",
+        "logoAlt": "Restart Agency Logo",
+        "logoLink": "https://www.restartfuture.org/",
+        "leftItems": [
+          { "label": "Drawing Participation", "to": "/about/" },
+          { "label": "Гуртомá", "to": "/about/" }
+        ],
+        "rightItems": [
+          { "icon": "i-ix:analyze", "onClick": { "$action": { "toggle": "dashboard" } } }
+        ]
+      },
+      "on": { "menu": { "set": "menuOpen", "value": true } },
+      "children": [
+        { "slot": "right", "type": "MapTypeToggle", "bind": { "modelValue": "$state.mapType" }, "on": { "update:modelValue": { "set": "mapType" } } }
+      ]
+    },
+    { "type": "MenuModal", "bind": { "modelValue": "$state.menuOpen" }, "on": { "update:modelValue": { "set": "menuOpen" } } },
+
+    { "type": "AnalysisPanel", "bind": { "modelValue": "$state.dashboard" }, "on": { "update:modelValue": { "set": "dashboard" } } },
+
+    {
+      "type": "BackgroundMap",
+      "bind": { "mapType": "$state.mapType" },
+      "children": [
+        { "slot": "layers", "type": "AnalysisLayers" },
+        { "slot": "overlays", "type": "ToolTips", "props": { "filterKeys": ["fillColor", "value"] } }
+      ]
+    }
+  ]
+}

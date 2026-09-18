@@ -1,0 +1,17 @@
+{
+  "version": 1,
+  "name": "open-sensing-chapultepec",
+  "title": "Bitácora de observación medioambiental",
+  "description": "Registro participativo del comportamiento del medio ambiente en Chapultepec.",
+  "lang": "es",
+  "theme": { "primary": "red", "gray": "neutral", "colorMode": "light" },
+  "shell": "shell.json",
+  "routes": {
+    "/": "map.json",
+    "/compartir-glifo": "compartir-glifo.json",
+    "/clima-hoy": "clima-hoy.json",
+    "/datos": "datos.json",
+    "/acerca": "acerca.json"
+  },
+  "data": { "collection": "none" }
+}

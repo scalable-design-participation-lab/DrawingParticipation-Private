@@ -35,7 +35,7 @@ const props = defineProps({
   isVisible: Boolean,
 })
 
-const emit = defineEmits(['close'])
+const emit = defineEmits(['close', 'registered'])
 
 const userStore = useUserStore()
 const db = useFirestore()
@@ -103,6 +103,7 @@ const checkExistingUser = async () => {
       const userData = querySnapshot.docs[0].data()
       console.log('Found existing user:', userData)
       existingUserData.value = userData
+      emit('registered')
       userStore.setUserData(userData)
       showWelcomeBack.value = true
       emit('close')
@@ -150,7 +151,8 @@ const onSubmit = async () => {
       name: `${formState.firstname} ${formState.lastname}`,
     })
 
-    userStore.setUserData({
+    emit('registered')
+      userStore.setUserData({
       ...formState,
       uid: user.uid,
     })

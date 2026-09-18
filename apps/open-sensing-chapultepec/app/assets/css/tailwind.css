@@ -1,0 +1,37 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    /* Figma palette: black ink on white paper, one red for the glyph spiral. */
+    --ink: #000;
+    --paper: #fff;
+    --accent: #c0392b;
+    --muted: #9ca3af;
+  }
+
+  html,
+  body {
+    color: var(--ink);
+    background: var(--paper);
+    text-transform: uppercase;
+  }
+}
+
+@layer components {
+  /* 1px ink border used by every panel in the design. */
+  .panel {
+    @apply border border-black bg-white;
+  }
+
+  .label {
+    @apply text-[11px] tracking-wide;
+  }
+
+  /* "FECHA_" style underline input, passed as `input-class` to UInput. The
+     `!` beats Nuxt UI's own border-0 / placeholder-gray utilities. */
+  .line-input {
+    @apply w-full !border-b border-black bg-transparent px-0 py-1 text-sm uppercase outline-none placeholder:!text-black;
+  }
+}
