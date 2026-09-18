@@ -38,6 +38,8 @@ export interface VerifySpecOptions {
    * the mode to run on LLM output.
    */
   strict?: boolean
+  /** The app's route paths; when given, every internal link / navigate target must be one of them. */
+  routes?: string[]
 }
 
 const NATIVE_TAG = /^[a-z][a-z0-9-]*$/
@@ -67,6 +69,8 @@ function isPlainObject(value: unknown): value is Record<string, unknown> {
   return typeof value === 'object' && value !== null && !Array.isArray(value)
 }
 
+const normalizeRoute = (p: string) => (p.split(/[?#]/)[0].replace(/\/+$/, '') || '/')
+
 export function verifySpec(spec: unknown, options: VerifySpecOptions = {}): VerifyResult {
   const errors: VerifyError[] = []
 
@@ -84,6 +88,8 @@ export function verifySpec(spec: unknown, options: VerifySpecOptions = {}): Veri
   const dataNames = new Set([...sourceNames, ...(options.extraData ?? [])])
   const stateNames = new Set(Object.keys(root.state ?? {}))
   const handlerNames = new Set(options.handlers ?? [])
+  const routes = options.routes ? new Set(options.routes.map(normalizeRoute)) : null
+  const usedState = new Set<string>()
 
   // Initial state may read the route query ("$query.x"); nothing else.
   for (const [key, value] of Object.entries(root.state ?? {})) {
@@ -92,10 +98,12 @@ export function verifySpec(spec: unknown, options: VerifySpecOptions = {}): Veri
     }
   }
 
+  const isHandler = (name: string) => isHandlerDeclared(name) || handlerNames.has(name)
+
   const checkExpr = (expr: string, at: string, inItem: boolean) => {
     const match = BIND_RE.exec(expr)
     if (!match) {
-      errors.push({ path: at, rule: 'bind.bad-expr', message: `"${expr}" is not "$data.x", "$state.x", "$sources.x", "$query.x" or "$item[.x]"` })
+      errors.push({ path: at, rule: 'bind.bad-expr', message: `"${expr}" is not "$data.x", "$state.x", "$sources.x", "$errors.x", "$query.x" or "$item[.x]"` })
       return
     }
     const [, kind, rest] = match
@@ -103,11 +111,23 @@ export function verifySpec(spec: unknown, options: VerifySpecOptions = {}): Veri
     if ((kind === 'data' && !dataNames.has(first)) || (kind === 'sources' && !sourceNames.has(first))) {
       errors.push({ path: at, rule: 'bind.unknown-data', message: `data source "${first}" is not declared in dataSources` })
     }
-    if (kind === 'state' && !stateNames.has(first)) {
-      errors.push({ path: at, rule: 'bind.unknown-state', message: `state "${first}" is not declared in state` })
+    if (kind === 'state') {
+      usedState.add(first)
+      if (!stateNames.has(first)) {
+        errors.push({ path: at, rule: 'bind.unknown-state', message: `state "${first}" is not declared in state` })
+      }
+    }
+    if (kind === 'errors' && !isHandler(first)) {
+      errors.push({ path: at, rule: 'action.unknown-handler', message: `handler "${first}" is not registered` })
     }
     if (kind === 'item' && !inItem) {
       errors.push({ path: at, rule: 'bind.item-outside-template', message: '"$item" is only available inside an "item" template' })
+    }
+  }
+
+  const checkLink = (target: string, at: string) => {
+    if (routes && target.startsWith('/') && !routes.has(normalizeRoute(target))) {
+      errors.push({ path: at, rule: 'link.unknown-route', message: `"${target}" is not a route of this app (app.json routes)` })
     }
   }
 
@@ -115,12 +135,19 @@ export function verifySpec(spec: unknown, options: VerifySpecOptions = {}): Veri
     for (const [i, action] of (Array.isArray(actions) ? actions : [actions]).entries()) {
       const p = Array.isArray(actions) ? `${at}[${i}]` : at
       const statePath = 'set' in action ? action.set : 'toggle' in action ? action.toggle : null
-      if (statePath !== null && !stateNames.has(statePath.split('.')[0])) {
-        const key = 'set' in action ? 'set' : 'toggle'
-        errors.push({ path: `${p}.${key}`, rule: 'action.unknown-state', message: `state "${statePath}" is not declared in state` })
+      if (statePath !== null) {
+        const first = statePath.split('.')[0]
+        usedState.add(first)
+        if (!stateNames.has(first)) {
+          const key = 'set' in action ? 'set' : 'toggle'
+          errors.push({ path: `${p}.${key}`, rule: 'action.unknown-state', message: `state "${statePath}" is not declared in state` })
+        }
       }
-      if ('call' in action && !isHandlerDeclared(action.call) && !handlerNames.has(action.call)) {
+      if ('call' in action && !isHandler(action.call)) {
         errors.push({ path: `${p}.call`, rule: 'action.unknown-handler', message: `handler "${action.call}" is not registered` })
+      }
+      if ('navigate' in action) {
+        checkLink(action.navigate, `${p}.navigate`)
       }
       // `value` / `args` may be expressions.
       const dynamic: [string, unknown] | null = 'set' in action ? ['value', action.value] : 'call' in action ? ['args', action.args] : null
@@ -130,10 +157,10 @@ export function verifySpec(spec: unknown, options: VerifySpecOptions = {}): Veri
     }
   }
 
-  // `{ "$action": ... }` objects may sit anywhere inside literal props.
-  const checkActionProps = (value: unknown, at: string, inItem: boolean) => {
+  // `{ "$action": ... }` objects and internal links may sit anywhere inside literal props.
+  const checkProps = (value: unknown, at: string, inItem: boolean) => {
     if (Array.isArray(value)) {
-      value.forEach((v, i) => checkActionProps(v, `${at}[${i}]`, inItem))
+      value.forEach((v, i) => checkProps(v, `${at}[${i}]`, inItem))
       return
     }
     if (!isPlainObject(value)) {
@@ -150,7 +177,10 @@ export function verifySpec(spec: unknown, options: VerifySpecOptions = {}): Veri
       return
     }
     for (const [k, v] of Object.entries(value)) {
-      checkActionProps(v, `${at}.${k}`, inItem)
+      if ((k === 'to' || k === 'href') && typeof v === 'string') {
+        checkLink(v, `${at}.${k}`)
+      }
+      checkProps(v, `${at}.${k}`, inItem)
     }
   }
 
@@ -185,7 +215,7 @@ export function verifySpec(spec: unknown, options: VerifySpecOptions = {}): Veri
       }
     }
 
-    checkActionProps(node.props ?? {}, `${path}.props`, inItem)
+    checkProps(node.props ?? {}, `${path}.props`, inItem)
 
     if (contract) {
       const props = Object.fromEntries(Object.entries(stripActions(node.props ?? {}) as Record<string, unknown>).filter(([k]) => !PASSTHROUGH_PROPS.has(k)))
@@ -199,6 +229,12 @@ export function verifySpec(spec: unknown, options: VerifySpecOptions = {}): Veri
           if (!(prop in contract.props.shape) && !PASSTHROUGH_PROPS.has(prop)) {
             errors.push({ path: `${path}.bind.${prop}`, rule: 'bind.unknown-prop', message: `"${node.type}" has no prop "${prop}"` })
           }
+        }
+      }
+      // A two-way prop bound to state with nobody writing it back: the UI would never update.
+      for (const [prop, expr] of Object.entries(node.bind ?? {})) {
+        if (expr.startsWith('$state.') && contract.emits?.includes(`update:${prop}`) && !node.on?.[`update:${prop}`]) {
+          errors.push({ path: `${path}.bind.${prop}`, rule: 'bind.write-only', message: `"${prop}" is bound to state but nothing handles "update:${prop}"; add on["update:${prop}"] = { "set": "${expr.slice(7)}" }` })
         }
       }
       if (contract.slots) {
@@ -244,6 +280,13 @@ export function verifySpec(spec: unknown, options: VerifySpecOptions = {}): Veri
 
   for (const [i, child] of root.children.entries()) {
     walk(child, `children[${i}]`, false)
+  }
+
+  // Declared but never read or written: dead weight that usually means a wiring mistake.
+  for (const name of stateNames) {
+    if (!usedState.has(name)) {
+      errors.push({ path: `state.${name}`, rule: 'state.unused', message: `state "${name}" is never bound or written; remove it or wire it` })
+    }
   }
 
   return { pass: errors.length === 0, errors }

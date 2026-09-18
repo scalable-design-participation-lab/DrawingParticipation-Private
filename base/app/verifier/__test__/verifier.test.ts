@@ -94,6 +94,27 @@ describe('verifySpec', () => {
     ]))
   })
 
+  it('catches wiring mistakes: write-only bindings, dead state, unknown routes, unknown $errors', () => {
+    const result = verifySpec({
+      state: { open: true, dead: 1 },
+      children: [
+        { type: 'IntroModal', bind: { modelValue: '$state.open' } },
+        { type: 'Text', if: '$errors.nope', props: { text: 'x' } },
+        { type: 'Button', props: { to: '/missing' }, text: 'go' },
+        { type: 'a', props: { href: '/also-missing' }, text: 'go', on: { click: { navigate: '/nowhere' } } },
+        { type: 'Button', props: { to: '/about/' }, text: 'ok' },
+      ],
+    }, { routes: ['/', '/about'] })
+    expect(result.errors.map(e => `${e.rule}@${e.path}`)).toEqual([
+      'bind.write-only@children[0].bind.modelValue',
+      'action.unknown-handler@children[1].if',
+      'link.unknown-route@children[2].props.to',
+      'link.unknown-route@children[3].props.href',
+      'link.unknown-route@children[3].on.click.navigate',
+      'state.unused@state.dead',
+    ])
+  })
+
   it('strict mode forbids raw classes', () => {
     const spec = { children: [{ type: 'div', props: { class: 'mt-4' } }, { type: 'Panel', props: { class: 'p-8' } }] }
     expect(verifySpec(spec).pass).toBe(true)

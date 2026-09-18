@@ -3,6 +3,10 @@
   "name": "drawing-participation",
   "title": "Drawing Participation - Interactive Drawing Tool",
   "description": "A collaborative drawing tool for participatory design and community engagement.",
-  "routes": { "/": "index.json" },
-  "data": { "collection": "none" }
+  "routes": {
+    "/": "index.json",
+    "/gallery": "placeholder.json",
+    "/about": "placeholder.json",
+    "/privacy": "placeholder.json"
+  }
 }

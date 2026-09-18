@@ -1,0 +1,26 @@
+{
+  "version": 1,
+  "children": [
+    {
+      "type": "div",
+      "style": "content",
+      "children": [
+        {
+          "type": "Text",
+          "props": {
+            "as": "h1",
+            "text": "Coming soon"
+          }
+        },
+        {
+          "type": "Button",
+          "props": {
+            "to": "/",
+            "color": "black"
+          },
+          "text": "Back to the drawing tool"
+        }
+      ]
+    }
+  ]
+}
