@@ -1,0 +1,45 @@
+{
+  "name": "Panel",
+  "description": "A box: plain / card / outline / paper, with enumerated padding and an optional readable measure.",
+  "stateful": false,
+  "emits": [],
+  "slots": [
+    "default"
+  ],
+  "props": {
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "type": "object",
+    "properties": {
+      "variant": {
+        "type": "string",
+        "enum": [
+          "plain",
+          "card",
+          "outline",
+          "paper"
+        ]
+      },
+      "padding": {
+        "type": "string",
+        "enum": [
+          "none",
+          "sm",
+          "md",
+          "lg"
+        ]
+      },
+      "measure": {
+        "type": "string",
+        "enum": [
+          "none",
+          "prose",
+          "wide"
+        ]
+      },
+      "as": {
+        "type": "string"
+      }
+    },
+    "additionalProperties": false
+  }
+}

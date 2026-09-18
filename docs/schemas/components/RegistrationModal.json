@@ -1,0 +1,20 @@
+{
+  "name": "RegistrationModal",
+  "description": "Registration form backed by Firebase; emits `registered` on success.",
+  "stateful": true,
+  "emits": [
+    "close",
+    "registered"
+  ],
+  "slots": [],
+  "props": {
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "type": "object",
+    "properties": {
+      "isVisible": {
+        "type": "boolean"
+      }
+    },
+    "additionalProperties": false
+  }
+}

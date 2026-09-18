@@ -1,0 +1,58 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "properties": {
+    "type": {
+      "type": "string",
+      "const": "Feature"
+    },
+    "id": {
+      "type": [
+        "string",
+        "number"
+      ]
+    },
+    "geometry": {
+      "type": "object",
+      "properties": {
+        "type": {
+          "type": "string",
+          "enum": [
+            "Point",
+            "LineString",
+            "Polygon",
+            "MultiPoint",
+            "MultiLineString",
+            "MultiPolygon"
+          ]
+        },
+        "coordinates": {}
+      },
+      "required": [
+        "type",
+        "coordinates"
+      ],
+      "additionalProperties": false
+    },
+    "properties": {
+      "anyOf": [
+        {
+          "type": "object",
+          "propertyNames": {
+            "type": "string"
+          },
+          "additionalProperties": {}
+        },
+        {
+          "type": "null"
+        }
+      ]
+    }
+  },
+  "required": [
+    "type",
+    "geometry",
+    "properties"
+  ],
+  "additionalProperties": false
+}

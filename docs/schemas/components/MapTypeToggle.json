@@ -1,0 +1,23 @@
+{
+  "name": "MapTypeToggle",
+  "description": "Vector / satellite switch (header pill). Bind its value to BackgroundMap `mapType`.",
+  "stateful": false,
+  "emits": [
+    "update:modelValue"
+  ],
+  "slots": [],
+  "props": {
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "type": "object",
+    "properties": {
+      "modelValue": {
+        "type": "string",
+        "enum": [
+          "vector",
+          "satellite"
+        ]
+      }
+    },
+    "additionalProperties": false
+  }
+}

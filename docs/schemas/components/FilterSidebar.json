@@ -1,0 +1,47 @@
+{
+  "name": "FilterSidebar",
+  "description": "Slide-in panel with filter sections (checkbox groups, date ranges).",
+  "stateful": false,
+  "emits": [
+    "close",
+    "reset",
+    "filter-change",
+    "download"
+  ],
+  "slots": [],
+  "props": {
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "type": "object",
+    "properties": {
+      "isVisible": {
+        "type": "boolean"
+      },
+      "title": {
+        "type": "string"
+      },
+      "filterSections": {
+        "type": "array",
+        "items": {
+          "type": "object",
+          "properties": {
+            "title": {
+              "type": "string"
+            },
+            "type": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "title",
+            "type"
+          ],
+          "additionalProperties": {}
+        }
+      }
+    },
+    "required": [
+      "filterSections"
+    ],
+    "additionalProperties": false
+  }
+}

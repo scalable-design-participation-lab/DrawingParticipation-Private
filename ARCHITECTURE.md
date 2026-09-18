@@ -1,5 +1,11 @@
 # Drawing Participation Framework Architecture
 
+> **2026-09 update.** The framework is moving to contracts + JSON page specs + a verifier.
+> Start with [docs/ARCHITECTURE-PLAN.md](docs/ARCHITECTURE-PLAN.md), then
+> [docs/SPEC-FORMAT.md](docs/SPEC-FORMAT.md) (how to write a page as JSON) and
+> [docs/COMPONENT-INVENTORY.md](docs/COMPONENT-INVENTORY.md) (which base components are
+> fully generalized). Exported JSON schemas live in `docs/schemas/`.
+
 ## Overview
 
 The Drawing Participation Framework is a **monorepo-based component system** designed for rapid application development through **shared components and modular layers**. The core philosophy is: **build reusable components in base, compose them into specialized apps**.

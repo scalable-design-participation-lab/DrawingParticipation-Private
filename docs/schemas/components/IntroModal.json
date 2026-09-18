@@ -1,0 +1,43 @@
+{
+  "name": "IntroModal",
+  "description": "Dismissible modal with a title, a paragraph and one button. Used for welcome / onboarding text.",
+  "stateful": false,
+  "emits": [
+    "update:modelValue",
+    "close"
+  ],
+  "slots": [
+    "default"
+  ],
+  "props": {
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "type": "object",
+    "properties": {
+      "modelValue": {
+        "type": "boolean"
+      },
+      "title": {
+        "type": "string"
+      },
+      "text": {
+        "type": "string"
+      },
+      "buttonLabel": {
+        "type": "string"
+      },
+      "bodyClass": {
+        "description": "Classes for the body box, e.g. a bordered \"paper\" panel.",
+        "type": "string"
+      },
+      "ui": {
+        "description": "Nuxt UI `ui` override for the underlying UModal.",
+        "type": "object",
+        "propertyNames": {
+          "type": "string"
+        },
+        "additionalProperties": {}
+      }
+    },
+    "additionalProperties": false
+  }
+}

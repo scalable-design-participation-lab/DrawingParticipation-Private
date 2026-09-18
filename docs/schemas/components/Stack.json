@@ -1,0 +1,64 @@
+{
+  "name": "Stack",
+  "description": "Flex container. Children flow in a row or a column with an enumerated gap.",
+  "stateful": false,
+  "emits": [],
+  "slots": [
+    "default"
+  ],
+  "props": {
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "type": "object",
+    "properties": {
+      "direction": {
+        "type": "string",
+        "enum": [
+          "row",
+          "column"
+        ]
+      },
+      "gap": {
+        "type": "string",
+        "enum": [
+          "none",
+          "xs",
+          "sm",
+          "md",
+          "lg",
+          "xl"
+        ]
+      },
+      "align": {
+        "type": "string",
+        "enum": [
+          "start",
+          "center",
+          "end",
+          "stretch",
+          "baseline"
+        ]
+      },
+      "justify": {
+        "type": "string",
+        "enum": [
+          "start",
+          "center",
+          "end",
+          "between",
+          "around"
+        ]
+      },
+      "wrap": {
+        "type": "boolean"
+      },
+      "responsive": {
+        "description": "Column on phones, row from md up.",
+        "type": "boolean"
+      },
+      "as": {
+        "type": "string"
+      }
+    },
+    "additionalProperties": false
+  }
+}

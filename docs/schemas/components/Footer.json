@@ -1,0 +1,70 @@
+{
+  "name": "Footer",
+  "description": "Floating bottom bar with a title, links and buttons.",
+  "stateful": false,
+  "emits": [
+    "support"
+  ],
+  "slots": [
+    "support"
+  ],
+  "props": {
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "type": "object",
+    "properties": {
+      "title": {
+        "type": "string"
+      },
+      "links": {
+        "type": "array",
+        "items": {
+          "type": "object",
+          "properties": {
+            "to": {
+              "type": "string"
+            },
+            "label": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "to",
+            "label"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "buttons": {
+        "type": "array",
+        "items": {
+          "type": "object",
+          "properties": {
+            "label": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "label"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "icons": {
+        "type": "array",
+        "items": {
+          "type": "object",
+          "properties": {
+            "name": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "name"
+          ],
+          "additionalProperties": false
+        }
+      }
+    },
+    "additionalProperties": false
+  }
+}

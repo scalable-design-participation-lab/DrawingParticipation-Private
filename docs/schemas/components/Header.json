@@ -1,0 +1,112 @@
+{
+  "name": "Header",
+  "description": "Floating top bar: logo, left nav items, right action items.",
+  "stateful": false,
+  "emits": [
+    "menu"
+  ],
+  "slots": [
+    "logo",
+    "menu",
+    "right"
+  ],
+  "props": {
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "type": "object",
+    "properties": {
+      "variant": {
+        "type": "string",
+        "enum": [
+          "pill",
+          "text"
+        ]
+      },
+      "leftItems": {
+        "type": "array",
+        "items": {
+          "type": "object",
+          "properties": {
+            "label": {
+              "type": "string"
+            },
+            "to": {
+              "type": "string"
+            },
+            "icon": {
+              "type": "string"
+            },
+            "color": {
+              "type": "string"
+            },
+            "variant": {
+              "type": "string"
+            },
+            "primary": {
+              "type": "boolean"
+            }
+          },
+          "additionalProperties": false
+        }
+      },
+      "rightItems": {
+        "type": "array",
+        "items": {
+          "type": "object",
+          "properties": {
+            "label": {
+              "type": "string"
+            },
+            "to": {
+              "type": "string"
+            },
+            "icon": {
+              "type": "string"
+            },
+            "color": {
+              "type": "string"
+            },
+            "variant": {
+              "type": "string"
+            },
+            "primary": {
+              "type": "boolean"
+            }
+          },
+          "additionalProperties": false
+        }
+      },
+      "logoSrc": {
+        "type": "string"
+      },
+      "logoAlt": {
+        "type": "string"
+      },
+      "logoLink": {
+        "type": "string"
+      },
+      "showIcon": {
+        "type": "boolean"
+      },
+      "showColorMode": {
+        "type": "boolean"
+      },
+      "showMenu": {
+        "type": "boolean"
+      },
+      "shape": {
+        "type": "string",
+        "enum": [
+          "rounded",
+          "rectangular"
+        ]
+      },
+      "z": {
+        "type": [
+          "string",
+          "number"
+        ]
+      }
+    },
+    "additionalProperties": false
+  }
+}

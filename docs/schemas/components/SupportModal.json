@@ -1,0 +1,19 @@
+{
+  "name": "SupportModal",
+  "description": "Help / support dialog.",
+  "stateful": false,
+  "emits": [
+    "update:modelValue"
+  ],
+  "slots": [],
+  "props": {
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "type": "object",
+    "properties": {
+      "modelValue": {
+        "type": "boolean"
+      }
+    },
+    "additionalProperties": false
+  }
+}

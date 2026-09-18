@@ -1,0 +1,89 @@
+{
+  "name": "WeatherGlyph",
+  "description": "SVG weather glyph: humidity spiral in the middle, one symbol per variable around it.",
+  "stateful": false,
+  "emits": [],
+  "slots": [],
+  "props": {
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "type": "object",
+    "properties": {
+      "reading": {
+        "type": "object",
+        "properties": {
+          "humedad": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 100,
+            "description": "Relative humidity, %"
+          },
+          "temperatura": {
+            "type": "number",
+            "minimum": -30,
+            "maximum": 60,
+            "description": "°C"
+          },
+          "nubes": {
+            "type": "string",
+            "enum": [
+              "stratus",
+              "cirrus",
+              "cumulus",
+              "cirrocumulus"
+            ]
+          },
+          "lluvia": {
+            "type": "string",
+            "enum": [
+              "suave",
+              "moderada",
+              "fuerte"
+            ]
+          },
+          "viento": {
+            "type": "string",
+            "enum": [
+              "suave",
+              "leve",
+              "moderada",
+              "fuerte"
+            ]
+          },
+          "olor": {
+            "type": "string",
+            "enum": [
+              "bajo",
+              "alto",
+              "intermitente"
+            ]
+          }
+        },
+        "required": [
+          "humedad",
+          "temperatura",
+          "nubes",
+          "lluvia",
+          "viento",
+          "olor"
+        ],
+        "additionalProperties": false
+      },
+      "size": {
+        "description": "Rendered size in px (default 240).",
+        "type": "number",
+        "exclusiveMinimum": 0
+      },
+      "labels": {
+        "description": "Print the variable names under each symbol.",
+        "type": "boolean"
+      },
+      "spiralOnly": {
+        "type": "boolean"
+      }
+    },
+    "required": [
+      "reading"
+    ],
+    "additionalProperties": false
+  }
+}

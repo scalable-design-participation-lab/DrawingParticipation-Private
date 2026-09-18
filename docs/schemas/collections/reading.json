@@ -1,0 +1,92 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "properties": {
+    "id": {
+      "type": "string"
+    },
+    "position": {
+      "type": "array",
+      "prefixItems": [
+        {
+          "type": "number",
+          "minimum": -180,
+          "maximum": 180
+        },
+        {
+          "type": "number",
+          "minimum": -90,
+          "maximum": 90
+        }
+      ],
+      "items": false,
+      "minItems": 2,
+      "maxItems": 2
+    },
+    "reading": {
+      "type": "object",
+      "properties": {
+        "humedad": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 100,
+          "description": "Relative humidity, %"
+        },
+        "temperatura": {
+          "type": "number",
+          "minimum": -30,
+          "maximum": 60,
+          "description": "°C"
+        },
+        "nubes": {
+          "type": "string",
+          "enum": [
+            "stratus",
+            "cirrus",
+            "cumulus",
+            "cirrocumulus"
+          ]
+        },
+        "lluvia": {
+          "type": "string",
+          "enum": [
+            "suave",
+            "moderada",
+            "fuerte"
+          ]
+        },
+        "viento": {
+          "type": "string",
+          "enum": [
+            "suave",
+            "leve",
+            "moderada",
+            "fuerte"
+          ]
+        },
+        "olor": {
+          "type": "string",
+          "enum": [
+            "bajo",
+            "alto",
+            "intermitente"
+          ]
+        }
+      },
+      "required": [
+        "humedad",
+        "temperatura",
+        "nubes",
+        "lluvia",
+        "viento",
+        "olor"
+      ],
+      "additionalProperties": false
+    }
+  },
+  "required": [
+    "position",
+    "reading"
+  ],
+  "additionalProperties": false
+}

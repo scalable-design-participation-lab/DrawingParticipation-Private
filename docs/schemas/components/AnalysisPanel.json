@@ -1,0 +1,19 @@
+{
+  "name": "AnalysisPanel",
+  "description": "Analysis dashboard (metadata, layer cards) and layer controls. `modelValue` = dashboard open.",
+  "stateful": true,
+  "emits": [
+    "update:modelValue"
+  ],
+  "slots": [],
+  "props": {
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "type": "object",
+    "properties": {
+      "modelValue": {
+        "type": "boolean"
+      }
+    },
+    "additionalProperties": false
+  }
+}

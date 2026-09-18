@@ -1,0 +1,39 @@
+{
+  "name": "Image",
+  "description": "Image with enumerated width and rounded corners; optionally wrapped in a link.",
+  "stateful": false,
+  "emits": [],
+  "slots": [],
+  "props": {
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "type": "object",
+    "properties": {
+      "src": {
+        "type": "string"
+      },
+      "alt": {
+        "type": "string"
+      },
+      "width": {
+        "type": "string",
+        "enum": [
+          "auto",
+          "full",
+          "half",
+          "third",
+          "two-thirds"
+        ]
+      },
+      "rounded": {
+        "type": "boolean"
+      },
+      "href": {
+        "type": "string"
+      }
+    },
+    "required": [
+      "src"
+    ],
+    "additionalProperties": false
+  }
+}

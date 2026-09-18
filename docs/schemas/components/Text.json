@@ -1,0 +1,68 @@
+{
+  "name": "Text",
+  "description": "Typography: element, size, weight, tone, alignment. Size and weight default from the element.",
+  "stateful": false,
+  "emits": [],
+  "slots": [
+    "default"
+  ],
+  "props": {
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "type": "object",
+    "properties": {
+      "as": {
+        "type": "string",
+        "enum": [
+          "h1",
+          "h2",
+          "h3",
+          "p",
+          "span",
+          "label"
+        ]
+      },
+      "size": {
+        "type": "string",
+        "enum": [
+          "xs",
+          "sm",
+          "md",
+          "lg",
+          "xl",
+          "2xl",
+          "3xl"
+        ]
+      },
+      "weight": {
+        "type": "string",
+        "enum": [
+          "normal",
+          "medium",
+          "semibold",
+          "bold"
+        ]
+      },
+      "tone": {
+        "type": "string",
+        "enum": [
+          "default",
+          "muted",
+          "accent",
+          "inverse"
+        ]
+      },
+      "align": {
+        "type": "string",
+        "enum": [
+          "left",
+          "center",
+          "right"
+        ]
+      },
+      "text": {
+        "type": "string"
+      }
+    },
+    "additionalProperties": false
+  }
+}

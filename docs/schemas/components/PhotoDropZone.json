@@ -1,0 +1,32 @@
+{
+  "name": "PhotoDropZone",
+  "description": "Photo picker with preview: drop, click or take a photo.",
+  "stateful": false,
+  "emits": [
+    "files"
+  ],
+  "slots": [],
+  "props": {
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "type": "object",
+    "properties": {
+      "lines": {
+        "type": "array",
+        "items": {
+          "type": "string"
+        }
+      },
+      "accept": {
+        "type": "string"
+      },
+      "capture": {
+        "type": "string",
+        "enum": [
+          "user",
+          "environment"
+        ]
+      }
+    },
+    "additionalProperties": false
+  }
+}

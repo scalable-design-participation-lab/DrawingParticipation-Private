@@ -1,0 +1,19 @@
+{
+  "name": "MenuModal",
+  "description": "Site menu (home / about / support / results).",
+  "stateful": false,
+  "emits": [
+    "update:modelValue"
+  ],
+  "slots": [],
+  "props": {
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "type": "object",
+    "properties": {
+      "modelValue": {
+        "type": "boolean"
+      }
+    },
+    "additionalProperties": false
+  }
+}

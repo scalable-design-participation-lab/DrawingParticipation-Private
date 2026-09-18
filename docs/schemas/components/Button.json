@@ -1,0 +1,36 @@
+{
+  "name": "Button",
+  "description": "Nuxt UI button / link.",
+  "stateful": false,
+  "emits": [
+    "click"
+  ],
+  "slots": [
+    "default"
+  ],
+  "props": {
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "type": "object",
+    "properties": {
+      "label": {
+        "type": "string"
+      },
+      "to": {
+        "type": "string"
+      },
+      "color": {
+        "type": "string"
+      },
+      "variant": {
+        "type": "string"
+      },
+      "icon": {
+        "type": "string"
+      },
+      "size": {
+        "type": "string"
+      }
+    },
+    "additionalProperties": false
+  }
+}

@@ -1,0 +1,31 @@
+{
+  "name": "FileDropZone",
+  "description": "Headless drag-and-drop / click-to-browse file picker.",
+  "stateful": false,
+  "emits": [
+    "files"
+  ],
+  "slots": [
+    "default"
+  ],
+  "props": {
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "type": "object",
+    "properties": {
+      "accept": {
+        "type": "string"
+      },
+      "multiple": {
+        "type": "boolean"
+      },
+      "capture": {
+        "type": "string",
+        "enum": [
+          "user",
+          "environment"
+        ]
+      }
+    },
+    "additionalProperties": false
+  }
+}

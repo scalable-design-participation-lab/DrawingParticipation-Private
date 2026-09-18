@@ -1,0 +1,34 @@
+{
+  "name": "RuMap",
+  "description": "Background map with the drawing layer, comment popups and comment display (Гуртома́).",
+  "stateful": true,
+  "emits": [
+    "show-comment-display",
+    "update:model-value",
+    "update:selectedFeature"
+  ],
+  "slots": [],
+  "props": {
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "type": "object",
+    "properties": {
+      "showAllPlusIcons": {
+        "type": "boolean"
+      },
+      "showCommentIcons": {
+        "type": "boolean"
+      },
+      "mapType": {
+        "type": "string",
+        "enum": [
+          "vector",
+          "satellite"
+        ]
+      },
+      "blurred": {
+        "type": "boolean"
+      }
+    },
+    "additionalProperties": false
+  }
+}

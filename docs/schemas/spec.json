@@ -1,0 +1,322 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "properties": {
+    "version": {
+      "type": "number",
+      "const": 1
+    },
+    "state": {
+      "type": "object",
+      "propertyNames": {
+        "type": "string"
+      },
+      "additionalProperties": {}
+    },
+    "dataSources": {
+      "type": "object",
+      "propertyNames": {
+        "type": "string"
+      },
+      "additionalProperties": {
+        "oneOf": [
+          {
+            "type": "object",
+            "properties": {
+              "kind": {
+                "type": "string",
+                "const": "static"
+              },
+              "contract": {
+                "description": "Collection contract the rows must satisfy.",
+                "type": "string"
+              },
+              "items": {
+                "type": "array",
+                "items": {}
+              }
+            },
+            "required": [
+              "kind",
+              "items"
+            ],
+            "additionalProperties": false
+          },
+          {
+            "type": "object",
+            "properties": {
+              "kind": {
+                "type": "string",
+                "const": "collection"
+              },
+              "name": {
+                "type": "string",
+                "description": "Backend collection name (Firestore collection, table, ...)."
+              },
+              "contract": {
+                "type": "string"
+              },
+              "where": {
+                "type": "array",
+                "items": {
+                  "type": "array",
+                  "prefixItems": [
+                    {
+                      "type": "string"
+                    },
+                    {
+                      "type": "string"
+                    },
+                    {}
+                  ],
+                  "items": false,
+                  "minItems": 3,
+                  "maxItems": 3
+                }
+              },
+              "limit": {
+                "type": "integer",
+                "exclusiveMinimum": 0,
+                "maximum": 9007199254740991
+              }
+            },
+            "required": [
+              "kind",
+              "name"
+            ],
+            "additionalProperties": false
+          },
+          {
+            "type": "object",
+            "properties": {
+              "kind": {
+                "type": "string",
+                "const": "rest"
+              },
+              "url": {
+                "type": "string"
+              },
+              "contract": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "kind",
+              "url"
+            ],
+            "additionalProperties": false
+          }
+        ]
+      }
+    },
+    "children": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/__schema0"
+      }
+    }
+  },
+  "required": [
+    "children"
+  ],
+  "additionalProperties": false,
+  "$defs": {
+    "__schema0": {
+      "type": "object",
+      "properties": {
+        "type": {
+          "type": "string",
+          "minLength": 1
+        },
+        "props": {
+          "type": "object",
+          "propertyNames": {
+            "type": "string"
+          },
+          "additionalProperties": {}
+        },
+        "bind": {
+          "type": "object",
+          "propertyNames": {
+            "type": "string"
+          },
+          "additionalProperties": {
+            "type": "string"
+          }
+        },
+        "on": {
+          "type": "object",
+          "propertyNames": {
+            "type": "string"
+          },
+          "additionalProperties": {
+            "anyOf": [
+              {
+                "anyOf": [
+                  {
+                    "type": "object",
+                    "properties": {
+                      "set": {
+                        "type": "string",
+                        "description": "State path to write, e.g. \"welcome\" or \"filters.year\"."
+                      },
+                      "value": {
+                        "description": "Value to write; a \"$...\" string is resolved (e.g. \"$item.id\"). Omitted = the event payload."
+                      }
+                    },
+                    "required": [
+                      "set"
+                    ],
+                    "additionalProperties": false
+                  },
+                  {
+                    "type": "object",
+                    "properties": {
+                      "navigate": {
+                        "type": "string",
+                        "description": "Route to push."
+                      }
+                    },
+                    "required": [
+                      "navigate"
+                    ],
+                    "additionalProperties": false
+                  },
+                  {
+                    "type": "object",
+                    "properties": {
+                      "toggle": {
+                        "type": "string",
+                        "description": "Boolean state path to flip."
+                      }
+                    },
+                    "required": [
+                      "toggle"
+                    ],
+                    "additionalProperties": false
+                  },
+                  {
+                    "type": "object",
+                    "properties": {
+                      "call": {
+                        "type": "string",
+                        "description": "Name of a handler registered by the app (registerHandler)."
+                      },
+                      "args": {
+                        "description": "Arguments passed to the handler after the payload; a \"$...\" string is resolved."
+                      }
+                    },
+                    "required": [
+                      "call"
+                    ],
+                    "additionalProperties": false
+                  }
+                ]
+              },
+              {
+                "type": "array",
+                "items": {
+                  "anyOf": [
+                    {
+                      "type": "object",
+                      "properties": {
+                        "set": {
+                          "type": "string",
+                          "description": "State path to write, e.g. \"welcome\" or \"filters.year\"."
+                        },
+                        "value": {
+                          "description": "Value to write; a \"$...\" string is resolved (e.g. \"$item.id\"). Omitted = the event payload."
+                        }
+                      },
+                      "required": [
+                        "set"
+                      ],
+                      "additionalProperties": false
+                    },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "navigate": {
+                          "type": "string",
+                          "description": "Route to push."
+                        }
+                      },
+                      "required": [
+                        "navigate"
+                      ],
+                      "additionalProperties": false
+                    },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "toggle": {
+                          "type": "string",
+                          "description": "Boolean state path to flip."
+                        }
+                      },
+                      "required": [
+                        "toggle"
+                      ],
+                      "additionalProperties": false
+                    },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "call": {
+                          "type": "string",
+                          "description": "Name of a handler registered by the app (registerHandler)."
+                        },
+                        "args": {
+                          "description": "Arguments passed to the handler after the payload; a \"$...\" string is resolved."
+                        }
+                      },
+                      "required": [
+                        "call"
+                      ],
+                      "additionalProperties": false
+                    }
+                  ]
+                }
+              }
+            ]
+          }
+        },
+        "if": {
+          "type": "string"
+        },
+        "style": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          ]
+        },
+        "slot": {
+          "type": "string"
+        },
+        "children": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/__schema0"
+          }
+        },
+        "item": {
+          "$ref": "#/$defs/__schema0"
+        },
+        "text": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "type"
+      ],
+      "additionalProperties": false
+    }
+  }
+}

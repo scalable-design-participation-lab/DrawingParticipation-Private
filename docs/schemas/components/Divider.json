@@ -1,0 +1,17 @@
+{
+  "name": "Divider",
+  "description": "Nuxt UI divider.",
+  "stateful": false,
+  "emits": [],
+  "slots": [],
+  "props": {
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "type": "object",
+    "properties": {
+      "label": {
+        "type": "string"
+      }
+    },
+    "additionalProperties": false
+  }
+}

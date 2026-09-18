@@ -1,0 +1,34 @@
+{
+  "name": "Toolbar",
+  "description": "Vertical tool palette.",
+  "stateful": false,
+  "emits": [
+    "toolClick"
+  ],
+  "slots": [],
+  "props": {
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "type": "object",
+    "properties": {
+      "tools": {
+        "type": "array",
+        "items": {
+          "type": "object",
+          "properties": {
+            "icon": {
+              "type": "string"
+            },
+            "tooltip": {
+              "type": "string"
+            }
+          },
+          "additionalProperties": {}
+        }
+      }
+    },
+    "required": [
+      "tools"
+    ],
+    "additionalProperties": false
+  }
+}
