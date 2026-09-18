@@ -85,22 +85,36 @@ const props = defineProps({
     type: Boolean,
     default: true,
   },
+  showColorMode: {
+    type: Boolean,
+    default: true,
+  },
+  /**
+   * 'pill' (default) renders every item as a floating button; 'text' renders
+   * plain text links (a label may contain a line break for two-line labels).
+   */
+  variant: {
+    type: String,
+    default: 'pill',
+    validator: (value: string) => ['pill', 'text'].includes(value),
+  },
 })
 
-// Add new refs for modals
-const showMenuModal = ref(false)
+const emit = defineEmits(['menu'])
 
-// Add menu select handler
-function handleMenuSelect(action: string) {
-  switch (action) {
-    case 'help':
-      // Add help logic
-      break
-    case 'settings':
-      // Add settings logic
-      break
-  }
+// The menu itself is app-specific: render it in the `menu` slot (receives
+// `open` / `close`) or listen to the `menu` event.
+const showMenuModal = ref(false)
+function openMenu() {
+  showMenuModal.value = true
+  emit('menu')
 }
+function closeMenu() {
+  showMenuModal.value = false
+}
+
+const textLinkClass = 'whitespace-pre-line text-center text-xs leading-tight text-gray-400 hover:text-black dark:hover:text-white'
+const textLinkActiveClass = '!text-black dark:!text-white'
 
 /**
  * Computed property to determine the shape class
@@ -131,10 +145,10 @@ const accentTextStyle = computed(() => {
   <div class="relative">
     <header
       class="h-10 lg:h-12 fixed top-6 left-6 right-6 flex justify-between bg-transparent"
-      :class="[`z-${z}`]"
+      :style="{ zIndex: z }"
     >
       <!-- items left -->
-      <div class="h-full flex space-x-2 sm:space-x-3 relative">
+      <div class="h-full flex relative" :class="variant === 'text' ? 'gap-16' : 'space-x-2 sm:space-x-3'">
         <UButton
           v-if="showIcon"
           class="w-10 lg:w-12 text-xl sm:text-2xl !rounded-lg flex justify-center !bg-gray-50 dark:!bg-black shadow-lg hover:scale-105 relative z-10" :class="[
@@ -162,9 +176,20 @@ const accentTextStyle = computed(() => {
             class="w-9/12 h-auto"
           >
         </UButton>
+        <!-- Anything that isn't an image logo: a text wordmark, an SVG, ... -->
+        <slot name="logo" />
         <template v-for="(item, index) in leftItems" :key="index">
+          <NuxtLink
+            v-if="variant === 'text'"
+            :to="item.to"
+            :class="textLinkClass"
+            :active-class="textLinkActiveClass"
+            @click="item.onClick"
+          >
+            {{ item.label }}
+          </NuxtLink>
           <UButton
-            v-if="item.to"
+            v-else-if="item.to"
             :to="item.to"
             :target="item.target"
             :variant="item.variant"
@@ -195,9 +220,18 @@ const accentTextStyle = computed(() => {
         </template>
       </div>
       <!-- items right -->
-      <div class="h-full flex space-x-2 sm:space-x-3 items-center relative z-10">
+      <div class="h-full flex items-center relative z-10" :class="variant === 'text' ? 'gap-16' : 'space-x-2 sm:space-x-3'">
         <template v-for="(item, index) in rightItems" :key="index">
-          <UDropdown v-if="item.dropdown" v-bind="item.dropdown">
+          <NuxtLink
+            v-if="variant === 'text'"
+            :to="item.to"
+            :class="textLinkClass"
+            :active-class="textLinkActiveClass"
+            @click="item.onClick"
+          >
+            {{ item.label }}
+          </NuxtLink>
+          <UDropdown v-else-if="item.dropdown" v-bind="item.dropdown">
             <UButton
               :icon="item.icon"
               class="h-full px-3 md:px-5 lg:px-6 text-xs sm:text-sm md:text-base lg:text-lg rounded-full !bg-gray-50 dark:!bg-black shadow-lg" :class="[
@@ -248,8 +282,11 @@ const accentTextStyle = computed(() => {
             {{ item.label }}
           </UButton>
         </template>
+        <!-- Extra controls that are not plain items (e.g. MapTypeToggle) -->
+        <slot name="right" />
         <!-- Dark Mode Toggle -->
         <UColorModeButton
+          v-if="showColorMode"
           class="h-full px-2 md:px-3 lg:px-4 text-xs hidden md:flex shadow-lg" :class="[
             shapeClass,
             hasPrimaryAccentColor
@@ -270,14 +307,12 @@ const accentTextStyle = computed(() => {
           ]"
           :style="accentTextStyle"
           icon="i-heroicons-ellipsis-horizontal-20-solid"
-          @click="showMenuModal = true"
+          @click="openMenu"
         />
       </div>
     </header>
 
-    <!-- Add popups (only when the menu is enabled; apps that hide the ellipsis
-         also drop the menu + its Support modal entirely) -->
-    <MenuModal v-if="showMenu" v-model="showMenuModal" @select="handleMenuSelect" />
+    <slot name="menu" :open="showMenuModal" :close="closeMenu" />
   </div>
 </template>
 

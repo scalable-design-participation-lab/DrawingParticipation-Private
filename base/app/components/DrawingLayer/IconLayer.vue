@@ -147,7 +147,7 @@ function handleCommentIconClick(feature, event) {
         @click.stop.prevent="handlePlusIconClick(feature)"
       >
         <img
-          src="@/assets/icons/open-icon.svg"
+          src="../../assets/icons/open-icon.svg"
           alt="Open Icon"
           class="plus-icon"
         >
@@ -167,7 +167,7 @@ function handleCommentIconClick(feature, event) {
         @click.stop.prevent="handleDeleteClick(feature)"
       >
         <img
-          src="@/assets/icons/delete.svg"
+          src="../../assets/icons/delete.svg"
           alt="Delete Icon"
           class="delete-icon"
         >

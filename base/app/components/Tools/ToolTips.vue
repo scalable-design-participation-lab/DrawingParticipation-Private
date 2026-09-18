@@ -1,5 +1,6 @@
 <script setup lang="ts">
-import { computed, onUnmounted, reactive, ref, watch } from 'vue'
+import { computed, inject, onUnmounted, reactive, ref, watch } from 'vue'
+import type { Ref } from 'vue'
 import { click, pointerMove } from 'ol/events/condition'
 import { Circle as CircleStyle, Fill, Stroke, Style } from 'ol/style'
 import type { Feature, Map } from 'ol'
@@ -309,7 +310,9 @@ function postRenderHandler() {
 }
 
 // Setup map instance and listeners
-watch(() => props.mapInstance, (newInstance) => {
+// Without an explicit prop, use the map provided by GeneralizedBackgroundMap.
+const injectedMap = inject<Ref<Map | null> | null>('olMap', null)
+watch(() => props.mapInstance ?? injectedMap?.value ?? null, (newInstance) => {
   if (newInstance) {
     mapInstance.value = newInstance
 

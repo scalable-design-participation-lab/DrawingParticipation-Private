@@ -6,17 +6,18 @@ exports[`generalizedHeader > renders correctly 1`] = `
   data-v-7abae708=""
 >
   <header
-    class="h-10 lg:h-12 fixed top-6 left-6 right-6 flex justify-between bg-transparent z-50"
+    class="h-10 lg:h-12 fixed top-6 left-6 right-6 flex justify-between bg-transparent"
     data-v-7abae708=""
+    style="z-index: 50;"
   >
     <!-- items left -->
     <div
-      class="h-full flex space-x-2 sm:space-x-3 relative"
+      class="h-full flex relative space-x-2 sm:space-x-3"
       data-v-7abae708=""
     >
       <button
         alt="Scalable Design Participation Lab Logo"
-        class="w-10 lg:w-12 text-xl sm:text-2xl !rounded-lg flex justify-center !bg-gray-50 dark:!bg-black shadow-lg hover:scale-105 relative z-10 rounded-full"
+        class="w-10 lg:w-12 text-xl sm:text-2xl !rounded-lg flex justify-center !bg-gray-50 dark:!bg-black shadow-lg hover:scale-105 relative z-10 rounded-full text-black dark:text-white"
         data-v-7abae708=""
         target="_blank"
         to="https://www.northeastern.edu/"
@@ -40,52 +41,43 @@ exports[`generalizedHeader > renders correctly 1`] = `
         />
         
       </button>
+      <!-- Anything that isn't an image logo: a text wordmark, an SVG, ... -->
       
       
-      <a
-        custom=""
+      
+      
+      <button
+        class="h-full px-3 sm:px-4 !rounded-lg text-xs sm:text-sm md:text-base lg:text-lg shadow-lg text-black dark:text-white !bg-gray-50 dark:!bg-black hover:scale-105 rounded-full text-black dark:text-white"
         data-v-7abae708=""
+        to="/"
       >
         
-        <button
-          class="h-full px-3 sm:px-4 !rounded-lg text-xs sm:text-sm md:text-base lg:text-lg shadow-lg text-black dark:text-white !bg-gray-50 dark:!bg-black hover:scale-105 rounded-full"
-          data-v-7abae708=""
-        >
-          
-          Home
-          
-        </button>
+        Home
         
-      </a>
+      </button>
       
       
-      <a
-        custom=""
+      <button
+        class="h-full px-3 sm:px-4 !rounded-lg text-xs sm:text-sm md:text-base lg:text-lg shadow-lg text-black dark:text-white !bg-gray-50 dark:!bg-black hover:scale-105 rounded-full text-black dark:text-white"
         data-v-7abae708=""
+        to="/about"
       >
         
-        <button
-          class="h-full px-3 sm:px-4 !rounded-lg text-xs sm:text-sm md:text-base lg:text-lg shadow-lg text-black dark:text-white !bg-gray-50 dark:!bg-black hover:scale-105 rounded-full"
-          data-v-7abae708=""
-        >
-          
-          About
-          
-        </button>
+        About
         
-      </a>
+      </button>
       
       
     </div>
     <!-- items right -->
     <div
-      class="h-full flex space-x-2 sm:space-x-3 items-center relative z-10"
+      class="h-full flex items-center relative z-10 space-x-2 sm:space-x-3"
       data-v-7abae708=""
     >
       
       
       <button
-        class="h-full px-2 md:px-3 lg:px-4 text-xs md:text-base lg:text-lg rounded-full !bg-gray-50 hover:!bg-black hover:!text-white dark:!bg-black shadow-lg dark:hover:!bg-slate-800 text-black dark:text-white hidden md:flex rounded-full"
+        class="h-full px-2 md:px-3 lg:px-4 text-xs md:text-base lg:text-lg rounded-full hidden md:flex shadow-lg rounded-full !bg-gray-50 hover:!bg-black hover:!text-white dark:!bg-black dark:hover:!bg-slate-800 text-black dark:text-white"
         data-v-7abae708=""
       >
         
@@ -100,7 +92,7 @@ exports[`generalizedHeader > renders correctly 1`] = `
       >
         
         <button
-          class="h-full px-2 md:px-3 lg:px-4 text-xs md:text-base lg:text-lg rounded-full !bg-gray-50 hover:!bg-black hover:!text-white dark:!bg-black shadow-lg dark:hover:!bg-slate-800 text-black dark:text-white hidden md:flex rounded-full"
+          class="h-full px-2 md:px-3 lg:px-4 text-xs md:text-base lg:text-lg rounded-full hidden md:flex shadow-lg rounded-full !bg-gray-50 hover:!bg-black hover:!text-white dark:!bg-black dark:hover:!bg-slate-800 text-black dark:text-white"
           data-v-7abae708=""
         >
           
@@ -111,14 +103,17 @@ exports[`generalizedHeader > renders correctly 1`] = `
       </a>
       
       
+      <!-- Extra controls that are not plain items (e.g. MapTypeToggle) -->
+      
+      
       <!-- Dark Mode Toggle -->
       <div
-        class="h-full px-2 md:px-3 lg:px-4 text-xs !bg-gray-50 hover:!bg-black hover:!text-white dark:!bg-black shadow-lg dark:hover:!bg-slate-800 text-black dark:text-white hidden md:flex rounded-full"
+        class="h-full px-2 md:px-3 lg:px-4 text-xs hidden md:flex shadow-lg rounded-full !bg-gray-50 hover:!bg-black hover:!text-white dark:!bg-black dark:hover:!bg-slate-800 text-black dark:text-white"
         data-v-7abae708=""
       />
       <!-- Menu -->
       <button
-        class="h-full px-2 md:px-2 lg:px-3.5 text-lg !bg-gray-50 hover:!bg-black hover:!text-white dark:!bg-black shadow-lg dark:hover:!bg-slate-800 text-black dark:text-white rounded-full"
+        class="h-full px-2 md:px-2 lg:px-3.5 text-lg shadow-lg rounded-full !bg-gray-50 hover:!bg-black hover:!text-white dark:!bg-black dark:hover:!bg-slate-800 text-black dark:text-white"
         data-v-7abae708=""
       >
         
@@ -126,11 +121,7 @@ exports[`generalizedHeader > renders correctly 1`] = `
       </button>
     </div>
   </header>
-  <!-- Add popups -->
-  <div
-    class=""
-    data-v-7abae708=""
-    modelvalue="false"
-  />
+  
+  
 </div>
 `;

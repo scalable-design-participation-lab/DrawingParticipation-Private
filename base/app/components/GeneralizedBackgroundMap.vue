@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import { computed, ref } from 'vue'
+import { computed, provide, ref } from 'vue'
 import type Feature from 'ol/Feature'
-import { useMapStore } from '../stores/map'
+import { fromLonLat } from 'ol/proj'
 import { useRuntimeConfig } from '#app'
 
 const props = defineProps({
@@ -66,32 +66,49 @@ const props = defineProps({
     type: String,
     default: 'restartukraine/cm3p4jqnj009y01s79ngdah4r',
   },
+  // 'vector' uses the light/dark styles above, 'satellite' uses mapbox/satellite-v9.
+  // Owned by the caller now (no pinia store inside this component).
+  mapType: {
+    type: String,
+    default: 'vector',
+    validator: (value: string) => ['vector', 'satellite'].includes(value),
+  },
+  // Falls back to runtimeConfig.public.mapboxToken when empty.
+  mapboxToken: {
+    type: String,
+    default: '',
+  },
+  // Convenience for JSON specs: [lon, lat] instead of projected `center`.
+  centerLonLat: {
+    type: Array as PropType<number[]>,
+    default: null,
+  },
 })
 
 const emit = defineEmits(['map-click', 'toggle-icon-details'])
 
 const config = useRuntimeConfig()
-const { mapType } = storeToRefs(useMapStore())
 const mapInstance = ref(null)
 const mapRef = ref(null)
 
 const colorMode = useColorMode()
 const isDark = computed(() => colorMode.value === 'dark')
 
-const mapboxToken = config.public.mapboxToken
+const mapboxToken = computed(() => props.mapboxToken || config.public.mapboxToken)
+const viewCenter = computed(() => (props.centerLonLat ? fromLonLat(props.centerLonLat) : props.center))
 
 const mapboxUrl = computed(() => {
   let style
-  if (mapType.value === 'vector' && isDark.value) {
+  if (props.mapType === 'vector' && isDark.value) {
     style = props.mapboxStyleDark
   }
-  else if (mapType.value === 'vector' && !isDark.value) {
+  else if (props.mapType === 'vector' && !isDark.value) {
     style = props.mapboxStyleLight
   }
   else {
     style = 'mapbox/satellite-v9'
   }
-  return `https://api.mapbox.com/styles/v1/${style}/tiles/{z}/{x}/{y}@2x?access_token=${mapboxToken}`
+  return `https://api.mapbox.com/styles/v1/${style}/tiles/{z}/{x}/{y}@2x?access_token=${mapboxToken.value}`
 })
 
 const mapboxAttribution = '© <a href="https://www.mapbox.com/about/maps/">Mapbox</a> © <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
@@ -150,6 +167,8 @@ function handleMapClick(event: any) {
 }
 
 // Expose map instance to parent components
+// Slot content (ToolTips and friends) cannot hold a template ref from a JSON spec.
+provide('olMap', mapInstance)
 defineExpose({
   mapInstance,
 })
@@ -215,7 +234,7 @@ onBeforeUnmount(() => {
 
       <ol-view
         ref="view"
-        :center="center"
+        :center="viewCenter"
         :zoom="zoom"
         :projection="projection"
         :rotation="rotation"

@@ -89,7 +89,7 @@ function handleCommentIconClick(feature, event) {
   >
     <div class="plus-icon-container" @click.stop="handleIconClick(feature)">
       <img
-        src="@/assets/icons/open-icon.svg"
+        src="../../assets/icons/open-icon.svg"
         alt="Open Icon"
         class="plus-icon"
       >
@@ -107,7 +107,7 @@ function handleCommentIconClick(feature, event) {
   >
     <div class="delete-icon-container" @click.stop="handleDeleteClick(feature)">
       <img
-        src="@/assets/icons/delete.svg"
+        src="../../assets/icons/delete.svg"
         alt="Delete Icon"
         class="delete-icon-img"
       >

@@ -163,7 +163,7 @@ function handleCommentIconClick(feature, event) {
   >
     <div class="delete-icon-container" @click.stop="handleDeleteClick(feature)">
       <img
-        src="@/assets/icons/delete.svg"
+        src="../../assets/icons/delete.svg"
         alt="Delete Icon"
         class="delete-icon"
       >

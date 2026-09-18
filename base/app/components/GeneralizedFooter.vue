@@ -46,8 +46,15 @@ defineProps({
   },
 })
 
-// Add ref for SupportModal
+const emit = defineEmits(['support'])
+
+// The help ("?") button: the app renders its own modal in the `support` slot
+// or listens to the `support` event.
 const showSupportModal = ref(false)
+function openSupport() {
+  showSupportModal.value = true
+  emit('support')
+}
 </script>
 
 <template>
@@ -81,14 +88,13 @@ const showSupportModal = ref(false)
         <button
           class="w-12 h-12 rounded-full bg-white dark:bg-black flex items-center justify-center font-semibold text-lg md:text-xl cursor-pointer shadow-md hover:bg-black hover:text-white dark:text-white dark:hover:bg-slate-800"
           aria-label="Help"
-          @click="showSupportModal = true"
+          @click="openSupport"
         >
           ?
         </button>
       </div>
     </footer>
 
-    <!-- Add SupportModal -->
-    <SupportModal v-model="showSupportModal" />
+    <slot name="support" :open="showSupportModal" :close="() => (showSupportModal = false)" />
   </div>
 </template>
