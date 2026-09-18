@@ -60,7 +60,10 @@
         ]
       },
       "text": {
-        "type": "string"
+        "type": [
+          "string",
+          "number"
+        ]
       }
     },
     "additionalProperties": false

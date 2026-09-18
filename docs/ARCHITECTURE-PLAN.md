@@ -10,6 +10,12 @@ Later an LLM writes the JSON; it never writes Vue.
 `apps/open-sensing-chapultepec` (3 pages + 2 placeholders). Each page file is a
 single `<SpecRenderer :spec>` line; the JSON lives in `app/specs/`.
 
+**Status (2026-09, round 2): the target user cannot read code or debug.** A
+generated app therefore has to fail safe at runtime, be caught by the verifier
+for the mistakes a schema cannot see, and own its data without hand-written
+backend code. All three are in (see the last rows of the table below); the
+deploy pipeline and acceptance scripts are deliberately not yet.
+
 ## Layers (each depends only on the one below)
 
 | Layer     | Where                                                                                                                    | What                                                                                                                                                                                       |
@@ -47,6 +53,9 @@ missing. Everything below was added rather than worked around:
 | DrawingLayer icons via the app's `@/assets`                | icons ship with base                                                                                                                                                                                                       |
 | raw Tailwind strings in specs (unverifiable, inconsistent) | layout primitives `Stack` / `Grid` / `Panel` / `Text` / `Image` with enumerated props; style presets (`registerStyle`, node `style`); verifier strict mode (`style.raw-class`, `style.unknown`) — every spec passes strict |
 | list-item actions, loading/error UI, validation feedback   | `"value": "$item.id"` / `"args": "$…"` expressions; `$sources.<name>.loading                                                                                                                                               | error`; `FormFields.errors` |
+| one crashing component or handler took the page down       | per-node `SpecErrorBoundary` (alert box in place of the node); handler errors captured into `$errors.<handler>`; `verifyRender` reports leftover alert boxes                                                                 |
+| wiring mistakes the schema cannot see                      | verifier rules `bind.write-only`, `link.unknown-route` (uses the manifest's routes), `state.unused`, unknown `$errors.<x>`                                                                                                   |
+| writing data needed app-specific backend code              | `app.json` `data.collections` -> base Nitro CRUD (`/api/collections/<name>`, fs storage) validated server-side with the app's own zod contract; built-in `saveTo` / `deleteFrom` handlers with reload                         |
 
 ## Next
 
@@ -56,7 +65,9 @@ missing. Everything below was added rather than worked around:
 3. `DrawingLayer` / `SideBar` / `RuMap`: accept `features` as a prop with the store as fallback, then flip `stateful`.
 4. Promote restart-ukraine's modal family to three generic shapes (intro / form / confirm); `MenuModal` and
    `SupportModal` are the obvious first two.
-5. Backend: expose the same collection contracts server-side (Nitro `server/api/<collection>` validated
-   with the same zod schemas) so a `rest` data source and a `collection` data source are interchangeable.
+5. ~~Backend: expose the same collection contracts server-side~~ done (`data.collections`, fs storage; swap the
+   Nitro storage driver for a database when a deployment needs one).
 6. Run `gen-spec --provider anthropic` on a real request and tune the prompt / catalogue from what the verifier rejects.
-7. Coverage: `DataList` / `DataTable`, `Chart`, form submit to a collection, `AuthGate` — add each with a contract when a real request needs it.
+7. Coverage: `DataList` / `DataTable`, `Chart`, `AuthGate` — add each with a contract when a real request needs it.
+8. Deploy pipeline (verify --app -> build -> host, one command) and JSON acceptance scripts (a generated app ships
+   with "open page X, fill Y, expect Z" checks the pipeline runs) — deferred on purpose until 1-7 are exercised.

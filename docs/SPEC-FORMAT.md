@@ -134,8 +134,26 @@ Everything an LLM can wire: show/hide (`if`), two-way values (`bind` +
 `update:*` → `set`), modals (`toggle` / `set`), navigation, list-item actions
 (`"value": "$item.id"`), loading/error states (`$sources.x.loading` /
 `$sources.x.error`), form validation feedback (`FormFields.errors`, a
-`field -> message` map a handler can `set`), side effects (`call`).
+`field -> message` map a handler can `set`), side effects (`call`), failed
+side effects (`$errors.<handler>`: the message of the last error a handler
+threw, cleared when it next succeeds), writing rows (`call: "saveTo"` /
+`"deleteFrom"` with the collection name as `args`, see the manifest below).
 Animations, drag, map gestures stay inside components (an enumerated prop at most).
+
+## Runtime safety
+
+A generated page must degrade, never disappear:
+
+- Every component node is wrapped in an error boundary (`SpecErrorBoundary`).
+  A component that throws while rendering is replaced by a small
+  `role="alert"` box naming the node type; the rest of the page keeps working.
+- A handler that throws (or rejects) does not break the page: the message
+  lands in `$errors.<handler>` so the spec can show it
+  (`{ "type": "Text", "if": "$errors.saveTo", "bind": { "text": "$errors.saveTo" } }`).
+- Data sources whose rows break their contract are rejected wholesale
+  (`$sources.<name>.error`), so a component never sees a malformed row.
+- `verifyRender` reports any alert box left after mounting as `render.error`,
+  so a spec that only fails at render time still fails in CI.
 
 ## Data sources
 
@@ -143,24 +161,23 @@ Animations, drag, map gestures stay inside components (an enumerated prop at mos
 | ------------ | -------------------------- | ------------------------------------------- |
 | `static`     | `items`                    | `staticAdapter` (fixtures, mocks, tests)    |
 | `rest`       | `url`                      | `restAdapter` (array, `{items}` or GeoJSON) |
-| `collection` | `name`, `where?`, `limit?` | `createFirestoreAdapter(db)` or your own    |
+| `collection` | `name`, `where?`, `limit?` | base's collections API when `name` is declared in `app.json` `data.collections`; otherwise `data.restBase/<name>` |
 
 Every kind accepts `contract`: the name of a collection contract the rows must
 satisfy. Rows that fail are rejected wholesale (`$sources.<name>.error` holds
 the `VerifyResult`) so bad data never reaches a component.
 
-The adapter is injected once in the app shell:
+The adapter is provided by base's manifest plugin (`base/app/plugins/manifest.ts`).
+An app that needs another backend (Firestore, ...) provides its own
+`DATA_ADAPTER` in a plugin:
 
 ```ts
-// app.vue
-provide(DATA_ADAPTER, composeAdapters({
+nuxtApp.vueApp.provide(DATA_ADAPTER, composeAdapters({
   static: staticAdapter,
   rest: restAdapter,
   collection: createFirestoreAdapter(useFirestore()),
 }))
 ```
-
-Swapping Firestore for a REST backend changes that one line.
 
 ## Registering components, handlers and styles
 
@@ -194,9 +211,17 @@ Three levels, cheapest first. All of them return the same shape:
    Rules: `spec.schema`, `state.bad-init`, `component.unknown`, `props.invalid`,
    `bind.unknown-prop`, `bind.bad-expr`, `bind.unknown-data`, `bind.unknown-state`,
    `bind.item-outside-template`, `slot.unknown`, `event.unknown`, `action.invalid`,
-   `action.unknown-state`, `action.unknown-handler`, `style.unknown`, `style.raw-class` (strict).
+   `action.unknown-state`, `action.unknown-handler` (also for `$errors.<x>`),
+   `style.unknown`, `style.raw-class` (strict).
+   Wiring rules, the mistakes a schema cannot see: `bind.write-only` (a
+   `modelValue` binding with no `update:modelValue` -> `set` back into the
+   same state, i.e. an input that never saves), `link.unknown-route`
+   (`navigate`, `to`, `href` pointing at a path the manifest does not route;
+   needs `routes`, which `verify --app` passes), `state.unused` (state that
+   nothing reads or writes).
 2. **Render** (`verifyRender`, seconds, in vitest): mounts the spec headlessly and
-   collects every Vue warning/error (`render.warn`, `render.error`).
+   collects every Vue warning/error (`render.warn`, `render.error`) plus any
+   error-boundary alert box left in the DOM.
 3. **Contract** (`verifyRows`, on every adapter response): rows vs. the collection
    schema (`row.invalid`, `rows.not-array`). Runs automatically in `useDataSources`.
 
@@ -216,7 +241,7 @@ static verifier over all of its specs.
   "theme": { "primary": "red", "gray": "neutral", "colorMode": "light" },
   "shell": "shell.json", // rendered around every page; contains one { "type": "Outlet" }
   "routes": { "/": "map.json", "/datos": "datos.json" },
-  "data": { "collection": "none" } // or "rest" + "restBase"
+  "data": { "collections": { "observaciones": { "contract": "observacion" } } } // and/or "restBase"
 }
 ```
 
@@ -225,11 +250,24 @@ static verifier over all of its specs.
   path and drop base's template pages. `SpecPage` renders the page, `Outlet`
   marks where it goes inside the shell.
 - Title / description / lang come from the manifest (base `app.vue`); theme
-  colors and color mode are applied at runtime; `data.collection` picks the
-  adapter for `collection` data sources (`rest` with `restBase`, or none —
-  Firestore apps provide their own adapter in a plugin).
+  colors and color mode are applied at runtime.
+- `data.collections` declares the collections the app owns. Base serves each
+  one at `/api/collections/<name>` (`GET` list, `POST` row, `DELETE :id`;
+  rows are files under `.data/collections`, gitignored) and validates every
+  write against the named contract with the same zod schema and the same
+  `verifyRows` the client uses; an invalid row is a `400` whose body is the
+  `VerifyResult`. The app's `app/contracts.ts` is loaded on the server by
+  `base/server/plugins/app-contracts.ts` (via a virtual module generated in
+  `base/nuxt.config.ts`), so a contract is registered once and enforced on
+  both sides. Specs write with the built-in handlers `saveTo` / `deleteFrom`
+  (`{ "call": "saveTo", "args": "observaciones" }` with the row as payload,
+  e.g. `FormFields` `submit`); both reload the page's data sources afterwards
+  and report failures through `$errors.saveTo` / `$errors.deleteFrom`.
+  Collections not owned by the app are read from `data.restBase/<name>`.
 - `yarn workspace @mono/base verify --app apps/<app>` checks the manifest,
-  every routed spec (strict) and the shell (`manifest.*` rules), all in one
+  every routed spec (strict, with the manifest's routes for `link.unknown-route`)
+  and the shell (`manifest.schema`, `manifest.missing-spec`, `manifest.shell-outlet`,
+  `manifest.unknown-contract`, `manifest.unknown-collection`), all in one
   result. Each app has `specs/__test__/app.test.ts` doing the same in vitest.
 
 An app is therefore `app.json` + `specs/*.json` + `contracts.ts` /
