@@ -4,7 +4,11 @@
   "title": "Bitácora de observación medioambiental",
   "description": "Registro participativo del comportamiento del medio ambiente en Chapultepec.",
   "lang": "es",
-  "theme": { "primary": "red", "gray": "neutral", "colorMode": "light" },
+  "theme": {
+    "primary": "red",
+    "gray": "neutral",
+    "colorMode": "light"
+  },
   "shell": "shell.json",
   "routes": {
     "/": "map.json",
@@ -13,5 +17,11 @@
     "/datos": "datos.json",
     "/acerca": "acerca.json"
   },
-  "data": { "collection": "none" }
+  "data": {
+    "collections": {
+      "observaciones": {
+        "contract": "observacion"
+      }
+    }
+  }
 }

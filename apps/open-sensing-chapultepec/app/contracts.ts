@@ -36,3 +36,13 @@ export const weatherGlyphContract = registerContract({
 
 registerContract({ name: 'GlyphLegend', description: 'EJEMPLO glyph plus the six legend cards.', props: z.strictObject({}) })
 registerContract({ name: 'GlyphCanvas', description: 'Axes where a visitor composes their glyph (static for now).', props: z.strictObject({}) })
+
+/** One answer to "¿Cómo está el clima hoy?" (stored by base's collections API). */
+export const ObservacionSchema = registerCollection('observacion', z.strictObject({
+  id: z.string().optional(),
+  createdAt: z.string().optional(),
+  escuchan: z.string().min(1),
+  nubes: z.string().min(1),
+  cielo: z.string().min(1),
+  huele: z.string().min(1),
+}))

@@ -14,19 +14,28 @@ const specPage = fileURLToPath(new URL('./app/components/SpecPage.vue', import.m
  * every `routes` entry becomes a route rendered by SpecPage, and it replaces
  * any page with the same path (including base's template leftovers).
  */
-function manifestRoutes() {
-  const file = ['app/app.json', 'app.json'].map(p => resolve(process.cwd(), p)).find(existsSync)
-  if (!file) {
-    return null
-  }
-  const manifest = JSON.parse(readFileSync(file, 'utf8')) as { routes?: Record<string, string> }
-  return manifest.routes ?? null
+interface Manifest {
+  routes?: Record<string, string>
+  data?: { collections?: Record<string, { contract: string }> }
 }
+
+function readManifest(): Manifest | null {
+  const file = ['app/app.json', 'app.json'].map(p => resolve(process.cwd(), p)).find(existsSync)
+  return file ? JSON.parse(readFileSync(file, 'utf8')) as Manifest : null
+}
+const manifest = readManifest()
+
+// The app's contracts module (collection schemas, handler declarations). The
+// server needs it loaded to validate collection writes; Nitro tree-shakes a
+// side-effect-only import, so it is registered through a generated plugin and
+// marked as having side effects.
+const contractsFile = resolve(process.cwd(), 'app/contracts.ts')
+const appContracts = existsSync(contractsFile) ? slash(contractsFile) : null
 
 export default defineNuxtConfig({
   hooks: {
     'pages:extend': (pages) => {
-      const routes = manifestRoutes()
+      const routes = manifest?.routes
       if (!routes) {
         return
       }
@@ -47,6 +56,25 @@ export default defineNuxtConfig({
     // By default, any layers within your project in the ~/layers directory will be automatically registered as layers in your project. (Nuxt > v3.12)
     '@nuxt/ui-pro',
   ],
+
+  // Collections declared in app.json are served by server/api/collections/*
+  // and validated server-side; rows are stored as files under .data/.
+  runtimeConfig: {
+    collections: manifest?.data?.collections ?? {},
+  },
+  nitro: {
+    storage: {
+      collections: { driver: 'fs', base: './.data/collections' },
+    },
+    // `#spec/app-contracts` is imported by base/server/plugins/app-contracts.ts.
+    moduleSideEffects: appContracts ? [appContracts] : [],
+    virtual: {
+      '#spec/app-contracts': appContracts
+        ? `import '${appContracts}'
+export const loaded = true`
+        : 'export const loaded = false',
+    },
+  },
 
   modules: [
     //

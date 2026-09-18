@@ -25,9 +25,15 @@ export const AppManifestSchema = z.strictObject({
   /** route path -> spec file name under specs/. */
   routes: z.record(z.string().regex(/^\/\S*$/), z.string().regex(/\.json$/)),
   data: z.strictObject({
-    /** Which adapter serves `kind: "collection"` data sources. */
-    collection: z.enum(['none', 'rest']).optional(),
-    /** Base URL for the rest adapter (collection name is appended). */
+    /**
+     * Collections the app owns. base serves them at /api/collections/<name>
+     * (list / create / delete), validates every write against `contract`, and
+     * `kind: "collection"` data sources read from there.
+     */
+    collections: z.record(z.string().regex(/^[\w-]+$/), z.strictObject({
+      contract: z.string().describe('Collection contract the rows must satisfy.'),
+    })).optional(),
+    /** Base URL for collections the app does not own (name is appended). */
     restBase: z.string().optional(),
   }).optional(),
 })

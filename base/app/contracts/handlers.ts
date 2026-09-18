@@ -17,3 +17,7 @@ export function isHandlerDeclared(name: string) {
 export function listHandlers() {
   return [...declared.entries()].map(([name, description]) => ({ name, description }))
 }
+
+// Built-in handlers every manifest app gets (implemented in plugins/manifest.ts).
+declareHandler('saveTo', 'Save the payload as a new row of the collection named in args (app.json data.collections), then reload data sources. Errors appear as $errors.saveTo.')
+declareHandler('deleteFrom', 'Delete the row whose id is the payload from the collection named in args, then reload data sources.')

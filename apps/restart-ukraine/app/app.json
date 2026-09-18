@@ -9,6 +9,5 @@
     "/about": "about.json",
     "/result": "result.json",
     "/dashboard": "dashboard.json"
-  },
-  "data": { "collection": "none" }
+  }
 }
