@@ -6,6 +6,7 @@ import { getComponent } from '../utils/registry'
 import { SPEC_CONTEXT, materializeProps, resolveExpr, runAction } from '../utils/spec-context'
 import type { SpecContext } from '../utils/spec-context'
 import { styleClasses } from '../utils/styles'
+import SpecErrorBoundary from './SpecErrorBoundary.vue'
 
 /**
  * Renders one spec node (and, recursively, its children). Used by SpecRenderer;
@@ -69,7 +70,8 @@ function renderNode(node: Node, item: unknown, ctx: SpecContext): VNodeChild {
   if (isNative) {
     return h(node.type, attrs, slots.default?.())
   }
-  return h(component, attrs, slots)
+  // Every component node is isolated: if it throws, only it shows an error.
+  return h(SpecErrorBoundary, { label: node.type }, { default: () => h(component, attrs, slots) })
 }
 
 export default SpecNode

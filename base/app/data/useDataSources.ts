@@ -16,35 +16,48 @@ export interface DataSourceState {
  * Loads every declared data source through the adapter. When a source names a
  * `contract`, the rows are verified against that collection schema first and
  * rejected wholesale on failure (fail closed: bad data never reaches the UI).
+ * `reload(name)` re-runs one source (all when omitted), e.g. after a write.
  */
 export function useDataSources(specs: Record<string, DataSourceSpec>, adapter: DataAdapter) {
   const sources = reactive<Record<string, DataSourceState>>({})
 
-  for (const [name, spec] of Object.entries(specs)) {
-    sources[name] = { items: [], loading: true, error: null }
-    adapter.load(spec)
-      .then((rows) => {
-        if (spec.contract) {
-          const schema = getCollection(spec.contract)
-          if (!schema) {
-            sources[name].error = `Unknown collection contract "${spec.contract}"`
-            return
-          }
-          const result = verifyRows(rows, schema)
-          if (!result.pass) {
-            sources[name].error = result
-            return
-          }
+  async function load(name: string) {
+    const spec = specs[name]
+    const source = sources[name]
+    source.loading = true
+    try {
+      const rows = await adapter.load(spec)
+      if (spec.contract) {
+        const schema = getCollection(spec.contract)
+        if (!schema) {
+          source.error = `Unknown collection contract "${spec.contract}"`
+          return
         }
-        sources[name].items = rows
-      })
-      .catch((err: unknown) => {
-        sources[name].error = err instanceof Error ? err.message : String(err)
-      })
-      .finally(() => {
-        sources[name].loading = false
-      })
+        const result = verifyRows(rows, schema)
+        if (!result.pass) {
+          source.error = result
+          return
+        }
+      }
+      source.items = rows
+      source.error = null
+    }
+    catch (err: unknown) {
+      source.error = err instanceof Error ? err.message : String(err)
+    }
+    finally {
+      source.loading = false
+    }
   }
 
-  return sources
+  for (const name of Object.keys(specs)) {
+    sources[name] = { items: [], loading: true, error: null }
+    load(name)
+  }
+
+  async function reload(name?: string) {
+    await Promise.all((name ? [name] : Object.keys(specs)).filter(n => n in specs).map(load))
+  }
+
+  return { sources, reload }
 }

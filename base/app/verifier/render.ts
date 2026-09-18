@@ -28,6 +28,10 @@ export async function verifyRender(spec: RootSpec, options: {
   })
   await nextTick()
   await new Promise(resolve => setTimeout(resolve, 0))
+  // A node that threw renders SpecErrorBoundary's alert box; report it.
+  for (const box of wrapper.findAll('[role="alert"]')) {
+    errors.push({ path: '(render)', rule: 'render.error', message: box.text() })
+  }
   wrapper.unmount()
   return { pass: errors.length === 0, errors }
 }

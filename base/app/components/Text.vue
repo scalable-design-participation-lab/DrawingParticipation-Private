@@ -11,7 +11,8 @@ const props = withDefaults(defineProps<{
   weight?: 'normal' | 'medium' | 'semibold' | 'bold'
   tone?: 'default' | 'muted' | 'accent' | 'inverse'
   align?: 'left' | 'center' | 'right'
-  text?: string
+  /** Content; numbers (e.g. a bound `$data.rows.length`) are rendered as-is. */
+  text?: string | number
 }>(), {
   as: 'p',
   size: undefined,
@@ -28,18 +29,20 @@ const ALIGN = { left: 'text-left', center: 'text-center', right: 'text-right' }
 const DEFAULT_SIZE = { h1: '3xl', h2: 'xl', h3: 'lg', p: 'md', span: 'md', label: 'xs' } as const
 const DEFAULT_WEIGHT = { h1: 'normal', h2: 'semibold', h3: 'semibold', p: 'normal', span: 'normal', label: 'normal' } as const
 
+const content = computed(() => String(props.text ?? ''))
+
 const classes = computed(() => [
   SIZE[props.size ?? DEFAULT_SIZE[props.as]],
   WEIGHT[props.weight ?? DEFAULT_WEIGHT[props.as]],
   TONE[props.tone],
   ALIGN[props.align],
   'leading-tight',
-  props.text.includes('\n') ? 'whitespace-pre-line' : '',
+  content.value.includes('\n') ? 'whitespace-pre-line' : '',
 ])
 </script>
 
 <template>
   <component :is="as" :class="classes">
-    <slot>{{ text }}</slot>
+    <slot>{{ content }}</slot>
   </component>
 </template>

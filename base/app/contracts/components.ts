@@ -293,7 +293,7 @@ registerContract({
     weight: z.enum(['normal', 'medium', 'semibold', 'bold']).optional(),
     tone: z.enum(['default', 'muted', 'accent', 'inverse']).optional(),
     align: z.enum(['left', 'center', 'right']).optional(),
-    text: z.string().optional(),
+    text: z.union([z.string(), z.number()]).optional(),
   }),
   slots: ['default'],
 })

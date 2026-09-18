@@ -15,7 +15,8 @@ import SpecNode from './SpecNode.vue'
  *   `set` actions write. A string value like "$query.showIntro" is read from
  *   the route query once, on load.
  * - `spec.dataSources` are loaded through the injected DataAdapter and exposed
- *   as `$data.<name>` (rows only; loading/error live in `sources`).
+ *   as `$data.<name>` (rows only; loading/error live in `$sources.<name>`).
+ * - `$errors.<handler>` is the last error a handler threw.
  * - `data` lets the host page pass extra rows without a data source.
  */
 const props = defineProps<{
@@ -33,15 +34,16 @@ const navigate = props.navigate ?? ((to: string) => {
 })
 const query: Record<string, unknown> = props.query ?? (props.navigate ? {} : { ...useRoute().query })
 
-const seed = { state: {}, data: {}, query, navigate }
+const adapter = props.adapter ?? inject(DATA_ADAPTER, defaultAdapter)
+const { sources, reload } = useDataSources(props.spec.dataSources ?? {}, adapter)
+const errors = reactive<Record<string, string | undefined>>({})
+
+const seed = { state: {}, data: {}, sources, errors, query, navigate, reload }
 // Query params are strings; "true"/"false" almost always mean a boolean flag.
 const coerce = (v: unknown) => (v === 'true' ? true : v === 'false' ? false : v)
 const state = reactive<Record<string, unknown>>(
   Object.fromEntries(Object.entries(props.spec.state ?? {}).map(([k, v]) => [k, coerce(resolveExpr(v, seed))])),
 )
-
-const adapter = props.adapter ?? inject(DATA_ADAPTER, defaultAdapter)
-const sources = useDataSources(props.spec.dataSources ?? {}, adapter)
 
 const data = computed<Record<string, unknown>>(() => {
   const out: Record<string, unknown> = { ...(props.data ?? {}) }
@@ -57,11 +59,13 @@ provide(SPEC_CONTEXT, {
     return data.value
   },
   sources,
+  errors,
   query,
   navigate,
+  reload,
 })
 
-defineExpose({ state, sources })
+defineExpose({ state, sources, errors })
 </script>
 
 <template>

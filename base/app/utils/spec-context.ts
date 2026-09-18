@@ -4,13 +4,17 @@ import type { ActionList } from '../contracts/spec'
 import type { DataSourceState } from '../data/useDataSources'
 import { getHandler } from './handlers'
 
-/** What a rendered spec can see: page state, loaded data, data-source status, route query, navigation. */
+/** What a rendered spec can see: page state, loaded data, data-source status, handler errors, route query. */
 export interface SpecContext {
   state: Record<string, unknown>
   data: Record<string, unknown>
   sources: Record<string, DataSourceState>
+  /** handler name -> last error message (cleared on the next successful call). */
+  errors: Record<string, string | undefined>
   query: Record<string, unknown>
   navigate: (to: string) => void
+  /** Reload one data source (or all of them) after a write. */
+  reload: (name?: string) => Promise<void>
 }
 
 export const SPEC_CONTEXT: InjectionKey<SpecContext> = Symbol('spec-context')
@@ -46,6 +50,7 @@ export function resolveExpr(expr: unknown, ctx: SpecContext, item?: unknown): un
     case 'item': return getPath(item, path)
     case 'data': return getPath(ctx.data, path)
     case 'sources': return getPath(ctx.sources, path)
+    case 'errors': return getPath(ctx.errors, path)
     case 'query': return getPath(ctx.query, path)
     default: return getPath(ctx.state, path)
   }
@@ -56,7 +61,12 @@ function resolveValue(value: unknown, ctx: SpecContext, item: unknown) {
   return typeof value === 'string' && value.startsWith('$') ? resolveExpr(value, ctx, item) : value
 }
 
-export function runAction(actions: ActionList, payload: unknown, ctx: SpecContext, item?: unknown) {
+/**
+ * Runs the actions in order. A handler that throws (or rejects) stops the
+ * list, is logged, and is exposed as `$errors.<handler>` so the spec can show
+ * it; it never takes the page down.
+ */
+export async function runAction(actions: ActionList, payload: unknown, ctx: SpecContext, item?: unknown) {
   for (const action of Array.isArray(actions) ? actions : [actions]) {
     if ('navigate' in action) {
       ctx.navigate(action.navigate)
@@ -68,9 +78,18 @@ export function runAction(actions: ActionList, payload: unknown, ctx: SpecContex
       const handler = getHandler(action.call)
       if (!handler) {
         console.error(`[spec] no handler registered for "${action.call}"`)
-        continue
+        ctx.errors[action.call] = `handler "${action.call}" is not registered`
+        return
       }
-      handler(payload, ctx, resolveValue(action.args, ctx, item))
+      try {
+        await handler(payload, ctx, resolveValue(action.args, ctx, item))
+        ctx.errors[action.call] = undefined
+      }
+      catch (err) {
+        ctx.errors[action.call] = err instanceof Error ? err.message : String(err)
+        console.error(`[spec] handler "${action.call}" failed:`, err)
+        return
+      }
     }
     else {
       setPath(ctx.state, action.set, 'value' in action ? resolveValue(action.value, ctx, item) : payload)

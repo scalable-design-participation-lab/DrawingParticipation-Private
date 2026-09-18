@@ -96,4 +96,4 @@ export const RootSpecSchema = z.strictObject({
 export type RootSpec = z.infer<typeof RootSpecSchema>
 
 /** Bind expressions: "$data.x", "$state.a.b", "$query.q", "$item", "$item.reading.humedad". */
-export const BIND_RE = /^\$(data|state|sources|item|query)((?:\.[\w-]+)*)$/
+export const BIND_RE = /^\$(data|state|sources|errors|item|query)((?:\.[\w-]+)*)$/
