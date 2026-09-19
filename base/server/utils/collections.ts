@@ -1,4 +1,6 @@
 import { getCollection } from '../../app/contracts/collections'
+import { collectionSchema } from '../../app/contracts/manifest'
+import type { CollectionFieldSpec } from '../../app/contracts/manifest'
 import { verifyRows } from '../../app/verifier'
 
 /**
@@ -15,7 +17,7 @@ export interface StoredRow {
 }
 
 export function collectionConfig(name: string) {
-  const collections = (useRuntimeConfig().collections ?? {}) as Record<string, { contract: string }>
+  const collections = (useRuntimeConfig().collections ?? {}) as Record<string, { contract?: string, fields?: CollectionFieldSpec[] }>
   const config = collections[name]
   if (!config) {
     throw createError({ statusCode: 404, statusMessage: `Unknown collection "${name}"` })
@@ -25,8 +27,8 @@ export function collectionConfig(name: string) {
 
 /** Throws 400 with the verifier's errors when the row breaks the contract. */
 export function validateRow(name: string, row: unknown) {
-  const { contract } = collectionConfig(name)
-  const schema = getCollection(contract)
+  const { contract, fields } = collectionConfig(name)
+  const schema = contract ? getCollection(contract) : fields ? collectionSchema(fields) : undefined
   if (!schema) {
     throw createError({ statusCode: 500, statusMessage: `Contract "${contract}" is not registered on the server (register it in app/contracts.ts)` })
   }

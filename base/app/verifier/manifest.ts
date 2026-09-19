@@ -24,7 +24,7 @@ export function verifyApp(manifest: unknown, specs: Record<string, unknown>): Ve
   const owned = new Set(Object.keys(m.data?.collections ?? {}))
 
   for (const [name, { contract }] of Object.entries(m.data?.collections ?? {})) {
-    if (!getCollection(contract)) {
+    if (contract && !getCollection(contract)) {
       errors.push({ path: `app.json:data.collections.${name}.contract`, rule: 'manifest.unknown-contract', message: `collection contract "${contract}" is not registered (app/contracts.ts)` })
     }
   }

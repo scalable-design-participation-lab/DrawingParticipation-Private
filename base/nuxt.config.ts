@@ -16,7 +16,7 @@ const specPage = fileURLToPath(new URL('./app/components/SpecPage.vue', import.m
  */
 interface Manifest {
   routes?: Record<string, string>
-  data?: { collections?: Record<string, { contract: string }> }
+  data?: { collections?: Record<string, { contract?: string, fields?: unknown[] }> }
 }
 
 function readManifest(): Manifest | null {

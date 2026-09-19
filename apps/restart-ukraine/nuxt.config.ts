@@ -54,9 +54,6 @@ export default defineNuxtConfig({
     },
   ],
 
-  plugins: [
-    { src: '~/plugins/vue3-openlayers.js', mode: 'client' }
-  ],
 
   layouts: {
     default: '~/layouts/default.vue'

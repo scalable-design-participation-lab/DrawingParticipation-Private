@@ -6,6 +6,7 @@ import MarkerOverlay from '../components/MarkerOverlay.vue'
 import FeatureLayer from '../components/FeatureLayer.vue'
 import StepCard from '../components/StepCard.vue'
 import Accordion from '../components/Accordion.vue'
+import List from '../components/List.vue'
 import FileDropZone from '../components/FileDropZone.vue'
 import PhotoDropZone from '../components/PhotoDropZone.vue'
 import FormFields from '../components/FormFields.vue'
@@ -38,6 +39,7 @@ export default defineNuxtPlugin(() => {
   registerComponent('FeatureLayer', FeatureLayer)
   registerComponent('StepCard', StepCard)
   registerComponent('Accordion', Accordion)
+  registerComponent('List', List)
   registerComponent('FileDropZone', FileDropZone)
   registerComponent('PhotoDropZone', PhotoDropZone)
   registerComponent('FormFields', FormFields)

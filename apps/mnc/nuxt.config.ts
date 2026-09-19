@@ -86,9 +86,6 @@ export default defineNuxtConfig({
     },
   ],
 
-  plugins: [
-    { src: '~/plugins/vue3-openlayers.js', mode: 'client' },
-  ],
 
   vite: {
     resolve: {

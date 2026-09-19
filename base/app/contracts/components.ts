@@ -242,6 +242,19 @@ registerContract({
 })
 
 registerContract({
+  name: 'List',
+  description: 'Repeat the `item` template for every row of `items` (bind to `$data.<source>` or a state list), as a stack or a grid. Inside the template use `$item.<field>`.',
+  props: z.strictObject({
+    items: z.array(z.unknown()).optional(),
+    layout: z.enum(['stack', 'grid']).optional(),
+    cols: z.union([z.literal(1), z.literal(2), z.literal(3), z.literal(4)]).optional(),
+    gap: z.enum(['none', 'xs', 'sm', 'md', 'lg']).optional(),
+    empty: z.string().optional().describe('Text shown when there are no items'),
+  }),
+  slots: ['item'],
+})
+
+registerContract({
   name: 'FormFields',
   description: 'A form described by data: `fields` in, one values object out (`update:modelValue`, `submit`).',
   props: z.strictObject({

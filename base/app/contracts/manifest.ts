@@ -9,6 +9,20 @@ import { z } from 'zod'
  * Nuxt routes at build time (nuxt.config `pages:extend`) and applies the theme
  * at runtime (plugins/manifest.ts).
  */
+/** One field of a collection declared in app.json (validated on every write). */
+export const CollectionField = z.strictObject({
+  name: z.string().regex(/^[\w-]+$/),
+  type: z.enum(['string', 'number', 'boolean', 'json']),
+  required: z.boolean().optional(),
+})
+export type CollectionFieldSpec = z.infer<typeof CollectionField>
+
+/** Build the zod row schema for `fields` (extra keys pass through). */
+export function collectionSchema(fields: CollectionFieldSpec[]) {
+  const types = { string: z.string(), number: z.number(), boolean: z.boolean(), json: z.unknown() }
+  return z.looseObject(Object.fromEntries(fields.map(f => [f.name, f.required ? types[f.type] : types[f.type].optional()])))
+}
+
 export const AppManifestSchema = z.strictObject({
   version: z.literal(1).optional(),
   name: z.string().min(1).describe('Workspace / display name.'),
@@ -31,8 +45,9 @@ export const AppManifestSchema = z.strictObject({
      * `kind: "collection"` data sources read from there.
      */
     collections: z.record(z.string().regex(/^[\w-]+$/), z.strictObject({
-      contract: z.string().describe('Collection contract the rows must satisfy.'),
-    })).optional(),
+      contract: z.string().optional().describe('A collection contract registered in app/contracts.ts.'),
+      fields: z.array(CollectionField).optional().describe('Or the row shape as data: declared fields are validated, others pass through.'),
+    }).refine(c => c.contract || c.fields, { message: 'a collection needs `contract` or `fields`' })).optional(),
     /** Base URL for collections the app does not own (name is appended). */
     restBase: z.string().optional(),
   }).optional(),
