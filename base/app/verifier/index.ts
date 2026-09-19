@@ -2,6 +2,7 @@ import type { z } from 'zod'
 import { getContract } from '../contracts/components'
 import { isHandlerDeclared } from '../contracts/handlers'
 import { ActionListSchema, BIND_RE, RootSpecSchema } from '../contracts/spec'
+import { conditionExprs } from '../utils/spec-context'
 import type { ActionList, RootSpec, SpecNode } from '../contracts/spec'
 import { getStyle } from '../utils/styles'
 
@@ -103,7 +104,7 @@ export function verifySpec(spec: unknown, options: VerifySpecOptions = {}): Veri
   const checkExpr = (expr: string, at: string, inItem: boolean) => {
     const match = BIND_RE.exec(expr)
     if (!match) {
-      errors.push({ path: at, rule: 'bind.bad-expr', message: `"${expr}" is not "$data.x", "$state.x", "$sources.x", "$errors.x", "$query.x" or "$item[.x]"` })
+      errors.push({ path: at, rule: 'bind.bad-expr', message: `"${expr}" is not "$data.x", "$state.x", "$sources.x", "$errors.x", "$query.x", "$t.key" or "$item[.x]"` })
       return
     }
     const [, kind, rest] = match
@@ -117,7 +118,7 @@ export function verifySpec(spec: unknown, options: VerifySpecOptions = {}): Veri
         errors.push({ path: at, rule: 'bind.unknown-state', message: `state "${first}" is not declared in state` })
       }
     }
-    if (kind === 'errors' && !isHandler(first)) {
+    if (kind === 'errors' && first && !isHandler(first)) {
       errors.push({ path: at, rule: 'action.unknown-handler', message: `handler "${first}" is not registered` })
     }
     if (kind === 'item' && !inItem) {
@@ -152,7 +153,7 @@ export function verifySpec(spec: unknown, options: VerifySpecOptions = {}): Veri
       // `value` / `args` may be expressions.
       const dynamic: [string, unknown] | null = 'set' in action ? ['value', action.value] : 'call' in action ? ['args', action.args] : null
       if (dynamic && typeof dynamic[1] === 'string' && /^!?\$/.test(dynamic[1])) {
-        checkExpr(dynamic[1].replace(/^!/, ''), `${p}.${dynamic[0]}`, inItem)
+        conditionExprs(dynamic[1]).forEach(expr => checkExpr(expr, `${p}.${dynamic[0]}`, inItem))
       }
     }
   }
@@ -261,7 +262,7 @@ export function verifySpec(spec: unknown, options: VerifySpecOptions = {}): Veri
       checkExpr(expr, `${path}.bind.${prop}`, inItem)
     }
     if (node.if !== undefined) {
-      checkExpr(node.if.replace(/^!/, ''), `${path}.if`, inItem)
+      conditionExprs(node.if).forEach(expr => checkExpr(expr, `${path}.if`, inItem))
     }
     if (node.text?.startsWith('$')) {
       checkExpr(node.text, `${path}.text`, inItem)

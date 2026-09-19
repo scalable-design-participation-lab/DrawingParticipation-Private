@@ -8,7 +8,7 @@
 export interface FormField {
   name: string
   label?: string
-  type?: 'text' | 'textarea' | 'number' | 'date' | 'time' | 'select'
+  type?: 'text' | 'email' | 'password' | 'textarea' | 'number' | 'date' | 'time' | 'select'
   placeholder?: string
   rows?: number
   options?: { label: string, value: string | number }[]

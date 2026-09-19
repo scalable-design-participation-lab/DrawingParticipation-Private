@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, inject, onMounted, provide, reactive } from 'vue'
+import { computed, getCurrentInstance, inject, onMounted, provide, reactive } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import type { RootSpec } from '../contracts/spec'
 import { DATA_ADAPTER, defaultAdapter } from '../data/adapters'
@@ -25,6 +25,7 @@ const props = defineProps<{
   adapter?: DataAdapter
   navigate?: (to: string) => void
   query?: Record<string, unknown>
+  translate?: (key: string) => string
 }>()
 
 // Outside a router (tests) callers pass `navigate` + `query` explicitly.
@@ -34,11 +35,15 @@ const navigate = props.navigate ?? ((to: string) => {
 })
 const query: Record<string, unknown> = props.query ?? (props.navigate ? {} : { ...useRoute().query })
 
+// "$t.key" reads vue-i18n's global $t when the app installed it (mnc); otherwise the key shows.
+const globals = getCurrentInstance()?.appContext.config.globalProperties as { $t?: (key: string) => string } | undefined
+const translate = props.translate ?? (globals?.$t ? (key: string) => globals.$t!(key) : undefined)
+
 const adapter = props.adapter ?? inject(DATA_ADAPTER, defaultAdapter)
 const { sources, reload } = useDataSources(props.spec.dataSources ?? {}, adapter)
 const errors = reactive<Record<string, string | undefined>>({})
 
-const seed = { state: {}, data: {}, sources, errors, query, navigate, reload }
+const seed = { state: {}, data: {}, sources, errors, query, navigate, reload, translate }
 // Query params are strings; "true"/"false" almost always mean a boolean flag.
 const coerce = (v: unknown) => (v === 'true' ? true : v === 'false' ? false : v)
 const state = reactive<Record<string, unknown>>(
@@ -63,6 +68,7 @@ const ctx = {
   query,
   navigate,
   reload,
+  translate,
 }
 provide(SPEC_CONTEXT, ctx)
 

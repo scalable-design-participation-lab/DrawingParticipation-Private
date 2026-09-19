@@ -3,7 +3,7 @@ import type { PropType, VNodeChild } from 'vue'
 import { defineComponent, h, inject } from 'vue'
 import type { SpecNode as Node } from '../contracts/spec'
 import { getComponent } from '../utils/registry'
-import { SPEC_CONTEXT, materializeProps, resolveExpr, runAction } from '../utils/spec-context'
+import { SPEC_CONTEXT, evaluate, materializeProps, resolveExpr, runAction } from '../utils/spec-context'
 import type { SpecContext } from '../utils/spec-context'
 import { styleClasses } from '../utils/styles'
 import SpecErrorBoundary from './SpecErrorBoundary.vue'
@@ -29,13 +29,9 @@ const SpecNode = defineComponent({
 })
 
 function renderNode(node: Node, item: unknown, ctx: SpecContext): VNodeChild {
-  if (node.if !== undefined) {
-    // "!$state.x" renders while the expression is falsy.
-    const negate = node.if.startsWith('!')
-    const shown = Boolean(resolveExpr(negate ? node.if.slice(1) : node.if, ctx, item))
-    if (shown === negate) {
-      return null
-    }
+  // "!$state.x" and "$state.view == 'list'" are conditions; anything else is truthiness.
+  if (node.if !== undefined && !evaluate(node.if, ctx, item)) {
+    return null
   }
 
   const component = getComponent(node.type)

@@ -15,6 +15,59 @@ export interface SpecContext {
   navigate: (to: string) => void
   /** Reload one data source (or all of them) after a write. */
   reload: (name?: string) => Promise<void>
+  /** "$t.some.key" -> translated text (vue-i18n when the app has it; the key otherwise). */
+  translate?: (key: string) => string
+}
+
+/** `"$state.view == 'list'"`, `"$state.n != 0"`, with an optional leading `!`. */
+const CONDITION_RE = /^(!?)(\$[\w.-]+)\s*(==|!=)\s*(\S.*)$/
+
+function literal(raw: string): unknown {
+  const s = raw.trim()
+  if (/^'.*'$/.test(s) || /^".*"$/.test(s)) {
+    return s.slice(1, -1)
+  }
+  if (s === 'true' || s === 'false') {
+    return s === 'true'
+  }
+  if (s === 'null') {
+    return null
+  }
+  return Number.isNaN(Number(s)) ? s : Number(s)
+}
+
+/** The expressions of a condition, one per `&&` part (for the verifier). */
+export function conditionExprs(expr: string): string[] {
+  return expr.split(/\s*&&\s*/).map(part => parseCondition(part)?.expr ?? part)
+}
+
+/** Splits a condition into its expression and the rest; null when it is a plain expression. */
+export function parseCondition(expr: string): { negate: boolean, expr: string, op?: '==' | '!=', value?: unknown } | null {
+  const match = CONDITION_RE.exec(expr)
+  if (match) {
+    return { negate: match[1] === '!', expr: match[2], op: match[3] as '==' | '!=', value: literal(match[4]) }
+  }
+  if (expr.startsWith('!$')) {
+    return { negate: true, expr: expr.slice(1) }
+  }
+  return null
+}
+
+/** Truthiness of `if` / boolean `value` expressions, including `!` and `==` / `!=` forms. */
+export function evaluate(expr: unknown, ctx: SpecContext, item?: unknown): unknown {
+  if (typeof expr !== 'string') {
+    return expr
+  }
+  if (expr.includes('&&')) {
+    return expr.split(/\s*&&\s*/).every(part => Boolean(evaluate(part, ctx, item)))
+  }
+  const cond = parseCondition(expr)
+  if (!cond) {
+    return resolveExpr(expr, ctx, item)
+  }
+  const left = resolveExpr(cond.expr, ctx, item)
+  const result = cond.op ? (cond.op === '==' ? left === cond.value : left !== cond.value) : Boolean(left)
+  return cond.negate ? !result : result
 }
 
 export const SPEC_CONTEXT: InjectionKey<SpecContext> = Symbol('spec-context')
@@ -52,19 +105,14 @@ export function resolveExpr(expr: unknown, ctx: SpecContext, item?: unknown): un
     case 'sources': return getPath(ctx.sources, path)
     case 'errors': return getPath(ctx.errors, path)
     case 'query': return getPath(ctx.query, path)
+    case 't': return ctx.translate ? ctx.translate(path.join('.')) : path.join('.')
     default: return getPath(ctx.state, path)
   }
 }
 
-/** Action `value` / `args` may be expressions ("$item.id", "!$state.open"); literals pass through. */
+/** Action `value` / `args` may be expressions ("$item.id", "!$state.open", "$state.view == 'list'"); literals pass through. */
 function resolveValue(value: unknown, ctx: SpecContext, item: unknown) {
-  if (typeof value !== 'string') {
-    return value
-  }
-  if (value.startsWith('!$')) {
-    return !resolveExpr(value.slice(1), ctx, item)
-  }
-  return value.startsWith('$') ? resolveExpr(value, ctx, item) : value
+  return typeof value === 'string' && /^!?\$/.test(value) ? evaluate(value, ctx, item) : value
 }
 
 /**

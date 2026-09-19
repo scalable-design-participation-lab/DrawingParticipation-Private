@@ -29,6 +29,7 @@ export const HeaderItem = z.strictObject({
   color: z.string().optional(),
   variant: z.string().optional(),
   primary: z.boolean().optional(),
+  target: z.string().optional().describe('Link target, e.g. "_blank" for an external site'),
 })
 
 // ---------------------------------------------------------------------------
@@ -71,6 +72,8 @@ registerContract({
     showIcon: z.boolean().optional(),
     showColorMode: z.boolean().optional(),
     showMenu: z.boolean().optional(),
+    iconLink: z.string().optional().describe('Where the lab icon links to'),
+    primaryAccentColor: z.string().optional().describe('Text / icon color for every header button'),
     shape: z.enum(['rounded', 'rectangular']).optional(),
     z: z.union([z.string(), z.number()]).optional(),
   }),
@@ -156,21 +159,6 @@ registerContract({
 })
 
 registerContract({
-  name: 'DrawingLayer',
-  description: 'Map drawing tools (points, lines, polygons). Reads the drawing/sidebar/route-features stores.',
-  props: z.strictObject({
-    projection: z.string(),
-    showAllPlusIcons: z.boolean().optional(),
-    enableClick: z.boolean().optional(),
-    isMapPage: z.boolean().optional(),
-    showDeleteButton: z.boolean().optional(),
-    showCommentIcons: z.boolean().optional(),
-  }),
-  emits: ['toggle-comment-popup', 'toggle-image-upload-popup', 'show-comment-display'],
-  stateful: true,
-})
-
-registerContract({
   name: 'MapTypeToggle',
   description: 'Vector / satellite switch (header pill). Bind its value to BackgroundMap `mapType`.',
   props: z.strictObject({ modelValue: z.enum(['vector', 'satellite']).optional() }),
@@ -180,7 +168,7 @@ registerContract({
 export const FormFieldSchema = z.strictObject({
   name: z.string(),
   label: z.string().optional(),
-  type: z.enum(['text', 'textarea', 'number', 'date', 'time', 'select']).optional(),
+  type: z.enum(['text', 'email', 'password', 'textarea', 'number', 'date', 'time', 'select']).optional(),
   placeholder: z.string().optional(),
   rows: z.number().int().positive().optional(),
   options: z.array(z.strictObject({ label: z.string(), value: z.union([z.string(), z.number()]) })).optional(),

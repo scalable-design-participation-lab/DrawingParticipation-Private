@@ -125,6 +125,18 @@ describe('verifySpec', () => {
     expect(verifySpec({ ...spec, init: [{ set: 'open', value: '!$state.nope' }] }).errors.map(e => `${e.rule}@${e.path}`)).toEqual(['bind.unknown-state@init[0].value', 'state.unused@state.user'])
   })
 
+  it('accepts $t keys, == / != comparisons and && conditions', () => {
+    const spec = {
+      state: { view: 'map', n: 0 },
+      children: [
+        { type: 'Text', if: "$state.view == 'list' && $state.n != 0", bind: { text: '$t.list.title' } },
+        { type: 'Text', if: "!$state.view == 'map'", props: { text: 'x' } },
+      ],
+    }
+    expect(verifySpec(spec).pass).toBe(true)
+    expect(verifySpec({ ...spec, children: [{ type: 'Text', if: "$state.nope == 1 && $state.view", props: { text: 'x' } }] }).errors.map(e => e.rule)).toEqual(['bind.unknown-state', 'state.unused'])
+  })
+
   it('strict mode forbids raw classes', () => {
     const spec = { children: [{ type: 'div', props: { class: 'mt-4' } }, { type: 'Panel', props: { class: 'p-8' } }] }
     expect(verifySpec(spec).pass).toBe(true)

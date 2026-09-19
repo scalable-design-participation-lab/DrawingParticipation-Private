@@ -26,6 +26,10 @@ export default defineNuxtPlugin((nuxtApp) => {
     const patch = payload as { id: unknown }
     ctx.state[String(args)] = list(ctx, args).map(row => (row.id === patch.id ? { ...row, ...patch } : row))
   }, 'Merge the payload into the item with the same id inside the state list named in args.')
+  registerHandler('toggleItem', (payload, ctx, args) => {
+    const rows = (ctx.state[String(args)] ?? []) as unknown[]
+    ctx.state[String(args)] = rows.includes(payload) ? rows.filter(x => x !== payload) : [...rows, payload]
+  }, 'Add the payload to the state list named in args, or remove it when already there.')
   registerHandler('removeItem', (payload, ctx, args) => {
     ctx.state[String(args)] = list(ctx, args).filter(row => row.id !== payload)
   }, 'Remove the item whose id is the payload from the state list named in args.')
