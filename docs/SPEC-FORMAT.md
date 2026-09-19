@@ -281,21 +281,27 @@ still has hand-written pages and is untouched by the manifest machinery.
 yarn workspace @mono/base gen-spec --app apps/<app> --page <name> --prompt "…" [--provider stub|anthropic] [--rounds 3]
 ```
 
-`gen-spec` builds the catalogue (components with their props, collections,
-handlers, style presets), adds two existing specs as examples and the task,
-asks the provider for JSON, runs the strict verifier, and feeds the `errors`
-back for up to `--rounds` attempts. On pass it writes `specs/<name>.json`.
-The `stub` provider reads the "answer" from `--stub <file>` so the loop is
-testable without a key; `anthropic` uses `ANTHROPIC_API_KEY` (`--model`
-overrides the default). Nothing else in the repo knows which provider ran.
+`gen-spec` builds the catalogue (components with their props and one verified
+`example` each, mined from the specs in this repo; collections, handlers,
+style presets), adds the two existing specs closest to the request (word
+overlap), and asks the provider for the whole spec through a tool call whose
+`input_schema` is the page-spec JSON Schema, so round 1 is always valid JSON
+of the right shape. It then runs the strict verifier with the app's routes.
+From round 2 on it asks only for patches (`{ path, value | remove }`) at the
+flagged paths and applies them with `applyPatches`, so a fix cannot regress
+the rest of the page. On pass it writes `specs/<name>.json`. The `stub`
+provider reads the "answers" from `--stub round1.json[,round2.json,…]` so the
+loop is testable without a key; `anthropic` uses `ANTHROPIC_API_KEY`
+(`--model` overrides the default). Nothing else in the repo knows which
+provider ran.
 
 ## The LLM loop, step by step
 
-1. Give the model `docs/schemas/index.json` plus the component / collection /
-   handler / style-preset schemas it needs, and two existing specs as examples.
-2. Ask for a page spec. It writes JSON only.
-3. Run the static verifier in strict mode. On failure, return `errors` verbatim
-   and ask for a fix; the `path` tells it exactly which node to change.
+1. Give the model the catalogue (every component with a verified example),
+   and the two existing specs closest to the request.
+2. Ask for a page spec through a schema-constrained tool call. It writes JSON only.
+3. Run the static verifier in strict mode with the app's routes. On failure,
+   return `errors` verbatim and ask for one patch per error; apply the patches.
 4. On pass, run the render verifier in CI, then ship the JSON.
 
 This is exactly what `gen-spec` does; a whole app is the same loop over
