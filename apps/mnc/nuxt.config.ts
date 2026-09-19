@@ -88,7 +88,6 @@ export default defineNuxtConfig({
 
   plugins: [
     { src: '~/plugins/vue3-openlayers.js', mode: 'client' },
-    { src: '~/plugins/auth.client.ts', mode: 'client' }
   ],
 
   vite: {

@@ -48,7 +48,9 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onKey))
         class="flex shrink-0 items-center justify-between gap-4 border-b border-gray-100 px-5 py-4 dark:border-zinc-800"
       >
         <slot name="header">
-          <h3 class="text-lg font-semibold text-gray-900 dark:text-white">{{ title }}</h3>
+          <h3 class="text-lg font-semibold text-gray-900 dark:text-white">
+            {{ title }}
+          </h3>
         </slot>
         <UButton
           icon="i-heroicons-x-mark"

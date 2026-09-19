@@ -1,17 +1,17 @@
 <script setup lang="ts">
 type MapView = 'map' | 'list' | 'info' | 'more'
 
-const props = defineProps<{
+defineProps<{
   activeView: MapView
   projectSelected: boolean
 }>()
 
 const emit = defineEmits<{
   'update:activeView': [view: MapView]
-  'show-on-map': []
-  'read-more': []
-  'next-project': []
-  'close-project': []
+  'showOnMap': []
+  'readMore': []
+  'nextProject': []
+  'closeProject': []
 }>()
 
 const defaultNavItems = [
@@ -54,16 +54,12 @@ const defaultNavItems = [
 <style scoped>
 .active-icon {
   border: 2.5px solid transparent;
-  background-image:
-    linear-gradient(white, white),
-    linear-gradient(135deg, #57C9C0, #84e8a0, #f9d876);
+  background-image: linear-gradient(white, white), linear-gradient(135deg, #57c9c0, #84e8a0, #f9d876);
   background-origin: border-box;
   background-clip: padding-box, border-box;
 }
 
 .dark .active-icon {
-  background-image:
-    linear-gradient(#18181b, #18181b),
-    linear-gradient(135deg, #57C9C0, #84e8a0, #f9d876);
+  background-image: linear-gradient(#18181b, #18181b), linear-gradient(135deg, #57c9c0, #84e8a0, #f9d876);
 }
 </style>

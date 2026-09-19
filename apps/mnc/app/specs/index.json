@@ -1,0 +1,712 @@
+{
+  "version": 1,
+  "state": {
+    "loading": true,
+    "mapType": "vector",
+    "isMobile": false,
+    "features": [],
+    "visibleTags": [
+      "Health & Crisis Response",
+      "Transportation & Mobility",
+      "Digital Access & Connectivity",
+      "Community Mapping & Visibility",
+      "Art & Cultural Expression"
+    ],
+    "selected": null,
+    "quickLook": false,
+    "detail": false,
+    "panelOpen": false,
+    "listOpen": false,
+    "onboarding": true,
+    "mobileView": "map",
+    "cardState": "expanded",
+    "contribute": false,
+    "picking": false,
+    "pin": null,
+    "contributions": [],
+    "contributionsLoading": false,
+    "auth": {
+      "ready": false,
+      "isAdmin": false,
+      "isSuperAdmin": false,
+      "isAnonymous": true,
+      "uid": null,
+      "email": null
+    },
+    "moderation": [],
+    "pendingContributions": [],
+    "loginOpen": false,
+    "reviewOpen": false,
+    "login": {}
+  },
+  "init": [
+    {
+      "call": "watchViewport"
+    },
+    {
+      "call": "watchAuth"
+    },
+    {
+      "call": "loadCatalog"
+    },
+    {
+      "set": "loading",
+      "value": false
+    },
+    {
+      "call": "watchSolutions"
+    }
+  ],
+  "children": [
+    {
+      "type": "LoadingScreen",
+      "if": "$state.loading"
+    },
+    {
+      "type": "div",
+      "style": "page-shell",
+      "if": "!$state.loading",
+      "children": [
+        {
+          "type": "MncMap",
+          "bind": {
+            "features": "$state.features",
+            "visibleTags": "$state.visibleTags",
+            "selected": "$state.selected",
+            "quickLook": "$state.quickLook",
+            "picking": "$state.picking",
+            "pin": "$state.pin",
+            "mapType": "$state.mapType",
+            "isMobile": "$state.isMobile"
+          },
+          "on": {
+            "update:selected": [
+              {
+                "set": "selected"
+              },
+              {
+                "set": "cardState",
+                "value": "expanded"
+              },
+              {
+                "call": "loadContributions",
+                "args": "$state.selected.properties.string_id"
+              }
+            ],
+            "update:quickLook": {
+              "set": "quickLook"
+            },
+            "expand": [
+              {
+                "set": "detail",
+                "value": true
+              },
+              {
+                "set": "quickLook",
+                "value": false
+              }
+            ],
+            "pick": [
+              {
+                "set": "pin"
+              },
+              {
+                "set": "picking",
+                "value": false
+              }
+            ],
+            "addAt": [
+              {
+                "set": "pin"
+              },
+              {
+                "set": "contribute",
+                "value": true
+              }
+            ]
+          }
+        },
+        {
+          "type": "div",
+          "if": "!$state.isMobile",
+          "children": [
+            {
+              "type": "Header",
+              "props": {
+                "z": 20,
+                "logoSrc": "/mnc-logo.svg",
+                "logoLink": "https://mobilecreativity.net",
+                "logoAlt": "Mobile Networked Creativity",
+                "iconLink": "https://scalabledesignparticipation.org/",
+                "primaryAccentColor": "#4FA19D",
+                "showMenu": false,
+                "leftItems": [
+                  {
+                    "label": "MNC",
+                    "color": "black",
+                    "to": "https://mobilecreativity.net",
+                    "target": "_blank"
+                  }
+                ]
+              },
+              "children": [
+                {
+                  "slot": "right",
+                  "type": "LocaleSwitcher"
+                },
+                {
+                  "slot": "right",
+                  "type": "MapTypeToggle",
+                  "bind": {
+                    "modelValue": "$state.mapType"
+                  },
+                  "on": {
+                    "update:modelValue": {
+                      "set": "mapType"
+                    }
+                  }
+                }
+              ]
+            },
+            {
+              "type": "ThemeFilterBar",
+              "if": "!$state.contribute",
+              "bind": {
+                "features": "$state.features",
+                "visibleTags": "$state.visibleTags"
+              },
+              "on": {
+                "toggleTag": {
+                  "call": "toggleItem",
+                  "args": "visibleTags"
+                }
+              }
+            },
+            {
+              "type": "BottomBar",
+              "if": "!$state.onboarding && !$state.contribute && !$state.detail && !$state.selected",
+              "bind": {
+                "contributeOpen": "$state.contribute",
+                "listOpen": "$state.listOpen",
+                "infoOpen": "$state.onboarding"
+              },
+              "on": {
+                "add": [
+                  {
+                    "toggle": "contribute"
+                  },
+                  {
+                    "set": "picking",
+                    "value": false
+                  },
+                  {
+                    "set": "pin",
+                    "value": null
+                  }
+                ],
+                "list": [
+                  {
+                    "toggle": "listOpen"
+                  },
+                  {
+                    "set": "panelOpen",
+                    "value": false
+                  }
+                ],
+                "info": {
+                  "set": "onboarding",
+                  "value": true
+                },
+                "map": [
+                  {
+                    "set": "panelOpen",
+                    "value": false
+                  },
+                  {
+                    "set": "listOpen",
+                    "value": false
+                  }
+                ]
+              }
+            },
+            {
+              "type": "MobileContributeFlow",
+              "bind": {
+                "pickedCoordinate": "$state.pin"
+              },
+              "on": {
+                "pickLocation": {
+                  "set": "picking",
+                  "value": true
+                },
+                "close": [
+                  {
+                    "set": "contribute",
+                    "value": false
+                  },
+                  {
+                    "set": "picking",
+                    "value": false
+                  },
+                  {
+                    "set": "pin",
+                    "value": null
+                  }
+                ],
+                "submit": {
+                  "call": "submitEntry"
+                }
+              },
+              "if": "$state.contribute && !$state.picking"
+            },
+            {
+              "type": "FilteredSelectionSidebar",
+              "if": "$state.panelOpen",
+              "bind": {
+                "features": "$state.features",
+                "visibleTags": "$state.visibleTags"
+              },
+              "on": {
+                "select": [
+                  {
+                    "set": "selected"
+                  },
+                  {
+                    "call": "loadContributions",
+                    "args": "$state.selected.properties.string_id"
+                  }
+                ],
+                "toggleTag": {
+                  "call": "toggleItem",
+                  "args": "visibleTags"
+                }
+              }
+            },
+            {
+              "type": "ProjectListPanel",
+              "if": "$state.listOpen",
+              "bind": {
+                "features": "$state.features",
+                "visibleTags": "$state.visibleTags"
+              },
+              "on": {
+                "select": [
+                  {
+                    "set": "selected"
+                  },
+                  {
+                    "set": "listOpen",
+                    "value": false
+                  },
+                  {
+                    "call": "loadContributions",
+                    "args": "$state.selected.properties.string_id"
+                  }
+                ],
+                "close": {
+                  "set": "listOpen",
+                  "value": false
+                }
+              }
+            },
+            {
+              "type": "EntryDetail",
+              "if": "$state.detail && $state.selected",
+              "bind": {
+                "entry": "$state.selected",
+                "contributions": "$state.contributions",
+                "loading": "$state.contributionsLoading",
+                "isAdmin": "$state.auth.isAdmin"
+              },
+              "on": {
+                "close": [
+                  {
+                    "set": "detail",
+                    "value": false
+                  },
+                  {
+                    "set": "selected",
+                    "value": null
+                  }
+                ],
+                "showTag": {
+                  "call": "showOnlyTag"
+                },
+                "contribute": {
+                  "call": "addContribution"
+                },
+                "approve": {
+                  "call": "approveContribution"
+                },
+                "delete": {
+                  "call": "deleteContribution"
+                }
+              }
+            }
+          ]
+        },
+        {
+          "type": "div",
+          "if": "$state.isMobile",
+          "children": [
+            {
+              "type": "MobileHeader",
+              "if": "!$state.onboarding && $state.mobileView != 'more'",
+              "bind": {
+                "mapType": "$state.mapType"
+              },
+              "on": {
+                "update:mapType": {
+                  "set": "mapType"
+                }
+              }
+            },
+            {
+              "type": "MobileProximityList",
+              "if": "$state.mobileView == 'list'",
+              "bind": {
+                "features": "$state.features"
+              },
+              "on": {
+                "select": [
+                  {
+                    "set": "selected"
+                  },
+                  {
+                    "set": "mobileView",
+                    "value": "map"
+                  },
+                  {
+                    "set": "cardState",
+                    "value": "expanded"
+                  },
+                  {
+                    "call": "loadContributions",
+                    "args": "$state.selected.properties.string_id"
+                  }
+                ]
+              }
+            },
+            {
+              "type": "MobileInfoPopup",
+              "if": "$state.selected",
+              "bind": {
+                "entry": "$state.selected",
+                "state": "$state.cardState",
+                "contributions": "$state.contributions",
+                "isAdmin": "$state.auth.isAdmin"
+              },
+              "on": {
+                "close": {
+                  "set": "selected",
+                  "value": null
+                },
+                "update:state": {
+                  "set": "cardState"
+                },
+                "contribute": {
+                  "call": "addContribution"
+                },
+                "approve": {
+                  "call": "approveContribution"
+                },
+                "delete": {
+                  "call": "deleteContribution"
+                }
+              }
+            },
+            {
+              "type": "MobileBottomNav",
+              "if": "!$state.onboarding && !$state.selected && $state.mobileView != 'more' && $state.mobileView != 'info'",
+              "bind": {
+                "activeView": "$state.mobileView"
+              },
+              "on": {
+                "update:activeView": {
+                  "set": "mobileView"
+                }
+              }
+            },
+            {
+              "type": "MobileContributeFlow",
+              "bind": {
+                "pickedCoordinate": "$state.pin"
+              },
+              "on": {
+                "pickLocation": {
+                  "set": "picking",
+                  "value": true
+                },
+                "close": [
+                  {
+                    "set": "mobileView",
+                    "value": "map"
+                  },
+                  {
+                    "set": "picking",
+                    "value": false
+                  },
+                  {
+                    "set": "pin",
+                    "value": null
+                  }
+                ],
+                "submit": {
+                  "call": "submitEntry"
+                }
+              },
+              "if": "$state.mobileView == 'more' && !$state.picking"
+            },
+            {
+              "type": "OnboardingModal",
+              "if": "$state.mobileView == 'info'",
+              "props": {
+                "isVisible": true
+              },
+              "on": {
+                "close": {
+                  "set": "mobileView",
+                  "value": "map"
+                }
+              }
+            }
+          ]
+        },
+        {
+          "type": "div",
+          "style": "pick-banner",
+          "if": "$state.picking",
+          "children": [
+            {
+              "type": "Icon",
+              "props": {
+                "name": "i-heroicons-map-pin"
+              },
+              "style": "pick-icon"
+            },
+            {
+              "type": "Text",
+              "bind": {
+                "text": "$t.add.pickBanner"
+              },
+              "props": {
+                "size": "sm",
+                "weight": "medium"
+              }
+            }
+          ]
+        },
+        {
+          "type": "div",
+          "style": "moderate-trigger",
+          "if": "$state.mobileView == 'map'",
+          "children": [
+            {
+              "type": "Button",
+              "if": "!$state.auth.isAdmin",
+              "props": {
+                "icon": "i-heroicons-lock-closed",
+                "color": "gray",
+                "variant": "solid",
+                "size": "sm"
+              },
+              "style": "round-shadow",
+              "on": {
+                "click": {
+                  "set": "loginOpen",
+                  "value": true
+                }
+              }
+            },
+            {
+              "type": "Button",
+              "if": "$state.auth.isAdmin",
+              "props": {
+                "icon": "i-heroicons-shield-check",
+                "color": "gray",
+                "variant": "solid",
+                "size": "sm"
+              },
+              "style": "round-shadow",
+              "text": "$t.mod.moderate",
+              "on": {
+                "click": {
+                  "toggle": "reviewOpen"
+                }
+              }
+            }
+          ]
+        },
+        {
+          "type": "Modal",
+          "props": {
+            "size": "sm"
+          },
+          "bind": {
+            "modelValue": "$state.loginOpen",
+            "title": "$t.mod.signInTitle"
+          },
+          "on": {
+            "update:modelValue": {
+              "set": "loginOpen"
+            }
+          },
+          "children": [
+            {
+              "type": "Stack",
+              "props": {
+                "gap": "sm"
+              },
+              "children": [
+                {
+                  "type": "FormFields",
+                  "props": {
+                    "fields": [
+                      {
+                        "name": "email",
+                        "type": "email",
+                        "placeholder": "Email"
+                      },
+                      {
+                        "name": "password",
+                        "type": "password",
+                        "placeholder": "Password"
+                      }
+                    ],
+                    "submitLabel": "Sign in",
+                    "gap": "gap-3"
+                  },
+                  "bind": {
+                    "modelValue": "$state.login"
+                  },
+                  "on": {
+                    "update:modelValue": {
+                      "set": "login"
+                    },
+                    "submit": [
+                      {
+                        "call": "signInModerator"
+                      },
+                      {
+                        "set": "loginOpen",
+                        "value": false
+                      },
+                      {
+                        "set": "login",
+                        "value": {}
+                      },
+                      {
+                        "set": "reviewOpen",
+                        "value": true
+                      }
+                    ]
+                  }
+                },
+                {
+                  "type": "Text",
+                  "if": "$errors.signInModerator",
+                  "bind": {
+                    "text": "$errors.signInModerator"
+                  },
+                  "props": {
+                    "size": "xs",
+                    "tone": "accent"
+                  }
+                },
+                {
+                  "type": "Text",
+                  "if": "$errors.resetPassword",
+                  "bind": {
+                    "text": "$errors.resetPassword"
+                  },
+                  "props": {
+                    "size": "xs",
+                    "tone": "accent"
+                  }
+                },
+                {
+                  "type": "Button",
+                  "props": {
+                    "variant": "link",
+                    "color": "gray",
+                    "size": "xs"
+                  },
+                  "text": "$t.mod.forgotPassword",
+                  "on": {
+                    "click": {
+                      "call": "resetPassword",
+                      "args": "$state.login.email"
+                    }
+                  }
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "ModerationPanel",
+          "if": "$state.auth.isAdmin && $state.reviewOpen",
+          "bind": {
+            "moderation": "$state.moderation",
+            "pending": "$state.pendingContributions",
+            "features": "$state.features",
+            "isSuperAdmin": "$state.auth.isSuperAdmin"
+          },
+          "on": {
+            "approveEntry": {
+              "call": "approveEntry"
+            },
+            "deleteEntry": {
+              "call": "deleteEntry"
+            },
+            "approveContribution": {
+              "call": "approveContribution"
+            },
+            "deleteContribution": {
+              "call": "deleteContribution"
+            },
+            "flyTo": [
+              {
+                "call": "selectEntry"
+              },
+              {
+                "call": "loadContributions",
+                "args": "$state.selected.properties.string_id"
+              }
+            ],
+            "signOut": [
+              {
+                "call": "signOut"
+              },
+              {
+                "set": "reviewOpen",
+                "value": false
+              }
+            ],
+            "close": {
+              "set": "reviewOpen",
+              "value": false
+            }
+          }
+        },
+        {
+          "type": "OnboardingModal",
+          "bind": {
+            "isVisible": "$state.onboarding"
+          },
+          "on": {
+            "close": {
+              "set": "onboarding",
+              "value": false
+            }
+          }
+        },
+        {
+          "type": "div",
+          "style": "dimmer",
+          "if": "$state.onboarding"
+        }
+      ]
+    }
+  ]
+}

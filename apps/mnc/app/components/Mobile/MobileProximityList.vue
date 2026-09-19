@@ -1,37 +1,32 @@
 <script setup lang="ts">
 import { computed, onMounted, ref } from 'vue'
 import { toLonLat } from 'ol/proj'
-import type { Feature } from '@base/stores/types/store'
-import { useFilterStore } from '../../stores/filter'
+import { useCatalog } from '../../composables/catalog'
+import type { Entry } from '../../composables/catalog'
 import { categoryMeta } from '../../composables/categoryMeta'
 import { useLocalizedEntry } from '../../composables/useLocalizedEntry'
 
-const emit = defineEmits<{
-  'select-feature': [feature: Feature]
-}>()
+/** Mobile list: nearest first when the user shares their location, newest first otherwise. */
+const props = withDefaults(defineProps<{ features?: Entry[] }>(), { features: () => [] })
+const emit = defineEmits<{ select: [entry: Entry] }>()
 
 const { t } = useI18n()
 const { lf } = useLocalizedEntry()
-const filterStore = useFilterStore()
+const { entries } = useCatalog(() => props.features, () => [])
 
-// The user's location, once granted. null until resolved / if denied.
 const userLonLat = ref<[number, number] | null>(null)
-
 onMounted(() => {
-  if (!import.meta.client || !navigator.geolocation)
+  if (!import.meta.client || !navigator.geolocation) {
     return
+  }
   navigator.geolocation.getCurrentPosition(
-    (pos) => {
-      userLonLat.value = [pos.coords.longitude, pos.coords.latitude]
-    },
-    () => {
-      // Permission denied / unavailable: fall back to date order, no distances.
-    },
+    pos => (userLonLat.value = [pos.coords.longitude, pos.coords.latitude]),
+    () => {},
     { enableHighAccuracy: false, timeout: 8000, maximumAge: 600000 },
   )
 })
 
-function haversineKm(a: [number, number], b: [number, number]): number {
+function haversineKm(a: [number, number], b: [number, number]) {
   const R = 6371
   const dLat = ((b[1] - a[1]) * Math.PI) / 180
   const dLon = ((b[0] - a[0]) * Math.PI) / 180
@@ -41,112 +36,70 @@ function haversineKm(a: [number, number], b: [number, number]): number {
   return 2 * R * Math.asin(Math.sqrt(h))
 }
 
-function distanceKm(feature: Feature): number | null {
-  if (!userLonLat.value) return null
-  const c = feature.coordinates
-  if (!Array.isArray(c) || typeof c[0] !== 'number' || typeof c[1] !== 'number') return null
-  const lonLat = toLonLat([c[0], c[1]]) as [number, number]
-  return haversineKm(userLonLat.value, lonLat)
+function distanceKm(entry: Entry) {
+  if (!userLonLat.value) {
+    return null
+  }
+  return haversineKm(userLonLat.value, toLonLat(entry.coordinates) as [number, number])
 }
 
-function distanceLabel(feature: Feature): string {
-  const d = distanceKm(feature)
-  if (d == null) return ''
-  const value = d < 10 ? d.toFixed(1) : String(Math.round(d))
-  return t('list.kmAway', { d: value })
+function distanceLabel(entry: Entry) {
+  const d = distanceKm(entry)
+  return d == null ? '' : t('list.kmAway', { d: d < 10 ? d.toFixed(1) : String(Math.round(d)) })
 }
 
-// Free-text search over the same fields the desktop "All Solutions" panel uses,
-// plus the title in the current language so a Spanish/Portuguese search matches.
 const search = ref('')
-
-const matchingFeatures = computed(() => {
+const sorted = computed(() => {
   const q = search.value.trim().toLowerCase()
-  if (!q)
-    return filterStore.mncFeatures
-  return filterStore.mncFeatures.filter((f) => {
-    const p = (f.properties as any) ?? {}
-    return (f.comment || '').toLowerCase().includes(q)
-      || lf(p, 'title', '').toLowerCase().includes(q)
-      || (p.location || '').toLowerCase().includes(q)
-      || (p.primaryTag || '').toLowerCase().includes(q)
-  })
-})
-
-// Sorted by real proximity when we have the user's location, else by date
-// (newest first) as a stable fallback. Uses the de-duplicated catalog.
-const sortedFeatures = computed(() => {
-  const list = matchingFeatures.value.slice()
+  const list = entries.value.filter(f => !q
+    || (f.comment || '').toLowerCase().includes(q)
+    || lf(f.properties, 'title', '').toLowerCase().includes(q)
+    || (f.properties?.location || '').toLowerCase().includes(q)
+    || (f.properties?.primaryTag || '').toLowerCase().includes(q))
   if (userLonLat.value) {
     return list.sort((a, b) => (distanceKm(a) ?? Infinity) - (distanceKm(b) ?? Infinity))
   }
-  return list.sort((a, b) => {
-    const dateA = String((a.properties as any)?.date ?? '')
-    const dateB = String((b.properties as any)?.date ?? '')
-    return dateB.localeCompare(dateA)
-  })
+  return list.sort((a, b) => String(b.properties?.date ?? '').localeCompare(String(a.properties?.date ?? '')))
 })
 </script>
 
 <template>
-  <div class="fixed bottom-24 safe-bottom left-0 right-0 z-40 flex justify-center pointer-events-none">
+  <div class="pointer-events-none fixed inset-x-0 bottom-24 z-40 flex justify-center safe-bottom">
     <UCard
-      class="pointer-events-auto touch-manipulation w-full max-w-sm shadow-xl"
+      class="pointer-events-auto w-full max-w-sm touch-manipulation shadow-xl"
       style="max-height: 60dvh;"
-      :ui="{
-        base: 'overflow-hidden',
-        rounded: 'rounded-t-3xl rounded-b-none',
-        body: { padding: 'p-0' },
-        header: { padding: 'px-4 pt-3 pb-2' },
-      }"
+      :ui="{ base: 'overflow-hidden', rounded: 'rounded-t-3xl rounded-b-none', body: { padding: 'p-0' }, header: { padding: 'px-4 pt-3 pb-2' } }"
     >
       <template #header>
         <div class="flex flex-col items-center gap-2">
-          <div class="w-10 h-1 bg-gray-300 rounded-full" />
+          <div class="h-1 w-10 rounded-full bg-gray-300" />
           <p class="w-full text-xs font-medium text-gray-500 dark:text-gray-400">
-            {{ userLonLat ? $t('list.nearest') : $t('list.all') }}
-            <span class="text-gray-400">· {{ sortedFeatures.length }}</span>
+            {{ userLonLat ? $t('list.nearest') : $t('list.all') }} <span class="text-gray-400">· {{ sorted.length }}</span>
           </p>
-          <UInput
-            v-model="search"
-            icon="i-heroicons-magnifying-glass"
-            :placeholder="$t('list.search')"
-            :ui="{ rounded: 'rounded-full' }"
-            class="w-full"
-          />
+          <UInput v-model="search" icon="i-heroicons-magnifying-glass" :placeholder="$t('list.search')" :ui="{ rounded: 'rounded-full' }" class="w-full" />
         </div>
       </template>
-
-      <!-- One scrollable list (no pagination) -->
       <div class="overflow-y-auto" style="max-height: calc(60dvh - 140px);">
         <button
-          v-for="feature in sortedFeatures"
-          :key="feature.id"
+          v-for="entry in sorted"
+          :key="entry.id"
           type="button"
-          class="w-full flex items-center gap-4 px-5 py-4 border-b border-gray-100 dark:border-zinc-800 text-left hover:bg-gray-50 dark:hover:bg-zinc-800/50"
-          @click="emit('select-feature', feature)"
+          class="flex w-full items-center gap-4 border-b border-gray-100 px-5 py-4 text-left hover:bg-gray-50 dark:border-zinc-800 dark:hover:bg-zinc-800/50"
+          @click="emit('select', entry)"
         >
-          <div
-            class="w-11 h-11 rounded-full flex items-center justify-center flex-shrink-0"
-            :style="{ border: `2.5px solid ${categoryMeta((feature.properties as any)?.primaryTag).color}`, background: 'rgba(24,24,27,0.04)' }"
-          >
-            <UIcon
-              :name="categoryMeta((feature.properties as any)?.primaryTag).icon"
-              class="w-5 h-5"
-              :style="{ color: categoryMeta((feature.properties as any)?.primaryTag).color }"
-            />
+          <div class="flex h-11 w-11 flex-shrink-0 items-center justify-center rounded-full" :style="{ border: `2.5px solid ${categoryMeta(entry.properties?.primaryTag).color}`, background: 'rgba(24,24,27,0.04)' }">
+            <UIcon :name="categoryMeta(entry.properties?.primaryTag).icon" class="h-5 w-5" :style="{ color: categoryMeta(entry.properties?.primaryTag).color }" />
           </div>
-
-          <div class="flex-1 min-w-0">
-            <p class="font-semibold text-gray-900 dark:text-white truncate text-sm">{{ lf(feature.properties, 'title', feature.comment) }}</p>
-            <p class="text-gray-400 text-xs mt-0.5 truncate">
-              <span v-if="distanceLabel(feature)">{{ distanceLabel(feature) }}</span>
-              <span v-else>{{ (feature.properties as any)?.location || '' }}</span>
+          <div class="min-w-0 flex-1">
+            <p class="truncate text-sm font-semibold text-gray-900 dark:text-white">
+              {{ lf(entry.properties, 'title', entry.comment) }}
+            </p>
+            <p class="mt-0.5 truncate text-xs text-gray-400">
+              {{ distanceLabel(entry) || entry.properties?.location || '' }}
             </p>
           </div>
         </button>
-
-        <p v-if="sortedFeatures.length === 0" class="text-center text-gray-400 py-8 text-sm">
+        <p v-if="sorted.length === 0" class="py-8 text-center text-sm text-gray-400">
           {{ search.trim() ? $t('list.empty', { q: search }) : $t('list.emptyList') }}
         </p>
       </div>

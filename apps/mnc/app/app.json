@@ -1,0 +1,12 @@
+{
+  "version": 1,
+  "name": "mnc",
+  "title": "Mobile Networked Creativity",
+  "description": "An interactive map of real-world examples of how communities around the world creatively adapt mobile and networked technology to meet local needs.",
+  "lang": "en",
+  "routes": {
+    "/": "index.json",
+    "/about": "about.json",
+    "/admin": "admin.json"
+  }
+}

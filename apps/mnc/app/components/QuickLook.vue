@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, type PropType } from 'vue'
+import { type PropType, computed } from 'vue'
 import { categoryMeta } from '../composables/categoryMeta'
 import { useLocalizedEntry } from '../composables/useLocalizedEntry'
 import { photoThumb } from '../composables/photoThumb'
@@ -56,7 +56,7 @@ const props = defineProps({
   },
 })
 
-const emit = defineEmits(['click-expand', 'click-close', 'click-previous', 'click-next'])
+const emit = defineEmits(['clickExpand', 'clickClose', 'clickPrevious', 'clickNext'])
 
 const { tagLabel } = useLocalizedEntry()
 
@@ -79,7 +79,6 @@ const tagChipStyle = computed(() => ({
   backgroundColor: `${primaryMeta.value.color}22`,
   color: colorMode.value === 'dark' ? primaryMeta.value.color : primaryMeta.value.ink,
 }))
-
 </script>
 
 <template>
@@ -89,10 +88,10 @@ const tagChipStyle = computed(() => ({
     :show-previous-arrow="props.showPreviousArrow"
     :show-next-arrow="props.showNextArrow"
     :show-expand="props.showExpand"
-    @click-expand="emit('click-expand')"
-    @click-close="emit('click-close')"
-    @click-previous="emit('click-previous')"
-    @click-next="emit('click-next')"
+    @click-expand="emit('clickExpand')"
+    @click-close="emit('clickClose')"
+    @click-previous="emit('clickPrevious')"
+    @click-next="emit('clickNext')"
   >
     <template #quickBody>
       <div class="px-4 pb-3 space-y-3">
@@ -120,7 +119,7 @@ const tagChipStyle = computed(() => ({
             v-if="props.location"
           >
             <UBadge color="info" variant="outline" class="rounded-sm">
-            {{ props.location }} </UBadge>
+              {{ props.location }} </UBadge>
           </span>
         </div>
 

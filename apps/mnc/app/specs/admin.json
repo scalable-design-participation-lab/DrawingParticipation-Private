@@ -1,0 +1,83 @@
+{
+  "version": 1,
+  "state": {
+    "auth": {
+      "ready": false,
+      "isAdmin": false,
+      "isSuperAdmin": false,
+      "isAnonymous": true,
+      "uid": null,
+      "email": null
+    },
+    "accounts": [],
+    "registrations": [],
+    "accountsLoading": false
+  },
+  "init": [
+    {
+      "call": "watchAuth"
+    }
+  ],
+  "children": [
+    {
+      "type": "div",
+      "style": "admin-page",
+      "children": [
+        {
+          "type": "div",
+          "style": "admin-container",
+          "children": [
+            {
+              "type": "AdminAccounts",
+              "bind": {
+                "auth": "$state.auth",
+                "accounts": "$state.accounts",
+                "registrations": "$state.registrations",
+                "loading": "$state.accountsLoading",
+                "errors": "$errors"
+              },
+              "on": {
+                "signIn": {
+                  "call": "signIn"
+                },
+                "register": {
+                  "call": "register"
+                },
+                "resetPassword": {
+                  "call": "resetPassword"
+                },
+                "claimAdmin": {
+                  "call": "claimAdmin"
+                },
+                "signOut": {
+                  "call": "signOut"
+                },
+                "refresh": {
+                  "call": "loadAccounts"
+                },
+                "promote": {
+                  "call": "promote"
+                },
+                "removeRegistration": {
+                  "call": "removeRegistration"
+                },
+                "setRole": {
+                  "call": "setRole"
+                },
+                "revoke": {
+                  "call": "revoke"
+                },
+                "sendReset": {
+                  "call": "resetPassword"
+                },
+                "create": {
+                  "call": "createAccount"
+                }
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

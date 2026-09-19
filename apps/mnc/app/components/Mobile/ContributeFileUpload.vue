@@ -23,11 +23,11 @@ const props = withDefaults(defineProps<{
   maxSizeMb: 10,
 })
 
-const { t } = useI18n()
-
 const emit = defineEmits<{
   'update:modelValue': [files: File[]]
 }>()
+
+const { t } = useI18n()
 
 const inputEl = ref<HTMLInputElement | null>(null)
 const isDragging = ref(false)

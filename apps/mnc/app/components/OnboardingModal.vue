@@ -1,3 +1,18 @@
+<script setup lang="ts">
+defineProps({
+  isVisible: {
+    type: Boolean,
+    required: true,
+  },
+})
+
+const emit = defineEmits(['close'])
+
+// Language switcher chips, driven by the locales configured in nuxt.config.
+const { locale, locales, setLocale } = useI18n()
+const langs = locales
+</script>
+
 <template>
   <UCard
     v-if="isVisible"
@@ -81,21 +96,6 @@
     </template>
   </UCard>
 </template>
-
-<script setup lang="ts">
-const props = defineProps({
-  isVisible: {
-    type: Boolean,
-    required: true,
-  },
-})
-
-const emit = defineEmits(['close'])
-
-// Language switcher chips, driven by the locales configured in nuxt.config.
-const { locale, locales, setLocale } = useI18n()
-const langs = locales
-</script>
 
 <style scoped>
 /* Slim, inset scrollbar so it doesn't sit chunkily on the card's rounded edge. */

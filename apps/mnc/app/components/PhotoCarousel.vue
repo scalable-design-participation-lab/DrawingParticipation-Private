@@ -66,7 +66,7 @@ function prev() {
         decoding="async"
         class="h-full w-full object-contain"
         @error="onImageError(slides[current])"
-      />
+      >
 
       <!-- Prev / next controls (only when there is more than one photo) -->
       <template v-if="multiple">
@@ -122,8 +122,12 @@ function prev() {
       class="flex h-full w-full flex-col items-center justify-center gap-1 rounded-2xl border border-dashed border-teal-200 px-3 text-center dark:border-zinc-700"
     >
       <UIcon name="i-heroicons-photo" class="mb-1 h-8 w-8 text-teal-400 dark:text-teal-500" />
-      <p class="text-sm font-medium text-gray-500 dark:text-gray-300">{{ $t('photo.noPhoto') }}</p>
-      <p class="text-xs text-gray-400 dark:text-gray-500">{{ $t('photo.beFirst') }}</p>
+      <p class="text-sm font-medium text-gray-500 dark:text-gray-300">
+        {{ $t('photo.noPhoto') }}
+      </p>
+      <p class="text-xs text-gray-400 dark:text-gray-500">
+        {{ $t('photo.beFirst') }}
+      </p>
     </div>
   </div>
 </template>

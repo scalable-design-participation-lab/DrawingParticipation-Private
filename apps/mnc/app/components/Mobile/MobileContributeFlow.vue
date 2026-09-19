@@ -1,11 +1,11 @@
 <script setup lang="ts">
 import { computed, reactive, ref, watch } from 'vue'
 import { toLonLat } from 'ol/proj'
-import MobileHeader from './MobileHeader.vue'
-import ContributeFileUpload from './ContributeFileUpload.vue'
-import { PRIMARY_TAGS } from '../../stores/filter'
+import { PRIMARY_TAGS } from '../../composables/catalog'
 import { useLocalizedEntry } from '../../composables/useLocalizedEntry'
 import { useIsMobile } from '../../composables/useIsMobile'
+import ContributeFileUpload from './ContributeFileUpload.vue'
+import MobileHeader from './MobileHeader.vue'
 
 /**
  * Mobile "Join Our Research" flow — a 7-step wizard plus a thank-you screen,
@@ -24,10 +24,10 @@ const props = defineProps<{
 }>()
 
 const emit = defineEmits<{
-  'close': []
+  close: []
   // Asks the parent to hide the flow and let the user tap the map.
-  'pick-location': []
-  'submit': [payload: ContributePayload]
+  pickLocation: []
+  submit: [payload: ContributePayload]
 }>()
 
 interface ContributePayload {
@@ -275,286 +275,286 @@ function prettyCoord(coord: [number, number]): string {
         @click="emit('close')"
       />
 
-    <!-- ============================== Thank-you ============================== -->
-    <div
-      v-if="submitted"
-      class="pointer-events-auto flex flex-1 flex-col items-center justify-center px-8 py-12 text-center md:py-16"
-    >
-      <h2 class="text-3xl font-extrabold text-[#F26D6D]">
-        {{ $t('contribute.title') }}
-      </h2>
-      <h3 class="mt-4 text-xl font-bold text-[#FB6D6D]">
-        {{ $t('contribute.thankYou') }}
-      </h3>
-      <p class="mt-6 max-w-xs text-sm text-[#A84A4A]">
-        {{ $t('contribute.received') }}
-      </p>
-      <p class="mt-2 max-w-xs text-sm text-[#A84A4A]">
-        {{ $t('contribute.inTouch') }}
-      </p>
-      <UButton
-        class="mt-10 rounded-full px-6"
-        :style="{ backgroundColor: '#C0392B', color: '#ffffff' }"
-        @click="reset"
-      >
-        {{ $t('contribute.anotherStory') }}
-      </UButton>
-    </div>
-
-    <!-- =============================== Steps =============================== -->
-    <template v-else>
-      <!-- Progress + title. On the mobile map step this floats over the live
-           map, so it gets an opaque card backing to stay legible. -->
+      <!-- ============================== Thank-you ============================== -->
       <div
-        class="pointer-events-auto mt-20 md:mt-8"
-        :class="mapCard ? 'mx-4 rounded-2xl bg-white px-6 py-4 shadow-lg dark:bg-zinc-900' : ''"
+        v-if="submitted"
+        class="pointer-events-auto flex flex-1 flex-col items-center justify-center px-8 py-12 text-center md:py-16"
       >
-        <div class="flex justify-center gap-1.5 px-8">
-          <span
-            v-for="i in TOTAL_STEPS"
-            :key="i"
-            class="h-1.5 w-8 rounded-full transition-colors"
-            :class="i <= step ? 'bg-[#FB6D6D]' : 'bg-[#F8C9C9]'"
-          />
-        </div>
-
-        <h2 class="mt-4 text-center text-2xl font-extrabold text-[#F26D6D]">
+        <h2 class="text-3xl font-extrabold text-[#F26D6D]">
           {{ $t('contribute.title') }}
         </h2>
+        <h3 class="mt-4 text-xl font-bold text-[#FB6D6D]">
+          {{ $t('contribute.thankYou') }}
+        </h3>
+        <p class="mt-6 max-w-xs text-sm text-[#A84A4A]">
+          {{ $t('contribute.received') }}
+        </p>
+        <p class="mt-2 max-w-xs text-sm text-[#A84A4A]">
+          {{ $t('contribute.inTouch') }}
+        </p>
+        <UButton
+          class="mt-10 rounded-full px-6"
+          :style="{ backgroundColor: '#C0392B', color: '#ffffff' }"
+          @click="reset"
+        >
+          {{ $t('contribute.anotherStory') }}
+        </UButton>
       </div>
 
-      <div class="mx-auto w-full max-w-2xl flex-1 overflow-y-auto px-6 pb-32 pt-4 md:pb-6">
-        <!-- Step 1a: confirm the just-dropped pin before the form, so the
+      <!-- =============================== Steps =============================== -->
+      <template v-else>
+        <!-- Progress + title. On the mobile map step this floats over the live
+           map, so it gets an opaque card backing to stay legible. -->
+        <div
+          class="pointer-events-auto mt-20 md:mt-8"
+          :class="mapCard ? 'mx-4 rounded-2xl bg-white px-6 py-4 shadow-lg dark:bg-zinc-900' : ''"
+        >
+          <div class="flex justify-center gap-1.5 px-8">
+            <span
+              v-for="i in TOTAL_STEPS"
+              :key="i"
+              class="h-1.5 w-8 rounded-full transition-colors"
+              :class="i <= step ? 'bg-[#FB6D6D]' : 'bg-[#F8C9C9]'"
+            />
+          </div>
+
+          <h2 class="mt-4 text-center text-2xl font-extrabold text-[#F26D6D]">
+            {{ $t('contribute.title') }}
+          </h2>
+        </div>
+
+        <div class="mx-auto w-full max-w-2xl flex-1 overflow-y-auto px-6 pb-32 pt-4 md:pb-6">
+          <!-- Step 1a: confirm the just-dropped pin before the form, so the
              user can check the placement (the live map + pin show through
              behind this card on mobile) before typing anything. -->
-        <div
-          v-if="step === 1 && confirmingPin"
-          class="pointer-events-auto space-y-4"
-          :class="mapCard ? 'rounded-2xl bg-white p-5 shadow-lg dark:bg-zinc-900' : ''"
-        >
-          <p class="text-sm font-semibold text-[#F26D6D]">
-            {{ $t('contribute.step1.confirmPinPrompt') }}
-          </p>
-          <p v-if="form.coordinate" class="flex items-center gap-1 text-xs text-emerald-600">
-            <UIcon name="i-heroicons-map-pin" class="h-4 w-4" />
-            {{ $t('contribute.step1.pinDropped', { coord: pinPlace || form.location || prettyCoord(form.coordinate) }) }}
-          </p>
-          <button
-            type="button"
-            class="text-sm font-medium text-[#FB6D6D] underline"
-            @click="emit('pick-location')"
+          <div
+            v-if="step === 1 && confirmingPin"
+            class="pointer-events-auto space-y-4"
+            :class="mapCard ? 'rounded-2xl bg-white p-5 shadow-lg dark:bg-zinc-900' : ''"
           >
-            {{ $t('contribute.step1.movePin') }}
-          </button>
-        </div>
-
-        <!-- Step 1b: the entry's required core — title, theme, location + pin -->
-        <div
-          v-else-if="step === 1"
-          class="pointer-events-auto space-y-4"
-          :class="mapCard ? 'rounded-2xl bg-white p-5 shadow-lg dark:bg-zinc-900' : ''"
-        >
-          <p class="text-sm font-semibold text-[#F26D6D]">
-            {{ $t('contribute.step1.prompt') }}
-          </p>
-          <UInput
-            v-model="form.title"
-            :placeholder="$t('add.titlePlaceholder')"
-            :ui="{ rounded: 'rounded-full' }"
-          />
-          <USelectMenu
-            v-model="form.primaryTag"
-            :options="themeOptions"
-            value-attribute="value"
-            option-attribute="label"
-            searchable
-            creatable
-            :placeholder="$t('add.themePlaceholder')"
-            @create="onCreateTheme"
-          />
-          <UInput
-            v-model="form.location"
-            :placeholder="$t('contribute.step1.placeholder')"
-            :ui="{ rounded: 'rounded-full' }"
-          />
-          <button
-            type="button"
-            class="text-sm font-medium text-[#FB6D6D] underline"
-            @click="emit('pick-location')"
-          >
-            {{ $t('contribute.step1.dropPin') }}
-          </button>
-          <p v-if="form.coordinate" class="flex items-center gap-1 text-xs text-emerald-600">
-            <UIcon name="i-heroicons-map-pin" class="h-4 w-4" />
-            {{ $t('contribute.step1.pinDropped', { coord: pinPlace || form.location || prettyCoord(form.coordinate) }) }}
-          </p>
-        </div>
-
-        <!-- Step 2: Describe an example -->
-        <div v-else-if="step === 2" class="space-y-4">
-          <p class="text-sm font-semibold text-[#F26D6D]">
-            {{ $t('contribute.step2.prompt') }}
-          </p>
-          <UTextarea
-            v-model="form.example"
-            :rows="5"
-            :placeholder="$t('contribute.descPlaceholder')"
-            :ui="{ rounded: 'rounded-2xl' }"
-            class="contribute-textarea"
-          />
-          <ContributeVoiceRecorder v-model="files.voiceExample" />
-          <ContributeFileUpload v-model="files.example" />
-        </div>
-
-        <!-- Step 3: Why is this a good example -->
-        <div v-else-if="step === 3" class="space-y-4">
-          <p class="text-sm font-semibold text-[#F26D6D]">
-            {{ $t('contribute.step3.prompt') }}
-          </p>
-          <UTextarea
-            v-model="form.why"
-            :rows="5"
-            :placeholder="$t('contribute.descPlaceholder')"
-            :ui="{ rounded: 'rounded-2xl' }"
-            class="contribute-textarea"
-          />
-          <ContributeVoiceRecorder v-model="files.voiceWhy" />
-          <ContributeFileUpload v-model="files.why" />
-        </div>
-
-        <!-- Step 4: Illustrative media -->
-        <div v-else-if="step === 4" class="space-y-4">
-          <p class="text-sm font-semibold text-[#F26D6D]">
-            {{ $t('contribute.step4.prompt') }}
-          </p>
-          <ContributeFileUpload v-model="files.media" />
-        </div>
-
-        <!-- Step 5: Date -->
-        <div v-else-if="step === 5" class="space-y-4">
-          <p class="text-sm font-semibold text-[#F26D6D]">
-            {{ $t('contribute.step5.prompt') }}
-          </p>
-          <UInput
-            v-model="form.date"
-            type="date"
-            :ui="{ rounded: 'rounded-full' }"
-          />
-        </div>
-
-        <!-- Step 6: Additional info -->
-        <div v-else-if="step === 6" class="space-y-4">
-          <p class="text-sm font-semibold text-[#F26D6D]">
-            {{ $t('contribute.step6.prompt') }}
-          </p>
-          <UTextarea
-            v-model="form.additionalInfo"
-            :rows="5"
-            :placeholder="$t('contribute.descPlaceholder')"
-            :ui="{ rounded: 'rounded-2xl' }"
-            class="contribute-textarea"
-          />
-          <ContributeFileUpload v-model="files.additional" />
-        </div>
-
-        <!-- Step 7: Personal information -->
-        <div v-else-if="step === 7" class="space-y-4">
-          <p class="text-sm font-semibold text-[#F26D6D]">
-            {{ $t('contribute.step7.prompt') }}
-          </p>
-          <div class="space-y-2">
-            <label class="flex items-center gap-2 text-sm text-gray-700">
-              <input
-                v-model="form.connectInfo"
-                type="radio"
-                :value="true"
-                class="accent-[#FB6D6D]"
-              >
-              {{ $t('contribute.step7.yes') }}
-            </label>
-            <label class="flex items-center gap-2 text-sm text-gray-700">
-              <input
-                v-model="form.connectInfo"
-                type="radio"
-                :value="false"
-                class="accent-[#FB6D6D]"
-              >
-              {{ $t('contribute.step7.no') }}
-            </label>
+            <p class="text-sm font-semibold text-[#F26D6D]">
+              {{ $t('contribute.step1.confirmPinPrompt') }}
+            </p>
+            <p v-if="form.coordinate" class="flex items-center gap-1 text-xs text-emerald-600">
+              <UIcon name="i-heroicons-map-pin" class="h-4 w-4" />
+              {{ $t('contribute.step1.pinDropped', { coord: pinPlace || form.location || prettyCoord(form.coordinate) }) }}
+            </p>
+            <button
+              type="button"
+              class="text-sm font-medium text-[#FB6D6D] underline"
+              @click="emit('pickLocation')"
+            >
+              {{ $t('contribute.step1.movePin') }}
+            </button>
           </div>
 
-          <p class="pt-2 text-sm font-semibold text-[#F26D6D]">
-            {{ $t('contribute.step7.ifYes') }}
-          </p>
-          <div class="space-y-3">
-            <div class="flex items-center gap-3">
-              <label class="w-28 flex-shrink-0 text-sm text-[#F26D6D]">{{ $t('contribute.step7.fullName') }}</label>
-              <UInput v-model="form.fullName" class="flex-1" :ui="{ rounded: 'rounded-full' }" />
-            </div>
-            <div class="flex items-center gap-3">
-              <label class="w-28 flex-shrink-0 text-sm text-[#F26D6D]">{{ $t('contribute.step7.email') }}</label>
-              <UInput v-model="form.email" type="email" class="flex-1" :ui="{ rounded: 'rounded-full' }" />
-            </div>
-            <div class="flex items-center gap-3">
-              <label class="w-28 flex-shrink-0 text-sm text-[#F26D6D]">{{ $t('contribute.step7.country') }}</label>
-              <UInput v-model="form.country" class="flex-1" :ui="{ rounded: 'rounded-full' }" />
-            </div>
-            <div class="flex items-center gap-3">
-              <label class="w-28 flex-shrink-0 text-sm text-[#F26D6D]">{{ $t('contribute.step7.city') }}</label>
-              <UInput v-model="form.city" class="flex-1" :ui="{ rounded: 'rounded-full' }" />
-            </div>
+          <!-- Step 1b: the entry's required core — title, theme, location + pin -->
+          <div
+            v-else-if="step === 1"
+            class="pointer-events-auto space-y-4"
+            :class="mapCard ? 'rounded-2xl bg-white p-5 shadow-lg dark:bg-zinc-900' : ''"
+          >
+            <p class="text-sm font-semibold text-[#F26D6D]">
+              {{ $t('contribute.step1.prompt') }}
+            </p>
+            <UInput
+              v-model="form.title"
+              :placeholder="$t('add.titlePlaceholder')"
+              :ui="{ rounded: 'rounded-full' }"
+            />
+            <USelectMenu
+              v-model="form.primaryTag"
+              :options="themeOptions"
+              value-attribute="value"
+              option-attribute="label"
+              searchable
+              creatable
+              :placeholder="$t('add.themePlaceholder')"
+              @create="onCreateTheme"
+            />
+            <UInput
+              v-model="form.location"
+              :placeholder="$t('contribute.step1.placeholder')"
+              :ui="{ rounded: 'rounded-full' }"
+            />
+            <button
+              type="button"
+              class="text-sm font-medium text-[#FB6D6D] underline"
+              @click="emit('pickLocation')"
+            >
+              {{ $t('contribute.step1.dropPin') }}
+            </button>
+            <p v-if="form.coordinate" class="flex items-center gap-1 text-xs text-emerald-600">
+              <UIcon name="i-heroicons-map-pin" class="h-4 w-4" />
+              {{ $t('contribute.step1.pinDropped', { coord: pinPlace || form.location || prettyCoord(form.coordinate) }) }}
+            </p>
           </div>
 
-          <p class="pt-1 text-xs leading-snug text-gray-500">
-            {{ $t('contribute.step7.privacy') }}
-          </p>
-        </div>
-      </div>
+          <!-- Step 2: Describe an example -->
+          <div v-else-if="step === 2" class="space-y-4">
+            <p class="text-sm font-semibold text-[#F26D6D]">
+              {{ $t('contribute.step2.prompt') }}
+            </p>
+            <UTextarea
+              v-model="form.example"
+              :rows="5"
+              :placeholder="$t('contribute.descPlaceholder')"
+              :ui="{ rounded: 'rounded-2xl' }"
+              class="contribute-textarea"
+            />
+            <ContributeVoiceRecorder v-model="files.voiceExample" />
+            <ContributeFileUpload v-model="files.example" />
+          </div>
 
-      <!-- Footer nav: Back / Next|Submit. Above the bottom nav on mobile;
+          <!-- Step 3: Why is this a good example -->
+          <div v-else-if="step === 3" class="space-y-4">
+            <p class="text-sm font-semibold text-[#F26D6D]">
+              {{ $t('contribute.step3.prompt') }}
+            </p>
+            <UTextarea
+              v-model="form.why"
+              :rows="5"
+              :placeholder="$t('contribute.descPlaceholder')"
+              :ui="{ rounded: 'rounded-2xl' }"
+              class="contribute-textarea"
+            />
+            <ContributeVoiceRecorder v-model="files.voiceWhy" />
+            <ContributeFileUpload v-model="files.why" />
+          </div>
+
+          <!-- Step 4: Illustrative media -->
+          <div v-else-if="step === 4" class="space-y-4">
+            <p class="text-sm font-semibold text-[#F26D6D]">
+              {{ $t('contribute.step4.prompt') }}
+            </p>
+            <ContributeFileUpload v-model="files.media" />
+          </div>
+
+          <!-- Step 5: Date -->
+          <div v-else-if="step === 5" class="space-y-4">
+            <p class="text-sm font-semibold text-[#F26D6D]">
+              {{ $t('contribute.step5.prompt') }}
+            </p>
+            <UInput
+              v-model="form.date"
+              type="date"
+              :ui="{ rounded: 'rounded-full' }"
+            />
+          </div>
+
+          <!-- Step 6: Additional info -->
+          <div v-else-if="step === 6" class="space-y-4">
+            <p class="text-sm font-semibold text-[#F26D6D]">
+              {{ $t('contribute.step6.prompt') }}
+            </p>
+            <UTextarea
+              v-model="form.additionalInfo"
+              :rows="5"
+              :placeholder="$t('contribute.descPlaceholder')"
+              :ui="{ rounded: 'rounded-2xl' }"
+              class="contribute-textarea"
+            />
+            <ContributeFileUpload v-model="files.additional" />
+          </div>
+
+          <!-- Step 7: Personal information -->
+          <div v-else-if="step === 7" class="space-y-4">
+            <p class="text-sm font-semibold text-[#F26D6D]">
+              {{ $t('contribute.step7.prompt') }}
+            </p>
+            <div class="space-y-2">
+              <label class="flex items-center gap-2 text-sm text-gray-700">
+                <input
+                  v-model="form.connectInfo"
+                  type="radio"
+                  :value="true"
+                  class="accent-[#FB6D6D]"
+                >
+                {{ $t('contribute.step7.yes') }}
+              </label>
+              <label class="flex items-center gap-2 text-sm text-gray-700">
+                <input
+                  v-model="form.connectInfo"
+                  type="radio"
+                  :value="false"
+                  class="accent-[#FB6D6D]"
+                >
+                {{ $t('contribute.step7.no') }}
+              </label>
+            </div>
+
+            <p class="pt-2 text-sm font-semibold text-[#F26D6D]">
+              {{ $t('contribute.step7.ifYes') }}
+            </p>
+            <div class="space-y-3">
+              <div class="flex items-center gap-3">
+                <label class="w-28 flex-shrink-0 text-sm text-[#F26D6D]">{{ $t('contribute.step7.fullName') }}</label>
+                <UInput v-model="form.fullName" class="flex-1" :ui="{ rounded: 'rounded-full' }" />
+              </div>
+              <div class="flex items-center gap-3">
+                <label class="w-28 flex-shrink-0 text-sm text-[#F26D6D]">{{ $t('contribute.step7.email') }}</label>
+                <UInput v-model="form.email" type="email" class="flex-1" :ui="{ rounded: 'rounded-full' }" />
+              </div>
+              <div class="flex items-center gap-3">
+                <label class="w-28 flex-shrink-0 text-sm text-[#F26D6D]">{{ $t('contribute.step7.country') }}</label>
+                <UInput v-model="form.country" class="flex-1" :ui="{ rounded: 'rounded-full' }" />
+              </div>
+              <div class="flex items-center gap-3">
+                <label class="w-28 flex-shrink-0 text-sm text-[#F26D6D]">{{ $t('contribute.step7.city') }}</label>
+                <UInput v-model="form.city" class="flex-1" :ui="{ rounded: 'rounded-full' }" />
+              </div>
+            </div>
+
+            <p class="pt-1 text-xs leading-snug text-gray-500">
+              {{ $t('contribute.step7.privacy') }}
+            </p>
+          </div>
+        </div>
+
+        <!-- Footer nav: Back / Next|Submit. Above the bottom nav on mobile;
            an in-card footer on desktop. -->
-      <div
-        class="pointer-events-auto flex items-center justify-center gap-6"
-        :class="isMobile ? 'absolute inset-x-0 bottom-24 safe-bottom' : 'shrink-0 border-t border-gray-100 py-4 dark:border-zinc-800'"
-      >
-        <button
-          v-if="step > 1"
-          type="button"
-          class="text-sm font-semibold text-[#F26D6D]"
-          @click="back"
+        <div
+          class="pointer-events-auto flex items-center justify-center gap-6"
+          :class="isMobile ? 'absolute inset-x-0 bottom-24 safe-bottom' : 'shrink-0 border-t border-gray-100 py-4 dark:border-zinc-800'"
         >
-          {{ $t('contribute.back') }}
-        </button>
-        <!-- Step 1 has no Back, so the close action takes the Back slot here
+          <button
+            v-if="step > 1"
+            type="button"
+            class="text-sm font-semibold text-[#F26D6D]"
+            @click="back"
+          >
+            {{ $t('contribute.back') }}
+          </button>
+          <!-- Step 1 has no Back, so the close action takes the Back slot here
              (the top-corner X is hidden on the mobile map step). A white pill
              backdrop keeps it readable where it floats over the map. -->
-        <button
-          v-else-if="mapCard"
-          type="button"
-          class="rounded-full bg-white px-6 py-2 text-sm font-semibold text-[#F26D6D] shadow-md hover:bg-gray-100 dark:bg-zinc-800 dark:hover:bg-zinc-700"
-          @click="emit('close')"
-        >
-          {{ $t('contribute.close') }}
-        </button>
-        <UButton
-          v-if="step < TOTAL_STEPS"
-          class="rounded-full px-6"
-          :style="{ backgroundColor: '#C0392B', color: '#ffffff' }"
-          :disabled="step === 1 && !confirmingPin && !step1Valid"
-          @click="next"
-        >
-          {{ $t('contribute.next') }}
-        </UButton>
-        <UButton
-          v-else
-          class="rounded-full px-6"
-          :style="{ backgroundColor: '#C0392B', color: '#ffffff' }"
-          @click="submit"
-        >
-          {{ $t('contribute.submit') }}
-        </UButton>
-      </div>
-    </template>
+          <button
+            v-else-if="mapCard"
+            type="button"
+            class="rounded-full bg-white px-6 py-2 text-sm font-semibold text-[#F26D6D] shadow-md hover:bg-gray-100 dark:bg-zinc-800 dark:hover:bg-zinc-700"
+            @click="emit('close')"
+          >
+            {{ $t('contribute.close') }}
+          </button>
+          <UButton
+            v-if="step < TOTAL_STEPS"
+            class="rounded-full px-6"
+            :style="{ backgroundColor: '#C0392B', color: '#ffffff' }"
+            :disabled="step === 1 && !confirmingPin && !step1Valid"
+            @click="next"
+          >
+            {{ $t('contribute.next') }}
+          </UButton>
+          <UButton
+            v-else
+            class="rounded-full px-6"
+            :style="{ backgroundColor: '#C0392B', color: '#ffffff' }"
+            @click="submit"
+          >
+            {{ $t('contribute.submit') }}
+          </UButton>
+        </div>
+      </template>
     </div>
   </div>
 </template>
