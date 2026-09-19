@@ -250,8 +250,39 @@ registerContract({
     cols: z.union([z.literal(1), z.literal(2), z.literal(3), z.literal(4)]).optional(),
     gap: z.enum(['none', 'xs', 'sm', 'md', 'lg']).optional(),
     empty: z.string().optional().describe('Text shown when there are no items'),
+    filterKey: z.string().optional().describe('Keep rows whose field equals filterValue (bind filterValue to state; empty = all)'),
+    filterValue: z.unknown().optional(),
+    search: z.string().optional().describe('Case-insensitive text search (bind to state)'),
+    searchKeys: z.array(z.string()).optional(),
+    sortBy: z.string().optional(),
+    sortDesc: z.boolean().optional(),
+    limit: z.number().int().positive().optional(),
   }),
   slots: ['item'],
+})
+
+registerContract({
+  name: 'Tally',
+  description: 'Results as data: groups `items` by a field and shows one bar per group with the count, or the sum / average of `valueKey`.',
+  props: z.strictObject({
+    items: z.array(z.unknown()).optional(),
+    by: z.string(),
+    mode: z.enum(['count', 'sum', 'avg']).optional(),
+    valueKey: z.string().optional().describe('Numeric field for sum / avg'),
+    labels: z.record(z.string(), z.string()).optional().describe('value -> label'),
+    empty: z.string().optional(),
+    decimals: z.number().int().min(0).max(4).optional(),
+  }),
+})
+
+registerContract({
+  name: 'Tabs',
+  description: 'A row of pills with one selected; bind `modelValue` to a state key and set it back on `update:modelValue` (e.g. a category filter for a List).',
+  props: z.strictObject({
+    options: z.array(z.strictObject({ label: z.string(), value: z.string() })),
+    modelValue: z.string().optional(),
+  }),
+  emits: ['update:modelValue'],
 })
 
 registerContract({
@@ -364,6 +395,8 @@ registerContract({
     tone: z.enum(['default', 'muted', 'accent', 'inverse']).optional(),
     align: z.enum(['left', 'center', 'right']).optional(),
     text: z.union([z.string(), z.number()]).optional(),
+    format: z.enum(['date', 'datetime', 'number']).optional().describe('Render an ISO date / a number in the reader\'s locale'),
+    labels: z.record(z.string(), z.string()).optional().describe('value -> label for stored codes; unknown values show as-is'),
   }),
   slots: ['default'],
 })

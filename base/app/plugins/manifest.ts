@@ -55,8 +55,38 @@ export default defineNuxtPlugin((nuxtApp) => {
   }
   nuxtApp.vueApp.provide(DATA_ADAPTER, composeAdapters({ static: staticAdapter, rest: restAdapter, collection }))
 
-  async function request(method: 'POST' | 'DELETE', url: string, body?: unknown) {
-    const response = await fetch(url, { method, headers: body ? { 'content-type': 'application/json' } : {}, body: body ? JSON.stringify(body) : undefined })
+  // A payload holding File objects (e.g. from PhotoDropZone) goes up as
+  // multipart: the JSON fields under `data`, every file under `files:<key>`;
+  // the server stores the files and puts their URLs into the row.
+  const isFile = (v: unknown): v is File => typeof File !== 'undefined' && v instanceof File
+  function encode(body: unknown): { headers: Record<string, string>, body: BodyInit | undefined } {
+    if (body === undefined) {
+      return { headers: {}, body: undefined }
+    }
+    const entries = Object.entries((body ?? {}) as Record<string, unknown>)
+    const hasFiles = entries.some(([, v]) => isFile(v) || (Array.isArray(v) && v.some(isFile)))
+    if (!hasFiles) {
+      return { headers: { 'content-type': 'application/json' }, body: JSON.stringify(body) }
+    }
+    const form = new FormData()
+    const data: Record<string, unknown> = {}
+    for (const [key, value] of entries) {
+      const files = isFile(value) ? [value] : Array.isArray(value) && value.some(isFile) ? value.filter(isFile) : null
+      if (files) {
+        files.forEach(file => form.append(`files:${key}`, file, file.name))
+        form.append(`multi:${key}`, Array.isArray(value) ? '1' : '0')
+      }
+      else {
+        data[key] = value
+      }
+    }
+    form.append('data', JSON.stringify(data))
+    return { headers: {}, body: form }
+  }
+
+  async function request(method: 'POST' | 'DELETE', url: string, payload?: unknown) {
+    const { headers, body } = encode(payload)
+    const response = await fetch(url, { method, headers, body })
     if (!response.ok) {
       const detail = await response.json().catch(() => null) as { statusMessage?: string, data?: { errors?: { path: string, message: string }[] } } | null
       const reasons = detail?.data?.errors?.map(e => `${e.path}: ${e.message}`).join('; ')

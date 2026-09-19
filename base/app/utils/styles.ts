@@ -45,4 +45,6 @@ registerStyle('content', 'relative px-6 pb-24 pt-24', 'Main content area under a
 registerStyle('floating-left', 'fixed left-6 top-1/2 z-30 -translate-y-1/2', 'Tool palette anchored to the left edge')
 registerStyle('link', 'hover:underline', 'Inline text link')
 registerStyle('bullets', 'list-disc space-y-1 pl-6', 'Bulleted list (put on a ul; children are li)')
+registerStyle('page-narrow', 'mx-auto w-full max-w-2xl px-6 pb-24 pt-28', 'Centered reading column under the floating header')
+registerStyle('page-wide', 'mx-auto w-full max-w-5xl px-6 pb-24 pt-28', 'Centered wide column under the floating header')
 registerStyle('logo', 'hover:scale-105 dark:invert', 'Partner / sponsor logo image')

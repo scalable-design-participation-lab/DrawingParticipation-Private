@@ -1,0 +1,41 @@
+{
+  "name": "Tabs",
+  "description": "A row of pills with one selected; bind `modelValue` to a state key and set it back on `update:modelValue` (e.g. a category filter for a List).",
+  "stateful": false,
+  "emits": [
+    "update:modelValue"
+  ],
+  "slots": [],
+  "props": {
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "type": "object",
+    "properties": {
+      "options": {
+        "type": "array",
+        "items": {
+          "type": "object",
+          "properties": {
+            "label": {
+              "type": "string"
+            },
+            "value": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "label",
+            "value"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "modelValue": {
+        "type": "string"
+      }
+    },
+    "required": [
+      "options"
+    ],
+    "additionalProperties": false
+  }
+}

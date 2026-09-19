@@ -64,6 +64,25 @@
           "string",
           "number"
         ]
+      },
+      "format": {
+        "description": "Render an ISO date / a number in the reader's locale",
+        "type": "string",
+        "enum": [
+          "date",
+          "datetime",
+          "number"
+        ]
+      },
+      "labels": {
+        "description": "value -> label for stored codes; unknown values show as-is",
+        "type": "object",
+        "propertyNames": {
+          "type": "string"
+        },
+        "additionalProperties": {
+          "type": "string"
+        }
       }
     },
     "additionalProperties": false

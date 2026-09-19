@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { ref, watch } from 'vue'
 /**
  * A form described by data: one object in, one object out.
  * `fields` says what to render; `modelValue` holds the values keyed by field
@@ -47,15 +48,22 @@ const emit = defineEmits<{
   'submit': [value: Record<string, unknown>]
 }>()
 
+// Merge into a local copy first: two updates in one tick (a dropped photo
+// and a typed note, a script filling several fields) would otherwise each
+// spread the stale prop and the earlier one would be lost.
+const values = ref<Record<string, unknown>>({ ...props.modelValue })
+watch(() => props.modelValue, v => (values.value = { ...v }), { deep: true })
+
 function update(name: string, value: unknown) {
-  emit('update:modelValue', { ...props.modelValue, [name]: value })
+  values.value = { ...values.value, [name]: value }
+  emit('update:modelValue', values.value)
 }
 
 const underline = 'w-full !border-b border-current rounded-none px-0 py-1 bg-transparent placeholder:!text-current'
 </script>
 
 <template>
-  <form class="flex" :class="[gap, direction === 'row' ? 'flex-row flex-wrap items-baseline' : 'flex-col']" @submit.prevent="emit('submit', modelValue)">
+  <form class="flex" :class="[gap, direction === 'row' ? 'flex-row flex-wrap items-baseline' : 'flex-col']" @submit.prevent="emit('submit', values)">
     <label
       v-for="field in fields"
       :key="field.name"
@@ -66,7 +74,7 @@ const underline = 'w-full !border-b border-current rounded-none px-0 py-1 bg-tra
 
       <UTextarea
         v-if="field.type === 'textarea'"
-        :model-value="(modelValue[field.name] as string) ?? ''"
+        :model-value="(values[field.name] as string) ?? ''"
         :rows="field.rows ?? 4"
         :placeholder="field.placeholder"
         :required="field.required"
@@ -78,7 +86,7 @@ const underline = 'w-full !border-b border-current rounded-none px-0 py-1 bg-tra
       />
       <USelect
         v-else-if="field.type === 'select'"
-        :model-value="(modelValue[field.name] as string) ?? ''"
+        :model-value="(values[field.name] as string) ?? ''"
         :options="field.options ?? []"
         :placeholder="field.placeholder"
         :required="field.required"
@@ -90,7 +98,7 @@ const underline = 'w-full !border-b border-current rounded-none px-0 py-1 bg-tra
       />
       <UInput
         v-else
-        :model-value="(modelValue[field.name] as string) ?? ''"
+        :model-value="(values[field.name] as string) ?? ''"
         :type="field.type ?? 'text'"
         :placeholder="field.placeholder"
         :required="field.required"

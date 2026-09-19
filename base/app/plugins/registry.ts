@@ -7,6 +7,8 @@ import FeatureLayer from '../components/FeatureLayer.vue'
 import StepCard from '../components/StepCard.vue'
 import Accordion from '../components/Accordion.vue'
 import List from '../components/List.vue'
+import Tally from '../components/Tally.vue'
+import Tabs from '../components/Tabs.vue'
 import FileDropZone from '../components/FileDropZone.vue'
 import PhotoDropZone from '../components/PhotoDropZone.vue'
 import FormFields from '../components/FormFields.vue'
@@ -40,6 +42,8 @@ export default defineNuxtPlugin(() => {
   registerComponent('StepCard', StepCard)
   registerComponent('Accordion', Accordion)
   registerComponent('List', List)
+  registerComponent('Tally', Tally)
+  registerComponent('Tabs', Tabs)
   registerComponent('FileDropZone', FileDropZone)
   registerComponent('PhotoDropZone', PhotoDropZone)
   registerComponent('FormFields', FormFields)

@@ -193,15 +193,37 @@ nuxtApp.vueApp.provide(DATA_ADAPTER, composeAdapters({
 ```
 
 Lists: JSON cannot loop, so `List` does it: `{ "type": "List", "bind": { "items": "$data.ideas" }, "props": { "layout": "grid", "cols": 3 }, "item": { … "$item.comment" … } }`.
+`List` also filters (`filterKey` + `filterValue` bound to state, e.g. a `Tabs`
+value), searches (`search` bound to a form field, `searchKeys`), sorts
+(`sortBy`, `sortDesc`) and limits. Results: `Tally` groups rows by a field and
+draws a bar per group (`mode` count / sum / avg of `valueKey`). `Text`
+renders stored codes and dates for people: `labels` (value -> label) and
+`format` (date / datetime / number).
 
-## A whole app from JSON only
+Files: a `saveTo` payload that holds `File` objects (the `files` of a
+`PhotoDropZone`, put into a draft with `{ "set": "draft.fotos" }`) is sent as
+multipart; base stores the files under `.data/uploads` and writes their
+`/api/uploads/<file>` URLs into the row, so the gallery is just
+`{ "type": "Image", "bind": { "src": "$item.fotos.0" } }`.
 
-`apps/barrio-ideas` is the proof: `app.json` (routes, theme, an `ideas`
-collection declared as `fields`) plus four specs (shell, map with two
-`FeatureLayer`s and a `MarkerOverlay` + `FormFields` editor that `saveTo`s
-the collection, a `List` page, a text page). No components, handlers, stores
-or style presets of its own; the `package.json` / `nuxt.config.ts` /
-`tsconfig.json` / `eslint.config.mjs` next to it are fixed boilerplate.
+## Four apps from JSON only
+
+Four apps under `apps/` are specs only (no components, handlers, stores or
+presets of their own; `package.json` / `nuxt.config.ts` / `tsconfig.json` /
+`eslint.config.mjs` are fixed boilerplate), each written to stress a
+different part of the library:
+
+| App                    | Kind                          | What it exercises                                                                              |
+| ---------------------- | ----------------------------- | ---------------------------------------------------------------------------------------------- |
+| `barrio-ideas`         | participation map             | `FeatureLayer` draw + `MarkerOverlay` editor + `saveTo` a `fields` collection + `List`          |
+| `encuesta-movilidad`   | multi-step survey + results   | `if: "$state.step == n"` wizard over one `FormFields` model, `Tally` count / avg, `Text.format` |
+| `agenda-barrio`        | data board                    | `Tabs` -> `List.filterValue`, search field -> `List.search`, `sortBy`, detail `Modal` bound to `$state.selected` |
+| `diario-fotos`         | media                         | `PhotoDropZone` -> `saveTo` multipart upload -> `Image` gallery -> lightbox `Modal`             |
+
+Each one was written without touching base first; what it could not
+express became a base addition (`List` filters, `Tally`, `Tabs`, `Text`
+`format` / `labels`, uploads through `saveTo`, `page-narrow` / `page-wide`
+presets, `FormFields` tolerant of rapid updates).
 
 ## Building blocks that replaced hand-written components
 

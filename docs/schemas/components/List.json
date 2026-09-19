@@ -54,6 +54,32 @@
       "empty": {
         "description": "Text shown when there are no items",
         "type": "string"
+      },
+      "filterKey": {
+        "description": "Keep rows whose field equals filterValue (bind filterValue to state; empty = all)",
+        "type": "string"
+      },
+      "filterValue": {},
+      "search": {
+        "description": "Case-insensitive text search (bind to state)",
+        "type": "string"
+      },
+      "searchKeys": {
+        "type": "array",
+        "items": {
+          "type": "string"
+        }
+      },
+      "sortBy": {
+        "type": "string"
+      },
+      "sortDesc": {
+        "type": "boolean"
+      },
+      "limit": {
+        "type": "integer",
+        "exclusiveMinimum": 0,
+        "maximum": 9007199254740991
       }
     },
     "additionalProperties": false

@@ -65,6 +65,7 @@ export default defineNuxtConfig({
   nitro: {
     storage: {
       collections: { driver: 'fs', base: './.data/collections' },
+      uploads: { driver: 'fs', base: './.data/uploads' },
     },
     // `#spec/app-contracts` is imported by base/server/plugins/app-contracts.ts.
     moduleSideEffects: appContracts ? [appContracts] : [],

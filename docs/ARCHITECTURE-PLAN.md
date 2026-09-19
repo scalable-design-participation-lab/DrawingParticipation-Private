@@ -62,6 +62,13 @@ collection declared as `fields` + list + about) was written as specs only, passe
 draw → comment → save → list → reopen loop was checked in the browser. What that needed from base: `List`,
 collections as `fields`, and the OpenLayers plugin moving into base so an app has no plugins directory.
 
+**Status (2026-09, round 4): three more spec-only apps of different kinds** (`encuesta-movilidad` survey +
+results, `agenda-barrio` filter / search / sort board, `diario-fotos` uploads + gallery), each run in the
+browser end to end. Gaps they exposed and closed in base: `List` filter / search / sort / limit, `Tally`
+(aggregation), `Tabs`, `Text.format` + `Text.labels` (dates and stored codes for people), file uploads
+through `saveTo` (multipart -> `.data/uploads` -> `/api/uploads/<file>`), `page-narrow` / `page-wide`,
+`FormFields` losing a field when two updates land in one tick, `YYYY-MM-DD` shown a day early.
+
 ## Next
 
 1. ~~Delete the dashboard leftovers~~ done.
