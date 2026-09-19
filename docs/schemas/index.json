@@ -12,6 +12,7 @@
     "FeatureLayer",
     "StepCard",
     "Accordion",
+    "List",
     "FormFields",
     "PhotoDropZone",
     "ToolTips",

@@ -192,6 +192,17 @@ nuxtApp.vueApp.provide(DATA_ADAPTER, composeAdapters({
 }))
 ```
 
+Lists: JSON cannot loop, so `List` does it: `{ "type": "List", "bind": { "items": "$data.ideas" }, "props": { "layout": "grid", "cols": 3 }, "item": { … "$item.comment" … } }`.
+
+## A whole app from JSON only
+
+`apps/barrio-ideas` is the proof: `app.json` (routes, theme, an `ideas`
+collection declared as `fields`) plus four specs (shell, map with two
+`FeatureLayer`s and a `MarkerOverlay` + `FormFields` editor that `saveTo`s
+the collection, a `List` page, a text page). No components, handlers, stores
+or style presets of its own; the `package.json` / `nuxt.config.ts` /
+`tsconfig.json` / `eslint.config.mjs` next to it are fixed boilerplate.
+
 ## Building blocks that replaced hand-written components
 
 restart-ukraine's participation flow is a good reference for what is JSON now:
@@ -307,7 +318,11 @@ static verifier over all of its specs.
   (`{ "call": "saveTo", "args": "observaciones" }` with the row as payload,
   e.g. `FormFields` `submit`); both reload the page's data sources afterwards
   and report failures through `$errors.saveTo` / `$errors.deleteFrom`.
-  Collections not owned by the app are read from `data.restBase/<name>`.
+  A collection can also be declared without any code, as data:
+  `"ideas": { "fields": [{ "name": "comment", "type": "string" }, { "name": "coordinates", "type": "json", "required": true }] }`
+  (types `string | number | boolean | json`; declared fields are validated,
+  other keys pass through). Collections not owned by the app are read from
+  `data.restBase/<name>`.
 - `yarn workspace @mono/base verify --app apps/<app>` checks the manifest,
   every routed spec (strict, with the manifest's routes for `link.unknown-route`)
   and the shell (`manifest.schema`, `manifest.missing-spec`, `manifest.shell-outlet`,

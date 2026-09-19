@@ -1,0 +1,151 @@
+{
+  "version": 1,
+  "dataSources": {
+    "ideas": {
+      "kind": "collection",
+      "name": "ideas"
+    }
+  },
+  "children": [
+    {
+      "type": "div",
+      "style": "content",
+      "children": [
+        {
+          "type": "Stack",
+          "props": {
+            "gap": "lg"
+          },
+          "children": [
+            {
+              "type": "Text",
+              "props": {
+                "as": "h1",
+                "text": "Todas las ideas"
+              }
+            },
+            {
+              "type": "Stack",
+              "props": {
+                "direction": "row",
+                "gap": "xs",
+                "align": "baseline"
+              },
+              "children": [
+                {
+                  "type": "Text",
+                  "props": {
+                    "size": "sm",
+                    "tone": "muted"
+                  },
+                  "bind": {
+                    "text": "$data.ideas.length"
+                  }
+                },
+                {
+                  "type": "Text",
+                  "props": {
+                    "size": "sm",
+                    "tone": "muted",
+                    "text": "marcas guardadas"
+                  }
+                }
+              ]
+            },
+            {
+              "type": "Text",
+              "if": "$sources.ideas.error",
+              "props": {
+                "tone": "accent",
+                "text": "No se pudieron cargar las ideas."
+              }
+            },
+            {
+              "type": "List",
+              "props": {
+                "layout": "grid",
+                "cols": 3,
+                "gap": "md",
+                "empty": "Todavía no hay ideas. Ve al mapa y marca la primera."
+              },
+              "bind": {
+                "items": "$data.ideas"
+              },
+              "item": {
+                "type": "Panel",
+                "props": {
+                  "variant": "card",
+                  "padding": "md"
+                },
+                "children": [
+                  {
+                    "type": "Stack",
+                    "props": {
+                      "gap": "xs"
+                    },
+                    "children": [
+                      {
+                        "type": "Text",
+                        "props": {
+                          "size": "sm",
+                          "weight": "semibold"
+                        },
+                        "bind": {
+                          "text": "$item.title"
+                        }
+                      },
+                      {
+                        "type": "Text",
+                        "props": {
+                          "size": "sm"
+                        },
+                        "bind": {
+                          "text": "$item.comment"
+                        }
+                      },
+                      {
+                        "type": "Text",
+                        "if": "!$item.comment",
+                        "props": {
+                          "size": "sm",
+                          "tone": "muted",
+                          "text": "Sin comentario."
+                        }
+                      },
+                      {
+                        "type": "Text",
+                        "props": {
+                          "size": "xs",
+                          "tone": "muted"
+                        },
+                        "bind": {
+                          "text": "$item.createdAt"
+                        }
+                      }
+                    ]
+                  }
+                ]
+              }
+            },
+            {
+              "type": "Stack",
+              "props": {
+                "direction": "row"
+              },
+              "children": [
+                {
+                  "type": "Button",
+                  "props": {
+                    "to": "/",
+                    "color": "black"
+                  },
+                  "text": "Volver al mapa"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

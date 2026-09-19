@@ -57,6 +57,11 @@ missing. Everything below was added rather than worked around:
 | wiring mistakes the schema cannot see                      | verifier rules `bind.write-only`, `link.unknown-route` (uses the manifest's routes), `state.unused`, unknown `$errors.<x>`                                                                                                   |
 | writing data needed app-specific backend code              | `app.json` `data.collections` -> base Nitro CRUD (`/api/collections/<name>`, fs storage) validated server-side with the app's own zod contract; built-in `saveTo` / `deleteFrom` handlers with reload                         |
 
+**Status (2026-09, round 3): a new app from JSON alone works.** `apps/barrio-ideas` (map + draw + save to a
+collection declared as `fields` + list + about) was written as specs only, passes `verify --app`, and the
+draw → comment → save → list → reopen loop was checked in the browser. What that needed from base: `List`,
+collections as `fields`, and the OpenLayers plugin moving into base so an app has no plugins directory.
+
 ## Next
 
 1. ~~Delete the dashboard leftovers~~ done.

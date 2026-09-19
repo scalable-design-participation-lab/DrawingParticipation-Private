@@ -1,0 +1,52 @@
+{
+  "version": 1,
+  "name": "barrio-ideas",
+  "title": "Ideas para el barrio",
+  "description": "Marca en el mapa lo que te gusta, lo que hay que arreglar y tus ideas para el barrio.",
+  "lang": "es",
+  "theme": {
+    "primary": "emerald",
+    "gray": "zinc",
+    "colorMode": "light"
+  },
+  "shell": "shell.json",
+  "routes": {
+    "/": "mapa.json",
+    "/ideas": "ideas.json",
+    "/acerca": "acerca.json"
+  },
+  "data": {
+    "collections": {
+      "ideas": {
+        "fields": [
+          {
+            "name": "type",
+            "type": "string",
+            "required": true
+          },
+          {
+            "name": "coordinates",
+            "type": "json",
+            "required": true
+          },
+          {
+            "name": "iconName",
+            "type": "string"
+          },
+          {
+            "name": "title",
+            "type": "string"
+          },
+          {
+            "name": "comment",
+            "type": "string"
+          },
+          {
+            "name": "timestamp",
+            "type": "string"
+          }
+        ]
+      }
+    }
+  }
+}

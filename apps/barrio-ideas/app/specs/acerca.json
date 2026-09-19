@@ -1,0 +1,91 @@
+{
+  "version": 1,
+  "children": [
+    {
+      "type": "div",
+      "style": "content",
+      "children": [
+        {
+          "type": "Panel",
+          "props": {
+            "measure": "prose"
+          },
+          "children": [
+            {
+              "type": "Stack",
+              "props": {
+                "gap": "md"
+              },
+              "children": [
+                {
+                  "type": "Text",
+                  "props": {
+                    "as": "h1",
+                    "text": "Ideas para el barrio"
+                  }
+                },
+                {
+                  "type": "Text",
+                  "props": {
+                    "text": "Una herramienta de participación: cualquier vecino marca en el mapa los lugares que le gustan, los que hay que arreglar y sus ideas nuevas, con un comentario. Todo lo que se guarda aparece en el mapa y en la lista de ideas."
+                  }
+                },
+                {
+                  "type": "Text",
+                  "props": {
+                    "as": "h2",
+                    "text": "Cómo participar"
+                  }
+                },
+                {
+                  "type": "ul",
+                  "style": "bullets",
+                  "children": [
+                    {
+                      "type": "li",
+                      "text": "Elige un icono en el panel de la izquierda."
+                    },
+                    {
+                      "type": "li",
+                      "text": "Toca el mapa donde quieras dejar la marca."
+                    },
+                    {
+                      "type": "li",
+                      "text": "Pulsa el «+» de la marca, escribe tu comentario y guarda."
+                    }
+                  ]
+                },
+                {
+                  "type": "Stack",
+                  "props": {
+                    "direction": "row",
+                    "gap": "sm"
+                  },
+                  "children": [
+                    {
+                      "type": "Button",
+                      "props": {
+                        "to": "/",
+                        "color": "black"
+                      },
+                      "text": "Ir al mapa"
+                    },
+                    {
+                      "type": "Button",
+                      "props": {
+                        "to": "/ideas",
+                        "color": "gray",
+                        "variant": "soft"
+                      },
+                      "text": "Ver las ideas"
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
