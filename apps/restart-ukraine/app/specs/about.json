@@ -1,6 +1,9 @@
 {
   "version": 1,
-  "state": { "menuOpen": false },
+  "state": {
+    "menuOpen": false,
+    "supportOpen": false
+  },
   "children": [
     {
       "type": "div",
@@ -14,160 +17,738 @@
             "logoAlt": "Restart Agency Logo",
             "logoLink": "https://www.restartfuture.org/",
             "leftItems": [
-              { "label": "Drawing Participation", "color": "black", "to": "/" },
-              { "label": "Гуртомá", "color": "black", "to": "/" }
+              {
+                "label": "Drawing Participation",
+                "color": "black",
+                "to": "/"
+              },
+              {
+                "label": "Гуртомá",
+                "color": "black",
+                "to": "/"
+              }
             ],
-            "rightItems": [{ "label": "Взяти участь", "color": "black", "to": "/" }]
+            "rightItems": [
+              {
+                "label": "Взяти участь",
+                "color": "black",
+                "to": "/"
+              }
+            ]
           },
-          "on": { "menu": { "set": "menuOpen", "value": true } }
+          "on": {
+            "menu": {
+              "set": "menuOpen",
+              "value": true
+            }
+          }
         },
-        { "type": "MenuModal", "bind": { "modelValue": "$state.menuOpen" }, "on": { "update:modelValue": { "set": "menuOpen" } } },
-
         {
-          "type": "Panel",
-          "style": "hero",
-          "props": { "measure": "prose" },
+          "type": "Modal",
+          "props": {
+            "size": "sm"
+          },
+          "bind": {
+            "modelValue": "$state.menuOpen"
+          },
+          "on": {
+            "update:modelValue": {
+              "set": "menuOpen"
+            }
+          },
           "children": [
             {
               "type": "Stack",
-              "props": { "gap": "lg" },
+              "props": {
+                "direction": "column",
+                "gap": "sm"
+              },
               "children": [
-                { "type": "Image", "props": { "src": "/hurtoma-river-01.jpg", "width": "full", "rounded": true } },
+                {
+                  "type": "Button",
+                  "props": {
+                    "block": true,
+                    "color": "white",
+                    "variant": "solid",
+                    "to": "/"
+                  },
+                  "style": "menu-item",
+                  "text": "Головна",
+                  "on": {
+                    "click": [
+                      {
+                        "set": "menuOpen",
+                        "value": false
+                      }
+                    ]
+                  }
+                },
+                {
+                  "type": "Button",
+                  "props": {
+                    "block": true,
+                    "color": "white",
+                    "variant": "solid",
+                    "to": "/about"
+                  },
+                  "style": "menu-item",
+                  "text": "Про нас",
+                  "on": {
+                    "click": [
+                      {
+                        "set": "menuOpen",
+                        "value": false
+                      }
+                    ]
+                  }
+                },
+                {
+                  "type": "Button",
+                  "props": {
+                    "block": true,
+                    "color": "white",
+                    "variant": "solid"
+                  },
+                  "style": "menu-item",
+                  "text": "Підтримка",
+                  "on": {
+                    "click": [
+                      {
+                        "set": "menuOpen",
+                        "value": false
+                      },
+                      {
+                        "set": "supportOpen",
+                        "value": true
+                      }
+                    ]
+                  }
+                },
+                {
+                  "type": "Button",
+                  "props": {
+                    "block": true,
+                    "color": "white",
+                    "variant": "solid",
+                    "to": "/result"
+                  },
+                  "style": "menu-item",
+                  "text": "Результати",
+                  "on": {
+                    "click": [
+                      {
+                        "set": "menuOpen",
+                        "value": false
+                      }
+                    ]
+                  }
+                },
+                {
+                  "type": "Button",
+                  "props": {
+                    "block": true,
+                    "color": "white",
+                    "variant": "solid",
+                    "to": "/dashboard"
+                  },
+                  "style": "menu-item",
+                  "text": "приладова панель",
+                  "on": {
+                    "click": [
+                      {
+                        "set": "menuOpen",
+                        "value": false
+                      }
+                    ]
+                  }
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "Modal",
+          "props": {
+            "title": "Допомога",
+            "size": "lg",
+            "closable": true,
+            "buttonLabel": "Повернутися до карти"
+          },
+          "bind": {
+            "modelValue": "$state.supportOpen"
+          },
+          "on": {
+            "update:modelValue": {
+              "set": "supportOpen"
+            }
+          },
+          "children": [
+            {
+              "type": "Stack",
+              "props": {
+                "gap": "md"
+              },
+              "children": [
+                {
+                  "type": "Text",
+                  "props": {
+                    "text": "«Гуртомá» — проєкт зі спільного створення мапи завдяки містянам, який дозволяє дослідити питання використання й ставлення до навколишнього простору."
+                  }
+                },
                 {
                   "type": "Stack",
-                  "props": { "gap": "sm" },
+                  "props": {
+                    "gap": "xs"
+                  },
                   "children": [
-                    { "type": "Text", "props": { "as": "h1", "text": "Гуртомá" } },
                     {
-                      "type": "Panel",
-                      "props": { "measure": "prose" },
+                      "type": "Text",
+                      "props": {
+                        "as": "h3",
+                        "size": "md",
+                        "weight": "medium",
+                        "text": "Ключові особливості:"
+                      }
+                    },
+                    {
+                      "type": "ul",
+                      "style": "bullets",
                       "children": [
-                        { "type": "Stack", "props": { "gap": "sm" }, "children": [
-                          { "type": "Text", "props": { "text": "Платформа від команди дослідників та містопланувальників Restart, яка спрощує комунікацію між містянами та урбаністами. Мета — покращувати міста і спільноти разом." } },
-                          { "type": "Text", "props": { "text": "Завдяки доступній онлайн мапі, платформа збирає зворотний зв’язок щодо улюблених локації та місць, які потребують покращень. А також враховує побажання уряду, громадських організацій та інших стейкхолдерів." } }
-                        ] }
+                        {
+                          "type": "li",
+                          "text": "Малюйте та позначайте місця, які ви відвідуєте та використовуєте для певної мети"
+                        },
+                        {
+                          "type": "li",
+                          "text": "Діліться своїм досвідом про відчуття безпеки та єдності"
+                        },
+                        {
+                          "type": "li",
+                          "text": "Робіть внесок у захист довкілля"
+                        },
+                        {
+                          "type": "li",
+                          "text": "Знайомтесь з думкою спільноти"
+                        }
                       ]
                     }
                   ]
                 },
                 {
-                  "type": "Stack",
-                  "props": { "direction": "row", "gap": "sm" },
+                  "type": "Text",
+                  "props": {
+                    "text": "Як долучитися: Використовуйте інструменти на лівій панелі збоку, щоб позначати місця та ділитися своїм досвідом. Ваш внесок дозволить краще зрозуміти, в якому стані міський простір та як його покращити."
+                  }
+                },
+                {
+                  "type": "Text",
                   "children": [
-                    { "type": "Button", "style": "pill-button", "props": { "color": "black", "to": "/" }, "text": "Взяти участь" },
-                    { "type": "Button", "style": "pill-button-secondary", "props": { "color": "black", "to": "/result/" }, "text": "Подивитись результати" }
+                    {
+                      "type": "span",
+                      "text": "Будь ласка, "
+                    },
+                    {
+                      "type": "a",
+                      "props": {
+                        "href": "https://forms.gle/6d8GuBSPaingSR4L6",
+                        "target": "_blank"
+                      },
+                      "style": "link",
+                      "text": "заповніть форму"
+                    },
+                    {
+                      "type": "span",
+                      "text": ", якщо бажаєте залишити відгук про платформу."
+                    }
                   ]
                 }
               ]
             }
           ]
         },
-
-        { "type": "Divider", "props": { "ui": { "wrapper": "mt-24 mb-8" } } },
-
-        {
-          "type": "Stack",
-          "style": "section",
-          "props": { "responsive": true, "gap": "md", "align": "stretch" },
-          "children": [
-            { "type": "Panel", "style": "feature-card-tall", "props": { "variant": "outline", "padding": "lg" }, "children": [
-              { "type": "Stack", "props": { "gap": "sm" }, "children": [
-                { "type": "Text", "props": { "as": "h2", "text": "Безпека" } },
-                { "type": "Text", "props": { "size": "sm", "text": "Ми створили цифровий простір, де можна відверто ділитися думками й спогадами про місця, яких уникаєте. Це допоможе привернути увагу спільноти й запустити процес змін." } }
-              ] }
-            ] },
-            { "type": "Panel", "style": "feature-card", "props": { "variant": "outline", "padding": "lg" }, "children": [
-              { "type": "Stack", "props": { "gap": "sm" }, "children": [
-                { "type": "Text", "props": { "as": "h2", "text": "Приналежність" } },
-                { "type": "Text", "props": { "size": "sm", "text": "Стежка до річки, квітучий сквер, культурний центр — позначайте улюблені місця та дізнавайтеся, які локації обирають інші містяни." } }
-              ] }
-            ] },
-            { "type": "Panel", "style": "feature-card", "props": { "variant": "outline", "padding": "lg" }, "children": [
-              { "type": "Stack", "props": { "gap": "sm" }, "children": [
-                { "type": "Text", "props": { "as": "h2", "text": "Середовище" } },
-                { "type": "Text", "props": { "size": "sm", "text": "Завдяки згуртованості містян, онлайн мапа наочно відображає популярні локації та ділянки, які потребують відновлення для процвітання міста." } }
-              ] }
-            ] },
-            { "type": "Panel", "style": "feature-card", "props": { "variant": "outline", "padding": "lg" }, "children": [
-              { "type": "Stack", "props": { "gap": "sm" }, "children": [
-                { "type": "Text", "props": { "as": "h2", "text": "Екологія" } },
-                { "type": "Text", "props": { "size": "sm", "text": "Платформа збирає й систе-матизує дані про рослини та тварин, характерних для місцевості. А також фіксує засмічені зони, які гальмують розвиток міста. Поділитися своїми враженнями — перший крок до покращень." } }
-              ] }
-            ] }
-          ]
-        },
-
-        { "type": "Divider", "props": { "ui": { "wrapper": "mt-24 mb-8" } } },
-
         {
           "type": "Panel",
-          "style": "section",
-          "props": { "measure": "prose" },
-          "children": [
-            { "type": "Stack", "props": { "gap": "lg" }, "children": [
-              { "type": "Text", "props": { "as": "h1", "text": "Візія" } },
-              { "type": "Panel", "props": { "measure": "prose" }, "children": [
-                { "type": "Stack", "props": { "gap": "sm" }, "children": [
-                  { "type": "Text", "props": { "text": "Річка Тяжилівка, оточена промисловими та військовими районами Вінниці, фактично ізольована від міста. Важкодоступність цієї території заважає мешканцям використовувати її потенціал на користь спільноті." } },
-                  { "type": "Text", "props": { "text": "Проєкт відновлення «Малі річки Вінниці», в межах якого платформа від Restart стала цифровим партнером, спрямований на відновлення зв'язку між річкою та міським простором. Ініціатива є частиною більшої стратегії Зеленого курсу Вінниці, яку міська рада оголосила в січні 2022 року. Мета — забезпечити сталий розвиток міста через екологічно орієнтовані проєкти та активне залучення інвестицій для покращення інфраструктури." } },
-                  { "type": "Text", "props": { "text": "Ще одним партнером виступає «Інститут розвитку міст», який вже реалізував кілька важливих проєктів для сталого розвитку Вінниці (один з яких — «Вінницький луг»)." } },
-                  { "type": "Text", "props": { "text": "У випадку з річкою Тяжилівка як першим проєктом, платформа «Гуртомá» дозволить вінничанам самостійно обирати, де прокласти дорогу, створити зону для відпочинку або розчистити територію від зайвого сміття. Зокрема це актуально для жителів віддалених мікрорайонів, які можуть впливати на зміни в один клік." } }
-                ] }
-              ] },
-              { "type": "Image", "props": { "src": "/hurtoma-river-02.jpg", "width": "two-thirds", "rounded": true } }
-            ] }
-          ]
-        },
-
-        { "type": "Divider", "props": { "ui": { "wrapper": "mt-24 mb-8" } } },
-
-        {
-          "type": "Panel",
-          "style": "section",
-          "props": { "measure": "prose" },
-          "children": [
-            { "type": "Stack", "props": { "gap": "lg" }, "children": [
-              { "type": "Text", "props": { "as": "h1", "text": "Наші партнери" } },
-              { "type": "Panel", "props": { "measure": "prose" }, "children": [
-                { "type": "Stack", "props": { "gap": "sm" }, "children": [
-                  { "type": "Text", "props": { "text": "Програмне забезпечення у цифровій платформі розробила команда Карлоса Сандовала Оласкоага. Він є доцентом кафедри взаємодії людини з комп’ютером (human-computer interaction) та інклюзивного дизайну (inclusive design) в Школі архітектури Північно-Східного університету (School of Architecture at Northeastern University). А також асоційованим доцентом Коледжу комп’ютерних наук Хурі Північно-Східного університету (Khoury College of Computer Sciences at Northeastern University). Зокрема Карлос керує лабораторією масштабованої участі у дизайні (Scalable Design Participation Lab)." } },
-                  { "type": "Text", "props": { "text": "у Північно-Східному університеті й спільно очолює локальну кодову лабораторію (Local Code Lab) в MIT. Його робота поєднує проєктування, обчислення, роботу з міськими даними та державними послугами. Це дозволяє широкому колу спільноти формувати власне цифрове середовище справедливо та цілісно за допомогою обчислювального інтелекту." } }
-                ] }
-              ] }
-            ] }
-          ]
-        },
-
-        { "type": "Divider", "props": { "ui": { "wrapper": "mt-24 mb-8" } } },
-
-        {
-          "type": "Stack",
-          "style": "section",
-          "props": { "gap": "xl" },
+          "style": "hero",
+          "props": {
+            "measure": "prose"
+          },
           "children": [
             {
               "type": "Stack",
-              "props": { "responsive": true, "justify": "between", "align": "center", "gap": "md" },
+              "props": {
+                "gap": "lg"
+              },
               "children": [
-                { "type": "Text", "props": { "as": "h1", "size": "2xl", "text": "Drawing Participation\nГуртомá" } },
+                {
+                  "type": "Image",
+                  "props": {
+                    "src": "/hurtoma-river-01.jpg",
+                    "width": "full",
+                    "rounded": true
+                  }
+                },
                 {
                   "type": "Stack",
-                  "props": { "direction": "row", "gap": "lg", "align": "center" },
+                  "props": {
+                    "gap": "sm"
+                  },
                   "children": [
-                    { "type": "Image", "style": "logo", "props": { "src": "/neu-logo-text.svg", "alt": "Northeastern University Logo", "href": "https://www.northeastern.edu" } },
-                    { "type": "Image", "style": "logo", "props": { "src": "/restart-logo-text.svg", "alt": "Restart Agency Logo", "href": "https://www.restartfuture.org" } },
-                    { "type": "Image", "style": "logo", "props": { "src": "/river-logo-text.svg", "alt": "Small Rivers Vinnytsia Project Logo", "href": "https://www.facebook.com/SmallRiversVinnytsia" } }
+                    {
+                      "type": "Text",
+                      "props": {
+                        "as": "h1",
+                        "text": "Гуртомá"
+                      }
+                    },
+                    {
+                      "type": "Panel",
+                      "props": {
+                        "measure": "prose"
+                      },
+                      "children": [
+                        {
+                          "type": "Stack",
+                          "props": {
+                            "gap": "sm"
+                          },
+                          "children": [
+                            {
+                              "type": "Text",
+                              "props": {
+                                "text": "Платформа від команди дослідників та містопланувальників Restart, яка спрощує комунікацію між містянами та урбаністами. Мета — покращувати міста і спільноти разом."
+                              }
+                            },
+                            {
+                              "type": "Text",
+                              "props": {
+                                "text": "Завдяки доступній онлайн мапі, платформа збирає зворотний зв’язок щодо улюблених локації та місць, які потребують покращень. А також враховує побажання уряду, громадських організацій та інших стейкхолдерів."
+                              }
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "type": "Stack",
+                  "props": {
+                    "direction": "row",
+                    "gap": "sm"
+                  },
+                  "children": [
+                    {
+                      "type": "Button",
+                      "style": "pill-button",
+                      "props": {
+                        "color": "black",
+                        "to": "/"
+                      },
+                      "text": "Взяти участь"
+                    },
+                    {
+                      "type": "Button",
+                      "style": "pill-button-secondary",
+                      "props": {
+                        "color": "black",
+                        "to": "/result/"
+                      },
+                      "text": "Подивитись результати"
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "Divider",
+          "props": {
+            "ui": {
+              "wrapper": "mt-24 mb-8"
+            }
+          }
+        },
+        {
+          "type": "Stack",
+          "style": "section",
+          "props": {
+            "responsive": true,
+            "gap": "md",
+            "align": "stretch"
+          },
+          "children": [
+            {
+              "type": "Panel",
+              "style": "feature-card-tall",
+              "props": {
+                "variant": "outline",
+                "padding": "lg"
+              },
+              "children": [
+                {
+                  "type": "Stack",
+                  "props": {
+                    "gap": "sm"
+                  },
+                  "children": [
+                    {
+                      "type": "Text",
+                      "props": {
+                        "as": "h2",
+                        "text": "Безпека"
+                      }
+                    },
+                    {
+                      "type": "Text",
+                      "props": {
+                        "size": "sm",
+                        "text": "Ми створили цифровий простір, де можна відверто ділитися думками й спогадами про місця, яких уникаєте. Це допоможе привернути увагу спільноти й запустити процес змін."
+                      }
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "Panel",
+              "style": "feature-card",
+              "props": {
+                "variant": "outline",
+                "padding": "lg"
+              },
+              "children": [
+                {
+                  "type": "Stack",
+                  "props": {
+                    "gap": "sm"
+                  },
+                  "children": [
+                    {
+                      "type": "Text",
+                      "props": {
+                        "as": "h2",
+                        "text": "Приналежність"
+                      }
+                    },
+                    {
+                      "type": "Text",
+                      "props": {
+                        "size": "sm",
+                        "text": "Стежка до річки, квітучий сквер, культурний центр — позначайте улюблені місця та дізнавайтеся, які локації обирають інші містяни."
+                      }
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "Panel",
+              "style": "feature-card",
+              "props": {
+                "variant": "outline",
+                "padding": "lg"
+              },
+              "children": [
+                {
+                  "type": "Stack",
+                  "props": {
+                    "gap": "sm"
+                  },
+                  "children": [
+                    {
+                      "type": "Text",
+                      "props": {
+                        "as": "h2",
+                        "text": "Середовище"
+                      }
+                    },
+                    {
+                      "type": "Text",
+                      "props": {
+                        "size": "sm",
+                        "text": "Завдяки згуртованості містян, онлайн мапа наочно відображає популярні локації та ділянки, які потребують відновлення для процвітання міста."
+                      }
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "Panel",
+              "style": "feature-card",
+              "props": {
+                "variant": "outline",
+                "padding": "lg"
+              },
+              "children": [
+                {
+                  "type": "Stack",
+                  "props": {
+                    "gap": "sm"
+                  },
+                  "children": [
+                    {
+                      "type": "Text",
+                      "props": {
+                        "as": "h2",
+                        "text": "Екологія"
+                      }
+                    },
+                    {
+                      "type": "Text",
+                      "props": {
+                        "size": "sm",
+                        "text": "Платформа збирає й систе-матизує дані про рослини та тварин, характерних для місцевості. А також фіксує засмічені зони, які гальмують розвиток міста. Поділитися своїми враженнями — перший крок до покращень."
+                      }
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "Divider",
+          "props": {
+            "ui": {
+              "wrapper": "mt-24 mb-8"
+            }
+          }
+        },
+        {
+          "type": "Panel",
+          "style": "section",
+          "props": {
+            "measure": "prose"
+          },
+          "children": [
+            {
+              "type": "Stack",
+              "props": {
+                "gap": "lg"
+              },
+              "children": [
+                {
+                  "type": "Text",
+                  "props": {
+                    "as": "h1",
+                    "text": "Візія"
+                  }
+                },
+                {
+                  "type": "Panel",
+                  "props": {
+                    "measure": "prose"
+                  },
+                  "children": [
+                    {
+                      "type": "Stack",
+                      "props": {
+                        "gap": "sm"
+                      },
+                      "children": [
+                        {
+                          "type": "Text",
+                          "props": {
+                            "text": "Річка Тяжилівка, оточена промисловими та військовими районами Вінниці, фактично ізольована від міста. Важкодоступність цієї території заважає мешканцям використовувати її потенціал на користь спільноті."
+                          }
+                        },
+                        {
+                          "type": "Text",
+                          "props": {
+                            "text": "Проєкт відновлення «Малі річки Вінниці», в межах якого платформа від Restart стала цифровим партнером, спрямований на відновлення зв'язку між річкою та міським простором. Ініціатива є частиною більшої стратегії Зеленого курсу Вінниці, яку міська рада оголосила в січні 2022 року. Мета — забезпечити сталий розвиток міста через екологічно орієнтовані проєкти та активне залучення інвестицій для покращення інфраструктури."
+                          }
+                        },
+                        {
+                          "type": "Text",
+                          "props": {
+                            "text": "Ще одним партнером виступає «Інститут розвитку міст», який вже реалізував кілька важливих проєктів для сталого розвитку Вінниці (один з яких — «Вінницький луг»)."
+                          }
+                        },
+                        {
+                          "type": "Text",
+                          "props": {
+                            "text": "У випадку з річкою Тяжилівка як першим проєктом, платформа «Гуртомá» дозволить вінничанам самостійно обирати, де прокласти дорогу, створити зону для відпочинку або розчистити територію від зайвого сміття. Зокрема це актуально для жителів віддалених мікрорайонів, які можуть впливати на зміни в один клік."
+                          }
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "type": "Image",
+                  "props": {
+                    "src": "/hurtoma-river-02.jpg",
+                    "width": "two-thirds",
+                    "rounded": true
+                  }
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "Divider",
+          "props": {
+            "ui": {
+              "wrapper": "mt-24 mb-8"
+            }
+          }
+        },
+        {
+          "type": "Panel",
+          "style": "section",
+          "props": {
+            "measure": "prose"
+          },
+          "children": [
+            {
+              "type": "Stack",
+              "props": {
+                "gap": "lg"
+              },
+              "children": [
+                {
+                  "type": "Text",
+                  "props": {
+                    "as": "h1",
+                    "text": "Наші партнери"
+                  }
+                },
+                {
+                  "type": "Panel",
+                  "props": {
+                    "measure": "prose"
+                  },
+                  "children": [
+                    {
+                      "type": "Stack",
+                      "props": {
+                        "gap": "sm"
+                      },
+                      "children": [
+                        {
+                          "type": "Text",
+                          "props": {
+                            "text": "Програмне забезпечення у цифровій платформі розробила команда Карлоса Сандовала Оласкоага. Він є доцентом кафедри взаємодії людини з комп’ютером (human-computer interaction) та інклюзивного дизайну (inclusive design) в Школі архітектури Північно-Східного університету (School of Architecture at Northeastern University). А також асоційованим доцентом Коледжу комп’ютерних наук Хурі Північно-Східного університету (Khoury College of Computer Sciences at Northeastern University). Зокрема Карлос керує лабораторією масштабованої участі у дизайні (Scalable Design Participation Lab)."
+                          }
+                        },
+                        {
+                          "type": "Text",
+                          "props": {
+                            "text": "у Північно-Східному університеті й спільно очолює локальну кодову лабораторію (Local Code Lab) в MIT. Його робота поєднує проєктування, обчислення, роботу з міськими даними та державними послугами. Це дозволяє широкому колу спільноти формувати власне цифрове середовище справедливо та цілісно за допомогою обчислювального інтелекту."
+                          }
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "Divider",
+          "props": {
+            "ui": {
+              "wrapper": "mt-24 mb-8"
+            }
+          }
+        },
+        {
+          "type": "Stack",
+          "style": "section",
+          "props": {
+            "gap": "xl"
+          },
+          "children": [
+            {
+              "type": "Stack",
+              "props": {
+                "responsive": true,
+                "justify": "between",
+                "align": "center",
+                "gap": "md"
+              },
+              "children": [
+                {
+                  "type": "Text",
+                  "props": {
+                    "as": "h1",
+                    "size": "2xl",
+                    "text": "Drawing Participation\nГуртомá"
+                  }
+                },
+                {
+                  "type": "Stack",
+                  "props": {
+                    "direction": "row",
+                    "gap": "lg",
+                    "align": "center"
+                  },
+                  "children": [
+                    {
+                      "type": "Image",
+                      "style": "logo",
+                      "props": {
+                        "src": "/neu-logo-text.svg",
+                        "alt": "Northeastern University Logo",
+                        "href": "https://www.northeastern.edu"
+                      }
+                    },
+                    {
+                      "type": "Image",
+                      "style": "logo",
+                      "props": {
+                        "src": "/restart-logo-text.svg",
+                        "alt": "Restart Agency Logo",
+                        "href": "https://www.restartfuture.org"
+                      }
+                    },
+                    {
+                      "type": "Image",
+                      "style": "logo",
+                      "props": {
+                        "src": "/river-logo-text.svg",
+                        "alt": "Small Rivers Vinnytsia Project Logo",
+                        "href": "https://www.facebook.com/SmallRiversVinnytsia"
+                      }
+                    }
                   ]
                 }
               ]
             },
             {
               "type": "Stack",
-              "props": { "gap": "xs" },
+              "props": {
+                "gap": "xs"
+              },
               "children": [
-                { "type": "a", "style": "link", "props": { "href": "/" }, "text": "Карта" },
-                { "type": "a", "style": "link", "props": { "href": "/about/" }, "text": "Про проєкт" },
-                { "type": "a", "style": "link", "props": { "href": "/result/" }, "text": "Допомога" }
+                {
+                  "type": "a",
+                  "style": "link",
+                  "props": {
+                    "href": "/"
+                  },
+                  "text": "Карта"
+                },
+                {
+                  "type": "a",
+                  "style": "link",
+                  "props": {
+                    "href": "/about/"
+                  },
+                  "text": "Про проєкт"
+                },
+                {
+                  "type": "a",
+                  "style": "link",
+                  "props": {
+                    "href": "/result/"
+                  },
+                  "text": "Допомога"
+                }
               ]
             }
           ]

@@ -134,7 +134,7 @@
           ]
         },
         {
-          "type": "IntroModal",
+          "type": "Modal",
           "bind": {
             "modelValue": "$state.welcome"
           },

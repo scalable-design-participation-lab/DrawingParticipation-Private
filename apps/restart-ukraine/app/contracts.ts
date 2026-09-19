@@ -8,15 +8,6 @@ import { declareHandler, registerContract } from '../../../base/app/contracts'
  * `--contracts apps/restart-ukraine/app/contracts.ts`.
  */
 
-function modal(name: string, description: string) {
-  return registerContract({
-    name,
-    description,
-    props: z.strictObject({ modelValue: z.boolean().optional() }),
-    emits: ['update:modelValue'],
-  })
-}
-
 registerContract({
   name: 'RuMap',
   description: 'Background map with the drawing layer, comment popups and comment display (Гуртома́).',
@@ -45,13 +36,6 @@ registerContract({
 })
 
 registerContract({
-  name: 'OnboardingModal',
-  description: 'Welcome card with a sign-up call to action.',
-  props: z.strictObject({ isVisible: z.boolean() }),
-  emits: ['showRegistration'],
-})
-
-registerContract({
   name: 'RegistrationModal',
   description: 'Registration form backed by Firebase; emits `registered` on success.',
   props: z.strictObject({ isVisible: z.boolean().optional() }),
@@ -72,16 +56,6 @@ registerContract({
   description: 'The active analysis layers; goes in the BackgroundMap "layers" slot.',
   props: z.strictObject({}),
   stateful: true,
-})
-
-modal('MenuModal', 'Site menu (home / about / support / results).')
-modal('MapIntroModal', 'How-to-read-the-map intro.')
-modal('SupportModal', 'Help / support dialog.')
-registerContract({
-  name: 'ComingSoonModal',
-  description: 'Download dialog placeholder; emits `download` with { format } when wired.',
-  props: z.strictObject({ modelValue: z.boolean() }),
-  emits: ['update:modelValue', 'download'],
 })
 
 declareHandler('downloadData', 'Download the collected data as JSON or CSV. Payload: { format }')

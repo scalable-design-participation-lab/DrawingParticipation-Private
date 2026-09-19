@@ -44,4 +44,5 @@ registerStyle('overlay', 'absolute inset-0 z-40 bg-black bg-opacity-50', 'Dim ev
 registerStyle('content', 'relative px-6 pb-24 pt-24', 'Main content area under a floating header and above a floating footer')
 registerStyle('floating-left', 'fixed left-6 top-1/2 z-30 -translate-y-1/2', 'Tool palette anchored to the left edge')
 registerStyle('link', 'hover:underline', 'Inline text link')
+registerStyle('bullets', 'list-disc space-y-1 pl-6', 'Bulleted list (put on a ul; children are li)')
 registerStyle('logo', 'hover:scale-105 dark:invert', 'Partner / sponsor logo image')

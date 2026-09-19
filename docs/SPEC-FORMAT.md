@@ -64,7 +64,7 @@ passes the verifier in **strict mode**: no raw class strings anywhere.
       "on": { "click": { "set": "registration", "value": true } }
     },
     {
-      "type": "IntroModal",
+      "type": "Modal",
       "bind": { "modelValue": "$state.welcome" },
       "on": { "update:modelValue": { "set": "welcome" } },
       "props": { "text": "Bienvenido…" }

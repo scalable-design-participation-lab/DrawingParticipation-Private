@@ -92,18 +92,21 @@ registerContract({
 })
 
 registerContract({
-  name: 'IntroModal',
-  description: 'Dismissible modal with a title, a paragraph and one button. Used for welcome / onboarding text.',
+  name: 'Modal',
+  description: 'The one modal: title, `text` or children, optional confirm button (`buttonLabel`, emits `confirm` then closes), optional `footer` slot, × when `closable`. Intro, help, menu, thank-you, coming-soon dialogs are all this plus JSON.',
   props: z.strictObject({
     modelValue: z.boolean().optional(),
     title: z.string().optional(),
     text: z.string().optional(),
-    buttonLabel: z.string().optional(),
+    buttonLabel: z.string().optional().describe('Confirm button label; omit for no button'),
+    align: z.enum(['left', 'center']).optional(),
+    size: z.enum(['sm', 'md', 'lg', 'xl']).optional(),
+    closable: z.boolean().optional().describe('Show a × in the header'),
     bodyClass: z.string().optional().describe('Classes for the body box, e.g. a bordered "paper" panel.'),
     ui: z.record(z.string(), z.unknown()).optional().describe('Nuxt UI `ui` override for the underlying UModal.'),
   }),
-  emits: ['update:modelValue', 'close'],
-  slots: ['default'],
+  emits: ['update:modelValue', 'close', 'confirm'],
+  slots: ['default', 'footer'],
 })
 
 registerContract({

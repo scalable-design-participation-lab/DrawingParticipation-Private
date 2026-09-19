@@ -1,7 +1,7 @@
 import GeneralizedBackgroundMap from '../components/GeneralizedBackgroundMap.vue'
 import GeneralizedHeader from '../components/GeneralizedHeader.vue'
 import GeneralizedFooter from '../components/GeneralizedFooter.vue'
-import IntroModal from '../components/IntroModal.vue'
+import Modal from '../components/Modal.vue'
 import MarkerOverlay from '../components/MarkerOverlay.vue'
 import FileDropZone from '../components/FileDropZone.vue'
 import PhotoDropZone from '../components/PhotoDropZone.vue'
@@ -31,7 +31,7 @@ export default defineNuxtPlugin(() => {
   registerComponent('BackgroundMap', GeneralizedBackgroundMap)
   registerComponent('Header', GeneralizedHeader)
   registerComponent('Footer', GeneralizedFooter)
-  registerComponent('IntroModal', IntroModal)
+  registerComponent('Modal', Modal)
   registerComponent('MarkerOverlay', MarkerOverlay)
   registerComponent('FileDropZone', FileDropZone)
   registerComponent('PhotoDropZone', PhotoDropZone)
