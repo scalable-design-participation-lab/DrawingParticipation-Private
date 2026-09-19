@@ -224,6 +224,15 @@ Three levels, cheapest first. All of them return the same shape:
    error-boundary alert box left in the DOM.
 3. **Contract** (`verifyRows`, on every adapter response): rows vs. the collection
    schema (`row.invalid`, `rows.not-array`). Runs automatically in `useDataSources`.
+4. **Visual** (`visual-check`, seconds, needs a model): screenshots the page
+   with the locally installed Chrome (`playwright-core`, `--url`, or `--image`
+   for a screenshot taken elsewhere) and asks a vision model for defects a
+   non-technical user would notice: `visual.overlap`, `visual.cut-off`,
+   `visual.blank`, `visual.placeholder`, `visual.contrast`, `visual.error-box`.
+   ```bash
+   yarn workspace @mono/base visual-check --url http://localhost:3015/datos --viewport 390x844 --provider anthropic
+   ```
+   Same result shape and exit code as the other levels.
 
 Each app has a vitest file under `app/specs/__test__/` that runs the strict
 static verifier over all of its specs.
@@ -278,31 +287,43 @@ still has hand-written pages and is untouched by the manifest machinery.
 ## The generation loop
 
 ```bash
-yarn workspace @mono/base gen-spec --app apps/<app> --page <name> --prompt "…" [--provider stub|anthropic] [--rounds 3]
+yarn workspace @mono/base gen-spec --app apps/<app> --page <name> --prompt "…" [--provider stub|anthropic] [--rounds 3] [--model …] [--effort …]
 ```
 
-`gen-spec` builds the catalogue (components with their props and one verified
-`example` each, mined from the specs in this repo; collections, handlers,
-style presets), adds the two existing specs closest to the request (word
-overlap), and asks the provider for the whole spec through a tool call whose
-`input_schema` is the page-spec JSON Schema, so round 1 is always valid JSON
-of the right shape. It then runs the strict verifier with the app's routes.
-From round 2 on it asks only for patches (`{ path, value | remove }`) at the
-flagged paths and applies them with `applyPatches`, so a fix cannot regress
-the rest of the page. On pass it writes `specs/<name>.json`. The `stub`
-provider reads the "answers" from `--stub round1.json[,round2.json,…]` so the
-loop is testable without a key; `anthropic` uses `ANTHROPIC_API_KEY`
-(`--model` overrides the default). Nothing else in the repo knows which
-provider ran.
+`gen-spec` makes three kinds of model calls, all through `base/scripts/llm.ts`
+(the only file that talks to a model; the Anthropic SDK with structured
+outputs, so every answer is parsed against a zod schema or the call fails):
+
+1. **Outline.** The model sees every component's name and description
+   (small) and returns the page's sections, the components each one uses and
+   the state keys it needs. Unknown names are dropped. This is also how the
+   catalogue gets trimmed: the next call only sees the chosen components
+   plus the layout primitives (`Stack` / `Grid` / `Panel` / `Text` / `Image` / `Button`).
+2. **Spec.** The trimmed catalogue (props, emits, slots, one verified
+   `example` per component mined from the specs in this repo), collections,
+   handlers, style presets, the app's routes, the two existing specs closest
+   to the request (word overlap) and the outline. The answer is shaped by
+   the page-spec schema itself.
+3. **Patches** (round 2 on). The strict verifier runs with the app's routes;
+   on failure the model returns one `{ path, value | remove }` per error and
+   `applyPatches` changes only those paths, so a fix cannot regress the rest
+   of the page.
+
+On pass it writes `specs/<name>.json`. `--provider stub --stub outline.json,spec.json[,patches.json,…]`
+replays answers from disk in call order, so the loop is testable without a
+key; `anthropic` reads `ANTHROPIC_API_KEY` from the environment or from
+`.env` at the repo root (`--model` defaults to `claude-opus-5`, `--effort`
+low…max). Token usage per call is printed to stderr.
 
 ## The LLM loop, step by step
 
-1. Give the model the catalogue (every component with a verified example),
-   and the two existing specs closest to the request.
-2. Ask for a page spec through a schema-constrained tool call. It writes JSON only.
+1. Ask for an outline against the component names; trim the catalogue to it.
+2. Ask for the page spec as structured output (the spec schema), with the
+   trimmed catalogue, verified examples and the closest existing specs.
 3. Run the static verifier in strict mode with the app's routes. On failure,
    return `errors` verbatim and ask for one patch per error; apply the patches.
-4. On pass, run the render verifier in CI, then ship the JSON.
+4. On pass, run the render verifier in CI, then `visual-check` the deployed
+   page, then ship the JSON.
 
 This is exactly what `gen-spec` does; a whole app is the same loop over
 `app.json` first, then one page at a time.

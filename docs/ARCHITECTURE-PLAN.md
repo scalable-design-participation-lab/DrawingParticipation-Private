@@ -68,9 +68,10 @@ missing. Everything below was added rather than worked around:
 5. ~~Backend: expose the same collection contracts server-side~~ done (`data.collections`, fs storage; swap the
    Nitro storage driver for a database when a deployment needs one).
 6. Run `gen-spec --provider anthropic` on a real request and tune the prompt / catalogue from what the verifier rejects.
-   Already in: schema-constrained first round (tool `input_schema`), one verified example per component, retrieval of
-   the two closest specs, patch-only later rounds. Still to try when errors show it: catalogue trimming per request,
-   outline-then-fill, a screenshot + vision check as a fourth verifier level.
+   In: the real model layer (`base/scripts/llm.ts`, Anthropic SDK + structured outputs), outline-then-fill with
+   the catalogue trimmed to the outline's components, one verified example per component, retrieval of the two
+   closest specs, patch-only later rounds, and `visual-check` (screenshot + vision model) as verifier level 4.
+   Not yet run against a real request in this repo: needs `ANTHROPIC_API_KEY`.
 7. Coverage: `DataList` / `DataTable`, `Chart`, `AuthGate` — add each with a contract when a real request needs it.
 8. Deploy pipeline (verify --app -> build -> host, one command) and JSON acceptance scripts (a generated app ships
    with "open page X, fill Y, expect Z" checks the pipeline runs) — deferred on purpose until 1-7 are exercised.
