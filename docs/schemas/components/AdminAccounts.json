@@ -1,0 +1,64 @@
+{
+  "name": "AdminAccounts",
+  "description": "Account management page body: sign in / register, then (super admin) promote registrations and manage moderators. Bind `errors` to `$errors` for outcomes.",
+  "stateful": false,
+  "emits": [
+    "signIn",
+    "register",
+    "resetPassword",
+    "claimAdmin",
+    "signOut",
+    "refresh",
+    "promote",
+    "removeRegistration",
+    "setRole",
+    "revoke",
+    "sendReset",
+    "create"
+  ],
+  "slots": [],
+  "props": {
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "type": "object",
+    "properties": {
+      "auth": {
+        "type": "object",
+        "propertyNames": {
+          "type": "string"
+        },
+        "additionalProperties": {}
+      },
+      "accounts": {
+        "type": "array",
+        "items": {
+          "type": "object",
+          "propertyNames": {
+            "type": "string"
+          },
+          "additionalProperties": {}
+        }
+      },
+      "registrations": {
+        "type": "array",
+        "items": {
+          "type": "object",
+          "propertyNames": {
+            "type": "string"
+          },
+          "additionalProperties": {}
+        }
+      },
+      "loading": {
+        "type": "boolean"
+      },
+      "errors": {
+        "type": "object",
+        "propertyNames": {
+          "type": "string"
+        },
+        "additionalProperties": {}
+      }
+    },
+    "additionalProperties": false
+  }
+}

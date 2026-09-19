@@ -8,7 +8,6 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue'
 import type Feature from 'ol/Feature'
-import { useMapStore } from '../stores/map'
 
 interface MarkerPosition {
   x: number

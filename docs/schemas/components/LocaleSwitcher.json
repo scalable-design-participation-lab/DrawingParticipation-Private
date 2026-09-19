@@ -1,6 +1,6 @@
 {
-  "name": "LoadingScreen",
-  "description": "Full-screen splash with a fake progress bar.",
+  "name": "LocaleSwitcher",
+  "description": "Header pill showing the current language with a dropdown of all locales.",
   "stateful": false,
   "emits": [],
   "slots": [],

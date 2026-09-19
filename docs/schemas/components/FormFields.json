@@ -26,6 +26,8 @@
               "type": "string",
               "enum": [
                 "text",
+                "email",
+                "password",
                 "textarea",
                 "number",
                 "date",

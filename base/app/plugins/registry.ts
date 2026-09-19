@@ -12,7 +12,6 @@ import FormFields from '../components/FormFields.vue'
 import MapTypeToggle from '../components/MapTypeToggle.vue'
 import GenericFilterSidebar from '../components/FilterSidebar/GenericFilterSidebar.vue'
 import GenericToolbar from '../components/toolbar/GenericToolbar.vue'
-import DrawingLayer from '../components/DrawingLayer/DrawingLayer.vue'
 import ToolTips from '../components/Tools/ToolTips.vue'
 import Stack from '../components/Stack.vue'
 import Grid from '../components/Grid.vue'
@@ -45,7 +44,6 @@ export default defineNuxtPlugin(() => {
   registerComponent('MapTypeToggle', MapTypeToggle)
   registerComponent('FilterSidebar', GenericFilterSidebar)
   registerComponent('Toolbar', GenericToolbar)
-  registerComponent('DrawingLayer', DrawingLayer)
   registerComponent('ToolTips', ToolTips)
   registerComponent('Stack', Stack)
   registerComponent('Grid', Grid)

@@ -1,0 +1,33 @@
+{
+  "name": "ProjectListPanel",
+  "description": "Searchable card grid of the visible entries (a modal); `select` emits an entry.",
+  "stateful": false,
+  "emits": [
+    "select",
+    "close"
+  ],
+  "slots": [],
+  "props": {
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "type": "object",
+    "properties": {
+      "features": {
+        "type": "array",
+        "items": {
+          "type": "object",
+          "propertyNames": {
+            "type": "string"
+          },
+          "additionalProperties": {}
+        }
+      },
+      "visibleTags": {
+        "type": "array",
+        "items": {
+          "type": "string"
+        }
+      }
+    },
+    "additionalProperties": false
+  }
+}

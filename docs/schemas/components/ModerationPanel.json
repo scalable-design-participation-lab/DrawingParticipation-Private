@@ -1,0 +1,55 @@
+{
+  "name": "ModerationPanel",
+  "description": "Moderator review queue (pending entries + contributions). `fly-to` emits a string_id.",
+  "stateful": false,
+  "emits": [
+    "approveEntry",
+    "deleteEntry",
+    "approveContribution",
+    "deleteContribution",
+    "flyTo",
+    "signOut",
+    "close"
+  ],
+  "slots": [],
+  "props": {
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "type": "object",
+    "properties": {
+      "moderation": {
+        "type": "array",
+        "items": {
+          "type": "object",
+          "propertyNames": {
+            "type": "string"
+          },
+          "additionalProperties": {}
+        }
+      },
+      "pending": {
+        "type": "array",
+        "items": {
+          "type": "object",
+          "propertyNames": {
+            "type": "string"
+          },
+          "additionalProperties": {}
+        }
+      },
+      "features": {
+        "type": "array",
+        "items": {
+          "type": "object",
+          "propertyNames": {
+            "type": "string"
+          },
+          "additionalProperties": {}
+        }
+      },
+      "isSuperAdmin": {
+        "type": "boolean"
+      }
+    },
+    "additionalProperties": false
+  }
+}

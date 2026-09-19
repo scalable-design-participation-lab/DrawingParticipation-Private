@@ -82,7 +82,7 @@ A node has exactly these keys: `type`, `props`, `bind`, `on`, `if`, `style`,
 | `props` | Literal props, validated against the component contract. A `{ "$action": … }` value becomes a callback (for `onClick` on header items, toolbar tools, …).  |
 | `bind`  | `prop -> "$data.<source>"`, `"$sources.<source>.loading"` / `".error"`, `"$state.<path>"`, `"$query.<param>"` or `"$item[.path]"` (inside an `item` only). |
 | `on`    | `event -> action` or `event -> [action, …]` run in order.                                                                                                  |
-| `if`    | Render the node only while the expression is truthy; a leading `!` negates it (`"!$state.open"`).                                                         |
+| `if`    | Render while the condition holds: an expression, `!expr`, `expr == 'x'` / `expr != 0`, joined with `&&` (`"$state.isMobile && $state.view == 'list'"`).   |
 | `style` | One or more registered style preset names (see Styling).                                                                                                   |
 | `slot`  | Named slot of the parent to render into (default slot when omitted).                                                                                       |
 | `item`  | Template for list components that expose an `item` slot (`MarkerOverlay`).                                                                                 |
@@ -134,6 +134,11 @@ Action `value` / `args` accept the same expressions, including the `!` form
 the root runs an action list once when the page mounts: the place to sign in,
 load results into state, or derive initial flags from what a handler found.
 
+Text can be translated: `"$t.about.title"` (in `text` or a bound prop) reads
+vue-i18n's `$t` when the app installed `@nuxtjs/i18n` (mnc), and shows the
+key otherwise. `"$errors"` alone binds the whole handler -> message map, for
+a component that reports several outcomes (`AdminAccounts`).
+
 ## Interaction
 
 Everything an LLM can wire: show/hide (`if`), two-way values (`bind` +
@@ -141,8 +146,8 @@ Everything an LLM can wire: show/hide (`if`), two-way values (`bind` +
 (`"value": "$item.id"`), loading/error states (`$sources.x.loading` /
 `$sources.x.error`), form validation feedback (`FormFields.errors`, a
 `field -> message` map a handler can `set`), list edits on page state
-(`updateItem` / `removeItem` with the state key as `args`: `{ "call": "updateItem", "args": "features" }`
-merges a `{ id, …patch }` payload into the matching item), side effects (`call`), failed
+(`updateItem` / `removeItem` / `toggleItem` with the state key as `args`: `{ "call": "updateItem", "args": "features" }`
+merges a `{ id, …patch }` payload into the matching item; `toggleItem` adds or removes the payload, e.g. a tag filter), side effects (`call`), failed
 side effects (`$errors.<handler>`: the message of the last error a handler
 threw, cleared when it next succeeds), writing rows (`call: "saveTo"` /
 `"deleteFrom"` with the collection name as `args`, see the manifest below).
@@ -200,8 +205,14 @@ restart-ukraine's participation flow is a good reference for what is JSON now:
 | `RegistrationModal` (305 lines, Firebase inside)         | `Modal` + `FormFields` (`errors` bound to `$state.formErrors`) + handlers `checkUser` / `register`; the `user` collection contract validates the form                       |
 | `db` store, `all-features` store                         | handlers `saveProject` (args `"$state.features"`) and `loadResults` (into `state.features`, run from `init`)                                                                |
 
-`base/app/stores/*` and `DrawingLayer` still exist only for `apps/mnc`, which
-has not moved to specs yet.
+mnc followed with the same recipe (`apps/mnc/app/specs/{index,about,admin}.json`):
+its eight pinia stores became page state + 30 handlers in `app/handlers.ts`
+(Firebase auth, live user entries, contributions, moderation, account
+management), the components that read stores now take `features` /
+`visibleTags` / `selected` as props and derive the rest through
+`composables/catalog.ts`, and the desktop / mobile split is `if` conditions
+on `$state.isMobile`. `base/app/stores/*` and `DrawingLayer` are gone: no app
+reads a store any more.
 
 ## Registering components, handlers and styles
 

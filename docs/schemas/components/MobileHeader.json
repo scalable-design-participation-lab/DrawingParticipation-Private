@@ -1,0 +1,29 @@
+{
+  "name": "MobileHeader",
+  "description": "Mobile top bar with the language menu and the vector / satellite toggle (`update:mapType`).",
+  "stateful": false,
+  "emits": [
+    "update:mapType"
+  ],
+  "slots": [],
+  "props": {
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "type": "object",
+    "properties": {
+      "title": {
+        "type": "string"
+      },
+      "titleLink": {
+        "type": "boolean"
+      },
+      "mapType": {
+        "type": "string",
+        "enum": [
+          "vector",
+          "satellite"
+        ]
+      }
+    },
+    "additionalProperties": false
+  }
+}

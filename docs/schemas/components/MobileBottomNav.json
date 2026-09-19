@@ -1,0 +1,35 @@
+{
+  "name": "MobileBottomNav",
+  "description": "Mobile tab pill: map / list / info / more (add). `update:activeView` emits the view name.",
+  "stateful": false,
+  "emits": [
+    "update:activeView",
+    "showOnMap",
+    "readMore",
+    "nextProject",
+    "closeProject"
+  ],
+  "slots": [],
+  "props": {
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "type": "object",
+    "properties": {
+      "activeView": {
+        "type": "string",
+        "enum": [
+          "map",
+          "list",
+          "info",
+          "more"
+        ]
+      },
+      "projectSelected": {
+        "type": "boolean"
+      }
+    },
+    "required": [
+      "activeView"
+    ],
+    "additionalProperties": false
+  }
+}

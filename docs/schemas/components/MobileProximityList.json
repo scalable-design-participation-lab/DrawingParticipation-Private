@@ -1,0 +1,26 @@
+{
+  "name": "MobileProximityList",
+  "description": "Mobile list sorted by distance (with location permission) or date; `select` emits an entry.",
+  "stateful": false,
+  "emits": [
+    "select"
+  ],
+  "slots": [],
+  "props": {
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "type": "object",
+    "properties": {
+      "features": {
+        "type": "array",
+        "items": {
+          "type": "object",
+          "propertyNames": {
+            "type": "string"
+          },
+          "additionalProperties": {}
+        }
+      }
+    },
+    "additionalProperties": false
+  }
+}

@@ -1,0 +1,50 @@
+{
+  "name": "MobileInfoPopup",
+  "description": "Mobile bottom sheet for one entry (compact or full). Contributions come from the page; `contribute` / `approve` / `delete` go back to it.",
+  "stateful": false,
+  "emits": [
+    "close",
+    "update:state",
+    "contribute",
+    "approve",
+    "delete"
+  ],
+  "slots": [],
+  "props": {
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "type": "object",
+    "properties": {
+      "entry": {
+        "type": "object",
+        "propertyNames": {
+          "type": "string"
+        },
+        "additionalProperties": {}
+      },
+      "state": {
+        "type": "string",
+        "enum": [
+          "expanded",
+          "full"
+        ]
+      },
+      "contributions": {
+        "type": "array",
+        "items": {
+          "type": "object",
+          "propertyNames": {
+            "type": "string"
+          },
+          "additionalProperties": {}
+        }
+      },
+      "isAdmin": {
+        "type": "boolean"
+      }
+    },
+    "required": [
+      "entry"
+    ],
+    "additionalProperties": false
+  }
+}

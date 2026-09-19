@@ -43,6 +43,10 @@
             },
             "primary": {
               "type": "boolean"
+            },
+            "target": {
+              "description": "Link target, e.g. \"_blank\" for an external site",
+              "type": "string"
             }
           },
           "additionalProperties": false
@@ -70,6 +74,10 @@
             },
             "primary": {
               "type": "boolean"
+            },
+            "target": {
+              "description": "Link target, e.g. \"_blank\" for an external site",
+              "type": "string"
             }
           },
           "additionalProperties": false
@@ -92,6 +100,14 @@
       },
       "showMenu": {
         "type": "boolean"
+      },
+      "iconLink": {
+        "description": "Where the lab icon links to",
+        "type": "string"
+      },
+      "primaryAccentColor": {
+        "description": "Text / icon color for every header button",
+        "type": "string"
       },
       "shape": {
         "type": "string",
