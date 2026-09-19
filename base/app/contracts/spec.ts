@@ -78,6 +78,7 @@ export const SpecNodeSchema: z.ZodType<SpecNode> = z.lazy(() => z.strictObject({
   props: z.record(z.string(), z.unknown()).optional(),
   bind: z.record(z.string(), z.string()).optional(),
   on: z.record(z.string(), ActionListSchema).optional(),
+  /** Render only while the expression is truthy; a leading "!" negates it. */
   if: z.string().optional(),
   style: z.union([z.string(), z.array(z.string())]).optional(),
   slot: z.string().optional(),
@@ -91,6 +92,8 @@ export const RootSpecSchema = z.strictObject({
   /** Initial page state. A string value of the form "$query.x" is read from the route on load. */
   state: z.record(z.string(), z.unknown()).optional(),
   dataSources: z.record(z.string(), DataSourceSchema).optional(),
+  /** Actions run once when the page mounts (load a user, fetch results, …). */
+  init: ActionListSchema.optional(),
   children: z.array(SpecNodeSchema),
 })
 export type RootSpec = z.infer<typeof RootSpecSchema>

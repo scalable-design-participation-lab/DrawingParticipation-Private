@@ -1,5 +1,5 @@
 import { defineStore } from 'pinia'
-import { reactive, toRefs} from 'vue'
+import { reactive, toRefs } from 'vue'
 import { layerDefinitions } from './layerRegistry'
 
 // Define a type for the reactive props of each layer
@@ -17,7 +17,7 @@ let nextId = 1
 
 export const useLayersStore = defineStore('layers', {
   state: (): { layers: LayerState[] } => ({
-    layers: []
+    layers: [],
   }),
   actions: {
     /**
@@ -25,7 +25,8 @@ export const useLayersStore = defineStore('layers', {
      */
     addLayer(type: keyof typeof layerDefinitions) {
       const def = layerDefinitions[type]
-      if (!def) return
+      if (!def)
+        return
 
       const reactiveProps = toRefs(reactive({ ...def.defaultProps })) as LayerProps
 
@@ -33,7 +34,7 @@ export const useLayersStore = defineStore('layers', {
         id: nextId++,
         type,
         visible: true,
-        props: reactiveProps
+        props: reactiveProps,
       })
     },
 
@@ -49,7 +50,8 @@ export const useLayersStore = defineStore('layers', {
      */
     toggleLayerVisibility(id: number) {
       const layer = this.layers.find(l => l.id === id)
-      if (layer) layer.visible = !layer.visible
+      if (layer)
+        layer.visible = !layer.visible
     },
 
     /**
@@ -57,10 +59,11 @@ export const useLayersStore = defineStore('layers', {
      */
     updateLayerProps(
       id: number,
-      newProps: Partial<Record<keyof typeof layerDefinitions[keyof typeof layerDefinitions]['defaultProps'], any>>
+      newProps: Partial<Record<keyof typeof layerDefinitions[keyof typeof layerDefinitions]['defaultProps'], any>>,
     ) {
       const layer = this.layers.find(l => l.id === id)
-      if (!layer) return
+      if (!layer)
+        return
 
       Object.entries(newProps).forEach(([key, value]) => {
         const propRef = layer.props[key]
@@ -68,6 +71,6 @@ export const useLayersStore = defineStore('layers', {
           propRef.value = value
         }
       })
-    }
-  }
+    },
+  },
 })

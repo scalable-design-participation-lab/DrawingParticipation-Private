@@ -20,6 +20,21 @@
           "additionalProperties": {}
         }
       },
+      "item": {
+        "description": "A single item (e.g. the selected feature); null renders nothing.",
+        "anyOf": [
+          {
+            "type": "object",
+            "propertyNames": {
+              "type": "string"
+            },
+            "additionalProperties": {}
+          },
+          {
+            "type": "null"
+          }
+        ]
+      },
       "positionKey": {
         "description": "Item key holding [lon, lat] (default \"position\").",
         "type": "string"

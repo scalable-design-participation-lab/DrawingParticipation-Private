@@ -38,4 +38,4 @@ useSeoMeta({
     <UNotifications />
     <UModals />
   </div>
-</template> 
+</template>

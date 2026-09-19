@@ -20,4 +20,6 @@ export function listHandlers() {
 
 // Built-in handlers every manifest app gets (implemented in plugins/manifest.ts).
 declareHandler('saveTo', 'Save the payload as a new row of the collection named in args (app.json data.collections), then reload data sources. Errors appear as $errors.saveTo.')
+declareHandler('updateItem', 'Merge the payload into the item with the same id inside the state list named in args, e.g. { "call": "updateItem", "args": "features" } with a FormFields submit payload.')
+declareHandler('removeItem', 'Remove the item whose id is the payload from the state list named in args.')
 declareHandler('deleteFrom', 'Delete the row whose id is the payload from the collection named in args, then reload data sources.')

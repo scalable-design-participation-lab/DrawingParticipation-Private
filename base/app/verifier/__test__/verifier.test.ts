@@ -115,6 +115,16 @@ describe('verifySpec', () => {
     ])
   })
 
+  it('checks init actions and accepts negated expressions', () => {
+    const spec = {
+      state: { open: false, user: null },
+      init: [{ call: 'nope' }, { set: 'open', value: '!$state.user' }],
+      children: [{ type: 'Text', if: '!$state.open', props: { text: 'closed' } }],
+    }
+    expect(verifySpec(spec).errors.map(e => `${e.rule}@${e.path}`)).toEqual(['action.unknown-handler@init[0].call'])
+    expect(verifySpec({ ...spec, init: [{ set: 'open', value: '!$state.nope' }] }).errors.map(e => `${e.rule}@${e.path}`)).toEqual(['bind.unknown-state@init[0].value', 'state.unused@state.user'])
+  })
+
   it('strict mode forbids raw classes', () => {
     const spec = { children: [{ type: 'div', props: { class: 'mt-4' } }, { type: 'Panel', props: { class: 'p-8' } }] }
     expect(verifySpec(spec).pass).toBe(true)

@@ -10,4 +10,5 @@ registerStyle('feature-card', 'md:w-56', 'Feature card width in the four-up row'
 registerStyle('feature-card-tall', 'pb-32 md:w-56', 'First feature card (taller)')
 registerStyle('menu-item', 'rounded-full py-3 text-lg font-semibold', 'Full-width menu entry (Button)')
 registerStyle('feature-icon', 'h-6 w-6 flex-shrink-0 text-blue-500', 'Icon in front of a feature line')
+registerStyle('sidebar', 'fixed right-6 top-24 z-40 max-h-[calc(100vh-11rem)] w-96 overflow-y-auto md:w-80', 'Participation panel anchored to the right edge')
 registerStyle('map-layer', 'absolute inset-0 z-[1]', 'Map behind the floating header/footer')

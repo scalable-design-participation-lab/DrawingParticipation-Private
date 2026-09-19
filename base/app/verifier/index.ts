@@ -151,8 +151,8 @@ export function verifySpec(spec: unknown, options: VerifySpecOptions = {}): Veri
       }
       // `value` / `args` may be expressions.
       const dynamic: [string, unknown] | null = 'set' in action ? ['value', action.value] : 'call' in action ? ['args', action.args] : null
-      if (dynamic && typeof dynamic[1] === 'string' && dynamic[1].startsWith('$')) {
-        checkExpr(dynamic[1], `${p}.${dynamic[0]}`, inItem)
+      if (dynamic && typeof dynamic[1] === 'string' && /^!?\$/.test(dynamic[1])) {
+        checkExpr(dynamic[1].replace(/^!/, ''), `${p}.${dynamic[0]}`, inItem)
       }
     }
   }
@@ -261,7 +261,7 @@ export function verifySpec(spec: unknown, options: VerifySpecOptions = {}): Veri
       checkExpr(expr, `${path}.bind.${prop}`, inItem)
     }
     if (node.if !== undefined) {
-      checkExpr(node.if, `${path}.if`, inItem)
+      checkExpr(node.if.replace(/^!/, ''), `${path}.if`, inItem)
     }
     if (node.text?.startsWith('$')) {
       checkExpr(node.text, `${path}.text`, inItem)
@@ -280,6 +280,9 @@ export function verifySpec(spec: unknown, options: VerifySpecOptions = {}): Veri
 
   for (const [i, child] of root.children.entries()) {
     walk(child, `children[${i}]`, false)
+  }
+  if (root.init) {
+    checkActions(root.init, 'init', false)
   }
 
   // Declared but never read or written: dead weight that usually means a wiring mistake.

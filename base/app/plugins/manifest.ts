@@ -14,6 +14,22 @@ import { defineNuxtPlugin, updateAppConfig } from '#app'
 export default defineNuxtPlugin((nuxtApp) => {
   registerComponent('Outlet', Outlet)
 
+  // List helpers on page state: `{ "call": "updateItem", "args": "<state key>" }` with { id, …patch } as payload.
+  const list = (ctx: { state: Record<string, unknown> }, key: unknown) => {
+    const rows = ctx.state[String(key)]
+    if (!Array.isArray(rows)) {
+      throw new TypeError(`state "${String(key)}" is not a list`)
+    }
+    return rows as { id: unknown }[]
+  }
+  registerHandler('updateItem', (payload, ctx, args) => {
+    const patch = payload as { id: unknown }
+    ctx.state[String(args)] = list(ctx, args).map(row => (row.id === patch.id ? { ...row, ...patch } : row))
+  }, 'Merge the payload into the item with the same id inside the state list named in args.')
+  registerHandler('removeItem', (payload, ctx, args) => {
+    ctx.state[String(args)] = list(ctx, args).filter(row => row.id !== payload)
+  }, 'Remove the item whose id is the payload from the state list named in args.')
+
   const { manifest } = useAppManifest()
   if (!manifest) {
     return

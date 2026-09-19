@@ -1,0 +1,103 @@
+{
+  "name": "FeatureLayer",
+  "description": "Draw and show map features (points with icons, dashed polygons, dashed lines). `features` in, `update:features` out after a drawing or a delete; `draw` is the active draw mode (a value a StepCard button can carry), cleared through `update:draw`. `open` / `inspect` emit the feature flat plus `position` and `title`, ready for a MarkerOverlay `item`. Goes in the BackgroundMap \"layers\" slot.",
+  "stateful": false,
+  "emits": [
+    "update:features",
+    "update:draw",
+    "open",
+    "inspect"
+  ],
+  "slots": [],
+  "props": {
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "type": "object",
+    "properties": {
+      "features": {
+        "type": "array",
+        "items": {
+          "type": "object",
+          "propertyNames": {
+            "type": "string"
+          },
+          "additionalProperties": {}
+        }
+      },
+      "draw": {
+        "anyOf": [
+          {
+            "type": "object",
+            "properties": {
+              "type": {
+                "type": "string",
+                "enum": [
+                  "Point",
+                  "LineString",
+                  "Polygon"
+                ]
+              },
+              "iconName": {
+                "type": "string"
+              },
+              "frequency": {
+                "type": "string"
+              },
+              "isProhibit": {
+                "type": "boolean"
+              },
+              "color": {
+                "description": "Stroke / point color while drawing",
+                "type": "string"
+              }
+            },
+            "required": [
+              "type"
+            ],
+            "additionalProperties": false
+          },
+          {
+            "type": "null"
+          }
+        ]
+      },
+      "icons": {
+        "description": "iconName | frequency | \"prohibit\" | \"default\" -> image URL",
+        "type": "object",
+        "propertyNames": {
+          "type": "string"
+        },
+        "additionalProperties": {
+          "type": "string"
+        }
+      },
+      "labels": {
+        "description": "iconName | frequency | \"prohibit\" -> title",
+        "type": "object",
+        "propertyNames": {
+          "type": "string"
+        },
+        "additionalProperties": {
+          "type": "string"
+        }
+      },
+      "defaultLabel": {
+        "type": "string"
+      },
+      "editable": {
+        "description": "Show the open (edit) button on every feature",
+        "type": "boolean"
+      },
+      "deletable": {
+        "type": "boolean"
+      },
+      "commentIcons": {
+        "description": "Show the comment icon that emits `inspect`",
+        "type": "boolean"
+      },
+      "confirmDelete": {
+        "type": "string"
+      }
+    },
+    "additionalProperties": false
+  }
+}

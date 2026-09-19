@@ -3,13 +3,16 @@
     "BackgroundMap",
     "Header",
     "Footer",
-    "IntroModal",
+    "Modal",
     "MarkerOverlay",
     "FileDropZone",
     "FilterSidebar",
     "Toolbar",
     "DrawingLayer",
     "MapTypeToggle",
+    "FeatureLayer",
+    "StepCard",
+    "Accordion",
     "FormFields",
     "PhotoDropZone",
     "ToolTips",
@@ -26,21 +29,14 @@
     "WeatherGlyph",
     "GlyphLegend",
     "GlyphCanvas",
-    "RuMap",
-    "SideBar",
     "LoadingScreen",
-    "OnboardingModal",
-    "RegistrationModal",
     "AnalysisPanel",
-    "AnalysisLayers",
-    "MenuModal",
-    "MapIntroModal",
-    "SupportModal",
-    "ComingSoonModal"
+    "AnalysisLayers"
   ],
   "collections": [
     "feature",
     "reading",
-    "observacion"
+    "observacion",
+    "user"
   ]
 }

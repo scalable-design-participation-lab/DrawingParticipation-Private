@@ -56,9 +56,15 @@ export function resolveExpr(expr: unknown, ctx: SpecContext, item?: unknown): un
   }
 }
 
-/** Action `value` / `args` may be expressions ("$item.id"); literals pass through. */
+/** Action `value` / `args` may be expressions ("$item.id", "!$state.open"); literals pass through. */
 function resolveValue(value: unknown, ctx: SpecContext, item: unknown) {
-  return typeof value === 'string' && value.startsWith('$') ? resolveExpr(value, ctx, item) : value
+  if (typeof value !== 'string') {
+    return value
+  }
+  if (value.startsWith('!$')) {
+    return !resolveExpr(value.slice(1), ctx, item)
+  }
+  return value.startsWith('$') ? resolveExpr(value, ctx, item) : value
 }
 
 /**

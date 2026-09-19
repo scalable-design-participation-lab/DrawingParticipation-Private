@@ -109,6 +109,137 @@
         ]
       }
     },
+    "init": {
+      "anyOf": [
+        {
+          "anyOf": [
+            {
+              "type": "object",
+              "properties": {
+                "set": {
+                  "type": "string",
+                  "description": "State path to write, e.g. \"welcome\" or \"filters.year\"."
+                },
+                "value": {
+                  "description": "Value to write; a \"$...\" string is resolved (e.g. \"$item.id\"). Omitted = the event payload."
+                }
+              },
+              "required": [
+                "set"
+              ],
+              "additionalProperties": false
+            },
+            {
+              "type": "object",
+              "properties": {
+                "navigate": {
+                  "type": "string",
+                  "description": "Route to push."
+                }
+              },
+              "required": [
+                "navigate"
+              ],
+              "additionalProperties": false
+            },
+            {
+              "type": "object",
+              "properties": {
+                "toggle": {
+                  "type": "string",
+                  "description": "Boolean state path to flip."
+                }
+              },
+              "required": [
+                "toggle"
+              ],
+              "additionalProperties": false
+            },
+            {
+              "type": "object",
+              "properties": {
+                "call": {
+                  "type": "string",
+                  "description": "Name of a handler registered by the app (registerHandler)."
+                },
+                "args": {
+                  "description": "Arguments passed to the handler after the payload; a \"$...\" string is resolved."
+                }
+              },
+              "required": [
+                "call"
+              ],
+              "additionalProperties": false
+            }
+          ]
+        },
+        {
+          "type": "array",
+          "items": {
+            "anyOf": [
+              {
+                "type": "object",
+                "properties": {
+                  "set": {
+                    "type": "string",
+                    "description": "State path to write, e.g. \"welcome\" or \"filters.year\"."
+                  },
+                  "value": {
+                    "description": "Value to write; a \"$...\" string is resolved (e.g. \"$item.id\"). Omitted = the event payload."
+                  }
+                },
+                "required": [
+                  "set"
+                ],
+                "additionalProperties": false
+              },
+              {
+                "type": "object",
+                "properties": {
+                  "navigate": {
+                    "type": "string",
+                    "description": "Route to push."
+                  }
+                },
+                "required": [
+                  "navigate"
+                ],
+                "additionalProperties": false
+              },
+              {
+                "type": "object",
+                "properties": {
+                  "toggle": {
+                    "type": "string",
+                    "description": "Boolean state path to flip."
+                  }
+                },
+                "required": [
+                  "toggle"
+                ],
+                "additionalProperties": false
+              },
+              {
+                "type": "object",
+                "properties": {
+                  "call": {
+                    "type": "string",
+                    "description": "Name of a handler registered by the app (registerHandler)."
+                  },
+                  "args": {
+                    "description": "Arguments passed to the handler after the payload; a \"$...\" string is resolved."
+                  }
+                },
+                "required": [
+                  "call"
+                ],
+                "additionalProperties": false
+              }
+            ]
+          }
+        }
+      ]
+    },
     "children": {
       "type": "array",
       "items": {

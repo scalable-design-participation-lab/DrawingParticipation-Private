@@ -62,9 +62,11 @@ missing. Everything below was added rather than worked around:
 1. ~~Delete the dashboard leftovers~~ done.
 2. `apps/open-sensing-frontend` is a gitlink (nested repo pointer, no `.gitmodules`, no content here); vendor or
    submodule it before it can be spec'd.
-3. `DrawingLayer` / `SideBar` / `RuMap`: accept `features` as a prop with the store as fallback, then flip `stateful`.
-4. Promote restart-ukraine's modal family to three generic shapes (intro / form / confirm); `MenuModal` and
-   `SupportModal` are the obvious first two.
+3. ~~`DrawingLayer` / `SideBar` / `RuMap`~~ done for restart-ukraine: `FeatureLayer` + `StepCard` + `Accordion`,
+   stores replaced by page state and handlers. `DrawingLayer` and `base/app/stores/*` remain for mnc only.
+4. ~~Promote restart-ukraine's modal family~~ done: one `Modal`, six dialogs are JSON.
+4b. `AnalysisPanel` / `AnalysisLayers` (dashboard) still read the `layers` store; then mnc (39 components, 11 stores)
+   with the same recipe.
 5. ~~Backend: expose the same collection contracts server-side~~ done (`data.collections`, fs storage; swap the
    Nitro storage driver for a database when a deployment needs one).
 6. Run `gen-spec --provider anthropic` on a real request and tune the prompt / catalogue from what the verifier rejects.

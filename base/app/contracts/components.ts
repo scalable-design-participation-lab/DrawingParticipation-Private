@@ -114,6 +114,7 @@ registerContract({
   description: 'Renders one HTML overlay per item on the map. Put it in the BackgroundMap "overlays" slot.',
   props: z.strictObject({
     items: z.array(z.record(z.string(), z.unknown())).optional(),
+    item: z.record(z.string(), z.unknown()).nullable().optional().describe('A single item (e.g. the selected feature); null renders nothing.'),
     positionKey: z.string().optional().describe('Item key holding [lon, lat] (default "position").'),
     lonLat: z.boolean().optional().describe('Positions are [lon, lat] (default) rather than map coordinates.'),
     positioning: z.string().optional(),
@@ -185,6 +186,71 @@ export const FormFieldSchema = z.strictObject({
   options: z.array(z.strictObject({ label: z.string(), value: z.union([z.string(), z.number()]) })).optional(),
   required: z.boolean().optional(),
   class: z.string().optional(),
+})
+
+const DrawModeSchema = z.strictObject({
+  type: z.enum(['Point', 'LineString', 'Polygon']),
+  iconName: z.string().optional(),
+  frequency: z.string().optional(),
+  isProhibit: z.boolean().optional(),
+  color: z.string().optional().describe('Stroke / point color while drawing'),
+})
+
+registerContract({
+  name: 'FeatureLayer',
+  description: 'Draw and show map features (points with icons, dashed polygons, dashed lines). `features` in, `update:features` out after a drawing or a delete; `draw` is the active draw mode (a value a StepCard button can carry), cleared through `update:draw`. `open` / `inspect` emit the feature flat plus `position` and `title`, ready for a MarkerOverlay `item`. Goes in the BackgroundMap "layers" slot.',
+  props: z.strictObject({
+    features: z.array(z.record(z.string(), z.unknown())).optional(),
+    draw: DrawModeSchema.nullable().optional(),
+    icons: z.record(z.string(), z.string()).optional().describe('iconName | frequency | "prohibit" | "default" -> image URL'),
+    labels: z.record(z.string(), z.string()).optional().describe('iconName | frequency | "prohibit" -> title'),
+    defaultLabel: z.string().optional(),
+    editable: z.boolean().optional().describe('Show the open (edit) button on every feature'),
+    deletable: z.boolean().optional(),
+    commentIcons: z.boolean().optional().describe('Show the comment icon that emits `inspect`'),
+    confirmDelete: z.string().optional(),
+  }),
+  emits: ['update:features', 'update:draw', 'open', 'inspect'],
+})
+
+const StepButtonSchema = z.strictObject({
+  label: z.string(),
+  color: z.string().optional(),
+  variant: z.enum(['solid', 'outline']).optional(),
+  tooltip: z.string().optional(),
+  value: z.unknown().optional().describe('Emitted by `select` when chosen'),
+})
+const StepIconSchema = z.strictObject({
+  name: z.string(),
+  src: z.string(),
+  tooltip: z.string().optional(),
+  value: z.unknown().optional().describe('Emitted by `select` when chosen'),
+})
+registerContract({
+  name: 'StepCard',
+  description: 'A card that walks through numbered steps (progress bar, title, text, buttons, icon grid, prev / next). `step` is 1-based and comes back through `update:step`; choosing a button or an icon emits `select` with its `value`.',
+  props: z.strictObject({
+    step: z.number().int().positive().optional(),
+    steps: z.array(z.strictObject({
+      title: z.string().optional(),
+      text: z.string().optional(),
+      icon: z.string().optional(),
+      buttons: z.array(StepButtonSchema).optional(),
+      iconGrid: z.strictObject({ title: z.string().optional(), icons: z.array(StepIconSchema) }).optional(),
+    })),
+  }),
+  emits: ['update:step', 'select'],
+  slots: ['default'],
+})
+
+registerContract({
+  name: 'Accordion',
+  description: 'Collapsible sections. `items` gives the labels; the content of item n goes in slot "item-n".',
+  props: z.strictObject({
+    items: z.array(z.strictObject({ label: z.string(), defaultOpen: z.boolean().optional() })),
+    multiple: z.boolean().optional(),
+  }),
+  slots: ['item-0', 'item-1', 'item-2', 'item-3', 'item-4', 'item-5'],
 })
 
 registerContract({

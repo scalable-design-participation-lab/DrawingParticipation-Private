@@ -1,11 +1,11 @@
 <script setup lang="ts">
-import { computed, inject, provide, reactive } from 'vue'
+import { computed, inject, onMounted, provide, reactive } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import type { RootSpec } from '../contracts/spec'
 import { DATA_ADAPTER, defaultAdapter } from '../data/adapters'
 import type { DataAdapter } from '../data/adapters'
 import { useDataSources } from '../data/useDataSources'
-import { SPEC_CONTEXT, resolveExpr } from '../utils/spec-context'
+import { SPEC_CONTEXT, resolveExpr, runAction } from '../utils/spec-context'
 import SpecNode from './SpecNode.vue'
 
 /**
@@ -53,7 +53,7 @@ const data = computed<Record<string, unknown>>(() => {
   return out
 })
 
-provide(SPEC_CONTEXT, {
+const ctx = {
   state,
   get data() {
     return data.value
@@ -63,6 +63,13 @@ provide(SPEC_CONTEXT, {
   query,
   navigate,
   reload,
+}
+provide(SPEC_CONTEXT, ctx)
+
+onMounted(() => {
+  if (props.spec.init) {
+    runAction(props.spec.init, undefined, ctx)
+  }
 })
 
 defineExpose({ state, sources, errors })

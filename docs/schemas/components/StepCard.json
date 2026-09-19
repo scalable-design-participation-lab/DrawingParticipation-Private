@@ -1,0 +1,113 @@
+{
+  "name": "StepCard",
+  "description": "A card that walks through numbered steps (progress bar, title, text, buttons, icon grid, prev / next). `step` is 1-based and comes back through `update:step`; choosing a button or an icon emits `select` with its `value`.",
+  "stateful": false,
+  "emits": [
+    "update:step",
+    "select"
+  ],
+  "slots": [
+    "default"
+  ],
+  "props": {
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "type": "object",
+    "properties": {
+      "step": {
+        "type": "integer",
+        "exclusiveMinimum": 0,
+        "maximum": 9007199254740991
+      },
+      "steps": {
+        "type": "array",
+        "items": {
+          "type": "object",
+          "properties": {
+            "title": {
+              "type": "string"
+            },
+            "text": {
+              "type": "string"
+            },
+            "icon": {
+              "type": "string"
+            },
+            "buttons": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "label": {
+                    "type": "string"
+                  },
+                  "color": {
+                    "type": "string"
+                  },
+                  "variant": {
+                    "type": "string",
+                    "enum": [
+                      "solid",
+                      "outline"
+                    ]
+                  },
+                  "tooltip": {
+                    "type": "string"
+                  },
+                  "value": {
+                    "description": "Emitted by `select` when chosen"
+                  }
+                },
+                "required": [
+                  "label"
+                ],
+                "additionalProperties": false
+              }
+            },
+            "iconGrid": {
+              "type": "object",
+              "properties": {
+                "title": {
+                  "type": "string"
+                },
+                "icons": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "name": {
+                        "type": "string"
+                      },
+                      "src": {
+                        "type": "string"
+                      },
+                      "tooltip": {
+                        "type": "string"
+                      },
+                      "value": {
+                        "description": "Emitted by `select` when chosen"
+                      }
+                    },
+                    "required": [
+                      "name",
+                      "src"
+                    ],
+                    "additionalProperties": false
+                  }
+                }
+              },
+              "required": [
+                "icons"
+              ],
+              "additionalProperties": false
+            }
+          },
+          "additionalProperties": false
+        }
+      }
+    },
+    "required": [
+      "steps"
+    ],
+    "additionalProperties": false
+  }
+}

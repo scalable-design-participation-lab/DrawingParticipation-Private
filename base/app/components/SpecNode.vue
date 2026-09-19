@@ -29,8 +29,13 @@ const SpecNode = defineComponent({
 })
 
 function renderNode(node: Node, item: unknown, ctx: SpecContext): VNodeChild {
-  if (node.if !== undefined && !resolveExpr(node.if, ctx, item)) {
-    return null
+  if (node.if !== undefined) {
+    // "!$state.x" renders while the expression is falsy.
+    const negate = node.if.startsWith('!')
+    const shown = Boolean(resolveExpr(negate ? node.if.slice(1) : node.if, ctx, item))
+    if (shown === negate) {
+      return null
+    }
   }
 
   const component = getComponent(node.type)

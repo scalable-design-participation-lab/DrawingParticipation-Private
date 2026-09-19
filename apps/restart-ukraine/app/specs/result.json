@@ -4,7 +4,9 @@
     "mapType": "vector",
     "menuOpen": false,
     "supportOpen": false,
-    "showIntro": "$query.showIntro"
+    "showIntro": "$query.showIntro",
+    "features": [],
+    "inspected": null
   },
   "children": [
     {
@@ -180,14 +182,172 @@
           "style": "map-layer",
           "children": [
             {
-              "type": "RuMap",
-              "props": {
-                "showAllPlusIcons": false,
-                "showCommentIcons": true
-              },
+              "type": "BackgroundMap",
               "bind": {
                 "mapType": "$state.mapType"
-              }
+              },
+              "children": [
+                {
+                  "slot": "layers",
+                  "type": "FeatureLayer",
+                  "props": {
+                    "icons": {
+                      "every day": "/icons/blue.svg",
+                      "every week": "/icons/green.svg",
+                      "sometimes": "/icons/purple.svg",
+                      "only once": "/icons/yellow.svg",
+                      "once": "/icons/yellow.svg",
+                      "never": "/icons/red.svg",
+                      "prohibit": "/icons/prohibit.svg",
+                      "heart": "/icons/heart.svg",
+                      "love": "/icons/heart.svg",
+                      "smile": "/icons/smile.svg",
+                      "positive": "/icons/smile.svg",
+                      "dislike": "/icons/dislike.svg",
+                      "negative": "/icons/dislike.svg",
+                      "broken": "/icons/broken.svg",
+                      "unsafe": "/icons/broken.svg",
+                      "calm": "/icons/calm.svg",
+                      "safe": "/icons/calm.svg",
+                      "lock": "/icons/lock.svg",
+                      "great": "/icons/lock.svg",
+                      "trash": "/icons/trash.svg",
+                      "pollution": "/icons/pollution.svg",
+                      "leaf": "/icons/leaf.svg",
+                      "flora-fauna": "/icons/leaf.svg",
+                      "default": "/icons/red.svg",
+                      "everyday": "/icons/blue.svg",
+                      "everyweek": "/icons/green.svg"
+                    },
+                    "labels": {
+                      "prohibit": "Заборонена зона",
+                      "pollution": "Точка забруднення",
+                      "leaf": "Зелена зона",
+                      "flora-fauna": "Флора та фауна",
+                      "lock": "Безпечна зона",
+                      "great": "Дуже безпечна зона",
+                      "calm": "Спокійна зона",
+                      "safe": "Безпечна територія",
+                      "broken": "Небезпечна зона",
+                      "unsafe": "Небезпечна територія",
+                      "dislike": "Не подобається",
+                      "negative": "Негативне",
+                      "heart": "Улюблене",
+                      "love": "Улюблене місце",
+                      "smile": "Щасливе місце",
+                      "positive": "Позитивне",
+                      "trash": "Сміття",
+                      "every day": "Щоденне відвідування",
+                      "everyday": "Щоденне відвідування",
+                      "every week": "Щотижневе відвідування",
+                      "everyweek": "Щотижневе відвідування",
+                      "sometimes": "Випадкове відвідування",
+                      "only once": "Одноразове відвідування",
+                      "once": "Одноразове відвідування",
+                      "never": "Ніколи не відвідував"
+                    },
+                    "defaultLabel": "Деталі локації",
+                    "confirmDelete": "Ви впевнені, що хочете видалити цю відмітку?",
+                    "commentIcons": true
+                  },
+                  "bind": {
+                    "features": "$state.features"
+                  },
+                  "on": {
+                    "update:features": {
+                      "set": "features"
+                    },
+                    "inspect": {
+                      "set": "inspected"
+                    }
+                  }
+                },
+                {
+                  "slot": "overlays",
+                  "type": "MarkerOverlay",
+                  "props": {
+                    "positionKey": "position",
+                    "lonLat": false,
+                    "positioning": "bottom-center",
+                    "stopEvent": true
+                  },
+                  "bind": {
+                    "item": "$state.inspected"
+                  },
+                  "item": {
+                    "type": "Panel",
+                    "props": {
+                      "variant": "card",
+                      "padding": "sm"
+                    },
+                    "children": [
+                      {
+                        "type": "Stack",
+                        "props": {
+                          "gap": "xs"
+                        },
+                        "children": [
+                          {
+                            "type": "Stack",
+                            "props": {
+                              "direction": "row",
+                              "justify": "between",
+                              "align": "center",
+                              "gap": "sm"
+                            },
+                            "children": [
+                              {
+                                "type": "Text",
+                                "bind": {
+                                  "text": "$item.title"
+                                },
+                                "props": {
+                                  "weight": "medium",
+                                  "size": "sm"
+                                }
+                              },
+                              {
+                                "type": "Button",
+                                "props": {
+                                  "icon": "i-heroicons-x-mark",
+                                  "variant": "ghost",
+                                  "color": "black",
+                                  "size": "xs"
+                                },
+                                "on": {
+                                  "click": {
+                                    "set": "inspected",
+                                    "value": null
+                                  }
+                                }
+                              }
+                            ]
+                          },
+                          {
+                            "type": "Text",
+                            "if": "$item.comment",
+                            "bind": {
+                              "text": "$item.comment"
+                            },
+                            "props": {
+                              "size": "sm"
+                            }
+                          },
+                          {
+                            "type": "Text",
+                            "if": "!$item.comment",
+                            "props": {
+                              "size": "sm",
+                              "tone": "muted",
+                              "text": "Ще ніхто не залишив коментарів для цієї локації."
+                            }
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                }
+              ]
             }
           ]
         },
@@ -357,6 +517,11 @@
           ]
         }
       ]
+    }
+  ],
+  "init": [
+    {
+      "call": "loadResults"
     }
   ]
 }

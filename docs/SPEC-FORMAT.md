@@ -14,6 +14,7 @@ passes the verifier in **strict mode**: no raw class strings anywhere.
 {
   "version": 1,
   "state": { "welcome": true, "showIntro": "$query.showIntro" }, // page state; "$query.x" is read from the route on load
+  "init": [{ "call": "checkUser" }, { "set": "onboarding", "value": "!$state.returning" }], // actions run once on mount
   "dataSources": { // rows, read by $data.*; status by $sources.*
     "readings": { "kind": "static", "contract": "reading", "items": [] }
   },
@@ -81,7 +82,7 @@ A node has exactly these keys: `type`, `props`, `bind`, `on`, `if`, `style`,
 | `props` | Literal props, validated against the component contract. A `{ "$action": … }` value becomes a callback (for `onClick` on header items, toolbar tools, …).  |
 | `bind`  | `prop -> "$data.<source>"`, `"$sources.<source>.loading"` / `".error"`, `"$state.<path>"`, `"$query.<param>"` or `"$item[.path]"` (inside an `item` only). |
 | `on`    | `event -> action` or `event -> [action, …]` run in order.                                                                                                  |
-| `if`    | Render the node only while the expression is truthy.                                                                                                       |
+| `if`    | Render the node only while the expression is truthy; a leading `!` negates it (`"!$state.open"`).                                                         |
 | `style` | One or more registered style preset names (see Styling).                                                                                                   |
 | `slot`  | Named slot of the parent to render into (default slot when omitted).                                                                                       |
 | `item`  | Template for list components that expose an `item` slot (`MarkerOverlay`).                                                                                 |
@@ -128,13 +129,20 @@ In **strict mode** (`verifySpec(spec, { strict: true })`, CLI `--strict`) a raw
 `class` prop anywhere is an error (`style.raw-class`). Every spec in this repo
 passes strict mode; run LLM output in strict mode.
 
+Action `value` / `args` accept the same expressions, including the `!` form
+(`{ "set": "needsRegistration", "value": "!$state.returning" }`). `init` at
+the root runs an action list once when the page mounts: the place to sign in,
+load results into state, or derive initial flags from what a handler found.
+
 ## Interaction
 
 Everything an LLM can wire: show/hide (`if`), two-way values (`bind` +
 `update:*` → `set`), modals (`toggle` / `set`), navigation, list-item actions
 (`"value": "$item.id"`), loading/error states (`$sources.x.loading` /
 `$sources.x.error`), form validation feedback (`FormFields.errors`, a
-`field -> message` map a handler can `set`), side effects (`call`), failed
+`field -> message` map a handler can `set`), list edits on page state
+(`updateItem` / `removeItem` with the state key as `args`: `{ "call": "updateItem", "args": "features" }`
+merges a `{ id, …patch }` payload into the matching item), side effects (`call`), failed
 side effects (`$errors.<handler>`: the message of the last error a handler
 threw, cleared when it next succeeds), writing rows (`call: "saveTo"` /
 `"deleteFrom"` with the collection name as `args`, see the manifest below).
@@ -178,6 +186,22 @@ nuxtApp.vueApp.provide(DATA_ADAPTER, composeAdapters({
   collection: createFirestoreAdapter(useFirestore()),
 }))
 ```
+
+## Building blocks that replaced hand-written components
+
+restart-ukraine's participation flow is a good reference for what is JSON now:
+
+| Was                                                      | Is                                                                                                                                                                        |
+| -------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| six modal components                                     | one `Modal` (title, `text` or children, `buttonLabel`, `footer` slot, `align`, `size`, `closable`) + JSON                                                                  |
+| `SideBar` (430 lines, three pinia stores)                | `Accordion` (slots `item-0…5`) + one `StepCard` per theme: `steps[]` with `buttons` / `iconGrid` whose `value` is the draw mode; `step` lives in page state               |
+| `DrawingLayer` + `IconLayer` / `PolygonLayer` / `LineStringLayer` reading four stores | `FeatureLayer`: `features` in, `update:features` out, `draw` in (`update:draw` when done), `icons` / `labels` as data, `open` / `inspect` payloads carry `position` + `title` |
+| `CommentModal` / `CommentDisplay` overlays               | `MarkerOverlay` with `item` bound to `$state.selected` / `$state.inspected` and an `item` template (`FormFields` + `updateItem`, or `Text` bound to `$item.*`)               |
+| `RegistrationModal` (305 lines, Firebase inside)         | `Modal` + `FormFields` (`errors` bound to `$state.formErrors`) + handlers `checkUser` / `register`; the `user` collection contract validates the form                       |
+| `db` store, `all-features` store                         | handlers `saveProject` (args `"$state.features"`) and `loadResults` (into `state.features`, run from `init`)                                                                |
+
+`base/app/stores/*` and `DrawingLayer` still exist only for `apps/mnc`, which
+has not moved to specs yet.
 
 ## Registering components, handlers and styles
 
