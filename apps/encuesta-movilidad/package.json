@@ -1,0 +1,23 @@
+{
+  "name": "@mono/encuesta-movilidad",
+  "type": "module",
+  "private": true,
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "build": "nuxt build",
+    "dev": "nuxt dev",
+    "generate": "nuxt generate",
+    "preview": "nuxt preview",
+    "postinstall": "nuxt prepare",
+    "lint": "eslint ."
+  },
+  "dependencies": {
+    "nuxt": "^3"
+  },
+  "devDependencies": {
+    "@types/eslint": "^9",
+    "eslint": "^9"
+  }
+}

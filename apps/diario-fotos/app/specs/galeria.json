@@ -1,0 +1,233 @@
+{
+  "version": 1,
+  "state": {
+    "selected": null
+  },
+  "dataSources": {
+    "fotos": {
+      "kind": "collection",
+      "name": "fotos"
+    }
+  },
+  "children": [
+    {
+      "type": "div",
+      "style": "page-wide",
+      "children": [
+        {
+          "type": "Stack",
+          "props": {
+            "gap": "lg"
+          },
+          "children": [
+            {
+              "type": "Stack",
+              "props": {
+                "direction": "row",
+                "justify": "between",
+                "align": "baseline",
+                "wrap": true
+              },
+              "children": [
+                {
+                  "type": "Text",
+                  "props": {
+                    "as": "h1",
+                    "text": "Diario del río"
+                  }
+                },
+                {
+                  "type": "Button",
+                  "props": {
+                    "to": "/subir",
+                    "color": "black"
+                  },
+                  "text": "Subir foto"
+                }
+              ]
+            },
+            {
+              "type": "Stack",
+              "props": {
+                "direction": "row",
+                "gap": "xs",
+                "align": "baseline"
+              },
+              "children": [
+                {
+                  "type": "Text",
+                  "props": {
+                    "size": "sm",
+                    "tone": "muted"
+                  },
+                  "bind": {
+                    "text": "$data.fotos.length"
+                  }
+                },
+                {
+                  "type": "Text",
+                  "props": {
+                    "size": "sm",
+                    "tone": "muted",
+                    "text": "fotos"
+                  }
+                }
+              ]
+            },
+            {
+              "type": "List",
+              "props": {
+                "layout": "grid",
+                "cols": 3,
+                "gap": "md",
+                "sortBy": "createdAt",
+                "sortDesc": true,
+                "empty": "Todavía no hay fotos. Sube la primera."
+              },
+              "bind": {
+                "items": "$data.fotos"
+              },
+              "item": {
+                "type": "Panel",
+                "props": {
+                  "variant": "card",
+                  "padding": "sm"
+                },
+                "children": [
+                  {
+                    "type": "Stack",
+                    "props": {
+                      "gap": "xs"
+                    },
+                    "children": [
+                      {
+                        "type": "Image",
+                        "bind": {
+                          "src": "$item.fotos.0"
+                        },
+                        "props": {
+                          "width": "full",
+                          "rounded": true,
+                          "alt": "Foto del diario"
+                        }
+                      },
+                      {
+                        "type": "Text",
+                        "props": {
+                          "size": "sm"
+                        },
+                        "bind": {
+                          "text": "$item.nota"
+                        }
+                      },
+                      {
+                        "type": "Stack",
+                        "props": {
+                          "direction": "row",
+                          "gap": "xs",
+                          "justify": "between"
+                        },
+                        "children": [
+                          {
+                            "type": "Text",
+                            "props": {
+                              "size": "xs",
+                              "tone": "muted"
+                            },
+                            "bind": {
+                              "text": "$item.lugar"
+                            }
+                          },
+                          {
+                            "type": "Text",
+                            "bind": {
+                              "text": "$item.createdAt"
+                            },
+                            "props": {
+                              "size": "xs",
+                              "tone": "muted",
+                              "format": "date"
+                            }
+                          }
+                        ]
+                      },
+                      {
+                        "type": "Stack",
+                        "props": {
+                          "direction": "row"
+                        },
+                        "children": [
+                          {
+                            "type": "Button",
+                            "props": {
+                              "color": "gray",
+                              "variant": "soft",
+                              "size": "xs"
+                            },
+                            "text": "Ver grande",
+                            "on": {
+                              "click": {
+                                "set": "selected",
+                                "value": "$item"
+                              }
+                            }
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            },
+            {
+              "type": "Modal",
+              "if": "$state.selected",
+              "props": {
+                "modelValue": true,
+                "size": "xl",
+                "closable": true
+              },
+              "bind": {
+                "title": "$state.selected.lugar"
+              },
+              "on": {
+                "update:modelValue": {
+                  "set": "selected",
+                  "value": null
+                }
+              },
+              "children": [
+                {
+                  "type": "Stack",
+                  "props": {
+                    "gap": "sm"
+                  },
+                  "children": [
+                    {
+                      "type": "Image",
+                      "bind": {
+                        "src": "$state.selected.fotos.0"
+                      },
+                      "props": {
+                        "width": "full",
+                        "rounded": true,
+                        "alt": "Foto del diario"
+                      }
+                    },
+                    {
+                      "type": "Text",
+                      "props": {},
+                      "bind": {
+                        "text": "$state.selected.nota"
+                      }
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

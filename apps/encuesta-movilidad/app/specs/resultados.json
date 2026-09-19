@@ -1,0 +1,285 @@
+{
+  "version": 1,
+  "dataSources": {
+    "respuestas": {
+      "kind": "collection",
+      "name": "respuestas"
+    }
+  },
+  "children": [
+    {
+      "type": "div",
+      "style": "page-narrow",
+      "children": [
+        {
+          "type": "Stack",
+          "props": {
+            "gap": "lg"
+          },
+          "children": [
+            {
+              "type": "Text",
+              "props": {
+                "as": "h1",
+                "text": "Resultados"
+              }
+            },
+            {
+              "type": "Stack",
+              "props": {
+                "direction": "row",
+                "gap": "xs",
+                "align": "baseline"
+              },
+              "children": [
+                {
+                  "type": "Text",
+                  "props": {
+                    "size": "sm",
+                    "tone": "muted"
+                  },
+                  "bind": {
+                    "text": "$data.respuestas.length"
+                  }
+                },
+                {
+                  "type": "Text",
+                  "props": {
+                    "size": "sm",
+                    "tone": "muted",
+                    "text": "respuestas"
+                  }
+                }
+              ]
+            },
+            {
+              "type": "Text",
+              "if": "$sources.respuestas.loading",
+              "props": {
+                "size": "sm",
+                "tone": "muted",
+                "text": "Cargando…"
+              }
+            },
+            {
+              "type": "Panel",
+              "props": {
+                "variant": "card",
+                "padding": "lg"
+              },
+              "children": [
+                {
+                  "type": "Stack",
+                  "props": {
+                    "gap": "md"
+                  },
+                  "children": [
+                    {
+                      "type": "Text",
+                      "props": {
+                        "as": "h2",
+                        "text": "Medio de transporte"
+                      }
+                    },
+                    {
+                      "type": "Tally",
+                      "props": {
+                        "by": "transporte",
+                        "labels": {
+                          "pie": "A pie",
+                          "bici": "Bicicleta",
+                          "publico": "Transporte público",
+                          "coche": "Coche",
+                          "moto": "Moto"
+                        },
+                        "empty": "Todavía no hay respuestas."
+                      },
+                      "bind": {
+                        "items": "$data.respuestas"
+                      }
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "Panel",
+              "props": {
+                "variant": "card",
+                "padding": "lg"
+              },
+              "children": [
+                {
+                  "type": "Stack",
+                  "props": {
+                    "gap": "md"
+                  },
+                  "children": [
+                    {
+                      "type": "Text",
+                      "props": {
+                        "as": "h2",
+                        "text": "Minutos de trayecto (promedio)"
+                      }
+                    },
+                    {
+                      "type": "Tally",
+                      "props": {
+                        "by": "transporte",
+                        "mode": "avg",
+                        "valueKey": "minutos",
+                        "labels": {
+                          "pie": "A pie",
+                          "bici": "Bicicleta",
+                          "publico": "Transporte público",
+                          "coche": "Coche",
+                          "moto": "Moto"
+                        },
+                        "decimals": 0,
+                        "empty": "Todavía no hay respuestas."
+                      },
+                      "bind": {
+                        "items": "$data.respuestas"
+                      }
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "Panel",
+              "props": {
+                "variant": "card",
+                "padding": "lg"
+              },
+              "children": [
+                {
+                  "type": "Stack",
+                  "props": {
+                    "gap": "md"
+                  },
+                  "children": [
+                    {
+                      "type": "Text",
+                      "props": {
+                        "as": "h2",
+                        "text": "Frecuencia"
+                      }
+                    },
+                    {
+                      "type": "Tally",
+                      "props": {
+                        "by": "frecuencia",
+                        "labels": {
+                          "diario": "Todos los días",
+                          "semanal": "Varias veces por semana",
+                          "ocasional": "De vez en cuando"
+                        },
+                        "empty": "Todavía no hay respuestas."
+                      },
+                      "bind": {
+                        "items": "$data.respuestas"
+                      }
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "Text",
+              "props": {
+                "as": "h2",
+                "text": "Comentarios"
+              }
+            },
+            {
+              "type": "List",
+              "props": {
+                "gap": "sm",
+                "sortBy": "createdAt",
+                "sortDesc": true,
+                "empty": "Nadie ha dejado comentarios aún."
+              },
+              "bind": {
+                "items": "$data.respuestas"
+              },
+              "item": {
+                "type": "Panel",
+                "if": "$item.comentario",
+                "props": {
+                  "variant": "outline",
+                  "padding": "md"
+                },
+                "children": [
+                  {
+                    "type": "Stack",
+                    "props": {
+                      "gap": "xs"
+                    },
+                    "children": [
+                      {
+                        "type": "Text",
+                        "props": {
+                          "size": "sm"
+                        },
+                        "bind": {
+                          "text": "$item.comentario"
+                        }
+                      },
+                      {
+                        "type": "Stack",
+                        "props": {
+                          "direction": "row",
+                          "gap": "xs"
+                        },
+                        "children": [
+                          {
+                            "type": "Text",
+                            "props": {
+                              "size": "xs",
+                              "tone": "muted"
+                            },
+                            "bind": {
+                              "text": "$item.transporte"
+                            }
+                          },
+                          {
+                            "type": "Text",
+                            "props": {
+                              "size": "xs",
+                              "tone": "muted",
+                              "text": "·"
+                            }
+                          },
+                          {
+                            "type": "Text",
+                            "bind": {
+                              "text": "$item.createdAt"
+                            },
+                            "props": {
+                              "size": "xs",
+                              "tone": "muted",
+                              "format": "date"
+                            }
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            },
+            {
+              "type": "Button",
+              "props": {
+                "to": "/",
+                "color": "black"
+              },
+              "text": "Responder la encuesta"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

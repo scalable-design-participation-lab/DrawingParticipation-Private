@@ -1,0 +1,28 @@
+{
+  "version": 1,
+  "children": [
+    {
+      "type": "Header",
+      "props": {
+        "z": 20,
+        "showMenu": false,
+        "showColorMode": false,
+        "leftItems": [
+          {
+            "label": "Encuesta",
+            "to": "/",
+            "color": "black"
+          },
+          {
+            "label": "Resultados",
+            "to": "/resultados",
+            "color": "black"
+          }
+        ]
+      }
+    },
+    {
+      "type": "Outlet"
+    }
+  ]
+}

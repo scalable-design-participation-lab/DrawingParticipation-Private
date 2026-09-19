@@ -1,0 +1,42 @@
+{
+  "version": 1,
+  "name": "encuesta-movilidad",
+  "title": "Encuesta de movilidad",
+  "description": "¿Cómo te mueves por la ciudad? Tres preguntas y los resultados en vivo.",
+  "lang": "es",
+  "theme": {
+    "primary": "violet",
+    "gray": "zinc",
+    "colorMode": "light"
+  },
+  "shell": "shell.json",
+  "routes": {
+    "/": "encuesta.json",
+    "/resultados": "resultados.json"
+  },
+  "data": {
+    "collections": {
+      "respuestas": {
+        "fields": [
+          {
+            "name": "transporte",
+            "type": "string",
+            "required": true
+          },
+          {
+            "name": "frecuencia",
+            "type": "string"
+          },
+          {
+            "name": "minutos",
+            "type": "number"
+          },
+          {
+            "name": "comentario",
+            "type": "string"
+          }
+        ]
+      }
+    }
+  }
+}

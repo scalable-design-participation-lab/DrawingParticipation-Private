@@ -1,0 +1,28 @@
+{
+  "version": 1,
+  "children": [
+    {
+      "type": "Header",
+      "props": {
+        "z": 20,
+        "showMenu": false,
+        "showColorMode": false,
+        "leftItems": [
+          {
+            "label": "Agenda",
+            "to": "/",
+            "color": "black"
+          },
+          {
+            "label": "Añadir evento",
+            "to": "/nuevo",
+            "color": "black"
+          }
+        ]
+      }
+    },
+    {
+      "type": "Outlet"
+    }
+  ]
+}

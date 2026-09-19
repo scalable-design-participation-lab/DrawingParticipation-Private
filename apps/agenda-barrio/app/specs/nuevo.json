@@ -1,0 +1,184 @@
+{
+  "version": 1,
+  "state": {
+    "form": {},
+    "sent": false
+  },
+  "children": [
+    {
+      "type": "div",
+      "style": "page-narrow",
+      "children": [
+        {
+          "type": "Stack",
+          "props": {
+            "gap": "lg"
+          },
+          "children": [
+            {
+              "type": "Text",
+              "props": {
+                "as": "h1",
+                "text": "Añadir un evento"
+              }
+            },
+            {
+              "type": "Panel",
+              "if": "!$state.sent",
+              "props": {
+                "variant": "card",
+                "padding": "lg"
+              },
+              "children": [
+                {
+                  "type": "FormFields",
+                  "props": {
+                    "fields": [
+                      {
+                        "name": "titulo",
+                        "label": "Título",
+                        "required": true
+                      },
+                      {
+                        "name": "categoria",
+                        "label": "Categoría",
+                        "type": "select",
+                        "placeholder": "Elige",
+                        "options": [
+                          {
+                            "label": "Cultura",
+                            "value": "cultura"
+                          },
+                          {
+                            "label": "Deporte",
+                            "value": "deporte"
+                          },
+                          {
+                            "label": "Asamblea",
+                            "value": "asamblea"
+                          },
+                          {
+                            "label": "Mercado",
+                            "value": "mercado"
+                          }
+                        ]
+                      },
+                      {
+                        "name": "fecha",
+                        "label": "Fecha",
+                        "type": "date"
+                      },
+                      {
+                        "name": "lugar",
+                        "label": "Lugar",
+                        "placeholder": "Plaza, calle, local…"
+                      },
+                      {
+                        "name": "descripcion",
+                        "label": "Descripción",
+                        "type": "textarea",
+                        "rows": 4
+                      }
+                    ],
+                    "submitLabel": "Publicar"
+                  },
+                  "bind": {
+                    "modelValue": "$state.form"
+                  },
+                  "on": {
+                    "update:modelValue": {
+                      "set": "form"
+                    },
+                    "submit": [
+                      {
+                        "call": "saveTo",
+                        "args": "eventos"
+                      },
+                      {
+                        "set": "sent",
+                        "value": true
+                      }
+                    ]
+                  }
+                },
+                {
+                  "type": "Text",
+                  "if": "$errors.saveTo",
+                  "bind": {
+                    "text": "$errors.saveTo"
+                  },
+                  "props": {
+                    "size": "xs",
+                    "tone": "accent"
+                  }
+                }
+              ]
+            },
+            {
+              "type": "Panel",
+              "if": "$state.sent",
+              "props": {
+                "variant": "card",
+                "padding": "lg"
+              },
+              "children": [
+                {
+                  "type": "Stack",
+                  "props": {
+                    "gap": "md"
+                  },
+                  "children": [
+                    {
+                      "type": "Text",
+                      "props": {
+                        "as": "h2",
+                        "text": "¡Publicado!"
+                      }
+                    },
+                    {
+                      "type": "Stack",
+                      "props": {
+                        "direction": "row",
+                        "gap": "sm"
+                      },
+                      "children": [
+                        {
+                          "type": "Button",
+                          "props": {
+                            "to": "/",
+                            "color": "black"
+                          },
+                          "text": "Ver la agenda"
+                        },
+                        {
+                          "type": "Button",
+                          "props": {
+                            "color": "gray",
+                            "variant": "soft"
+                          },
+                          "text": "Añadir otro",
+                          "on": {
+                            "click": [
+                              {
+                                "set": "form",
+                                "value": {}
+                              },
+                              {
+                                "set": "sent",
+                                "value": false
+                              }
+                            ]
+                          }
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,320 @@
+{
+  "version": 1,
+  "state": {
+    "cat": "",
+    "search": {},
+    "selected": null
+  },
+  "dataSources": {
+    "eventos": {
+      "kind": "collection",
+      "name": "eventos"
+    }
+  },
+  "children": [
+    {
+      "type": "div",
+      "style": "page-wide",
+      "children": [
+        {
+          "type": "Stack",
+          "props": {
+            "gap": "lg"
+          },
+          "children": [
+            {
+              "type": "Stack",
+              "props": {
+                "direction": "row",
+                "justify": "between",
+                "align": "baseline",
+                "wrap": true
+              },
+              "children": [
+                {
+                  "type": "Text",
+                  "props": {
+                    "as": "h1",
+                    "text": "Agenda del barrio"
+                  }
+                },
+                {
+                  "type": "Button",
+                  "props": {
+                    "to": "/nuevo",
+                    "color": "black"
+                  },
+                  "text": "Añadir evento"
+                }
+              ]
+            },
+            {
+              "type": "Tabs",
+              "props": {
+                "options": [
+                  {
+                    "label": "Todos",
+                    "value": ""
+                  },
+                  {
+                    "label": "Cultura",
+                    "value": "cultura"
+                  },
+                  {
+                    "label": "Deporte",
+                    "value": "deporte"
+                  },
+                  {
+                    "label": "Asamblea",
+                    "value": "asamblea"
+                  },
+                  {
+                    "label": "Mercado",
+                    "value": "mercado"
+                  }
+                ]
+              },
+              "bind": {
+                "modelValue": "$state.cat"
+              },
+              "on": {
+                "update:modelValue": {
+                  "set": "cat"
+                }
+              }
+            },
+            {
+              "type": "FormFields",
+              "props": {
+                "fields": [
+                  {
+                    "name": "q",
+                    "type": "text",
+                    "placeholder": "Buscar por título o lugar…"
+                  }
+                ],
+                "gap": "gap-0"
+              },
+              "bind": {
+                "modelValue": "$state.search"
+              },
+              "on": {
+                "update:modelValue": {
+                  "set": "search"
+                }
+              }
+            },
+            {
+              "type": "Text",
+              "if": "$sources.eventos.error",
+              "props": {
+                "tone": "accent",
+                "text": "No se pudo cargar la agenda."
+              }
+            },
+            {
+              "type": "List",
+              "props": {
+                "layout": "grid",
+                "cols": 3,
+                "gap": "md",
+                "filterKey": "categoria",
+                "searchKeys": [
+                  "titulo",
+                  "lugar"
+                ],
+                "sortBy": "fecha",
+                "empty": "No hay eventos que coincidan."
+              },
+              "bind": {
+                "items": "$data.eventos",
+                "filterValue": "$state.cat",
+                "search": "$state.search.q"
+              },
+              "item": {
+                "type": "Panel",
+                "props": {
+                  "variant": "card",
+                  "padding": "md"
+                },
+                "children": [
+                  {
+                    "type": "Stack",
+                    "props": {
+                      "gap": "xs"
+                    },
+                    "children": [
+                      {
+                        "type": "Text",
+                        "props": {
+                          "size": "xs",
+                          "tone": "accent",
+                          "weight": "semibold"
+                        },
+                        "bind": {
+                          "text": "$item.categoria"
+                        }
+                      },
+                      {
+                        "type": "Text",
+                        "props": {
+                          "size": "lg",
+                          "weight": "semibold"
+                        },
+                        "bind": {
+                          "text": "$item.titulo"
+                        }
+                      },
+                      {
+                        "type": "Stack",
+                        "props": {
+                          "direction": "row",
+                          "gap": "xs"
+                        },
+                        "children": [
+                          {
+                            "type": "Text",
+                            "bind": {
+                              "text": "$item.fecha"
+                            },
+                            "props": {
+                              "size": "sm",
+                              "tone": "muted",
+                              "format": "date"
+                            }
+                          },
+                          {
+                            "type": "Text",
+                            "props": {
+                              "size": "sm",
+                              "tone": "muted",
+                              "text": "·"
+                            }
+                          },
+                          {
+                            "type": "Text",
+                            "props": {
+                              "size": "sm",
+                              "tone": "muted"
+                            },
+                            "bind": {
+                              "text": "$item.lugar"
+                            }
+                          }
+                        ]
+                      },
+                      {
+                        "type": "Stack",
+                        "props": {
+                          "direction": "row"
+                        },
+                        "children": [
+                          {
+                            "type": "Button",
+                            "props": {
+                              "color": "gray",
+                              "variant": "soft",
+                              "size": "xs"
+                            },
+                            "text": "Detalles",
+                            "on": {
+                              "click": {
+                                "set": "selected",
+                                "value": "$item"
+                              }
+                            }
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            },
+            {
+              "type": "Modal",
+              "if": "$state.selected",
+              "props": {
+                "modelValue": true,
+                "size": "lg",
+                "closable": true
+              },
+              "bind": {
+                "title": "$state.selected.titulo"
+              },
+              "on": {
+                "update:modelValue": {
+                  "set": "selected",
+                  "value": null
+                }
+              },
+              "children": [
+                {
+                  "type": "Stack",
+                  "props": {
+                    "gap": "sm"
+                  },
+                  "children": [
+                    {
+                      "type": "Stack",
+                      "props": {
+                        "direction": "row",
+                        "gap": "xs"
+                      },
+                      "children": [
+                        {
+                          "type": "Text",
+                          "bind": {
+                            "text": "$state.selected.fecha"
+                          },
+                          "props": {
+                            "size": "sm",
+                            "tone": "muted",
+                            "format": "date"
+                          }
+                        },
+                        {
+                          "type": "Text",
+                          "props": {
+                            "size": "sm",
+                            "tone": "muted",
+                            "text": "·"
+                          }
+                        },
+                        {
+                          "type": "Text",
+                          "props": {
+                            "size": "sm",
+                            "tone": "muted"
+                          },
+                          "bind": {
+                            "text": "$state.selected.lugar"
+                          }
+                        }
+                      ]
+                    },
+                    {
+                      "type": "Text",
+                      "props": {},
+                      "bind": {
+                        "text": "$state.selected.descripcion"
+                      }
+                    },
+                    {
+                      "type": "Text",
+                      "if": "!$state.selected.descripcion",
+                      "props": {
+                        "tone": "muted",
+                        "text": "Sin descripción."
+                      }
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
