@@ -34,6 +34,43 @@
               "items": {
                 "type": "array",
                 "items": {}
+              },
+              "join": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "from": {
+                      "type": "string",
+                      "description": "Another data source declared on the same page"
+                    },
+                    "on": {
+                      "type": "string",
+                      "description": "Field of the other source holding this row's id"
+                    },
+                    "key": {
+                      "description": "Field of this row the other source points at (default \"id\")",
+                      "type": "string"
+                    },
+                    "count": {
+                      "description": "Output field holding how many rows matched",
+                      "type": "string"
+                    },
+                    "sum": {
+                      "description": "Numeric field of the other source to add up",
+                      "type": "string"
+                    },
+                    "as": {
+                      "description": "Output field for `sum` (default the `sum` field name)",
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "from",
+                    "on"
+                  ],
+                  "additionalProperties": false
+                }
               }
             },
             "required": [
@@ -78,6 +115,43 @@
                 "type": "integer",
                 "exclusiveMinimum": 0,
                 "maximum": 9007199254740991
+              },
+              "join": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "from": {
+                      "type": "string",
+                      "description": "Another data source declared on the same page"
+                    },
+                    "on": {
+                      "type": "string",
+                      "description": "Field of the other source holding this row's id"
+                    },
+                    "key": {
+                      "description": "Field of this row the other source points at (default \"id\")",
+                      "type": "string"
+                    },
+                    "count": {
+                      "description": "Output field holding how many rows matched",
+                      "type": "string"
+                    },
+                    "sum": {
+                      "description": "Numeric field of the other source to add up",
+                      "type": "string"
+                    },
+                    "as": {
+                      "description": "Output field for `sum` (default the `sum` field name)",
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "from",
+                    "on"
+                  ],
+                  "additionalProperties": false
+                }
               }
             },
             "required": [
@@ -98,6 +172,43 @@
               },
               "contract": {
                 "type": "string"
+              },
+              "join": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "from": {
+                      "type": "string",
+                      "description": "Another data source declared on the same page"
+                    },
+                    "on": {
+                      "type": "string",
+                      "description": "Field of the other source holding this row's id"
+                    },
+                    "key": {
+                      "description": "Field of this row the other source points at (default \"id\")",
+                      "type": "string"
+                    },
+                    "count": {
+                      "description": "Output field holding how many rows matched",
+                      "type": "string"
+                    },
+                    "sum": {
+                      "description": "Numeric field of the other source to add up",
+                      "type": "string"
+                    },
+                    "as": {
+                      "description": "Output field for `sum` (default the `sum` field name)",
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "from",
+                    "on"
+                  ],
+                  "additionalProperties": false
+                }
               }
             },
             "required": [
@@ -164,6 +275,9 @@
                 },
                 "args": {
                   "description": "Arguments passed to the handler after the payload; a \"$...\" string is resolved."
+                },
+                "payload": {
+                  "description": "What the handler receives instead of the event; every \"$...\" string inside is resolved (e.g. { \"propuestaId\": \"$state.open.id\" })."
                 }
               },
               "required": [
@@ -228,6 +342,9 @@
                   },
                   "args": {
                     "description": "Arguments passed to the handler after the payload; a \"$...\" string is resolved."
+                  },
+                  "payload": {
+                    "description": "What the handler receives instead of the event; every \"$...\" string inside is resolved (e.g. { \"propuestaId\": \"$state.open.id\" })."
                   }
                 },
                 "required": [
@@ -335,6 +452,9 @@
                       },
                       "args": {
                         "description": "Arguments passed to the handler after the payload; a \"$...\" string is resolved."
+                      },
+                      "payload": {
+                        "description": "What the handler receives instead of the event; every \"$...\" string inside is resolved (e.g. { \"propuestaId\": \"$state.open.id\" })."
                       }
                     },
                     "required": [
@@ -399,6 +519,9 @@
                         },
                         "args": {
                           "description": "Arguments passed to the handler after the payload; a \"$...\" string is resolved."
+                        },
+                        "payload": {
+                          "description": "What the handler receives instead of the event; every \"$...\" string inside is resolved (e.g. { \"propuestaId\": \"$state.open.id\" })."
                         }
                       },
                       "required": [

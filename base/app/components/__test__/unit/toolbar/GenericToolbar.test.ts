@@ -46,7 +46,8 @@ describe('genericToolbar', () => {
     const wrapper = createWrapper()
     await wrapper.findAll('.w-14.h-14')[0].trigger('click')
     expect(wrapper.emitted('toolClick')).toBeTruthy()
-    expect(wrapper.emitted('toolClick')[0]).toEqual([0])
+    // The tool itself (plus its index), so a page can act on what it means.
+    expect(wrapper.emitted('toolClick')[0][0]).toMatchObject({ icon: 'i-heroicons-pencil', tooltip: 'Edit', index: 0 })
   })
 
   it('executes the corresponding action when a tool button is clicked', async () => {

@@ -123,11 +123,19 @@ export function verifySpec(spec: unknown, options: VerifySpecOptions = {}): Veri
     }
   }
 
-  const checkExpr = (expr: string, at: string, inItem: boolean) => {
+  for (const [name, source] of Object.entries(root.dataSources ?? {})) {
+    for (const [i, join] of (source.join ?? []).entries()) {
+      if (!(join.from in (root.dataSources ?? {}))) {
+        errors.push({ path: `dataSources.${name}.join[${i}].from`, rule: 'bind.unknown-data', message: `data source "${join.from}" is not declared in dataSources` })
+      }
+    }
+  }
+
+  const checkExpr = (expr: string, at: string, inItem: boolean, inAction = false) => {
     checkKey(expr, at)
     const match = BIND_RE.exec(expr)
     if (!match) {
-      errors.push({ path: at, rule: 'bind.bad-expr', message: `"${expr}" is not "$data.x", "$state.x", "$sources.x", "$errors.x", "$query.x", "$t.key" or "$item[.x]"` })
+      errors.push({ path: at, rule: 'bind.bad-expr', message: `"${expr}" is not "$data.x", "$state.x", "$sources.x", "$errors.x", "$query.x", "$t.key", "$locale", "$payload[.x]" or "$item[.x]"` })
       return
     }
     const [, kind, rest] = match
@@ -146,6 +154,28 @@ export function verifySpec(spec: unknown, options: VerifySpecOptions = {}): Veri
     }
     if (kind === 'item' && !inItem) {
       errors.push({ path: at, rule: 'bind.item-outside-template', message: '"$item" is only available inside an "item" template' })
+    }
+    if (kind === 'payload' && !inAction) {
+      errors.push({ path: at, rule: 'bind.payload-outside-action', message: '"$payload" is the event value, so it only exists inside an action\'s `value`, `args` or `payload`' })
+    }
+  }
+
+  /** Every "$..." string inside an action value, at any depth. */
+  const checkExprsIn = (value: unknown, at: string, inItem: boolean) => {
+    if (typeof value === 'string') {
+      if (/^!?\$/.test(value)) {
+        conditionExprs(value).forEach(expr => checkExpr(expr, at, inItem, true))
+      }
+      return
+    }
+    if (Array.isArray(value)) {
+      value.forEach((v, i) => checkExprsIn(v, `${at}[${i}]`, inItem))
+      return
+    }
+    if (isPlainObject(value)) {
+      for (const [k, v] of Object.entries(value)) {
+        checkExprsIn(v, `${at}.${k}`, inItem)
+      }
     }
   }
 
@@ -173,10 +203,12 @@ export function verifySpec(spec: unknown, options: VerifySpecOptions = {}): Veri
       if ('navigate' in action) {
         checkLink(action.navigate, `${p}.navigate`)
       }
-      // `value` / `args` may be expressions.
-      const dynamic: [string, unknown] | null = 'set' in action ? ['value', action.value] : 'call' in action ? ['args', action.args] : null
-      if (dynamic && typeof dynamic[1] === 'string' && /^!?\$/.test(dynamic[1])) {
-        conditionExprs(dynamic[1]).forEach(expr => checkExpr(expr, `${p}.${dynamic[0]}`, inItem))
+      // `value` / `args` / `payload` may hold expressions, at any depth.
+      const dynamic: [string, unknown][] = 'set' in action
+        ? [['value', action.value]]
+        : 'call' in action ? [['args', action.args], ...('payload' in action ? [['payload', action.payload] as [string, unknown]] : [])] : []
+      for (const [key, value] of dynamic) {
+        checkExprsIn(value, `${p}.${key}`, inItem)
       }
     }
   }

@@ -1,6 +1,6 @@
 {
   "name": "FilterSidebar",
-  "description": "Slide-in panel with filter sections (checkbox groups, date ranges).",
+  "description": "Panel of collapsible filter sections. A section is `{ label, name, component, props }`: `label` heads the accordion, `component` is \"GenericCheckboxGroup\" (props `{ items: [{ label, value }] }`) or \"GenericDateRangePicker\", `name` identifies it. `filter-change` emits `{ name, value }`; a checkbox group value is a map of item value to boolean, which binds straight to `FeatureLayer.visibleTags`.",
   "stateful": false,
   "emits": [
     "close",
@@ -24,16 +24,31 @@
         "items": {
           "type": "object",
           "properties": {
-            "title": {
+            "label": {
               "type": "string"
             },
-            "type": {
+            "name": {
               "type": "string"
+            },
+            "component": {
+              "type": "string",
+              "enum": [
+                "GenericCheckboxGroup",
+                "GenericDateRangePicker"
+              ]
+            },
+            "props": {
+              "type": "object",
+              "propertyNames": {
+                "type": "string"
+              },
+              "additionalProperties": {}
             }
           },
           "required": [
-            "title",
-            "type"
+            "label",
+            "name",
+            "component"
           ],
           "additionalProperties": {}
         }

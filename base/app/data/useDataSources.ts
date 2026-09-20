@@ -4,9 +4,13 @@ import type { DataSourceSpec } from '../contracts/spec'
 import { verifyRows } from '../verifier'
 import type { VerifyResult } from '../verifier'
 import type { DataAdapter } from './adapters'
+import { applyJoin } from './join'
 
 export interface DataSourceState {
+  /** Rows as the page sees them: loaded rows plus any `join` aggregates. */
   items: unknown[]
+  /** Rows exactly as the adapter returned them. */
+  raw: unknown[]
   loading: boolean
   /** Adapter failure message, or the contract verification result when rows were rejected. */
   error: string | VerifyResult | null
@@ -20,6 +24,21 @@ export interface DataSourceState {
  */
 export function useDataSources(specs: Record<string, DataSourceSpec>, adapter: DataAdapter) {
   const sources = reactive<Record<string, DataSourceState>>({})
+
+  // `join` folds another source's aggregates into these rows, so it re-runs
+  // whenever either side is (re)loaded.
+  function applyJoins() {
+    for (const [name, spec] of Object.entries(specs)) {
+      const source = sources[name]
+      if (!source) {
+        continue
+      }
+      source.items = (spec.join ?? []).reduce(
+        (rows, join) => applyJoin(rows, join, sources[join.from]?.raw ?? []),
+        source.raw,
+      )
+    }
+  }
 
   async function load(name: string) {
     const spec = specs[name]
@@ -39,8 +58,9 @@ export function useDataSources(specs: Record<string, DataSourceSpec>, adapter: D
           return
         }
       }
-      source.items = rows
+      source.raw = rows
       source.error = null
+      applyJoins()
     }
     catch (err: unknown) {
       source.error = err instanceof Error ? err.message : String(err)
@@ -51,7 +71,7 @@ export function useDataSources(specs: Record<string, DataSourceSpec>, adapter: D
   }
 
   for (const name of Object.keys(specs)) {
-    sources[name] = { items: [], loading: true, error: null }
+    sources[name] = { items: [], raw: [], loading: true, error: null }
     load(name)
   }
 

@@ -46,7 +46,9 @@ defineProps({
   },
 })
 
-const emit = defineEmits(['support'])
+// `support` is the "?" button; `buttonClick` carries the pressed `buttons` entry
+// so the page can decide what it does (they used to render and do nothing).
+const emit = defineEmits(['support', 'buttonClick'])
 
 // The help ("?") button: the app renders its own modal in the `support` slot
 // or listens to the `support` event.
@@ -83,6 +85,8 @@ function openSupport() {
             :key="button.label"
             color="gray"
             :label="button.label"
+            :to="button.to"
+            @click="emit('buttonClick', button)"
           />
         </div>
         <button

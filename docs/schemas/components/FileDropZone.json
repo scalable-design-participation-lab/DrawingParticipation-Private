@@ -24,6 +24,13 @@
           "user",
           "environment"
         ]
+      },
+      "lines": {
+        "description": "Lines drawn inside a dashed box when no children are given",
+        "type": "array",
+        "items": {
+          "type": "string"
+        }
       }
     },
     "additionalProperties": false

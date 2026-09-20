@@ -56,18 +56,18 @@ export function parseCondition(expr: string): { negate: boolean, expr: string, o
 }
 
 /** Truthiness of `if` / boolean `value` expressions, including `!` and `==` / `!=` forms. */
-export function evaluate(expr: unknown, ctx: SpecContext, item?: unknown): unknown {
+export function evaluate(expr: unknown, ctx: SpecContext, item?: unknown, payload?: unknown): unknown {
   if (typeof expr !== 'string') {
     return expr
   }
   if (expr.includes('&&')) {
-    return expr.split(/\s*&&\s*/).every(part => Boolean(evaluate(part, ctx, item)))
+    return expr.split(/\s*&&\s*/).every(part => Boolean(evaluate(part, ctx, item, payload)))
   }
   const cond = parseCondition(expr)
   if (!cond) {
-    return resolveExpr(expr, ctx, item)
+    return resolveExpr(expr, ctx, item, payload)
   }
-  const left = resolveExpr(cond.expr, ctx, item)
+  const left = resolveExpr(cond.expr, ctx, item, payload)
   const result = cond.op ? (cond.op === '==' ? left === cond.value : left !== cond.value) : Boolean(left)
   return cond.negate ? !result : result
 }
@@ -90,8 +90,8 @@ export function setPath(root: Record<string, unknown>, path: string, value: unkn
   target[last] = value
 }
 
-/** "$state.a.b" -> ctx.state.a.b; "$item.x" -> item.x; anything else is a literal. */
-export function resolveExpr(expr: unknown, ctx: SpecContext, item?: unknown): unknown {
+/** "$state.a.b" -> ctx.state.a.b; "$item.x" -> item.x; "$payload.x" -> the event's x; anything else is a literal. */
+export function resolveExpr(expr: unknown, ctx: SpecContext, item?: unknown, payload?: unknown): unknown {
   if (typeof expr !== 'string') {
     return expr
   }
@@ -103,6 +103,7 @@ export function resolveExpr(expr: unknown, ctx: SpecContext, item?: unknown): un
   const path = rest ? rest.slice(1).split('.') : []
   switch (root) {
     case 'item': return getPath(item, path)
+    case 'payload': return path.length ? getPath(payload, path) : payload
     case 'data': return getPath(ctx.data, path)
     case 'sources': return getPath(ctx.sources, path)
     case 'errors': return getPath(ctx.errors, path)
@@ -113,9 +114,22 @@ export function resolveExpr(expr: unknown, ctx: SpecContext, item?: unknown): un
   }
 }
 
-/** Action `value` / `args` may be expressions ("$item.id", "!$state.open", "$state.view == 'list'"); literals pass through. */
-function resolveValue(value: unknown, ctx: SpecContext, item: unknown) {
-  return typeof value === 'string' && /^!?\$/.test(value) ? evaluate(value, ctx, item) : value
+/**
+ * Action `value` / `args` / `payload`: every "$..." string is resolved, at any
+ * depth, so an action can build an object out of page state
+ * (`{ "propuestaId": "$state.open.id" }`). Literals pass through.
+ */
+function resolveValue(value: unknown, ctx: SpecContext, item: unknown, payload?: unknown): unknown {
+  if (typeof value === 'string') {
+    return /^!?\$/.test(value) ? evaluate(value, ctx, item, payload) : value
+  }
+  if (Array.isArray(value)) {
+    return value.map(v => resolveValue(v, ctx, item, payload))
+  }
+  if (isPlainObject(value)) {
+    return Object.fromEntries(Object.entries(value).map(([k, v]) => [k, resolveValue(v, ctx, item, payload)]))
+  }
+  return value
 }
 
 /**
@@ -139,7 +153,8 @@ export async function runAction(actions: ActionList, payload: unknown, ctx: Spec
         return
       }
       try {
-        await handler(payload, ctx, resolveValue(action.args, ctx, item))
+        const given = 'payload' in action ? resolveValue(action.payload, ctx, item, payload) : payload
+        await handler(given, ctx, resolveValue(action.args, ctx, item, payload))
         ctx.errors[action.call] = undefined
       }
       catch (err) {
@@ -149,7 +164,7 @@ export async function runAction(actions: ActionList, payload: unknown, ctx: Spec
       }
     }
     else {
-      setPath(ctx.state, action.set, 'value' in action ? resolveValue(action.value, ctx, item) : payload)
+      setPath(ctx.state, action.set, 'value' in action ? resolveValue(action.value, ctx, item, payload) : payload)
     }
   }
 }

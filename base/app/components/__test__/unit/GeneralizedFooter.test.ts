@@ -2,7 +2,6 @@ import { describe, expect, it } from 'vitest'
 import type { VueWrapper } from '@vue/test-utils'
 import { config, mount } from '@vue/test-utils'
 import GeneralizedFooter from '@components/GeneralizedFooter.vue'
-import Nop from '@components/Nop.vue'
 
 // Mock NuxtUI components
 const ULink = {
@@ -40,11 +39,6 @@ describe('generalizedFooter', () => {
       wrapper = mount(GeneralizedFooter, {
         props: {
           ...mockProps,
-        },
-        global: {
-          components: {
-            SupportModal: Nop,
-          },
         },
       })
     },

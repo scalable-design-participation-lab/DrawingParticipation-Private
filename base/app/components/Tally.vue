@@ -43,7 +43,8 @@ const rows = computed<Row[]>(() => {
     .sort((a, b) => b.value - a.value)
 })
 const max = computed(() => Math.max(...rows.value.map(r => r.value), 0))
-const fmt = (v: number) => (Number.isInteger(v) ? String(v) : v.toFixed(props.decimals))
+// Grouped thousands, and no more decimals than asked for.
+const fmt = (v: number) => v.toLocaleString(undefined, { maximumFractionDigits: Number.isInteger(v) ? 0 : props.decimals })
 </script>
 
 <template>
@@ -54,7 +55,7 @@ const fmt = (v: number) => (Number.isInteger(v) ? String(v) : v.toFixed(props.de
     <div v-for="row in rows" :key="row.key">
       <div class="flex items-baseline justify-between gap-3 text-sm">
         <span class="truncate">{{ row.label }}</span>
-        <span class="shrink-0 tabular-nums text-gray-500">{{ fmt(row.value) }}<span v-if="mode !== 'count'" class="ml-1 text-xs">(n={{ row.n }})</span></span>
+        <span class="shrink-0 tabular-nums text-gray-500">{{ fmt(row.value) }}<span v-if="mode !== 'count'" class="ml-1.5 text-xs opacity-70">n={{ row.n }}</span></span>
       </div>
       <div class="mt-1 h-2 w-full overflow-hidden rounded-full bg-gray-200 dark:bg-gray-700">
         <div class="h-full rounded-full bg-primary-500" :style="{ width: `${max ? (row.value / max) * 100 : 0}%` }" />

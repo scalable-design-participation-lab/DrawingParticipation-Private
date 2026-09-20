@@ -19,6 +19,7 @@ export const ActionSchema = z.union([
   z.strictObject({
     call: z.string().describe('Name of a handler registered by the app (registerHandler).'),
     args: z.unknown().optional().describe('Arguments passed to the handler after the payload; a "$..." string is resolved.'),
+    payload: z.unknown().optional().describe('What the handler receives instead of the event; every "$..." string inside is resolved (e.g. { "propuestaId": "$state.open.id" }).'),
   }),
 ])
 export type Action = z.infer<typeof ActionSchema>
@@ -27,11 +28,28 @@ export type Action = z.infer<typeof ActionSchema>
 export const ActionListSchema = z.union([ActionSchema, z.array(ActionSchema)])
 export type ActionList = z.infer<typeof ActionListSchema>
 
+/**
+ * Enrich every row of this source with an aggregate of another one: the rows
+ * of `from` whose `on` field equals this row's `key` (default "id") are
+ * counted into `count`, or their `sum` field is added up into `as`.
+ */
+export const JoinSchema = z.strictObject({
+  from: z.string().describe('Another data source declared on the same page'),
+  on: z.string().describe('Field of the other source holding this row\'s id'),
+  key: z.string().optional().describe('Field of this row the other source points at (default "id")'),
+  count: z.string().optional().describe('Output field holding how many rows matched'),
+  sum: z.string().optional().describe('Numeric field of the other source to add up'),
+  as: z.string().optional().describe('Output field for `sum` (default the `sum` field name)'),
+}).refine(j => j.count || j.sum, { message: 'a join needs `count` or `sum`' })
+
+const joinable = { join: z.array(JoinSchema).optional() }
+
 export const DataSourceSchema = z.discriminatedUnion('kind', [
   z.strictObject({
     kind: z.literal('static'),
     contract: z.string().optional().describe('Collection contract the rows must satisfy.'),
     items: z.array(z.unknown()),
+    ...joinable,
   }),
   z.strictObject({
     kind: z.literal('collection'),
@@ -39,14 +57,17 @@ export const DataSourceSchema = z.discriminatedUnion('kind', [
     contract: z.string().optional(),
     where: z.array(z.tuple([z.string(), z.string(), z.unknown()])).optional(),
     limit: z.number().int().positive().optional(),
+    ...joinable,
   }),
   z.strictObject({
     kind: z.literal('rest'),
     url: z.string(),
     contract: z.string().optional(),
+    ...joinable,
   }),
 ])
 export type DataSourceSpec = z.infer<typeof DataSourceSchema>
+export type JoinSpec = z.infer<typeof JoinSchema>
 
 export interface SpecNode {
   /** Registry name ("BackgroundMap") or a native tag ("div"). */
@@ -99,4 +120,4 @@ export const RootSpecSchema = z.strictObject({
 export type RootSpec = z.infer<typeof RootSpecSchema>
 
 /** Bind expressions: "$data.x", "$state.a.b", "$query.q", "$item", "$item.reading.humedad". */
-export const BIND_RE = /^\$(data|state|sources|errors|item|query|t|locale)((?:\.[\w-]+)*)$/
+export const BIND_RE = /^\$(data|state|sources|errors|item|query|t|locale|payload)((?:\.[\w-]+)*)$/

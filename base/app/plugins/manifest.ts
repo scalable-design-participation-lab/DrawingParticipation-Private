@@ -32,6 +32,21 @@ export default defineNuxtPlugin((nuxtApp) => {
     const rows = (ctx.state[String(args)] ?? []) as unknown[]
     ctx.state[String(args)] = rows.includes(payload) ? rows.filter(x => x !== payload) : [...rows, payload]
   }, 'Add the payload to the state list named in args, or remove it when already there.')
+  // A detail view holds a snapshot of a row; after a write, re-read it from the
+  // (reloaded) data source so the open panel shows the new numbers.
+  registerHandler('refreshItem', (_payload, ctx, args) => {
+    const { from, into, key = 'id' } = (args ?? {}) as { from?: string, into?: string, key?: string }
+    if (!from || !into) {
+      throw new Error('refreshItem needs args { from: "<data source>", into: "<state key>" }')
+    }
+    const current = ctx.state[into] as Record<string, unknown> | null
+    if (!current) {
+      return
+    }
+    const rows = (ctx.data[from] ?? []) as Record<string, unknown>[]
+    ctx.state[into] = rows.find(row => row[key] === current[key]) ?? current
+  }, 'Re-read the row a detail view is showing from a data source: args { from, into, key? }.')
+
   registerHandler('removeItem', (payload, ctx, args) => {
     ctx.state[String(args)] = list(ctx, args).filter(row => row.id !== payload)
   }, 'Remove the item whose id is the payload from the state list named in args.')

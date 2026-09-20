@@ -6,6 +6,7 @@ import MarkerOverlay from '../components/MarkerOverlay.vue'
 import FeatureLayer from '../components/FeatureLayer.vue'
 import StepCard from '../components/StepCard.vue'
 import Accordion from '../components/Accordion.vue'
+import SpecIcon from '../components/SpecIcon.vue'
 import List from '../components/List.vue'
 import Tally from '../components/Tally.vue'
 import Tabs from '../components/Tabs.vue'
@@ -23,7 +24,7 @@ import Text from '../components/Text.vue'
 import Image from '../components/Image.vue'
 import { registerComponent } from '../utils/registry'
 import { defineNuxtPlugin } from '#app'
-import { UButton, UCard, UDivider, UIcon } from '#components'
+import { UButton, UCard, UDivider } from '#components'
 // Registers the base contracts and style presets as side effects.
 import '../contracts/components'
 import '../utils/styles'
@@ -62,5 +63,5 @@ export default defineNuxtPlugin(() => {
   registerComponent('Button', UButton)
   registerComponent('Divider', UDivider)
   registerComponent('Card', UCard)
-  registerComponent('Icon', UIcon)
+  registerComponent('Icon', SpecIcon)
 })

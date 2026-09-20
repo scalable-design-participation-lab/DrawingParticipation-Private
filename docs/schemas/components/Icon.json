@@ -1,6 +1,6 @@
 {
   "name": "Icon",
-  "description": "Nuxt UI icon.",
+  "description": "An icon with the same enumerated size / tone vocabulary as Text.",
   "stateful": false,
   "emits": [],
   "slots": [],
@@ -10,6 +10,25 @@
     "properties": {
       "name": {
         "type": "string"
+      },
+      "size": {
+        "type": "string",
+        "enum": [
+          "xs",
+          "sm",
+          "md",
+          "lg",
+          "xl"
+        ]
+      },
+      "tone": {
+        "type": "string",
+        "enum": [
+          "default",
+          "muted",
+          "accent",
+          "inverse"
+        ]
       }
     },
     "required": [

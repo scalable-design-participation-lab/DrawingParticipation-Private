@@ -46,6 +46,8 @@ const props = withDefaults(defineProps<{
   deletable?: boolean
   /** Show the comment (inspect) icon on every feature. */
   commentIcons?: boolean
+  /** Only draw features whose icon key is listed, or true in the map (omit to draw all). */
+  visibleTags?: string[] | Record<string, boolean>
   confirmDelete?: string
 }>(), {
   features: () => [],
@@ -56,6 +58,7 @@ const props = withDefaults(defineProps<{
   editable: false,
   deletable: false,
   commentIcons: false,
+  visibleTags: undefined,
   confirmDelete: 'Delete this feature?',
 })
 
@@ -68,11 +71,20 @@ const emit = defineEmits<{
   'inspect': [payload: MapFeature & { position: number[], title: string }]
 }>()
 
-const points = computed(() => props.features.filter(f => f.type === 'Point'))
-const lines = computed(() => props.features.filter(f => f.type === 'LineString'))
-const polygons = computed(() => props.features.filter(f => f.type === 'Polygon'))
-
 const key = (f: MapFeature) => (f.isProhibit ? 'prohibit' : f.iconName || f.frequency || '')
+
+const visible = computed(() => {
+  const tags = props.visibleTags
+  if (!tags) {
+    return null
+  }
+  // A list of tags, or the `{ tag: boolean }` map a checkbox group emits.
+  return Array.isArray(tags) ? new Set(tags) : new Set(Object.entries(tags).filter(([, on]) => on).map(([tag]) => tag))
+})
+const shown = computed(() => (visible.value ? props.features.filter(f => visible.value!.has(key(f))) : props.features))
+const points = computed(() => shown.value.filter(f => f.type === 'Point'))
+const lines = computed(() => shown.value.filter(f => f.type === 'LineString'))
+const polygons = computed(() => shown.value.filter(f => f.type === 'Polygon'))
 const iconFor = (f: MapFeature) => props.icons[key(f)] ?? props.icons.default ?? ''
 const titleFor = (f: MapFeature) => props.labels[key(f)] ?? props.defaultLabel
 
@@ -157,7 +169,7 @@ function remove(f: MapFeature) {
     </ol-source-vector>
   </ol-vector-layer>
 
-  <template v-for="f in features" :key="`ui-${f.id}`">
+  <template v-for="f in shown" :key="`ui-${f.id}`">
     <ol-overlay v-if="editable" :position="anchor(f)" :offset="[0, 0]" :stop-event="false" positioning="top-left">
       <button type="button" class="feature-button" aria-label="open" @click.stop.prevent="emit('open', payload(f))">
         <img :src="openIcon" alt="" class="h-6 w-6">

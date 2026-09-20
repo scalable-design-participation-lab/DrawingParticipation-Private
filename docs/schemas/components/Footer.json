@@ -3,7 +3,8 @@
   "description": "Floating bottom bar with a title, links and buttons.",
   "stateful": false,
   "emits": [
-    "support"
+    "support",
+    "buttonClick"
   ],
   "slots": [
     "support"
@@ -35,18 +36,22 @@
         }
       },
       "buttons": {
+        "description": "Pressing one emits `buttonClick` with the entry",
         "type": "array",
         "items": {
           "type": "object",
           "properties": {
             "label": {
               "type": "string"
+            },
+            "to": {
+              "type": "string"
             }
           },
           "required": [
             "label"
           ],
-          "additionalProperties": false
+          "additionalProperties": {}
         }
       },
       "icons": {

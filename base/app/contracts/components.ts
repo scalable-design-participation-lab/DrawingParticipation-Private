@@ -87,10 +87,10 @@ registerContract({
   props: z.strictObject({
     title: z.string().optional(),
     links: z.array(z.strictObject({ to: z.string(), label: z.string() })).optional(),
-    buttons: z.array(z.strictObject({ label: z.string() })).optional(),
+    buttons: z.array(z.object({ label: z.string(), to: z.string().optional() }).passthrough()).optional().describe('Pressing one emits `buttonClick` with the entry'),
     icons: z.array(z.strictObject({ name: z.string() })).optional(),
   }),
-  emits: ['support'],
+  emits: ['support', 'buttonClick'],
   slots: ['support'],
 })
 
@@ -133,6 +133,7 @@ registerContract({
     accept: z.string().optional(),
     multiple: z.boolean().optional(),
     capture: z.enum(['user', 'environment']).optional(),
+    lines: z.array(z.string()).optional().describe('Lines drawn inside a dashed box when no children are given'),
   }),
   emits: ['files'],
   slots: ['default'],
@@ -140,20 +141,25 @@ registerContract({
 
 registerContract({
   name: 'FilterSidebar',
-  description: 'Slide-in panel with filter sections (checkbox groups, date ranges).',
+  description: 'Panel of collapsible filter sections. A section is `{ label, name, component, props }`: `label` heads the accordion, `component` is "GenericCheckboxGroup" (props `{ items: [{ label, value }] }`) or "GenericDateRangePicker", `name` identifies it. `filter-change` emits `{ name, value }`; a checkbox group value is a map of item value to boolean, which binds straight to `FeatureLayer.visibleTags`.',
   props: z.strictObject({
     isVisible: z.boolean().optional(),
     title: z.string().optional(),
-    filterSections: z.array(z.object({ title: z.string(), type: z.string() }).passthrough()),
+    filterSections: z.array(z.object({
+      label: z.string(),
+      name: z.string(),
+      component: z.enum(['GenericCheckboxGroup', 'GenericDateRangePicker']),
+      props: z.record(z.string(), z.unknown()).optional(),
+    }).passthrough()),
   }),
   emits: ['close', 'reset', 'filter-change', 'download'],
 })
 
 registerContract({
   name: 'Toolbar',
-  description: 'Vertical tool palette.',
+  description: 'Vertical tool palette. Pressing one emits `toolClick` with that tool (plus its `index`), so give each tool a `value` and branch on `$state.<key>.value`.',
   props: z.strictObject({
-    tools: z.array(z.object({ icon: z.string().optional(), tooltip: z.string().optional() }).passthrough()),
+    tools: z.array(z.object({ icon: z.string().optional(), tooltip: z.string().optional(), value: z.unknown().optional() }).passthrough()),
   }),
   emits: ['toolClick'],
 })
@@ -196,6 +202,7 @@ registerContract({
     editable: z.boolean().optional().describe('Show the open (edit) button on every feature'),
     deletable: z.boolean().optional(),
     commentIcons: z.boolean().optional().describe('Show the comment icon that emits `inspect`'),
+    visibleTags: z.union([z.array(z.string()), z.record(z.string(), z.boolean())]).optional().describe('Only draw features whose icon key is listed, or true in the map a FilterSidebar checkbox group emits; omit to draw all'),
     confirmDelete: z.string().optional(),
   }),
   emits: ['update:features', 'update:draw', 'open', 'inspect'],
@@ -337,7 +344,15 @@ registerContract({
 })
 registerContract({ name: 'Divider', description: 'Nuxt UI divider.', props: z.strictObject({ label: z.string().optional() }), looseProps: true })
 registerContract({ name: 'Card', description: 'Nuxt UI card.', props: z.strictObject({}), looseProps: true, slots: ['default', 'header', 'footer'] })
-registerContract({ name: 'Icon', description: 'Nuxt UI icon.', props: z.strictObject({ name: z.string() }), looseProps: true })
+registerContract({
+  name: 'Icon',
+  description: 'An icon with the same enumerated size / tone vocabulary as Text.',
+  props: z.strictObject({
+    name: z.string(),
+    size: z.enum(['xs', 'sm', 'md', 'lg', 'xl']).optional(),
+    tone: z.enum(['default', 'muted', 'accent', 'inverse']).optional(),
+  }),
+})
 
 // ---------------------------------------------------------------------------
 // Layout primitives: every visual decision is an enum, so a spec never needs

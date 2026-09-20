@@ -94,6 +94,26 @@
         "description": "Show the comment icon that emits `inspect`",
         "type": "boolean"
       },
+      "visibleTags": {
+        "description": "Only draw features whose icon key is listed, or true in the map a FilterSidebar checkbox group emits; omit to draw all",
+        "anyOf": [
+          {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          {
+            "type": "object",
+            "propertyNames": {
+              "type": "string"
+            },
+            "additionalProperties": {
+              "type": "boolean"
+            }
+          }
+        ]
+      },
       "confirmDelete": {
         "type": "string"
       }
