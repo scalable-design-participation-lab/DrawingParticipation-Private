@@ -5,10 +5,6 @@ import { useFeatureStore } from '../../stores/features'
 import { useRouteFeatureStore } from '../../stores/route-features'
 
 const props = defineProps({
-  enableClick: {
-    type: Boolean,
-    default: false,
-  },
   isMapPage: {
     type: Boolean,
     default: false,

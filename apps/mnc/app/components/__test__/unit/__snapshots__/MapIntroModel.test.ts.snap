@@ -1,0 +1,67 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`mapIntroModel.vue > renders correctly 1`] = `
+<div
+  modelvalue="false"
+  ui="[object Object]"
+>
+  
+  <div>
+    
+    <div
+      class="space-y-4"
+    >
+      <p>
+         This map gathers real-world case studies of mobile and networked creativity from communities around the world. 
+      </p>
+      <p>
+        You can:
+      </p>
+      <ul
+        class="list-disc pl-6 space-y-2"
+      >
+        <li>
+          Click any pin to read the full case study
+        </li>
+        <li>
+          Switch the basemap between map and satellite views
+        </li>
+        <li>
+          Add your own photos and comments to a case study
+        </li>
+      </ul>
+    </div>
+    
+    
+    <div
+      class="flex items-center gap-2"
+    >
+      <h3
+        class="text-xl font-semibold"
+      >
+        Mobile Networked Creativity Map
+      </h3>
+    </div>
+    
+    
+    <div
+      class="flex justify-end"
+    >
+      <button
+        color="black"
+        variant="solid"
+      >
+        
+         Got it 
+        
+      </button>
+    </div>
+    
+  </div>
+  
+  
+  
+  
+  
+</div>
+`;

@@ -1,0 +1,25 @@
+rules_version = '2';
+
+// Cloud Storage security rules for the MNC mapping app.
+// Deploy with:  firebase deploy --only storage  (from apps/mnc)
+service firebase.storage {
+  match /b/{bucket}/o {
+
+    // All objects are publicly readable: the app shares Firebase Storage
+    // download URLs directly in the UI.
+    match /{allPaths=**} {
+      allow read: if true;
+    }
+
+    // User-uploaded contribution media, written by the contributions store
+    // under contributions/<projectId>/<timestamp>-<filename>. Photos or audio,
+    // up to 10 MB each. No sign-in required to add; only a moderator may delete.
+    match /contributions/{projectId}/{fileName} {
+      allow write: if request.resource.size < 10 * 1024 * 1024
+        && (request.resource.contentType.matches('image/.*')
+          || request.resource.contentType.matches('audio/.*'));
+      allow delete: if request.auth != null
+        && firestore.exists(/databases/(default)/documents/admins/$(request.auth.uid));
+    }
+  }
+}

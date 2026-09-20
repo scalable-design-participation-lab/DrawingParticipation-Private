@@ -1,0 +1,17 @@
+{
+  "_note": "Display labels for the five primary tags. The tag itself stays the English data key (it is stored on entries and used for filtering) - this only translates what the user sees. Unknown/free-text tags fall back to the key. es strings supplied by Johan Romero (issue #45); pt strings reused from about.themes in pt.json.",
+  "pt": {
+    "Health & Crisis Response": "Saúde e Resposta a Crises",
+    "Transportation & Mobility": "Transporte e Mobilidade",
+    "Digital Access & Connectivity": "Acesso Digital e Conectividade",
+    "Community Mapping & Visibility": "Mapeamento Comunitário e Visibilidade",
+    "Art & Cultural Expression": "Arte e Expressão Cultural"
+  },
+  "es": {
+    "Health & Crisis Response": "Salud y gestión de crisis",
+    "Transportation & Mobility": "Transporte y movilidad",
+    "Digital Access & Connectivity": "Acceso digital y conectividad",
+    "Community Mapping & Visibility": "Mapas comunitarios y visibilidad",
+    "Art & Cultural Expression": "Arte y expresiones culturales"
+  }
+}

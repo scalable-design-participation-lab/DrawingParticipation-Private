@@ -1,0 +1,142 @@
+rules_version = '2';
+
+// Firestore security rules for the MNC mapping app.
+// Deploy with:  firebase deploy --only firestore:rules  (from apps/mnc)
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // A signed-in user is a moderator when an admins/<uid> document exists.
+    // Bootstrap the first admin by creating that document from the console
+    // with { role: 'admin' }; after that, accounts are managed on /admin.
+    function isAdmin() {
+      return request.auth != null
+        && exists(/databases/$(database)/documents/admins/$(request.auth.uid));
+    }
+
+    // The account-management tier: role 'admin' on the caller's own admins
+    // doc. Docs from before roles existed have no role field and keep full
+    // rights (they were bootstrapped by the team).
+    function isSuperAdmin() {
+      return isAdmin()
+        && get(/databases/$(database)/documents/admins/$(request.auth.uid))
+            .data.get('role', 'admin') == 'admin';
+    }
+
+    // email is optional (docs bootstrapped from the console may not have one)
+    // but must be a short string when present.
+    function isValidAdminDoc(d) {
+      return d.role in ['admin', 'moderator']
+        && d.get('email', '') is string
+        && d.get('email', '').size() <= 200;
+    }
+
+    // Bootstrap allowlist. The first administrator has nobody to grant them
+    // access, so the project owners named here may claim their own admins doc
+    // once, from the /admin page — no Firebase console needed. Everyone else
+    // is granted by an existing admin. request.auth.token.email is issued by
+    // Firebase Auth and cannot be spoofed by the client.
+    //
+    // EDIT THIS LIST to match whoever owns the project.
+    function isProjectOwner() {
+      return request.auth != null
+        && request.auth.token.email in [
+          'kong.dez@northeastern.edu',
+          'ce.sandoval09@gmail.com'
+        ];
+    }
+
+    // Admin allowlist + roles. Anyone signed in may check their own status;
+    // moderators may see the list. Only super admins manage accounts — and
+    // never their own doc, so they can't lock themselves out or self-demote.
+    match /admins/{uid} {
+      allow get: if (request.auth != null && request.auth.uid == uid) || isAdmin();
+      allow list: if isAdmin();
+      // `create` only fires when the doc is absent, so an owner's self-claim
+      // works exactly once; changing it afterwards needs another admin.
+      allow create: if isValidAdminDoc(request.resource.data)
+        && (
+          (isSuperAdmin() && request.auth.uid != uid)
+          || (isProjectOwner()
+              && request.auth.uid == uid
+              && request.resource.data.role == 'admin')
+        );
+      allow update: if isSuperAdmin()
+        && request.auth.uid != uid
+        && isValidAdminDoc(request.resource.data);
+      allow delete: if isSuperAdmin() && request.auth.uid != uid;
+    }
+
+    // Self-registrations (plain logins awaiting a rights decision on /admin).
+    // A signed-in user may register themselves exactly once; admins see the
+    // list and may clean up registrations they don't recognize. No rights are
+    // conferred by this collection — only admins/* grants anything.
+    match /accounts/{uid} {
+      allow get: if (request.auth != null && request.auth.uid == uid) || isAdmin();
+      allow list: if isAdmin();
+      allow create: if request.auth != null
+        && request.auth.uid == uid
+        && request.resource.data.email is string
+        && request.resource.data.email.size() <= 200
+        && request.resource.data.createdAt == request.time;
+      allow update: if false;
+      allow delete: if isSuperAdmin();
+    }
+
+    function isValidContribution(data) {
+      return data.projectId is string
+        && data.projectId.size() > 0
+        && data.projectId.size() <= 200
+        && data.comment is string
+        && data.comment.size() <= 2000
+        && data.media is list
+        && data.media.size() <= 10
+        && data.userId is string
+        // New submissions must be unapproved; only a moderator can approve.
+        && data.approved == false
+        && data.createdAt == request.time;
+    }
+
+    // User-contributed media + comments. Anyone may create a well-formed,
+    // pending contribution; the public reads only approved ones; moderators
+    // read all and may approve (update) or delete.
+    match /contributions/{contributionId} {
+      allow read: if resource.data.approved == true || isAdmin();
+      allow create: if isValidContribution(request.resource.data);
+      allow update, delete: if isAdmin();
+    }
+
+    // User-submitted solutions (new case-study pins). Same moderation model.
+    match /userSolutions/{solutionId} {
+      allow read: if resource.data.approved == true || isAdmin();
+      allow create: if request.resource.data.title is string
+        && request.resource.data.title.size() > 0
+        && request.resource.data.title.size() <= 200
+        && request.resource.data.primaryTag is string
+        && request.resource.data.lon is number
+        && request.resource.data.lat is number
+        && request.resource.data.approved == false
+        && request.resource.data.createdAt == request.time;
+      allow update, delete: if isAdmin();
+    }
+
+    // Personal contact info attached to an entry (from the "Join Our Research"
+    // step). Carries name/email, so ONLY moderators may read; anyone may create
+    // one. Never rendered publicly — the entry itself lives in userSolutions.
+    match /entryContacts/{contactId} {
+      allow read: if isAdmin();
+      allow create: if request.resource.data.createdAt == request.time;
+      allow update, delete: if isAdmin();
+    }
+
+    // Collections written/read by the existing app code (db.ts
+    // saveDataToDatabase, DownloadModalHurtoma export, base all-features).
+    match /projects/{projectId} {
+      allow read, create: if true;
+      allow update, delete: if false;
+    }
+    match /users/{userId} {
+      allow read, create: if true;
+      allow update, delete: if false;
+    }
+  }
+}

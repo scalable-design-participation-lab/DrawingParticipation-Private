@@ -1,0 +1,39 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`SidebarComponent > renders correctly 1`] = `
+<div
+  class="u-card fixed right-6 top-24 w-96 md:w-80 max-h-[calc(100vh-11rem)] z-40 shadow-xl dark:bg-black flex flex-col overflow-hidden"
+  data-v-fa3e7347=""
+  modelvalue="false"
+>
+  
+  <div
+    class="flex-1 overflow-y-scroll max-h-[calc(100vh-13rem)] px-1"
+    data-v-fa3e7347=""
+  >
+    <div
+      class="u-accordion space-y-1.5"
+      color="white"
+      data-v-fa3e7347=""
+      items="[object Object],[object Object],[object Object],[object Object]"
+      variant="solid"
+    >
+      
+      
+    </div>
+    <u-button-stub
+      class="my-2 py-3 px-6 rounded-full flex place-self-end hover:bg-gray-300 hover:text-black dark:hover:bg-zinc-700 dark:hover:text-white"
+      color="black"
+      data-v-fa3e7347=""
+      disabled="false"
+      loading="false"
+    />
+    <div
+      class="thank-you-modal"
+      data-v-fa3e7347=""
+      modelvalue="false"
+    />
+  </div>
+  
+</div>
+`;

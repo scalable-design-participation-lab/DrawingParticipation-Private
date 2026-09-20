@@ -25,6 +25,7 @@ export interface Feature {
     lastname: string
   } | null
   images?: string[]
+  properties?: object
 }
 /**
  * Type Icon name for the sidebar.
