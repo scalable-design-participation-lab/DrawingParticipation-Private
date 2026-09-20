@@ -4118,26 +4118,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@mono/agenda-barrio@workspace:apps/agenda-barrio":
-  version: 0.0.0-use.local
-  resolution: "@mono/agenda-barrio@workspace:apps/agenda-barrio"
-  dependencies:
-    "@types/eslint": "npm:^9"
-    eslint: "npm:^9"
-    nuxt: "npm:^3"
-  languageName: unknown
-  linkType: soft
-
-"@mono/barrio-ideas@workspace:apps/barrio-ideas":
-  version: 0.0.0-use.local
-  resolution: "@mono/barrio-ideas@workspace:apps/barrio-ideas"
-  dependencies:
-    "@types/eslint": "npm:^9"
-    eslint: "npm:^9"
-    nuxt: "npm:^3"
-  languageName: unknown
-  linkType: soft
-
 "@mono/base@workspace:base":
   version: 0.0.0-use.local
   resolution: "@mono/base@workspace:base"
@@ -4174,29 +4154,9 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@mono/diario-fotos@workspace:apps/diario-fotos":
-  version: 0.0.0-use.local
-  resolution: "@mono/diario-fotos@workspace:apps/diario-fotos"
-  dependencies:
-    "@types/eslint": "npm:^9"
-    eslint: "npm:^9"
-    nuxt: "npm:^3"
-  languageName: unknown
-  linkType: soft
-
 "@mono/drawing-participation@workspace:apps/drawing-participation":
   version: 0.0.0-use.local
   resolution: "@mono/drawing-participation@workspace:apps/drawing-participation"
-  dependencies:
-    "@types/eslint": "npm:^9"
-    eslint: "npm:^9"
-    nuxt: "npm:^3"
-  languageName: unknown
-  linkType: soft
-
-"@mono/encuesta-movilidad@workspace:apps/encuesta-movilidad":
-  version: 0.0.0-use.local
-  resolution: "@mono/encuesta-movilidad@workspace:apps/encuesta-movilidad"
   dependencies:
     "@types/eslint": "npm:^9"
     eslint: "npm:^9"
@@ -4286,6 +4246,16 @@ __metadata:
     nuxt: "npm:^3"
     ol: "npm:^10.2.1"
     vue3-openlayers: "npm:^11.2.1"
+  languageName: unknown
+  linkType: soft
+
+"@mono/presupuesto-distrito@workspace:apps/presupuesto-distrito":
+  version: 0.0.0-use.local
+  resolution: "@mono/presupuesto-distrito@workspace:apps/presupuesto-distrito"
+  dependencies:
+    "@types/eslint": "npm:^9"
+    eslint: "npm:^9"
+    nuxt: "npm:^3"
   languageName: unknown
   linkType: soft
 

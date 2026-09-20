@@ -1,0 +1,107 @@
+{
+  "nav": {
+    "mapa": "Mapa",
+    "propuestas": "Propuestas",
+    "resultados": "Resultados",
+    "acerca": "Acerca"
+  },
+  "app": {
+    "title": "Presupuesto participativo",
+    "subtitle": "Distrito Centro · edición 2026"
+  },
+  "cat": {
+    "movilidad": "Movilidad",
+    "verde": "Zonas verdes",
+    "cultura": "Cultura",
+    "accesibilidad": "Accesibilidad",
+    "limpieza": "Limpieza"
+  },
+  "mapa": {
+    "paletaTitulo": "¿Qué quieres proponer?",
+    "paletaTexto": "Elige una categoría y toca el mapa donde iría la mejora. Después pulsa el «+» de la marca para describirla.",
+    "pendiente": "Toca el mapa para colocar tu propuesta.",
+    "verDetalle": "Ver detalle",
+    "cerrar": "Cerrar",
+    "sinCoste": "Sin presupuesto todavía",
+    "filtros": "Filtrar por categoría",
+    "ayuda": "Cómo funciona",
+    "total": "Propuestas en el mapa:"
+  },
+  "form": {
+    "nueva": "Nueva propuesta",
+    "paso": "Paso",
+    "de": "de",
+    "titulo": "Título de la propuesta",
+    "tituloHint": "Ej.: Carril bici en la avenida del Parque",
+    "categoria": "Categoría",
+    "elige": "Elige una categoría",
+    "coste": "Coste estimado (€)",
+    "costeHint": "Una cifra aproximada basta",
+    "lugar": "Lugar",
+    "lugarHint": "Calle, plaza o referencia",
+    "resumen": "Resumen en una línea",
+    "descripcion": "Descripción",
+    "descripcionHint": "¿Qué problema resuelve? ¿A quién beneficia?",
+    "fotos": "Añade una foto del sitio (opcional)",
+    "documento": "Adjunta un documento de apoyo (opcional)",
+    "documentoLineas": "Arrastra un PDF aquí o haz clic para elegirlo",
+    "siguiente": "Siguiente",
+    "atras": "Atrás",
+    "enviar": "Publicar propuesta",
+    "faltaTitulo": "Ponle un título y una categoría para continuar.",
+    "gracias": "¡Propuesta publicada!",
+    "graciasTexto": "Ya aparece en el mapa y en la lista; tus vecinos pueden votarla.",
+    "otra": "Proponer otra",
+    "verLista": "Ver todas las propuestas"
+  },
+  "lista": {
+    "titulo": "Todas las propuestas",
+    "todas": "Todas",
+    "buscar": "Buscar por título o lugar…",
+    "vacio": "No hay propuestas que coincidan.",
+    "detalle": "Detalle",
+    "votar": "Votar esta propuesta",
+    "votos": "votos",
+    "coste": "Coste",
+    "sinDescripcion": "Sin descripción.",
+    "cargando": "Cargando…",
+    "error": "No se pudieron cargar las propuestas.",
+    "graciasVoto": "¡Gracias por tu voto!"
+  },
+  "res": {
+    "titulo": "Resultados",
+    "porCategoria": "Propuestas por categoría",
+    "costePorCategoria": "Coste solicitado por categoría (€)",
+    "votosPorCategoria": "Votos por categoría",
+    "ranking": "Las más votadas",
+    "vacio": "Todavía no hay datos.",
+    "presupuesto": "Presupuesto del distrito",
+    "solicitado": "Total solicitado",
+    "propuestas": "propuestas",
+    "votos": "votos"
+  },
+  "acerca": {
+    "titulo": "Cómo funciona el presupuesto participativo",
+    "intro": "El distrito reserva una parte de su presupuesto para que lo decidan los vecinos. Cualquiera propone, cualquiera vota, y las propuestas más apoyadas se ejecutan hasta agotar la partida.",
+    "pasosTitulo": "Tres pasos",
+    "paso1": "Propón: marca en el mapa dónde iría la mejora y ponle precio.",
+    "paso2": "Vota: apoya las propuestas de tus vecinas y vecinos.",
+    "paso3": "Sigue: los resultados se actualizan en vivo en esta misma web.",
+    "faqTitulo": "Preguntas frecuentes",
+    "faq1": "¿Quién puede participar?",
+    "faq1r": "Cualquier persona empadronada en el distrito, sin límite de edad.",
+    "faq2": "¿Cuánto puedo pedir?",
+    "faq2r": "No hay mínimo. Las propuestas de más de 200.000 € pasan por un informe técnico.",
+    "faq3": "¿Qué pasa si mi propuesta no sale?",
+    "faq3r": "Queda publicada y puede volver a presentarse en la siguiente edición.",
+    "faq4": "¿Puedo votar varias veces?",
+    "faq4r": "Puedes apoyar tantas propuestas como quieras, pero solo una vez cada una.",
+    "contacto": "Dudas: participacion@distrito.example",
+    "irMapa": "Ir al mapa",
+    "irPropuestas": "Ver propuestas"
+  },
+  "footer": {
+    "titulo": "Presupuesto participativo del distrito",
+    "ayuda": "Ayuda"
+  }
+}

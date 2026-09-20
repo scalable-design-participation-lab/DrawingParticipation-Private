@@ -129,8 +129,23 @@ In **strict mode** (`verifySpec(spec, { strict: true })`, CLI `--strict`) a raw
 `class` prop anywhere is an error (`style.raw-class`). Every spec in this repo
 passes strict mode; run LLM output in strict mode.
 
-Action `value` / `args` accept the same expressions, including the `!` form
-(`{ "set": "needsRegistration", "value": "!$state.returning" }`). `init` at
+A `call` action can build what the handler receives instead of passing the
+event through: `payload` is resolved at any depth, so a button can save a row
+made of page state.
+
+```jsonc
+{ "call": "saveTo", "args": "votos",
+  "payload": { "propuestaId": "$state.abierta.id", "valor": 1 } }
+```
+
+`"$payload"` (or `"$payload.<field>"`) is the event's own value, for the common
+case of keeping one field of what a component emitted:
+`{ "set": "visibles", "value": "$payload.value" }`. It only exists inside an
+action's `value` / `args` / `payload`; anywhere else the verifier rejects it.
+
+Action `value` / `args` / `payload` accept the same expressions, including the
+`!` form (`{ "set": "needsRegistration", "value": "!$state.returning" }`), and
+resolve inside nested objects and arrays. `init` at
 the root runs an action list once when the page mounts: the place to sign in,
 load results into state, or derive initial flags from what a handler found.
 
@@ -154,7 +169,9 @@ Everything an LLM can wire: show/hide (`if`), two-way values (`bind` +
 `$sources.x.error`), form validation feedback (`FormFields.errors`, a
 `field -> message` map a handler can `set`), list edits on page state
 (`updateItem` / `removeItem` / `toggleItem` with the state key as `args`: `{ "call": "updateItem", "args": "features" }`
-merges a `{ id, …patch }` payload into the matching item; `toggleItem` adds or removes the payload, e.g. a tag filter), side effects (`call`), failed
+merges a `{ id, …patch }` payload into the matching item; `toggleItem` adds or removes the payload, e.g. a tag filter),
+re-reading an open detail view after a write (`{ "call": "refreshItem", "args": { "from": "propuestas", "into": "abierta" } }`),
+side effects (`call`), failed
 side effects (`$errors.<handler>`: the message of the last error a handler
 threw, cleared when it next succeeds), writing rows (`call: "saveTo"` /
 `"deleteFrom"` with the collection name as `args`, see the manifest below).
@@ -182,6 +199,19 @@ A generated page must degrade, never disappear:
 | `static`     | `items`                    | `staticAdapter` (fixtures, mocks, tests)    |
 | `rest`       | `url`                      | `restAdapter` (array, `{items}` or GeoJSON) |
 | `collection` | `name`, `where?`, `limit?` | base's collections API when `name` is declared in `app.json` `data.collections`; otherwise `data.restBase/<name>` |
+
+Every kind accepts `join`: aggregates of another source folded into these rows,
+so an item template can read them without looping twice.
+
+```jsonc
+"propuestas": { "kind": "collection", "name": "propuestas",
+  "join": [{ "from": "votos", "on": "propuestaId", "count": "votos" }] }
+// every proposal row now has `votos`; `$item.votos` works, and List can sortBy it
+```
+
+`{ from, on, key?, count?, sum?, as? }`: rows of `from` whose `on` equals this
+row's `key` (default `id`) are counted into `count`, or their `sum` field is
+added up into `as`. Joins re-run whenever either side reloads.
 
 Every kind accepts `contract`: the name of a collection contract the rows must
 satisfy. Rows that fail are rejected wholesale (`$sources.<name>.error` holds
@@ -213,24 +243,28 @@ multipart; base stores the files under `.data/uploads` and writes their
 `/api/uploads/<file>` URLs into the row, so the gallery is just
 `{ "type": "Image", "bind": { "src": "$item.fotos.0" } }`.
 
-## Four apps from JSON only
+## An app from JSON only
 
-Four apps under `apps/` are specs only (no components, handlers, stores or
-presets of their own; `package.json` / `nuxt.config.ts` / `tsconfig.json` /
-`eslint.config.mjs` are fixed boilerplate), each written to stress a
-different part of the library:
+`apps/presupuesto-distrito` is specs only: no components, handlers, stores or
+presets of its own (`package.json` / `nuxt.config.ts` / `tsconfig.json` /
+`eslint.config.mjs` are fixed boilerplate). It is participatory budgeting for a
+district, written to use every component the registry offers - 28 of 28 - so
+that a gap in the library shows up as a broken screen instead of going
+unnoticed. What each of its pages stresses:
 
-| App                    | Kind                          | What it exercises                                                                              |
-| ---------------------- | ----------------------------- | ---------------------------------------------------------------------------------------------- |
-| `barrio-ideas`         | participation map             | `FeatureLayer` draw + `MarkerOverlay` editor + `saveTo` a `fields` collection + `List`          |
-| `encuesta-movilidad`   | multi-step survey + results   | `if: "$state.step == n"` wizard over one `FormFields` model, `Tally` count / avg, `Text.format` |
-| `agenda-barrio`        | data board                    | `Tabs` -> `List.filterValue`, search field -> `List.search`, `sortBy`, detail `Modal` bound to `$state.selected` |
-| `diario-fotos`         | media                         | `PhotoDropZone` -> `saveTo` multipart upload -> `Image` gallery -> lightbox `Modal`             |
+| Page          | Kind                        | What it exercises                                                                                               |
+| ------------- | --------------------------- | --------------------------------------------------------------------------------------------------------------- |
+| `mapa`        | participation map           | `FeatureLayer` draw + `visibleTags` legend, `StepCard` wizard, `PhotoDropZone` + `FileDropZone` -> multipart `saveTo` |
+| `lista`       | data board                  | `Tabs` -> `List.filterValue`, search -> `List.search`, `sortBy` a joined count, detail `Modal` + `refreshItem`     |
+| `resultados`  | aggregation                 | `Tally` count / sum / joined count, `Grid` ranking, `Text.format`                                                 |
+| `acerca`      | text                        | `Accordion`, `Footer` buttons opening a help `Modal`                                                             |
 
-Each one was written without touching base first; what it could not
-express became a base addition (`List` filters, `Tally`, `Tabs`, `Text`
-`format` / `labels`, uploads through `saveTo`, `page-narrow` / `page-wide`
-presets, `FormFields` tolerant of rapid updates).
+Four earlier demo apps (a survey, a board, a gallery, a map) were written the
+same way in rounds 3-5 and deleted once this one covered the same ground. What
+they could not express is still here, because each gap became a base addition:
+`List` filters, `Tally`, `Tabs`, `Text` `format` / `labels`, uploads through
+`saveTo`, `page-narrow` / `page-wide` presets, `FormFields` tolerant of rapid
+updates, and the whole i18n layer.
 
 ## Building blocks that replaced hand-written components
 

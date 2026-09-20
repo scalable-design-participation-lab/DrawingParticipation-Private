@@ -73,6 +73,17 @@ through `saveTo` (multipart -> `.data/uploads` -> `/api/uploads/<file>`), `page-
 spec (including literal props), `$locale`, built-in `setLocale`, verifier rules `i18n.unknown-key` /
 `i18n.missing`; `agenda-barrio` is bilingual with a `Tabs` switcher and no code.
 
+**Status (2026-09, round 6): one deliberately complex spec-only app.** `apps/presupuesto-distrito` (participatory
+budgeting: map + draw + two-step form with photo and PDF, filterable list with per-row vote counts, live results,
+FAQ page, es/en) uses all 28 components the registry offers, on purpose, to find what breaks under load. What it exposed and
+closed: data-source `join` (counting votes per proposal), `call` `payload` + the `$payload` root (a button could
+not build the row it saves), `refreshItem` (a detail view went stale after its own write), `FeatureLayer.visibleTags`,
+`Icon` size / tone (a file named `Icon.vue` shadowed Nuxt's own `<Icon>` and recursed forever), `FileDropZone`
+default look, Footer buttons that rendered and did nothing, a Toolbar that emitted an array index instead of the
+tool, a `FilterSidebar` contract describing a shape the component never reads, `Tally` number formatting, and
+three layout presets. The four smaller demo apps of rounds 3-5 were deleted once this one covered every
+component they did; base keeps everything they taught it, and `docs/SPEC-FORMAT.md` keeps the patterns.
+
 ## Next
 
 1. ~~Delete the dashboard leftovers~~ done.

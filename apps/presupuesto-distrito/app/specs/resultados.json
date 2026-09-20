@@ -1,0 +1,386 @@
+{
+  "version": 1,
+  "dataSources": {
+    "propuestas": {
+      "kind": "collection",
+      "name": "propuestas",
+      "join": [
+        {
+          "from": "votos",
+          "on": "propuestaId",
+          "count": "votos"
+        }
+      ]
+    },
+    "votos": {
+      "kind": "collection",
+      "name": "votos"
+    }
+  },
+  "children": [
+    {
+      "type": "div",
+      "style": "page-wide",
+      "children": [
+        {
+          "type": "Stack",
+          "props": {
+            "gap": "lg"
+          },
+          "children": [
+            {
+              "type": "Text",
+              "props": {
+                "as": "h1"
+              },
+              "bind": {
+                "text": "$t.res.titulo"
+              }
+            },
+            {
+              "type": "Grid",
+              "props": {
+                "cols": 3,
+                "gap": "md"
+              },
+              "children": [
+                {
+                  "type": "Panel",
+                  "props": {
+                    "variant": "card",
+                    "padding": "lg"
+                  },
+                  "children": [
+                    {
+                      "type": "Stack",
+                      "props": {
+                        "gap": "none"
+                      },
+                      "children": [
+                        {
+                          "type": "Text",
+                          "bind": {
+                            "text": "$t.res.propuestas"
+                          },
+                          "props": {
+                            "size": "xs",
+                            "tone": "muted"
+                          }
+                        },
+                        {
+                          "type": "Text",
+                          "bind": {
+                            "text": "$data.propuestas.length"
+                          },
+                          "props": {
+                            "size": "3xl",
+                            "weight": "bold"
+                          }
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "type": "Panel",
+                  "props": {
+                    "variant": "card",
+                    "padding": "lg"
+                  },
+                  "children": [
+                    {
+                      "type": "Stack",
+                      "props": {
+                        "gap": "none"
+                      },
+                      "children": [
+                        {
+                          "type": "Text",
+                          "bind": {
+                            "text": "$t.res.votos"
+                          },
+                          "props": {
+                            "size": "xs",
+                            "tone": "muted"
+                          }
+                        },
+                        {
+                          "type": "Text",
+                          "bind": {
+                            "text": "$data.votos.length"
+                          },
+                          "props": {
+                            "size": "3xl",
+                            "weight": "bold"
+                          }
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "type": "Panel",
+                  "props": {
+                    "variant": "card",
+                    "padding": "lg"
+                  },
+                  "children": [
+                    {
+                      "type": "Stack",
+                      "props": {
+                        "gap": "none"
+                      },
+                      "children": [
+                        {
+                          "type": "Text",
+                          "bind": {
+                            "text": "$t.res.presupuesto"
+                          },
+                          "props": {
+                            "size": "xs",
+                            "tone": "muted"
+                          }
+                        },
+                        {
+                          "type": "Text",
+                          "props": {
+                            "size": "3xl",
+                            "weight": "bold",
+                            "format": "number",
+                            "text": "1500000"
+                          }
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "Panel",
+              "props": {
+                "variant": "card",
+                "padding": "lg"
+              },
+              "children": [
+                {
+                  "type": "Stack",
+                  "props": {
+                    "gap": "md"
+                  },
+                  "children": [
+                    {
+                      "type": "Text",
+                      "props": {
+                        "as": "h2",
+                        "size": "lg"
+                      },
+                      "bind": {
+                        "text": "$t.res.porCategoria"
+                      }
+                    },
+                    {
+                      "type": "Tally",
+                      "props": {
+                        "by": "categoria",
+                        "labels": {
+                          "movilidad": "$t.cat.movilidad",
+                          "verde": "$t.cat.verde",
+                          "cultura": "$t.cat.cultura",
+                          "accesibilidad": "$t.cat.accesibilidad",
+                          "limpieza": "$t.cat.limpieza"
+                        },
+                        "empty": "$t.res.vacio"
+                      },
+                      "bind": {
+                        "items": "$data.propuestas"
+                      }
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "Panel",
+              "props": {
+                "variant": "card",
+                "padding": "lg"
+              },
+              "children": [
+                {
+                  "type": "Stack",
+                  "props": {
+                    "gap": "md"
+                  },
+                  "children": [
+                    {
+                      "type": "Text",
+                      "props": {
+                        "as": "h2",
+                        "size": "lg"
+                      },
+                      "bind": {
+                        "text": "$t.res.costePorCategoria"
+                      }
+                    },
+                    {
+                      "type": "Tally",
+                      "props": {
+                        "by": "categoria",
+                        "mode": "sum",
+                        "valueKey": "coste",
+                        "decimals": 0,
+                        "labels": {
+                          "movilidad": "$t.cat.movilidad",
+                          "verde": "$t.cat.verde",
+                          "cultura": "$t.cat.cultura",
+                          "accesibilidad": "$t.cat.accesibilidad",
+                          "limpieza": "$t.cat.limpieza"
+                        },
+                        "empty": "$t.res.vacio"
+                      },
+                      "bind": {
+                        "items": "$data.propuestas"
+                      }
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "Panel",
+              "props": {
+                "variant": "card",
+                "padding": "lg"
+              },
+              "children": [
+                {
+                  "type": "Stack",
+                  "props": {
+                    "gap": "md"
+                  },
+                  "children": [
+                    {
+                      "type": "Text",
+                      "props": {
+                        "as": "h2",
+                        "size": "lg"
+                      },
+                      "bind": {
+                        "text": "$t.res.votosPorCategoria"
+                      }
+                    },
+                    {
+                      "type": "Tally",
+                      "props": {
+                        "by": "categoria",
+                        "mode": "sum",
+                        "valueKey": "votos",
+                        "decimals": 0,
+                        "labels": {
+                          "movilidad": "$t.cat.movilidad",
+                          "verde": "$t.cat.verde",
+                          "cultura": "$t.cat.cultura",
+                          "accesibilidad": "$t.cat.accesibilidad",
+                          "limpieza": "$t.cat.limpieza"
+                        },
+                        "empty": "$t.res.vacio"
+                      },
+                      "bind": {
+                        "items": "$data.propuestas"
+                      }
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "Text",
+              "props": {
+                "as": "h2"
+              },
+              "bind": {
+                "text": "$t.res.ranking"
+              }
+            },
+            {
+              "type": "List",
+              "props": {
+                "gap": "sm",
+                "sortBy": "votos",
+                "sortDesc": true,
+                "limit": 5,
+                "empty": "$t.res.vacio"
+              },
+              "bind": {
+                "items": "$data.propuestas"
+              },
+              "item": {
+                "type": "Panel",
+                "props": {
+                  "variant": "outline",
+                  "padding": "md"
+                },
+                "children": [
+                  {
+                    "type": "Stack",
+                    "props": {
+                      "gap": "xs"
+                    },
+                    "children": [
+                      {
+                        "type": "Stack",
+                        "props": {
+                          "direction": "row",
+                          "justify": "between",
+                          "align": "baseline"
+                        },
+                        "children": [
+                          {
+                            "type": "Text",
+                            "props": {
+                              "weight": "semibold"
+                            },
+                            "bind": {
+                              "text": "$item.titulo"
+                            }
+                          },
+                          {
+                            "type": "Text",
+                            "bind": {
+                              "text": "$item.votos"
+                            },
+                            "props": {
+                              "weight": "bold"
+                            }
+                          }
+                        ]
+                      },
+                      {
+                        "type": "Text",
+                        "bind": {
+                          "text": "$item.categoria"
+                        },
+                        "props": {
+                          "size": "xs",
+                          "tone": "muted",
+                          "labels": {
+                            "movilidad": "$t.cat.movilidad",
+                            "verde": "$t.cat.verde",
+                            "cultura": "$t.cat.cultura",
+                            "accesibilidad": "$t.cat.accesibilidad",
+                            "limpieza": "$t.cat.limpieza"
+                          }
+                        }
+                      }
+                    ]
+                  }
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
