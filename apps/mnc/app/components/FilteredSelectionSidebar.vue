@@ -10,9 +10,11 @@ import type { Entry } from '../composables/catalog'
 import { useLocalizedEntry } from '../composables/useLocalizedEntry'
 
 /** Collapsible category accordion with per-category counts and visibility toggles. */
-const props = withDefaults(defineProps<{ features?: Entry[], visibleTags?: string[] }>(), {
+const props = withDefaults(defineProps<{ features?: Entry[], visibleTags?: string[], title?: string, empty?: string }>(), {
   features: () => [],
   visibleTags: () => [],
+  title: 'Filtered Selection',
+  empty: 'No features loaded yet.',
 })
 const emit = defineEmits<{ select: [entry: Entry], toggleTag: [tag: string] }>()
 
@@ -57,7 +59,7 @@ function itemLocationDate(entry: Entry) {
     <template #header>
       <div class="flex items-center justify-between">
         <h2 class="text-base font-semibold text-gray-900 dark:text-white">
-          Filtered Selection
+          {{ title }}
         </h2>
         <UButton :icon="isCollapsed ? 'i-heroicons-chevron-down' : 'i-heroicons-chevron-up'" color="gray" variant="ghost" size="sm" aria-label="Collapse" :ui="{ rounded: 'rounded-full' }" @click="isCollapsed = !isCollapsed" />
       </div>
@@ -65,7 +67,7 @@ function itemLocationDate(entry: Entry) {
 
     <div v-show="!isCollapsed" class="max-h-[calc(100vh-15rem)] flex-1 space-y-3 overflow-y-auto px-3 py-2">
       <p v-if="categories.length === 0" class="py-6 text-center text-sm text-gray-400">
-        No features loaded yet.
+        {{ empty }}
       </p>
       <div v-for="cat in categories" :key="cat.tag" class="space-y-1">
         <div class="flex cursor-pointer select-none items-center gap-2 py-1" :class="{ 'opacity-50': !isVisible(cat.tag) }" @click="toggleOpen(cat.tag)">

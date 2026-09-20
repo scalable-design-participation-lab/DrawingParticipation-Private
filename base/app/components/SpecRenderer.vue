@@ -3,6 +3,7 @@ import { computed, getCurrentInstance, inject, onMounted, provide, reactive } fr
 import { useRoute, useRouter } from 'vue-router'
 import type { RootSpec } from '../contracts/spec'
 import { DATA_ADAPTER, defaultAdapter } from '../data/adapters'
+import { SPEC_I18N } from '../utils/i18n'
 import type { DataAdapter } from '../data/adapters'
 import { useDataSources } from '../data/useDataSources'
 import { SPEC_CONTEXT, resolveExpr, runAction } from '../utils/spec-context'
@@ -35,9 +36,11 @@ const navigate = props.navigate ?? ((to: string) => {
 })
 const query: Record<string, unknown> = props.query ?? (props.navigate ? {} : { ...useRoute().query })
 
-// "$t.key" reads vue-i18n's global $t when the app installed it (mnc); otherwise the key shows.
+// "$t.key": vue-i18n's global $t when the app installed it (mnc), else base's
+// app/i18n/*.json translator, else the key shows.
 const globals = getCurrentInstance()?.appContext.config.globalProperties as { $t?: (key: string) => string } | undefined
-const translate = props.translate ?? (globals?.$t ? (key: string) => globals.$t!(key) : undefined)
+const i18n = inject(SPEC_I18N, null)
+const translate = props.translate ?? (globals?.$t ? (key: string) => globals.$t!(key) : i18n?.translate)
 
 const adapter = props.adapter ?? inject(DATA_ADAPTER, defaultAdapter)
 const { sources, reload } = useDataSources(props.spec.dataSources ?? {}, adapter)
@@ -69,6 +72,9 @@ const ctx = {
   navigate,
   reload,
   translate,
+  get locale() {
+    return i18n?.locale.value ?? (globals as { $i18n?: { locale?: { value?: string } | string } } | undefined)?.$i18n?.locale as string | undefined
+  },
 }
 provide(SPEC_CONTEXT, ctx)
 

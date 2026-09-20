@@ -18,8 +18,10 @@
             {
               "type": "Text",
               "props": {
-                "as": "h1",
-                "text": "Añadir un evento"
+                "as": "h1"
+              },
+              "bind": {
+                "text": "$t.nuevo.title"
               }
             },
             {
@@ -36,51 +38,51 @@
                     "fields": [
                       {
                         "name": "titulo",
-                        "label": "Título",
+                        "label": "$t.nuevo.titulo",
                         "required": true
                       },
                       {
                         "name": "categoria",
-                        "label": "Categoría",
+                        "label": "$t.nuevo.categoria",
                         "type": "select",
-                        "placeholder": "Elige",
+                        "placeholder": "$t.nuevo.choose",
                         "options": [
                           {
-                            "label": "Cultura",
+                            "label": "$t.cat.cultura",
                             "value": "cultura"
                           },
                           {
-                            "label": "Deporte",
+                            "label": "$t.cat.deporte",
                             "value": "deporte"
                           },
                           {
-                            "label": "Asamblea",
+                            "label": "$t.cat.asamblea",
                             "value": "asamblea"
                           },
                           {
-                            "label": "Mercado",
+                            "label": "$t.cat.mercado",
                             "value": "mercado"
                           }
                         ]
                       },
                       {
                         "name": "fecha",
-                        "label": "Fecha",
+                        "label": "$t.nuevo.fecha",
                         "type": "date"
                       },
                       {
                         "name": "lugar",
-                        "label": "Lugar",
-                        "placeholder": "Plaza, calle, local…"
+                        "label": "$t.nuevo.lugar",
+                        "placeholder": "$t.nuevo.lugarHint"
                       },
                       {
                         "name": "descripcion",
-                        "label": "Descripción",
+                        "label": "$t.nuevo.descripcion",
                         "type": "textarea",
                         "rows": 4
                       }
                     ],
-                    "submitLabel": "Publicar"
+                    "submitLabel": "$t.nuevo.publish"
                   },
                   "bind": {
                     "modelValue": "$state.form"
@@ -131,8 +133,10 @@
                     {
                       "type": "Text",
                       "props": {
-                        "as": "h2",
-                        "text": "¡Publicado!"
+                        "as": "h2"
+                      },
+                      "bind": {
+                        "text": "$t.nuevo.done"
                       }
                     },
                     {
@@ -148,7 +152,7 @@
                             "to": "/",
                             "color": "black"
                           },
-                          "text": "Ver la agenda"
+                          "text": "$t.nuevo.seeAgenda"
                         },
                         {
                           "type": "Button",
@@ -156,7 +160,7 @@
                             "color": "gray",
                             "variant": "soft"
                           },
-                          "text": "Añadir otro",
+                          "text": "$t.nuevo.another",
                           "on": {
                             "click": [
                               {

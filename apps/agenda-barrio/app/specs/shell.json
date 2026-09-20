@@ -9,17 +9,43 @@
         "showColorMode": false,
         "leftItems": [
           {
-            "label": "Agenda",
+            "label": "$t.nav.agenda",
             "to": "/",
             "color": "black"
           },
           {
-            "label": "Añadir evento",
+            "label": "$t.nav.nuevo",
             "to": "/nuevo",
             "color": "black"
           }
         ]
-      }
+      },
+      "children": [
+        {
+          "slot": "right",
+          "type": "Tabs",
+          "props": {
+            "options": [
+              {
+                "label": "ES",
+                "value": "es"
+              },
+              {
+                "label": "EN",
+                "value": "en"
+              }
+            ]
+          },
+          "bind": {
+            "modelValue": "$locale"
+          },
+          "on": {
+            "update:modelValue": {
+              "call": "setLocale"
+            }
+          }
+        }
+      ]
     },
     {
       "type": "Outlet"

@@ -17,6 +17,8 @@ export interface SpecContext {
   reload: (name?: string) => Promise<void>
   /** "$t.some.key" -> translated text (vue-i18n when the app has it; the key otherwise). */
   translate?: (key: string) => string
+  /** Current UI locale ("$locale"). */
+  locale?: string
 }
 
 /** `"$state.view == 'list'"`, `"$state.n != 0"`, with an optional leading `!`. */
@@ -106,6 +108,7 @@ export function resolveExpr(expr: unknown, ctx: SpecContext, item?: unknown): un
     case 'errors': return getPath(ctx.errors, path)
     case 'query': return getPath(ctx.query, path)
     case 't': return ctx.translate ? ctx.translate(path.join('.')) : path.join('.')
+    case 'locale': return ctx.locale
     default: return getPath(ctx.state, path)
   }
 }
@@ -161,6 +164,10 @@ function isPlainObject(value: unknown): value is Record<string, unknown> {
  * toolbar tools) without a slot or an event on the parent.
  */
 export function materializeProps(value: unknown, ctx: SpecContext, item?: unknown): unknown {
+  // Translations may sit anywhere in literal props (field labels, step titles, menu items).
+  if (typeof value === 'string' && value.startsWith('$t.')) {
+    return resolveExpr(value, ctx, item)
+  }
   if (Array.isArray(value)) {
     return value.map(v => materializeProps(v, ctx, item))
   }

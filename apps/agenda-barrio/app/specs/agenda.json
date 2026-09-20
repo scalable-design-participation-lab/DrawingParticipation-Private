@@ -34,8 +34,10 @@
                 {
                   "type": "Text",
                   "props": {
-                    "as": "h1",
-                    "text": "Agenda del barrio"
+                    "as": "h1"
+                  },
+                  "bind": {
+                    "text": "$t.agenda.title"
                   }
                 },
                 {
@@ -44,7 +46,7 @@
                     "to": "/nuevo",
                     "color": "black"
                   },
-                  "text": "Añadir evento"
+                  "text": "$t.nav.nuevo"
                 }
               ]
             },
@@ -53,23 +55,23 @@
               "props": {
                 "options": [
                   {
-                    "label": "Todos",
+                    "label": "$t.agenda.all",
                     "value": ""
                   },
                   {
-                    "label": "Cultura",
+                    "label": "$t.cat.cultura",
                     "value": "cultura"
                   },
                   {
-                    "label": "Deporte",
+                    "label": "$t.cat.deporte",
                     "value": "deporte"
                   },
                   {
-                    "label": "Asamblea",
+                    "label": "$t.cat.asamblea",
                     "value": "asamblea"
                   },
                   {
-                    "label": "Mercado",
+                    "label": "$t.cat.mercado",
                     "value": "mercado"
                   }
                 ]
@@ -90,7 +92,7 @@
                   {
                     "name": "q",
                     "type": "text",
-                    "placeholder": "Buscar por título o lugar…"
+                    "placeholder": "$t.agenda.search"
                   }
                 ],
                 "gap": "gap-0"
@@ -107,9 +109,11 @@
             {
               "type": "Text",
               "if": "$sources.eventos.error",
+              "bind": {
+                "text": "$t.agenda.loadError"
+              },
               "props": {
-                "tone": "accent",
-                "text": "No se pudo cargar la agenda."
+                "tone": "accent"
               }
             },
             {
@@ -124,7 +128,7 @@
                   "lugar"
                 ],
                 "sortBy": "fecha",
-                "empty": "No hay eventos que coincidan."
+                "empty": "$t.agenda.empty"
               },
               "bind": {
                 "items": "$data.eventos",
@@ -146,13 +150,19 @@
                     "children": [
                       {
                         "type": "Text",
+                        "bind": {
+                          "text": "$item.categoria"
+                        },
                         "props": {
                           "size": "xs",
                           "tone": "accent",
-                          "weight": "semibold"
-                        },
-                        "bind": {
-                          "text": "$item.categoria"
+                          "weight": "semibold",
+                          "labels": {
+                            "cultura": "$t.cat.cultura",
+                            "deporte": "$t.cat.deporte",
+                            "asamblea": "$t.cat.asamblea",
+                            "mercado": "$t.cat.mercado"
+                          }
                         }
                       },
                       {
@@ -216,7 +226,7 @@
                               "variant": "soft",
                               "size": "xs"
                             },
-                            "text": "Detalles",
+                            "text": "$t.agenda.details",
                             "on": {
                               "click": {
                                 "set": "selected",
@@ -303,9 +313,11 @@
                     {
                       "type": "Text",
                       "if": "!$state.selected.descripcion",
+                      "bind": {
+                        "text": "$t.agenda.noDescription"
+                      },
                       "props": {
-                        "tone": "muted",
-                        "text": "Sin descripción."
+                        "tone": "muted"
                       }
                     }
                   ]

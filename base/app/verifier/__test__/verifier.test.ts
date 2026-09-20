@@ -129,12 +129,26 @@ describe('verifySpec', () => {
     const spec = {
       state: { view: 'map', n: 0 },
       children: [
-        { type: 'Text', if: "$state.view == 'list' && $state.n != 0", bind: { text: '$t.list.title' } },
-        { type: 'Text', if: "!$state.view == 'map'", props: { text: 'x' } },
+        { type: 'Text', if: '$state.view == \'list\' && $state.n != 0', bind: { text: '$t.list.title' } },
+        { type: 'Text', if: '!$state.view == \'map\'', props: { text: 'x' } },
       ],
     }
     expect(verifySpec(spec).pass).toBe(true)
-    expect(verifySpec({ ...spec, children: [{ type: 'Text', if: "$state.nope == 1 && $state.view", props: { text: 'x' } }] }).errors.map(e => e.rule)).toEqual(['bind.unknown-state', 'state.unused'])
+    expect(verifySpec({ ...spec, children: [{ type: 'Text', if: '$state.nope == 1 && $state.view', props: { text: 'x' } }] }).errors.map(e => e.rule)).toEqual(['bind.unknown-state', 'state.unused'])
+  })
+
+  it('checks $t keys against app/i18n messages', () => {
+    const messages = { es: { nav: { home: 'Inicio' }, form: { name: 'Nombre' } }, en: { nav: { home: 'Home' } } }
+    const spec = { children: [
+      { type: 'Text', bind: { text: '$t.nav.home' } },
+      { type: 'FormFields', props: { fields: [{ name: 'a', label: '$t.form.name' }] } },
+      { type: 'Text', bind: { text: '$t.nav.nope' } },
+    ] }
+    expect(verifySpec(spec, { messages, defaultLocale: 'es' }).errors.map(e => `${e.rule}@${e.path}`)).toEqual([
+      'i18n.missing@children[1].props.fields[0].label',
+      'i18n.unknown-key@children[2].bind.text',
+    ])
+    expect(verifySpec(spec).pass).toBe(true) // no messages loaded: keys are not checked
   })
 
   it('strict mode forbids raw classes', () => {

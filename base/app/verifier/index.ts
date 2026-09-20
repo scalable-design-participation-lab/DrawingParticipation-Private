@@ -3,6 +3,7 @@ import { getContract } from '../contracts/components'
 import { isHandlerDeclared } from '../contracts/handlers'
 import { ActionListSchema, BIND_RE, RootSpecSchema } from '../contracts/spec'
 import { conditionExprs } from '../utils/spec-context'
+import { lookup } from '../utils/i18n'
 import type { ActionList, RootSpec, SpecNode } from '../contracts/spec'
 import { getStyle } from '../utils/styles'
 
@@ -41,6 +42,9 @@ export interface VerifySpecOptions {
   strict?: boolean
   /** The app's route paths; when given, every internal link / navigate target must be one of them. */
   routes?: string[]
+  /** locale -> messages (app/i18n/*.json); when given, every "$t.key" must exist in `defaultLocale` (and in every other locale). */
+  messages?: Record<string, Record<string, unknown>>
+  defaultLocale?: string
 }
 
 const NATIVE_TAG = /^[a-z][a-z0-9-]*$/
@@ -101,7 +105,26 @@ export function verifySpec(spec: unknown, options: VerifySpecOptions = {}): Veri
 
   const isHandler = (name: string) => isHandlerDeclared(name) || handlerNames.has(name)
 
+  const locales = Object.keys(options.messages ?? {})
+  const defaultLocale = options.defaultLocale ?? locales[0]
+  const checkKey = (expr: string, at: string) => {
+    if (!locales.length || !expr.startsWith('$t.')) {
+      return
+    }
+    const key = expr.slice(3)
+    if (!lookup(options.messages![defaultLocale], key)) {
+      errors.push({ path: at, rule: 'i18n.unknown-key', message: `"${key}" is not in i18n/${defaultLocale}.json` })
+      return
+    }
+    for (const locale of locales) {
+      if (locale !== defaultLocale && !lookup(options.messages![locale], key)) {
+        errors.push({ path: at, rule: 'i18n.missing', message: `"${key}" has no translation in i18n/${locale}.json` })
+      }
+    }
+  }
+
   const checkExpr = (expr: string, at: string, inItem: boolean) => {
+    checkKey(expr, at)
     const match = BIND_RE.exec(expr)
     if (!match) {
       errors.push({ path: at, rule: 'bind.bad-expr', message: `"${expr}" is not "$data.x", "$state.x", "$sources.x", "$errors.x", "$query.x", "$t.key" or "$item[.x]"` })
@@ -160,6 +183,10 @@ export function verifySpec(spec: unknown, options: VerifySpecOptions = {}): Veri
 
   // `{ "$action": ... }` objects and internal links may sit anywhere inside literal props.
   const checkProps = (value: unknown, at: string, inItem: boolean) => {
+    if (typeof value === 'string') {
+      checkKey(value, at)
+      return
+    }
     if (Array.isArray(value)) {
       value.forEach((v, i) => checkProps(v, `${at}[${i}]`, inItem))
       return

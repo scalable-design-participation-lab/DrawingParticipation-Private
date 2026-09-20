@@ -134,10 +134,17 @@ Action `value` / `args` accept the same expressions, including the `!` form
 the root runs an action list once when the page mounts: the place to sign in,
 load results into state, or derive initial flags from what a handler found.
 
-Text can be translated: `"$t.about.title"` (in `text` or a bound prop) reads
-vue-i18n's `$t` when the app installed `@nuxtjs/i18n` (mnc), and shows the
-key otherwise. `"$errors"` alone binds the whole handler -> message map, for
-a component that reports several outcomes (`AdminAccounts`).
+Translations are data too. Put `app/i18n/<locale>.json` files next to the
+specs (nested objects), name the default in `app.json` (`"i18n": { "default": "es" }`),
+and write `"$t.nav.home"` anywhere a string goes: `text`, a bound prop, or a
+literal prop deep inside `fields`, `steps`, `leftItems`, `labels`. `"$locale"`
+is the current locale and the built-in `setLocale` handler switches it (a
+`Tabs` bound to `$locale` is a language switcher); the choice is remembered.
+The verifier reads the same files: `i18n.unknown-key` when the default locale
+lacks a key, `i18n.missing` when another locale does. Apps that ship
+`@nuxtjs/i18n` (mnc) keep vue-i18n's `$t` behind the same syntax. `"$errors"`
+alone binds the whole handler -> message map, for a component that reports
+several outcomes (`AdminAccounts`).
 
 ## Interaction
 

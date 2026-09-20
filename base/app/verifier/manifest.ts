@@ -10,7 +10,7 @@ import type { VerifyError, VerifyResult } from './index'
  * contain exactly one Outlet). Paths are prefixed with the file they belong
  * to so an LLM can fix the right JSON.
  */
-export function verifyApp(manifest: unknown, specs: Record<string, unknown>): VerifyResult {
+export function verifyApp(manifest: unknown, specs: Record<string, unknown>, messages: Record<string, Record<string, unknown>> = {}): VerifyResult {
   const errors: VerifyError[] = []
   const parsed = AppManifestSchema.safeParse(manifest)
   if (!parsed.success) {
@@ -21,6 +21,9 @@ export function verifyApp(manifest: unknown, specs: Record<string, unknown>): Ve
   }
   const m = parsed.data
   const routes = Object.keys(m.routes)
+  if (m.i18n && !(m.i18n.default in messages) && Object.keys(messages).length) {
+    errors.push({ path: 'app.json:i18n.default', rule: 'manifest.unknown-locale', message: `no i18n/${m.i18n.default}.json` })
+  }
   const owned = new Set(Object.keys(m.data?.collections ?? {}))
 
   for (const [name, { contract }] of Object.entries(m.data?.collections ?? {})) {
@@ -34,7 +37,7 @@ export function verifyApp(manifest: unknown, specs: Record<string, unknown>): Ve
       errors.push({ path: at, rule: 'manifest.missing-spec', message: `"${file}" is not in specs/` })
       return
     }
-    const result = verifySpec(specs[file], { strict: true, routes })
+    const result = verifySpec(specs[file], { strict: true, routes, messages, defaultLocale: m.i18n?.default })
     errors.push(...result.errors.map(e => ({ ...e, path: `${file}:${e.path}` })))
     // `collection` sources must be served by something: an owned collection or restBase.
     for (const [name, source] of Object.entries((specs[file] as RootSpec).dataSources ?? {})) {

@@ -69,6 +69,10 @@ browser end to end. Gaps they exposed and closed in base: `List` filter / search
 through `saveTo` (multipart -> `.data/uploads` -> `/api/uploads/<file>`), `page-narrow` / `page-wide`,
 `FormFields` losing a field when two updates land in one tick, `YYYY-MM-DD` shown a day early.
 
+**Status (2026-09, round 5): multilingual as data.** `app/i18n/<locale>.json` + `$t.key` everywhere in a
+spec (including literal props), `$locale`, built-in `setLocale`, verifier rules `i18n.unknown-key` /
+`i18n.missing`; `agenda-barrio` is bilingual with a `Tabs` switcher and no code.
+
 ## Next
 
 1. ~~Delete the dashboard leftovers~~ done.

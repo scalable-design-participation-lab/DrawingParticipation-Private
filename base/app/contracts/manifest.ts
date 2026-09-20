@@ -36,6 +36,10 @@ export const AppManifestSchema = z.strictObject({
   }).optional(),
   /** Spec rendered around every page; it must contain one `Outlet` node. */
   shell: z.string().optional().describe('Spec file name under specs/, e.g. "shell.json".'),
+  /** Translations live in app/i18n/<locale>.json; specs use "$t.some.key". */
+  i18n: z.strictObject({
+    default: z.string().describe('Locale used on first visit and as the fallback for missing keys'),
+  }).optional(),
   /** route path -> spec file name under specs/. */
   routes: z.record(z.string().regex(/^\/\S*$/), z.string().regex(/\.json$/)),
   data: z.strictObject({

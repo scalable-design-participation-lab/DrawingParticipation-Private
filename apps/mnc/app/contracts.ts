@@ -44,7 +44,7 @@ registerContract({
 registerContract({
   name: 'FilteredSelectionSidebar',
   description: 'Category accordion with counts and per-theme visibility; `select` emits an entry.',
-  props: z.strictObject({ features: Rows.optional(), visibleTags: z.array(z.string()).optional() }),
+  props: z.strictObject({ features: Rows.optional(), visibleTags: z.array(z.string()).optional(), title: z.string().optional(), empty: z.string().optional() }),
   emits: ['select', 'toggleTag'],
 })
 

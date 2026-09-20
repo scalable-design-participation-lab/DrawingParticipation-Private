@@ -26,6 +26,12 @@
         "items": {
           "type": "string"
         }
+      },
+      "title": {
+        "type": "string"
+      },
+      "empty": {
+        "type": "string"
       }
     },
     "additionalProperties": false

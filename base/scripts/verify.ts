@@ -43,7 +43,11 @@ if (appDir) {
   const specs = Object.fromEntries(
     readdirSync(specsDir).filter(f => f.endsWith('.json')).map(f => [f, JSON.parse(readFileSync(resolve(specsDir, f), 'utf8'))]),
   )
-  const result = verifyApp(manifest, specs)
+  const i18nDir = resolve(root, 'app/i18n')
+  const messages = existsSync(i18nDir)
+    ? Object.fromEntries(readdirSync(i18nDir).filter(f => f.endsWith('.json')).map(f => [f.replace(/\.json$/, ''), JSON.parse(readFileSync(resolve(i18nDir, f), 'utf8'))]))
+    : {}
+  const result = verifyApp(manifest, specs, messages)
   console.log(JSON.stringify(result, null, 2))
   process.exit(result.pass ? 0 : 1)
 }

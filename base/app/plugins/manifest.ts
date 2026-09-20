@@ -1,4 +1,6 @@
+import { ref } from 'vue'
 import { useAppManifest } from '../composables/useAppManifest'
+import { SPEC_I18N, createTranslator } from '../utils/i18n'
 import { DATA_ADAPTER, composeAdapters, restAdapter, staticAdapter } from '../data/adapters'
 import { registerHandler } from '../utils/handlers'
 import { registerComponent } from '../utils/registry'
@@ -34,10 +36,32 @@ export default defineNuxtPlugin((nuxtApp) => {
     ctx.state[String(args)] = list(ctx, args).filter(row => row.id !== payload)
   }, 'Remove the item whose id is the payload from the state list named in args.')
 
-  const { manifest } = useAppManifest()
+  const { manifest, messages } = useAppManifest()
   if (!manifest) {
     return
   }
+
+  // Translations as data: app/i18n/<locale>.json + "$t.key" in specs. The
+  // chosen locale survives reloads; apps with vue-i18n override setLocale.
+  const locales = Object.keys(messages)
+  const fallback = manifest.i18n?.default ?? locales[0] ?? 'en'
+  let remembered: string | null = null
+  try {
+    remembered = localStorage.getItem('spec-locale')
+  }
+  catch { /* private mode */ }
+  const locale = ref(remembered && locales.includes(remembered) ? remembered : fallback)
+  nuxtApp.vueApp.provide(SPEC_I18N, { locale, locales, translate: createTranslator(messages, locale, fallback) })
+  registerHandler('setLocale', (payload) => {
+    const next = String(payload)
+    if (locales.includes(next)) {
+      locale.value = next
+      try {
+        localStorage.setItem('spec-locale', next)
+      }
+      catch { /* private mode */ }
+    }
+  }, 'Switch the UI language; payload is a locale that has an app/i18n/<locale>.json.')
 
   if (manifest.theme?.primary || manifest.theme?.gray) {
     updateAppConfig({ ui: { ...(manifest.theme.primary && { primary: manifest.theme.primary }), ...(manifest.theme.gray && { gray: manifest.theme.gray }) } })

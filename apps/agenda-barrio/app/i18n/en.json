@@ -1,0 +1,35 @@
+{
+  "nav": {
+    "agenda": "Agenda",
+    "nuevo": "Add event"
+  },
+  "agenda": {
+    "title": "Neighbourhood agenda",
+    "all": "All",
+    "search": "Search by title or place…",
+    "loadError": "The agenda could not be loaded.",
+    "empty": "No events match.",
+    "details": "Details",
+    "noDescription": "No description."
+  },
+  "cat": {
+    "cultura": "Culture",
+    "deporte": "Sport",
+    "asamblea": "Assembly",
+    "mercado": "Market"
+  },
+  "nuevo": {
+    "title": "Add an event",
+    "titulo": "Title",
+    "categoria": "Category",
+    "choose": "Choose",
+    "fecha": "Date",
+    "lugar": "Place",
+    "lugarHint": "Square, street, venue…",
+    "descripcion": "Description",
+    "publish": "Publish",
+    "done": "Published!",
+    "seeAgenda": "See the agenda",
+    "another": "Add another"
+  }
+}
