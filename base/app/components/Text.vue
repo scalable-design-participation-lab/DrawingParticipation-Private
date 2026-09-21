@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed } from 'vue'
+import { computed, nextTick, onMounted, ref, watch } from 'vue'
 import { useSpecLocale } from '../utils/i18n'
 
 /**
@@ -14,8 +14,12 @@ const props = withDefaults(defineProps<{
   align?: 'left' | 'center' | 'right'
   /** Content; numbers (e.g. a bound `$data.rows.length`) are rendered as-is. */
   text?: string | number
-  /** Render an ISO date / a number in the reader's locale. */
-  format?: 'date' | 'datetime' | 'number'
+  /**
+   * Render the value: an ISO date or a number in the reader's locale,
+   * `relative` for how long ago ("3 days ago"), `host` for the domain of a
+   * URL, which is what a link is worth showing under its own label.
+   */
+  format?: 'date' | 'datetime' | 'number' | 'relative' | 'host'
   /**
    * value -> label, for stored codes ("bici" -> "Bicicleta"); unknown values
    * show as-is. Nest it by language ({ pt: { bici: "Bicicleta" } }) when the
@@ -29,6 +33,19 @@ const props = withDefaults(defineProps<{
   suffix?: string
   /** Round a number to this many decimals before showing it. */
   decimals?: number
+  /**
+   * value -> colour, for stored codes, exactly like `labels` but for how it
+   * reads. Pairs with the same map on an `Icon` so a theme looks the same
+   * wherever it appears.
+   */
+  colors?: Record<string, string>
+  /**
+   * Fold to this many lines, with a link to open it. The link appears only
+   * when the text really is longer, so a short one is left alone.
+   */
+  clamp?: number
+  moreLabel?: string
+  lessLabel?: string
 }>(), {
   as: 'p',
   size: undefined,
@@ -42,6 +59,10 @@ const props = withDefaults(defineProps<{
   prefix: '',
   suffix: '',
   decimals: undefined,
+  colors: undefined,
+  clamp: 0,
+  moreLabel: 'Read more',
+  lessLabel: 'Read less',
 })
 
 const SIZE = { 'xs': 'text-xs', 'sm': 'text-sm', 'md': 'text-base', 'lg': 'text-lg', 'xl': 'text-xl', '2xl': 'text-2xl', '3xl': 'text-3xl' }
@@ -80,26 +101,83 @@ const content = computed(() => {
   if (props.format === 'number') {
     return wrap(Number(raw).toLocaleString())
   }
+  if (props.format === 'host') {
+    try {
+      return wrap(new URL(String(raw)).hostname.replace(/^www\./, ''))
+    }
+    catch {
+      return wrap(String(raw))
+    }
+  }
   // A bare "YYYY-MM-DD" is a calendar day, not UTC midnight (which would show the day before in the Americas).
   const date = typeof raw === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(raw) ? new Date(`${raw}T00:00:00`) : new Date(raw)
   if (Number.isNaN(date.getTime())) {
     return wrap(String(raw))
   }
+  if (props.format === 'relative') {
+    return wrap(ago(date))
+  }
   return wrap(props.format === 'date' ? date.toLocaleDateString() : date.toLocaleString())
 })
+
+/** How long ago, in the reader's language, down to "just now". */
+function ago(date: Date) {
+  const seconds = Math.round((date.getTime() - Date.now()) / 1000)
+  const rtf = new Intl.RelativeTimeFormat(locale.value || undefined, { numeric: 'auto' })
+  const steps: [Intl.RelativeTimeFormatUnit, number][] = [['second', 60], ['minute', 60], ['hour', 24], ['day', 30], ['month', 12], ['year', Infinity]]
+  let value = seconds
+  for (const [unit, size] of steps) {
+    if (Math.abs(value) < size) {
+      return rtf.format(Math.round(value), unit)
+    }
+    value /= size
+  }
+  return date.toLocaleDateString()
+}
+
+const color = computed(() => props.colors?.[String(props.text ?? '')])
+
+// Folding: the link only appears once the element really is taller than the
+// clamp, so a two-line description is left alone.
+const body = ref<HTMLElement | null>(null)
+const expanded = ref(false)
+const overflows = ref(false)
+
+function measure() {
+  const el = body.value
+  overflows.value = !!el && !expanded.value && el.scrollHeight > el.clientHeight + 1
+}
+
+onMounted(measure)
+watch([content, () => props.clamp], () => nextTick(measure))
 
 const classes = computed(() => [
   SIZE[props.size ?? DEFAULT_SIZE[props.as]],
   WEIGHT[props.weight ?? DEFAULT_WEIGHT[props.as]],
-  TONE[props.tone],
+  // An explicit colour wins over the tone, the way an icon's does.
+  color.value ? '' : TONE[props.tone],
   ALIGN[props.align],
   'leading-tight',
   content.value.includes('\n') ? 'whitespace-pre-line' : '',
 ])
+
+// `line-clamp-N` cannot be built from a variable and still be seen by
+// Tailwind, so the clamp is inline.
+const clampStyle = computed(() => (props.clamp && !expanded.value
+  ? { display: '-webkit-box', WebkitBoxOrient: 'vertical', WebkitLineClamp: String(props.clamp), overflow: 'hidden' }
+  : undefined))
 </script>
 
 <template>
-  <component :is="as" :class="classes">
+  <component :is="as" v-if="!clamp" :class="classes" :style="color ? { color } : undefined">
     <slot>{{ content }}</slot>
   </component>
+  <div v-else>
+    <component :is="as" ref="body" :class="classes" :style="{ ...(color ? { color } : {}), ...clampStyle }">
+      <slot>{{ content }}</slot>
+    </component>
+    <button v-if="overflows || expanded" type="button" class="mt-2 text-sm font-semibold text-[--accent] hover:underline" @click="expanded = !expanded">
+      {{ expanded ? lessLabel : moreLabel }}
+    </button>
+  </div>
 </template>

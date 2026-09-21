@@ -66,12 +66,14 @@
         ]
       },
       "format": {
-        "description": "Render an ISO date / a number in the reader's locale",
+        "description": "Render the value: an ISO date or a number in the reader locale, `relative` for how long ago, `host` for the domain of a URL.",
         "type": "string",
         "enum": [
           "date",
           "datetime",
-          "number"
+          "number",
+          "relative",
+          "host"
         ]
       },
       "labels": {
@@ -117,6 +119,28 @@
         "type": "integer",
         "minimum": 0,
         "maximum": 9007199254740991
+      },
+      "colors": {
+        "description": "value -> colour for stored codes, like `labels` but for how it reads. Pair it with the same map on an Icon so a theme looks the same wherever it appears.",
+        "type": "object",
+        "propertyNames": {
+          "type": "string"
+        },
+        "additionalProperties": {
+          "type": "string"
+        }
+      },
+      "clamp": {
+        "description": "Fold to this many lines with a link to open it; the link appears only when the text really is longer.",
+        "type": "integer",
+        "exclusiveMinimum": 0,
+        "maximum": 9007199254740991
+      },
+      "moreLabel": {
+        "type": "string"
+      },
+      "lessLabel": {
+        "type": "string"
       }
     },
     "additionalProperties": false

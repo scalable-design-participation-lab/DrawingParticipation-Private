@@ -809,59 +809,786 @@
               ]
             },
             {
-              "type": "EntryDetail",
+              "type": "div",
               "if": "$state.detail && $state.selected",
-              "bind": {
-                "entry": "$state.selected",
-                "contributions": "$state.contributions",
-                "loading": "$state.contributionsLoading",
-                "isAdmin": "$state.auth.isAdmin"
-              },
-              "on": {
-                "close": [
-                  {
-                    "set": "detail",
-                    "value": false
-                  },
-                  {
-                    "set": "selected",
-                    "value": null
-                  }
-                ],
-                "showTag": [
-                  {
-                    "set": "visibleTags",
-                    "value": [
-                      "$payload"
-                    ]
-                  },
-                  {
-                    "set": "listOpen",
-                    "value": true
-                  },
-                  {
-                    "set": "panelOpen",
-                    "value": false
-                  },
-                  {
-                    "set": "detail",
-                    "value": false
-                  },
-                  {
-                    "set": "selected",
-                    "value": null
-                  }
-                ],
-                "approve": {
-                  "call": "approveContribution"
-                },
-                "delete": {
-                  "call": "deleteContribution"
-                },
-                "addMedia": {
-                  "set": "uploadFor"
+              "style": "detail-backdrop",
+              "children": [
+                {
+                  "type": "div",
+                  "style": "detail-frame",
+                  "children": [
+                    {
+                      "type": "Panel",
+                      "style": "detail-card",
+                      "props": {
+                        "variant": "card",
+                        "padding": "lg"
+                      },
+                      "children": [
+                        {
+                          "type": "Stack",
+                          "props": {
+                            "direction": "row",
+                            "justify": "between",
+                            "align": "start",
+                            "gap": "md"
+                          },
+                          "children": [
+                            {
+                              "type": "Text",
+                              "style": "detail-title",
+                              "props": {
+                                "as": "h2",
+                                "size": "3xl",
+                                "weight": "bold"
+                              },
+                              "bind": {
+                                "text": "$state.selected.properties.i18n.$locale.title",
+                                "fallback": "$state.selected.comment"
+                              }
+                            },
+                            {
+                              "type": "Stack",
+                              "props": {
+                                "direction": "row",
+                                "align": "center",
+                                "gap": "xs"
+                              },
+                              "children": [
+                                {
+                                  "type": "Button",
+                                  "if": "$state.selected.properties.string_id",
+                                  "style": "round",
+                                  "props": {
+                                    "size": "sm",
+                                    "color": "primary",
+                                    "variant": "soft",
+                                    "icon": "i-heroicons-camera",
+                                    "label": "$t.detail.addPhoto"
+                                  },
+                                  "on": {
+                                    "click": {
+                                      "set": "uploadFor",
+                                      "value": "$state.selected.properties.string_id"
+                                    }
+                                  }
+                                },
+                                {
+                                  "type": "Button",
+                                  "style": "round",
+                                  "props": {
+                                    "size": "sm",
+                                    "color": "gray",
+                                    "variant": "ghost",
+                                    "icon": "i-heroicons-x-mark",
+                                    "label": "$t.detail.close"
+                                  },
+                                  "on": {
+                                    "click": [
+                                      {
+                                        "set": "detail",
+                                        "value": false
+                                      },
+                                      {
+                                        "set": "selected",
+                                        "value": null
+                                      }
+                                    ]
+                                  }
+                                }
+                              ]
+                            }
+                          ]
+                        },
+                        {
+                          "type": "Stack",
+                          "style": "detail-facts",
+                          "props": {
+                            "direction": "row",
+                            "gap": "sm",
+                            "wrap": true
+                          },
+                          "children": [
+                            {
+                              "type": "Stack",
+                              "if": "$state.selected.properties.date",
+                              "style": "fact-chip",
+                              "props": {
+                                "direction": "row",
+                                "align": "center",
+                                "gap": "xs"
+                              },
+                              "children": [
+                                {
+                                  "type": "Icon",
+                                  "style": "fact-icon",
+                                  "props": {
+                                    "name": "i-heroicons-calendar-days",
+                                    "size": "xs"
+                                  }
+                                },
+                                {
+                                  "type": "Text",
+                                  "props": {
+                                    "as": "span",
+                                    "size": "sm",
+                                    "weight": "medium"
+                                  },
+                                  "bind": {
+                                    "text": "$state.selected.properties.date"
+                                  }
+                                }
+                              ]
+                            },
+                            {
+                              "type": "Stack",
+                              "if": "$state.selected.properties.location",
+                              "style": "fact-chip",
+                              "props": {
+                                "direction": "row",
+                                "align": "center",
+                                "gap": "xs"
+                              },
+                              "children": [
+                                {
+                                  "type": "Icon",
+                                  "style": "fact-icon",
+                                  "props": {
+                                    "name": "i-heroicons-map-pin",
+                                    "size": "xs"
+                                  }
+                                },
+                                {
+                                  "type": "Text",
+                                  "props": {
+                                    "as": "span",
+                                    "size": "sm",
+                                    "weight": "medium"
+                                  },
+                                  "bind": {
+                                    "text": "$state.selected.properties.i18n.$locale.location",
+                                    "fallback": "$state.selected.properties.location"
+                                  }
+                                }
+                              ]
+                            }
+                          ]
+                        },
+                        {
+                          "type": "Grid",
+                          "style": "detail-columns",
+                          "props": {
+                            "cols": 1,
+                            "colsMd": 2,
+                            "gap": "lg"
+                          },
+                          "children": [
+                            {
+                              "type": "Stack",
+                              "props": {
+                                "gap": "md"
+                              },
+                              "children": [
+                                {
+                                  "type": "Carousel",
+                                  "props": {
+                                    "height": "lg",
+                                    "emptyTitle": "$t.photo.noPhoto",
+                                    "emptyText": "$t.photo.beFirst",
+                                    "prevLabel": "$t.photo.prevPhoto",
+                                    "nextLabel": "$t.photo.nextPhoto"
+                                  },
+                                  "bind": {
+                                    "images": "$state.selected.properties.photos",
+                                    "alt": "$state.selected.comment"
+                                  }
+                                },
+                                {
+                                  "type": "Panel",
+                                  "if": "$state.selected.properties.audio.length",
+                                  "style": "detail-teal",
+                                  "props": {
+                                    "variant": "plain",
+                                    "padding": "md"
+                                  },
+                                  "children": [
+                                    {
+                                      "type": "Audio",
+                                      "props": {
+                                        "label": "$t.detail.voiceNotes"
+                                      },
+                                      "bind": {
+                                        "src": "$state.selected.properties.audio"
+                                      }
+                                    }
+                                  ]
+                                },
+                                {
+                                  "type": "Panel",
+                                  "if": "$state.selected.properties.mncConnection",
+                                  "style": "detail-teal",
+                                  "props": {
+                                    "variant": "plain",
+                                    "padding": "md"
+                                  },
+                                  "children": [
+                                    {
+                                      "type": "Text",
+                                      "style": "detail-eyebrow-teal",
+                                      "props": {
+                                        "size": "xs",
+                                        "weight": "semibold",
+                                        "text": "$t.detail.connection"
+                                      }
+                                    },
+                                    {
+                                      "type": "Text",
+                                      "props": {
+                                        "size": "sm",
+                                        "clamp": 6,
+                                        "moreLabel": "$t.detail.readMore",
+                                        "lessLabel": "$t.detail.readLess"
+                                      },
+                                      "bind": {
+                                        "text": "$state.selected.properties.i18n.$locale.mncConnection",
+                                        "fallback": "$state.selected.properties.mncConnection"
+                                      }
+                                    }
+                                  ]
+                                }
+                              ]
+                            },
+                            {
+                              "type": "Stack",
+                              "props": {
+                                "gap": "md"
+                              },
+                              "children": [
+                                {
+                                  "type": "Panel",
+                                  "if": "$state.selected.properties.description",
+                                  "style": "detail-grey",
+                                  "props": {
+                                    "variant": "plain",
+                                    "padding": "md"
+                                  },
+                                  "children": [
+                                    {
+                                      "type": "Text",
+                                      "style": "detail-eyebrow",
+                                      "props": {
+                                        "size": "xs",
+                                        "weight": "semibold",
+                                        "tone": "muted",
+                                        "text": "$t.detail.description"
+                                      }
+                                    },
+                                    {
+                                      "type": "Text",
+                                      "props": {
+                                        "size": "sm",
+                                        "clamp": 12,
+                                        "moreLabel": "$t.detail.readMore",
+                                        "lessLabel": "$t.detail.readLess"
+                                      },
+                                      "bind": {
+                                        "text": "$state.selected.properties.i18n.$locale.description",
+                                        "fallback": "$state.selected.properties.description"
+                                      }
+                                    }
+                                  ]
+                                },
+                                {
+                                  "type": "div",
+                                  "children": [
+                                    {
+                                      "type": "Text",
+                                      "style": "detail-eyebrow",
+                                      "props": {
+                                        "size": "xs",
+                                        "weight": "semibold",
+                                        "tone": "muted",
+                                        "text": "$t.detail.tags"
+                                      }
+                                    },
+                                    {
+                                      "type": "Stack",
+                                      "props": {
+                                        "direction": "row",
+                                        "gap": "sm",
+                                        "wrap": true
+                                      },
+                                      "children": [
+                                        {
+                                          "type": "Stack",
+                                          "if": "$state.selected.properties.primaryTag",
+                                          "style": "theme-chip",
+                                          "props": {
+                                            "direction": "row",
+                                            "align": "center",
+                                            "gap": "xs"
+                                          },
+                                          "on": {
+                                            "click": [
+                                              {
+                                                "set": "visibleTags",
+                                                "value": [
+                                                  "$state.selected.properties.primaryTag"
+                                                ]
+                                              },
+                                              {
+                                                "set": "listOpen",
+                                                "value": true
+                                              },
+                                              {
+                                                "set": "detail",
+                                                "value": false
+                                              },
+                                              {
+                                                "set": "selected",
+                                                "value": null
+                                              }
+                                            ]
+                                          },
+                                          "children": [
+                                            {
+                                              "type": "Icon",
+                                              "props": {
+                                                "size": "xs",
+                                                "icons": {
+                                                  "Health & Crisis Response": "i-heroicons-heart",
+                                                  "Transportation & Mobility": "i-ph-bus",
+                                                  "Digital Access & Connectivity": "i-heroicons-wifi",
+                                                  "Community Mapping & Visibility": "i-heroicons-user-group",
+                                                  "Art & Cultural Expression": "i-heroicons-light-bulb"
+                                                },
+                                                "colors": {
+                                                  "Health & Crisis Response": "#F26D6D",
+                                                  "Transportation & Mobility": "#4C9BEA",
+                                                  "Digital Access & Connectivity": "#57C9C0",
+                                                  "Community Mapping & Visibility": "#6FCF97",
+                                                  "Art & Cultural Expression": "#EBC24A"
+                                                }
+                                              },
+                                              "bind": {
+                                                "name": "$state.selected.properties.primaryTag"
+                                              }
+                                            },
+                                            {
+                                              "type": "Text",
+                                              "props": {
+                                                "as": "span",
+                                                "size": "sm",
+                                                "weight": "medium",
+                                                "colors": {
+                                                  "Health & Crisis Response": "#F26D6D",
+                                                  "Transportation & Mobility": "#4C9BEA",
+                                                  "Digital Access & Connectivity": "#57C9C0",
+                                                  "Community Mapping & Visibility": "#6FCF97",
+                                                  "Art & Cultural Expression": "#EBC24A"
+                                                }
+                                              },
+                                              "bind": {
+                                                "text": "$state.selected.properties.primaryTag",
+                                                "labels": "$state.tagLabels"
+                                              }
+                                            }
+                                          ]
+                                        },
+                                        {
+                                          "type": "List",
+                                          "props": {
+                                            "layout": "stack",
+                                            "gap": "xs"
+                                          },
+                                          "style": "tag-row",
+                                          "bind": {
+                                            "items": "$state.selected.properties.secondaryTags"
+                                          },
+                                          "item": {
+                                            "type": "Text",
+                                            "style": "tag-chip",
+                                            "props": {
+                                              "as": "span",
+                                              "size": "sm"
+                                            },
+                                            "bind": {
+                                              "text": "$item"
+                                            }
+                                          }
+                                        }
+                                      ]
+                                    }
+                                  ]
+                                }
+                              ]
+                            }
+                          ]
+                        },
+                        {
+                          "type": "div",
+                          "if": "$state.selected.properties.linkList.length",
+                          "style": "detail-section",
+                          "children": [
+                            {
+                              "type": "Text",
+                              "style": "detail-eyebrow",
+                              "props": {
+                                "size": "xs",
+                                "weight": "semibold",
+                                "tone": "muted",
+                                "text": "$t.detail.learnMore"
+                              }
+                            },
+                            {
+                              "type": "List",
+                              "props": {
+                                "layout": "grid",
+                                "cols": 2,
+                                "gap": "sm"
+                              },
+                              "bind": {
+                                "items": "$state.selected.properties.linkList"
+                              },
+                              "item": {
+                                "type": "a",
+                                "if": "$item.url",
+                                "style": "link-card",
+                                "props": {
+                                  "target": "_blank",
+                                  "rel": "noopener noreferrer"
+                                },
+                                "bind": {
+                                  "href": "$item.url"
+                                },
+                                "children": [
+                                  {
+                                    "type": "Icon",
+                                    "style": "link-card-icon",
+                                    "props": {
+                                      "name": "i-heroicons-arrow-top-right-on-square",
+                                      "size": "xs"
+                                    }
+                                  },
+                                  {
+                                    "type": "Stack",
+                                    "props": {
+                                      "gap": "none"
+                                    },
+                                    "children": [
+                                      {
+                                        "type": "Text",
+                                        "props": {
+                                          "size": "sm",
+                                          "weight": "medium"
+                                        },
+                                        "bind": {
+                                          "text": "$item.label",
+                                          "labels": "$state.linkLabels"
+                                        }
+                                      },
+                                      {
+                                        "type": "Text",
+                                        "props": {
+                                          "size": "xs",
+                                          "tone": "muted",
+                                          "format": "host"
+                                        },
+                                        "bind": {
+                                          "text": "$item.url"
+                                        }
+                                      }
+                                    ]
+                                  }
+                                ]
+                              }
+                            }
+                          ]
+                        },
+                        {
+                          "type": "div",
+                          "if": "$state.selected.properties.string_id",
+                          "style": "detail-community",
+                          "children": [
+                            {
+                              "type": "Stack",
+                              "style": "detail-community-head",
+                              "props": {
+                                "direction": "row",
+                                "justify": "between",
+                                "align": "center",
+                                "gap": "sm"
+                              },
+                              "children": [
+                                {
+                                  "type": "Stack",
+                                  "props": {
+                                    "direction": "row",
+                                    "align": "baseline",
+                                    "gap": "xs"
+                                  },
+                                  "children": [
+                                    {
+                                      "type": "Text",
+                                      "props": {
+                                        "as": "h3",
+                                        "size": "lg",
+                                        "weight": "semibold",
+                                        "text": "$t.detail.contributions"
+                                      }
+                                    },
+                                    {
+                                      "type": "Text",
+                                      "if": "$state.contributions.length",
+                                      "props": {
+                                        "as": "span",
+                                        "size": "lg",
+                                        "tone": "muted",
+                                        "prefix": "(",
+                                        "suffix": ")"
+                                      },
+                                      "bind": {
+                                        "text": "$state.contributions.length"
+                                      }
+                                    }
+                                  ]
+                                },
+                                {
+                                  "type": "Button",
+                                  "style": "round",
+                                  "props": {
+                                    "size": "xs",
+                                    "color": "primary",
+                                    "variant": "soft",
+                                    "icon": "i-heroicons-plus",
+                                    "label": "$t.detail.add"
+                                  },
+                                  "on": {
+                                    "click": {
+                                      "set": "uploadFor",
+                                      "value": "$state.selected.properties.string_id"
+                                    }
+                                  }
+                                }
+                              ]
+                            },
+                            {
+                              "type": "Text",
+                              "if": "$state.contributionsLoading",
+                              "props": {
+                                "size": "sm",
+                                "tone": "muted",
+                                "text": "$t.detail.loading"
+                              }
+                            },
+                            {
+                              "type": "Panel",
+                              "if": "!$state.contributionsLoading && !$state.contributions.length",
+                              "style": "detail-empty",
+                              "props": {
+                                "variant": "outline",
+                                "padding": "lg"
+                              },
+                              "children": [
+                                {
+                                  "type": "Icon",
+                                  "style": "detail-empty-icon",
+                                  "props": {
+                                    "name": "i-heroicons-camera",
+                                    "size": "lg"
+                                  }
+                                },
+                                {
+                                  "type": "Text",
+                                  "props": {
+                                    "size": "sm",
+                                    "tone": "muted",
+                                    "align": "center",
+                                    "text": "$t.detail.noContributions"
+                                  }
+                                }
+                              ]
+                            },
+                            {
+                              "type": "List",
+                              "if": "!$state.contributionsLoading",
+                              "props": {
+                                "gap": "md"
+                              },
+                              "bind": {
+                                "items": "$state.contributions"
+                              },
+                              "item": {
+                                "type": "Panel",
+                                "style": "contrib-panel",
+                                "props": {
+                                  "variant": "outline",
+                                  "padding": "md"
+                                },
+                                "children": [
+                                  {
+                                    "type": "Stack",
+                                    "style": "contrib-byline",
+                                    "props": {
+                                      "direction": "row",
+                                      "align": "center",
+                                      "gap": "xs"
+                                    },
+                                    "children": [
+                                      {
+                                        "type": "Icon",
+                                        "props": {
+                                          "name": "i-heroicons-user-circle",
+                                          "size": "xs"
+                                        }
+                                      },
+                                      {
+                                        "type": "Text",
+                                        "if": "$item.userId == 'anonymous'",
+                                        "props": {
+                                          "as": "span",
+                                          "size": "xs",
+                                          "tone": "muted",
+                                          "text": "$t.detail.anonymous"
+                                        }
+                                      },
+                                      {
+                                        "type": "Text",
+                                        "if": "$item.userId != 'anonymous'",
+                                        "props": {
+                                          "as": "span",
+                                          "size": "xs",
+                                          "tone": "muted",
+                                          "text": "$t.detail.contributor"
+                                        }
+                                      },
+                                      {
+                                        "type": "Text",
+                                        "if": "$item.createdAt",
+                                        "props": {
+                                          "as": "span",
+                                          "size": "xs",
+                                          "tone": "muted",
+                                          "format": "relative",
+                                          "prefix": "· "
+                                        },
+                                        "bind": {
+                                          "text": "$item.createdAt"
+                                        }
+                                      },
+                                      {
+                                        "type": "Text",
+                                        "if": "!$item.approved",
+                                        "style": "chip-pending",
+                                        "props": {
+                                          "as": "span",
+                                          "size": "xs",
+                                          "weight": "semibold",
+                                          "text": "$t.detail.pending"
+                                        }
+                                      }
+                                    ]
+                                  },
+                                  {
+                                    "type": "List",
+                                    "if": "$item.media.length",
+                                    "style": "contrib-media",
+                                    "props": {
+                                      "layout": "grid",
+                                      "cols": 3,
+                                      "gap": "sm"
+                                    },
+                                    "bind": {
+                                      "items": "$item.media"
+                                    },
+                                    "item": {
+                                      "type": "div",
+                                      "children": [
+                                        {
+                                          "type": "Audio",
+                                          "if": "$item.kind == 'audio'",
+                                          "bind": {
+                                            "src": "$item.url"
+                                          }
+                                        },
+                                        {
+                                          "type": "Image",
+                                          "if": "$item.kind != 'audio'",
+                                          "style": "contrib-photo",
+                                          "props": {
+                                            "width": "full",
+                                            "rounded": true
+                                          },
+                                          "bind": {
+                                            "src": "$item.url",
+                                            "alt": "$item.name",
+                                            "href": "$item.url"
+                                          }
+                                        }
+                                      ]
+                                    }
+                                  },
+                                  {
+                                    "type": "Text",
+                                    "if": "$item.comment",
+                                    "props": {
+                                      "size": "sm"
+                                    },
+                                    "bind": {
+                                      "text": "$item.comment"
+                                    }
+                                  },
+                                  {
+                                    "type": "Stack",
+                                    "if": "$state.auth.isAdmin",
+                                    "style": "contrib-admin",
+                                    "props": {
+                                      "direction": "row",
+                                      "gap": "xs"
+                                    },
+                                    "children": [
+                                      {
+                                        "type": "Button",
+                                        "if": "!$item.approved",
+                                        "props": {
+                                          "size": "xs",
+                                          "color": "primary",
+                                          "label": "$t.detail.approve"
+                                        },
+                                        "on": {
+                                          "click": {
+                                            "call": "approveContribution",
+                                            "payload": "$item"
+                                          }
+                                        }
+                                      },
+                                      {
+                                        "type": "Button",
+                                        "props": {
+                                          "size": "xs",
+                                          "color": "red",
+                                          "variant": "soft",
+                                          "label": "$t.detail.delete"
+                                        },
+                                        "on": {
+                                          "click": {
+                                            "call": "deleteContribution",
+                                            "payload": "$item"
+                                          }
+                                        }
+                                      }
+                                    ]
+                                  }
+                                ]
+                              }
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
                 }
-              }
+              ]
             }
           ]
         },

@@ -6,8 +6,7 @@ import { declareHandler, registerContract } from '../../../base/app/contracts'
  * Plain module (no Nuxt auto-imports): the verifier CLI loads it with
  * `--contracts apps/mnc/app/contracts.ts`.
  */
-const Row = z.record(z.string(), z.unknown())
-const Rows = z.array(Row)
+
 const Coordinate = z.tuple([z.number(), z.number()])
 
 registerContract({
@@ -15,13 +14,6 @@ registerContract({
   description: '"Join Our Research" wizard. `pick-location` asks the page to let the user tap the map; `pickedCoordinate` feeds the tap back; `submit` emits the whole payload (title, theme, coordinate, answers, files).',
   props: z.strictObject({ pickedCoordinate: Coordinate.nullable().optional() }),
   emits: ['close', 'pickLocation', 'submit'],
-})
-
-registerContract({
-  name: 'EntryDetail',
-  description: 'Desktop detail panel for one entry: text, gallery, voice notes, links, community contributions. `show-tag` emits the theme to narrow to.',
-  props: z.strictObject({ entry: Row, contributions: Rows.optional(), loading: z.boolean().optional(), isAdmin: z.boolean().optional() }),
-  emits: ['close', 'showTag', 'addMedia', 'approve', 'delete'],
 })
 
 declareHandler('watchAuth', 'Keep state.auth in sync with Firebase Auth; admins also get the review queues.')
