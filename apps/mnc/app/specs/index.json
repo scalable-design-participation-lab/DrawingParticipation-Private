@@ -487,13 +487,43 @@
               }
             },
             {
-              "type": "MobileBottomNav",
+              "type": "IconBar",
               "if": "!$state.onboarding && !$state.selected && $state.mobileView != 'more' && $state.mobileView != 'info'",
+              "props": {
+                "position": "bottom",
+                "size": "lg",
+                "items": [
+                  {
+                    "value": "map",
+                    "icon": "i-heroicons-map",
+                    "label": "$t.nav.map",
+                    "color": "#57C9C0"
+                  },
+                  {
+                    "value": "list",
+                    "icon": "i-heroicons-square-3-stack-3d",
+                    "label": "$t.nav.list",
+                    "color": "#57C9C0"
+                  },
+                  {
+                    "value": "info",
+                    "icon": "i-heroicons-information-circle",
+                    "label": "$t.nav.info",
+                    "color": "#57C9C0"
+                  },
+                  {
+                    "value": "more",
+                    "icon": "i-heroicons-plus",
+                    "label": "$t.nav.addEntryMobile",
+                    "color": "#57C9C0"
+                  }
+                ]
+              },
               "bind": {
-                "activeView": "$state.mobileView"
+                "modelValue": "$state.mobileView"
               },
               "on": {
-                "update:activeView": {
+                "update:modelValue": {
                   "set": "mobileView"
                 }
               }
@@ -529,17 +559,166 @@
               "if": "$state.mobileView == 'more' && !$state.picking"
             },
             {
-              "type": "OnboardingModal",
+              "type": "Modal",
               "if": "$state.mobileView == 'info'",
               "props": {
-                "isVisible": true
+                "title": "$t.onboarding.title",
+                "align": "center",
+                "size": "lg",
+                "buttonLabel": "$t.onboarding.getStarted"
               },
               "on": {
+                "confirm": {
+                  "set": "mobileView",
+                  "value": "map"
+                },
                 "close": {
                   "set": "mobileView",
                   "value": "map"
                 }
-              }
+              },
+              "children": [
+                {
+                  "type": "Stack",
+                  "props": {
+                    "gap": "lg"
+                  },
+                  "children": [
+                    {
+                      "type": "Stack",
+                      "props": {
+                        "direction": "row",
+                        "justify": "end"
+                      },
+                      "children": [
+                        {
+                          "type": "Tabs",
+                          "props": {
+                            "options": [
+                              {
+                                "label": "EN",
+                                "value": "en"
+                              },
+                              {
+                                "label": "PT",
+                                "value": "pt"
+                              },
+                              {
+                                "label": "ES",
+                                "value": "es"
+                              }
+                            ]
+                          },
+                          "bind": {
+                            "modelValue": "$locale"
+                          },
+                          "on": {
+                            "update:modelValue": {
+                              "call": "setLocale"
+                            }
+                          }
+                        }
+                      ]
+                    },
+                    {
+                      "type": "Text",
+                      "props": {
+                        "text": "$t.onboarding.intro"
+                      }
+                    },
+                    {
+                      "type": "Stack",
+                      "props": {
+                        "gap": "sm"
+                      },
+                      "children": [
+                        {
+                          "type": "Stack",
+                          "props": {
+                            "direction": "row",
+                            "gap": "sm",
+                            "align": "start"
+                          },
+                          "children": [
+                            {
+                              "type": "Icon",
+                              "props": {
+                                "name": "i-heroicons-map",
+                                "size": "lg",
+                                "tone": "accent"
+                              }
+                            },
+                            {
+                              "type": "Text",
+                              "props": {
+                                "text": "$t.onboarding.point1"
+                              }
+                            }
+                          ]
+                        },
+                        {
+                          "type": "Stack",
+                          "props": {
+                            "direction": "row",
+                            "gap": "sm",
+                            "align": "start"
+                          },
+                          "children": [
+                            {
+                              "type": "Icon",
+                              "props": {
+                                "name": "i-heroicons-cursor-arrow-rays",
+                                "size": "lg",
+                                "tone": "accent"
+                              }
+                            },
+                            {
+                              "type": "Text",
+                              "props": {
+                                "text": "$t.onboarding.point2"
+                              }
+                            }
+                          ]
+                        },
+                        {
+                          "type": "Stack",
+                          "props": {
+                            "direction": "row",
+                            "gap": "sm",
+                            "align": "start"
+                          },
+                          "children": [
+                            {
+                              "type": "Icon",
+                              "props": {
+                                "name": "i-heroicons-camera",
+                                "size": "lg",
+                                "tone": "accent"
+                              }
+                            },
+                            {
+                              "type": "Text",
+                              "props": {
+                                "text": "$t.onboarding.point3"
+                              }
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "slot": "footer",
+                  "type": "Text",
+                  "props": {
+                    "text": "$t.onboarding.footer",
+                    "size": "xs",
+                    "tone": "muted",
+                    "align": "center"
+                  }
+                }
+              ]
             }
           ]
         },
@@ -761,16 +940,171 @@
           }
         },
         {
-          "type": "OnboardingModal",
+          "type": "Modal",
+          "props": {
+            "title": "$t.onboarding.title",
+            "align": "center",
+            "size": "lg",
+            "buttonLabel": "$t.onboarding.getStarted"
+          },
           "bind": {
-            "isVisible": "$state.onboarding"
+            "modelValue": "$state.onboarding"
           },
           "on": {
+            "confirm": {
+              "set": "onboarding",
+              "value": false
+            },
             "close": {
               "set": "onboarding",
               "value": false
+            },
+            "update:modelValue": {
+              "set": "onboarding"
             }
-          }
+          },
+          "children": [
+            {
+              "type": "Stack",
+              "props": {
+                "gap": "lg"
+              },
+              "children": [
+                {
+                  "type": "Stack",
+                  "props": {
+                    "direction": "row",
+                    "justify": "end"
+                  },
+                  "children": [
+                    {
+                      "type": "Tabs",
+                      "props": {
+                        "options": [
+                          {
+                            "label": "EN",
+                            "value": "en"
+                          },
+                          {
+                            "label": "PT",
+                            "value": "pt"
+                          },
+                          {
+                            "label": "ES",
+                            "value": "es"
+                          }
+                        ]
+                      },
+                      "bind": {
+                        "modelValue": "$locale"
+                      },
+                      "on": {
+                        "update:modelValue": {
+                          "call": "setLocale"
+                        }
+                      }
+                    }
+                  ]
+                },
+                {
+                  "type": "Text",
+                  "props": {
+                    "text": "$t.onboarding.intro"
+                  }
+                },
+                {
+                  "type": "Stack",
+                  "props": {
+                    "gap": "sm"
+                  },
+                  "children": [
+                    {
+                      "type": "Stack",
+                      "props": {
+                        "direction": "row",
+                        "gap": "sm",
+                        "align": "start"
+                      },
+                      "children": [
+                        {
+                          "type": "Icon",
+                          "props": {
+                            "name": "i-heroicons-map",
+                            "size": "lg",
+                            "tone": "accent"
+                          }
+                        },
+                        {
+                          "type": "Text",
+                          "props": {
+                            "text": "$t.onboarding.point1"
+                          }
+                        }
+                      ]
+                    },
+                    {
+                      "type": "Stack",
+                      "props": {
+                        "direction": "row",
+                        "gap": "sm",
+                        "align": "start"
+                      },
+                      "children": [
+                        {
+                          "type": "Icon",
+                          "props": {
+                            "name": "i-heroicons-cursor-arrow-rays",
+                            "size": "lg",
+                            "tone": "accent"
+                          }
+                        },
+                        {
+                          "type": "Text",
+                          "props": {
+                            "text": "$t.onboarding.point2"
+                          }
+                        }
+                      ]
+                    },
+                    {
+                      "type": "Stack",
+                      "props": {
+                        "direction": "row",
+                        "gap": "sm",
+                        "align": "start"
+                      },
+                      "children": [
+                        {
+                          "type": "Icon",
+                          "props": {
+                            "name": "i-heroicons-camera",
+                            "size": "lg",
+                            "tone": "accent"
+                          }
+                        },
+                        {
+                          "type": "Text",
+                          "props": {
+                            "text": "$t.onboarding.point3"
+                          }
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "slot": "footer",
+              "type": "Text",
+              "props": {
+                "text": "$t.onboarding.footer",
+                "size": "xs",
+                "tone": "muted",
+                "align": "center"
+              }
+            }
+          ]
         },
         {
           "type": "div",

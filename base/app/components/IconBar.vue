@@ -75,7 +75,11 @@ function press(item: BarItem) {
 
 <template>
   <div class="pointer-events-none" :class="PLACE[position]">
-    <div class="pointer-events-auto inline-flex items-center gap-1.5 rounded-full border border-gray-200 bg-white/90 px-2.5 py-1.5 shadow-lg backdrop-blur dark:border-white/10 dark:bg-zinc-900/90">
+    <div
+      class="pointer-events-auto touch-manipulation inline-flex items-center gap-1.5 rounded-full border border-gray-200 bg-white/90 px-2.5 py-1.5 shadow-lg backdrop-blur dark:border-white/10 dark:bg-zinc-900/90"
+      @pointerdown.stop
+      @touchstart.stop
+    >
       <UTooltip v-for="item in items" :key="item.value" :text="item.label ?? ''" :prevent="!item.label">
         <button
           type="button"

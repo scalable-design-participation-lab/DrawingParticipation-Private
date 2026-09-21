@@ -63,13 +63,6 @@ registerContract({
 })
 
 registerContract({
-  name: 'MobileBottomNav',
-  description: 'Mobile tab pill: map / list / info / more (add). `update:activeView` emits the view name.',
-  props: z.strictObject({ activeView: z.enum(['map', 'list', 'info', 'more']), projectSelected: z.boolean().optional() }),
-  emits: ['update:activeView', 'showOnMap', 'readMore', 'nextProject', 'closeProject'],
-})
-
-registerContract({
   name: 'MobileContributeFlow',
   description: '"Join Our Research" wizard. `pick-location` asks the page to let the user tap the map; `pickedCoordinate` feeds the tap back; `submit` emits the whole payload (title, theme, coordinate, answers, files).',
   props: z.strictObject({ pickedCoordinate: Coordinate.nullable().optional() }),
@@ -102,13 +95,6 @@ registerContract({
   description: 'Account management page body: sign in / register, then (super admin) promote registrations and manage moderators. Bind `errors` to `$errors` for outcomes.',
   props: z.strictObject({ auth: Row.optional(), accounts: Rows.optional(), registrations: Rows.optional(), loading: z.boolean().optional(), errors: Row.optional() }),
   emits: ['signIn', 'register', 'resetPassword', 'claimAdmin', 'signOut', 'refresh', 'promote', 'removeRegistration', 'setRole', 'revoke', 'sendReset', 'create'],
-})
-
-registerContract({
-  name: 'OnboardingModal',
-  description: 'Welcome / about card with the language chips; `close` when the user starts.',
-  props: z.strictObject({ isVisible: z.boolean() }),
-  emits: ['close'],
 })
 
 declareHandler('watchViewport', 'state.isMobile follows the viewport (< 768px).')
