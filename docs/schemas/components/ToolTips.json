@@ -1,0 +1,30 @@
+{
+  "name": "ToolTips",
+  "description": "Hover/click tooltips for vector features on the map. Put it in the BackgroundMap \"overlays\" slot. It shows every property a feature carries, so say which ones to leave out rather than which to show.",
+  "stateful": false,
+  "emits": [],
+  "slots": [],
+  "props": {
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "type": "object",
+    "properties": {
+      "hideKeys": {
+        "description": "Feature properties NOT to show, e.g. internal ids and render fields. Everything else is shown.",
+        "type": "array",
+        "items": {
+          "type": "string"
+        }
+      },
+      "clickTolerance": {
+        "description": "How many pixels away from a feature still counts as being on it.",
+        "type": "number"
+      },
+      "itemsPerPage": {
+        "type": "integer",
+        "exclusiveMinimum": 0,
+        "maximum": 9007199254740991
+      }
+    },
+    "additionalProperties": false
+  }
+}

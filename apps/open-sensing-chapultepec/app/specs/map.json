@@ -1,0 +1,259 @@
+{
+  "version": 1,
+  "state": {
+    "welcome": true
+  },
+  "dataSources": {
+    "readings": {
+      "kind": "static",
+      "contract": "reading",
+      "items": [
+        {
+          "position": [
+            -99.19,
+            19.424
+          ],
+          "reading": {
+            "humedad": 61.5,
+            "temperatura": 24,
+            "nubes": "cirrocumulus",
+            "lluvia": "moderada",
+            "viento": "leve",
+            "olor": "alto"
+          }
+        },
+        {
+          "position": [
+            -99.214,
+            19.42
+          ],
+          "reading": {
+            "humedad": 40,
+            "temperatura": 20,
+            "nubes": "cumulus",
+            "lluvia": "suave",
+            "viento": "moderada",
+            "olor": "bajo"
+          }
+        },
+        {
+          "position": [
+            -99.204,
+            19.409
+          ],
+          "reading": {
+            "humedad": 55,
+            "temperatura": 22,
+            "nubes": "cirrus",
+            "lluvia": "suave",
+            "viento": "suave",
+            "olor": "intermitente"
+          }
+        },
+        {
+          "position": [
+            -99.18,
+            19.41
+          ],
+          "reading": {
+            "humedad": 30,
+            "temperatura": 26,
+            "nubes": "stratus",
+            "lluvia": "suave",
+            "viento": "fuerte",
+            "olor": "bajo"
+          }
+        },
+        {
+          "position": [
+            -99.168,
+            19.428
+          ],
+          "reading": {
+            "humedad": 48,
+            "temperatura": 18,
+            "nubes": "cumulus",
+            "lluvia": "fuerte",
+            "viento": "leve",
+            "olor": "alto"
+          }
+        },
+        {
+          "position": [
+            -99.16,
+            19.404
+          ],
+          "reading": {
+            "humedad": 25,
+            "temperatura": 28,
+            "nubes": "cirrus",
+            "lluvia": "suave",
+            "viento": "moderada",
+            "olor": "intermitente"
+          }
+        }
+      ]
+    },
+    "glyph": {
+      "kind": "rest",
+      "url": "/glyph.json"
+    }
+  },
+  "children": [
+    {
+      "type": "div",
+      "style": "fill",
+      "children": [
+        {
+          "type": "BackgroundMap",
+          "props": {
+            "centerLonLat": [
+              -99.19,
+              19.42
+            ],
+            "zoom": 14,
+            "minZoom": 11,
+            "mapHeight": "100%",
+            "showZoomControl": false,
+            "mapboxStyleLight": "mapbox/light-v11",
+            "mapboxStyleDark": "mapbox/dark-v11"
+          },
+          "children": [
+            {
+              "slot": "overlays",
+              "type": "MarkerOverlay",
+              "bind": {
+                "items": "$data.readings"
+              },
+              "item": {
+                "type": "Glyph",
+                "props": {
+                  "size": 180,
+                  "labels": false,
+                  "viewBox": "0 0 160 160",
+                  "parts": [
+                    {
+                      "mode": "spiral",
+                      "at": [
+                        30,
+                        30
+                      ],
+                      "value": "$item.reading.humedad",
+                      "suffix": "%",
+                      "turns": [
+                        2,
+                        6
+                      ],
+                      "max": 100,
+                      "radius": 46,
+                      "accent": true,
+                      "label": "HUMEDAD"
+                    },
+                    {
+                      "mode": "ticks",
+                      "at": [
+                        30,
+                        30
+                      ],
+                      "length": 72,
+                      "count": 11
+                    },
+                    {
+                      "kind": "nubes",
+                      "value": "$item.reading.nubes",
+                      "at": [
+                        8,
+                        4
+                      ],
+                      "size": 28,
+                      "label": "NUBES"
+                    },
+                    {
+                      "kind": "lluvia",
+                      "value": "$item.reading.lluvia",
+                      "at": [
+                        6,
+                        50
+                      ],
+                      "size": 24,
+                      "label": "LLUVIA"
+                    },
+                    {
+                      "kind": "viento",
+                      "value": "$item.reading.viento",
+                      "at": [
+                        6,
+                        100
+                      ],
+                      "size": 28,
+                      "label": "VIENTO",
+                      "rotate": {
+                        "suave": 0,
+                        "leve": 15,
+                        "moderada": 55,
+                        "fuerte": 85
+                      }
+                    },
+                    {
+                      "kind": "olor",
+                      "value": "$item.reading.olor",
+                      "at": [
+                        126,
+                        4
+                      ],
+                      "size": 28,
+                      "label": "OLOR"
+                    },
+                    {
+                      "mode": "repeat",
+                      "kind": "temperatura",
+                      "value": "$item.reading.temperatura",
+                      "at": [
+                        116,
+                        112
+                      ],
+                      "size": 40,
+                      "per": 2,
+                      "columns": 5,
+                      "step": 7.5,
+                      "suffix": "°C",
+                      "label": "TEMPERATURA"
+                    }
+                  ]
+                },
+                "bind": {
+                  "shapes": "$data.glyph.0"
+                }
+              }
+            }
+          ]
+        },
+        {
+          "type": "Modal",
+          "bind": {
+            "modelValue": "$state.welcome"
+          },
+          "on": {
+            "update:modelValue": {
+              "set": "welcome"
+            }
+          },
+          "props": {
+            "text": "Bienvenido a la bitácora de observación mediambiental objetiva. En esta parte de la bitácora llevarás un registro del comportamiento del medio ambiente tomando en cuenta las siguientes variables:",
+            "bodyClass": "panel relative border-2 p-3 text-center text-base font-bold leading-snug",
+            "ui": {
+              "width": "sm:max-w-xl",
+              "background": "bg-transparent dark:bg-transparent",
+              "shadow": "shadow-none",
+              "ring": "",
+              "rounded": "",
+              "overlay": {
+                "background": "bg-white/40 dark:bg-black/40 backdrop-blur-[2px]"
+              }
+            }
+          }
+        }
+      ]
+    }
+  ]
+}

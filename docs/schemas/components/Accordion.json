@@ -1,0 +1,45 @@
+{
+  "name": "Accordion",
+  "description": "Collapsible sections. `items` gives the labels; the content of item n goes in slot \"item-n\".",
+  "stateful": false,
+  "emits": [],
+  "slots": [
+    "item-0",
+    "item-1",
+    "item-2",
+    "item-3",
+    "item-4",
+    "item-5"
+  ],
+  "props": {
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "type": "object",
+    "properties": {
+      "items": {
+        "type": "array",
+        "items": {
+          "type": "object",
+          "properties": {
+            "label": {
+              "type": "string"
+            },
+            "defaultOpen": {
+              "type": "boolean"
+            }
+          },
+          "required": [
+            "label"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "multiple": {
+        "type": "boolean"
+      }
+    },
+    "required": [
+      "items"
+    ],
+    "additionalProperties": false
+  }
+}

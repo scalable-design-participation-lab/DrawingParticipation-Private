@@ -1,0 +1,922 @@
+{
+  "version": 1,
+  "state": {
+    "mapType": "vector",
+    "draw": null,
+    "catSel": null,
+    "nuevas": [],
+    "borrador": null,
+    "paso": 1,
+    "herramienta": null,
+    "enviado": false,
+    "seleccionada": null,
+    "filtros": {
+      "categorias": {
+        "movilidad": true,
+        "verde": true,
+        "cultura": true,
+        "accesibilidad": true,
+        "limpieza": true
+      }
+    }
+  },
+  "dataSources": {
+    "propuestas": {
+      "kind": "collection",
+      "name": "propuestas"
+    }
+  },
+  "children": [
+    {
+      "type": "div",
+      "style": "screen",
+      "children": [
+        {
+          "type": "BackgroundMap",
+          "props": {
+            "centerLonLat": [
+              -3.703,
+              40.417
+            ],
+            "zoom": 14,
+            "showZoomControl": true
+          },
+          "bind": {
+            "mapType": "$state.mapType"
+          },
+          "children": [
+            {
+              "slot": "layers",
+              "type": "FeatureLayer",
+              "props": {
+                "icons": {
+                  "movilidad": "/icons/movilidad.svg",
+                  "verde": "/icons/verde.svg",
+                  "cultura": "/icons/cultura.svg",
+                  "accesibilidad": "/icons/accesibilidad.svg",
+                  "limpieza": "/icons/limpieza.svg"
+                },
+                "labels": {
+                  "movilidad": "$t.cat.movilidad",
+                  "verde": "$t.cat.verde",
+                  "cultura": "$t.cat.cultura",
+                  "accesibilidad": "$t.cat.accesibilidad",
+                  "limpieza": "$t.cat.limpieza"
+                },
+                "defaultLabel": "$t.nav.propuestas",
+                "commentIcons": true
+              },
+              "bind": {
+                "features": "$data.propuestas",
+                "visibleTags": "$state.filtros.categorias"
+              },
+              "on": {
+                "inspect": {
+                  "set": "seleccionada"
+                }
+              }
+            },
+            {
+              "slot": "layers",
+              "type": "FeatureLayer",
+              "props": {
+                "icons": {
+                  "movilidad": "/icons/movilidad.svg",
+                  "verde": "/icons/verde.svg",
+                  "cultura": "/icons/cultura.svg",
+                  "accesibilidad": "/icons/accesibilidad.svg",
+                  "limpieza": "/icons/limpieza.svg"
+                },
+                "labels": {
+                  "movilidad": "$t.cat.movilidad",
+                  "verde": "$t.cat.verde",
+                  "cultura": "$t.cat.cultura",
+                  "accesibilidad": "$t.cat.accesibilidad",
+                  "limpieza": "$t.cat.limpieza"
+                },
+                "editable": true,
+                "deletable": true,
+                "confirmDelete": "$t.mapa.confirmarBorrado"
+              },
+              "bind": {
+                "features": "$state.nuevas",
+                "draw": "$state.draw"
+              },
+              "on": {
+                "update:features": {
+                  "set": "nuevas"
+                },
+                "update:draw": {
+                  "set": "draw"
+                },
+                "open": [
+                  {
+                    "set": "borrador"
+                  },
+                  {
+                    "set": "borrador.categoria",
+                    "value": "$state.catSel.iconName"
+                  },
+                  {
+                    "set": "paso",
+                    "value": 1
+                  }
+                ]
+              }
+            },
+            {
+              "slot": "overlays",
+              "type": "ToolTips",
+              "props": {
+                "hideKeys": [
+                  "geometry",
+                  "id",
+                  "iconName",
+                  "createdAt",
+                  "timestamp",
+                  "position",
+                  "title",
+                  "comment",
+                  "fotos",
+                  "documento"
+                ]
+              }
+            },
+            {
+              "slot": "overlays",
+              "type": "MarkerOverlay",
+              "props": {
+                "positionKey": "position",
+                "lonLat": false,
+                "positioning": "bottom-center",
+                "stopEvent": true
+              },
+              "bind": {
+                "item": "$state.seleccionada"
+              },
+              "item": {
+                "type": "Panel",
+                "props": {
+                  "variant": "card",
+                  "padding": "sm"
+                },
+                "children": [
+                  {
+                    "type": "Stack",
+                    "props": {
+                      "gap": "xs"
+                    },
+                    "children": [
+                      {
+                        "type": "Text",
+                        "bind": {
+                          "text": "$item.categoria"
+                        },
+                        "props": {
+                          "size": "xs",
+                          "tone": "accent",
+                          "weight": "semibold",
+                          "labels": {
+                            "movilidad": "$t.cat.movilidad",
+                            "verde": "$t.cat.verde",
+                            "cultura": "$t.cat.cultura",
+                            "accesibilidad": "$t.cat.accesibilidad",
+                            "limpieza": "$t.cat.limpieza"
+                          }
+                        }
+                      },
+                      {
+                        "type": "Text",
+                        "props": {
+                          "size": "sm",
+                          "weight": "semibold"
+                        },
+                        "bind": {
+                          "text": "$item.titulo"
+                        }
+                      },
+                      {
+                        "type": "Text",
+                        "bind": {
+                          "text": "$item.coste"
+                        },
+                        "props": {
+                          "size": "xs",
+                          "tone": "muted",
+                          "format": "number"
+                        }
+                      },
+                      {
+                        "type": "Stack",
+                        "props": {
+                          "direction": "row",
+                          "gap": "xs"
+                        },
+                        "children": [
+                          {
+                            "type": "Button",
+                            "props": {
+                              "to": "/propuestas",
+                              "color": "black",
+                              "size": "xs"
+                            },
+                            "text": "$t.mapa.verDetalle"
+                          },
+                          {
+                            "type": "Button",
+                            "props": {
+                              "color": "gray",
+                              "variant": "soft",
+                              "size": "xs"
+                            },
+                            "text": "$t.mapa.cerrar",
+                            "on": {
+                              "click": {
+                                "set": "seleccionada",
+                                "value": null
+                              }
+                            }
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "type": "div",
+          "style": "floating-left",
+          "children": [
+            {
+              "type": "Stack",
+              "props": {
+                "gap": "sm"
+              },
+              "children": [
+                {
+                  "type": "StepCard",
+                  "props": {
+                    "steps": [
+                      {
+                        "title": "$t.mapa.paletaTitulo",
+                        "text": "$t.mapa.paletaTexto",
+                        "iconGrid": {
+                          "icons": [
+                            {
+                              "name": "movilidad",
+                              "src": "/icons/movilidad.svg",
+                              "tooltip": "$t.cat.movilidad",
+                              "value": {
+                                "type": "Point",
+                                "iconName": "movilidad",
+                                "color": "#2563eb"
+                              }
+                            },
+                            {
+                              "name": "verde",
+                              "src": "/icons/verde.svg",
+                              "tooltip": "$t.cat.verde",
+                              "value": {
+                                "type": "Point",
+                                "iconName": "verde",
+                                "color": "#16a34a"
+                              }
+                            },
+                            {
+                              "name": "cultura",
+                              "src": "/icons/cultura.svg",
+                              "tooltip": "$t.cat.cultura",
+                              "value": {
+                                "type": "Point",
+                                "iconName": "cultura",
+                                "color": "#d946ef"
+                              }
+                            },
+                            {
+                              "name": "accesibilidad",
+                              "src": "/icons/accesibilidad.svg",
+                              "tooltip": "$t.cat.accesibilidad",
+                              "value": {
+                                "type": "Point",
+                                "iconName": "accesibilidad",
+                                "color": "#f59e0b"
+                              }
+                            },
+                            {
+                              "name": "limpieza",
+                              "src": "/icons/limpieza.svg",
+                              "tooltip": "$t.cat.limpieza",
+                              "value": {
+                                "type": "Point",
+                                "iconName": "limpieza",
+                                "color": "#0891b2"
+                              }
+                            }
+                          ]
+                        }
+                      }
+                    ]
+                  },
+                  "on": {
+                    "select": [
+                      {
+                        "set": "draw"
+                      },
+                      {
+                        "set": "catSel"
+                      }
+                    ]
+                  }
+                },
+                {
+                  "type": "Text",
+                  "if": "$state.draw",
+                  "bind": {
+                    "text": "$t.mapa.pendiente"
+                  },
+                  "props": {
+                    "size": "xs",
+                    "tone": "accent"
+                  }
+                },
+                {
+                  "type": "Stack",
+                  "props": {
+                    "direction": "row",
+                    "gap": "xs",
+                    "align": "baseline"
+                  },
+                  "children": [
+                    {
+                      "type": "Text",
+                      "bind": {
+                        "text": "$t.mapa.total"
+                      },
+                      "props": {
+                        "size": "xs",
+                        "tone": "muted"
+                      }
+                    },
+                    {
+                      "type": "Text",
+                      "bind": {
+                        "text": "$data.propuestas.length"
+                      },
+                      "props": {
+                        "size": "xs",
+                        "tone": "muted"
+                      }
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "div",
+          "style": "floating-right",
+          "children": [
+            {
+              "type": "Toolbar",
+              "props": {
+                "tools": [
+                  {
+                    "icon": "i-heroicons-funnel",
+                    "tooltip": "$t.mapa.filtros",
+                    "value": "filtros"
+                  },
+                  {
+                    "icon": "i-heroicons-question-mark-circle",
+                    "tooltip": "$t.mapa.ayuda",
+                    "value": "ayuda"
+                  }
+                ]
+              },
+              "on": {
+                "toolClick": {
+                  "set": "herramienta"
+                }
+              }
+            },
+            {
+              "type": "MapTypeToggle",
+              "bind": {
+                "modelValue": "$state.mapType"
+              },
+              "on": {
+                "update:modelValue": {
+                  "set": "mapType"
+                }
+              }
+            }
+          ]
+        },
+        {
+          "type": "div",
+          "style": "sheet-right",
+          "if": "$state.herramienta.value == 'filtros'",
+          "children": [
+            {
+              "type": "FilterSidebar",
+              "props": {
+                "isVisible": true,
+                "title": "$t.mapa.filtros",
+                "filterSections": [
+                  {
+                    "label": "$t.mapa.filtros",
+                    "name": "categorias",
+                    "component": "GenericCheckboxGroup",
+                    "props": {
+                      "items": [
+                        {
+                          "label": "$t.cat.movilidad",
+                          "value": "movilidad"
+                        },
+                        {
+                          "label": "$t.cat.verde",
+                          "value": "verde"
+                        },
+                        {
+                          "label": "$t.cat.cultura",
+                          "value": "cultura"
+                        },
+                        {
+                          "label": "$t.cat.accesibilidad",
+                          "value": "accesibilidad"
+                        },
+                        {
+                          "label": "$t.cat.limpieza",
+                          "value": "limpieza"
+                        }
+                      ],
+                      "selectAllLabel": "$t.mapa.todas",
+                      "deselectAllLabel": "$t.mapa.ninguna"
+                    }
+                  }
+                ],
+                "resetLabel": "$t.mapa.limpiarFiltros"
+              },
+              "on": {
+                "close": {
+                  "set": "herramienta",
+                  "value": null
+                },
+                "filterChange": {
+                  "set": "filtros.categorias",
+                  "value": "$payload.value"
+                },
+                "reset": {
+                  "set": "filtros.categorias",
+                  "value": {
+                    "movilidad": true,
+                    "verde": true,
+                    "cultura": true,
+                    "accesibilidad": true,
+                    "limpieza": true
+                  }
+                }
+              },
+              "bind": {
+                "values": "$state.filtros"
+              }
+            }
+          ]
+        },
+        {
+          "type": "Modal",
+          "if": "$state.borrador && !$state.enviado",
+          "props": {
+            "modelValue": true,
+            "size": "lg",
+            "closable": true
+          },
+          "bind": {
+            "title": "$t.form.nueva"
+          },
+          "on": {
+            "update:modelValue": {
+              "set": "borrador",
+              "value": null
+            }
+          },
+          "children": [
+            {
+              "type": "Stack",
+              "props": {
+                "gap": "md"
+              },
+              "children": [
+                {
+                  "type": "Stack",
+                  "props": {
+                    "direction": "row",
+                    "gap": "xs",
+                    "align": "baseline"
+                  },
+                  "children": [
+                    {
+                      "type": "Text",
+                      "bind": {
+                        "text": "$t.form.paso"
+                      },
+                      "props": {
+                        "size": "xs",
+                        "tone": "muted"
+                      }
+                    },
+                    {
+                      "type": "Text",
+                      "bind": {
+                        "text": "$state.paso"
+                      },
+                      "props": {
+                        "size": "xs",
+                        "tone": "muted"
+                      }
+                    },
+                    {
+                      "type": "Text",
+                      "bind": {
+                        "text": "$t.form.de"
+                      },
+                      "props": {
+                        "size": "xs",
+                        "tone": "muted"
+                      }
+                    },
+                    {
+                      "type": "Text",
+                      "props": {
+                        "size": "xs",
+                        "tone": "muted",
+                        "text": "2"
+                      }
+                    }
+                  ]
+                },
+                {
+                  "type": "div",
+                  "if": "$state.paso == 1",
+                  "children": [
+                    {
+                      "type": "Stack",
+                      "props": {
+                        "gap": "md"
+                      },
+                      "children": [
+                        {
+                          "type": "FormFields",
+                          "props": {
+                            "fields": [
+                              {
+                                "name": "titulo",
+                                "label": "$t.form.titulo",
+                                "placeholder": "$t.form.tituloHint",
+                                "required": true
+                              },
+                              {
+                                "name": "categoria",
+                                "label": "$t.form.categoria",
+                                "type": "select",
+                                "placeholder": "$t.form.elige",
+                                "options": [
+                                  {
+                                    "label": "$t.cat.movilidad",
+                                    "value": "movilidad"
+                                  },
+                                  {
+                                    "label": "$t.cat.verde",
+                                    "value": "verde"
+                                  },
+                                  {
+                                    "label": "$t.cat.cultura",
+                                    "value": "cultura"
+                                  },
+                                  {
+                                    "label": "$t.cat.accesibilidad",
+                                    "value": "accesibilidad"
+                                  },
+                                  {
+                                    "label": "$t.cat.limpieza",
+                                    "value": "limpieza"
+                                  }
+                                ]
+                              },
+                              {
+                                "name": "coste",
+                                "label": "$t.form.coste",
+                                "type": "number",
+                                "placeholder": "$t.form.costeHint"
+                              }
+                            ],
+                            "gap": "gap-3"
+                          },
+                          "bind": {
+                            "modelValue": "$state.borrador"
+                          },
+                          "on": {
+                            "update:modelValue": {
+                              "set": "borrador"
+                            }
+                          }
+                        },
+                        {
+                          "type": "Text",
+                          "if": "!$state.borrador.categoria",
+                          "bind": {
+                            "text": "$t.form.faltaTitulo"
+                          },
+                          "props": {
+                            "size": "xs",
+                            "tone": "muted"
+                          }
+                        },
+                        {
+                          "type": "div",
+                          "if": "$state.borrador.categoria",
+                          "children": [
+                            {
+                              "type": "Stack",
+                              "props": {
+                                "direction": "row",
+                                "justify": "end"
+                              },
+                              "children": [
+                                {
+                                  "type": "Button",
+                                  "props": {
+                                    "color": "black"
+                                  },
+                                  "text": "$t.form.siguiente",
+                                  "on": {
+                                    "click": {
+                                      "set": "paso",
+                                      "value": 2
+                                    }
+                                  }
+                                }
+                              ]
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "type": "div",
+                  "if": "$state.paso == 2",
+                  "children": [
+                    {
+                      "type": "Stack",
+                      "props": {
+                        "gap": "md"
+                      },
+                      "children": [
+                        {
+                          "type": "PhotoDropZone",
+                          "props": {
+                            "lines": [
+                              "$t.form.fotos"
+                            ],
+                            "accept": "image/*"
+                          },
+                          "on": {
+                            "files": {
+                              "set": "borrador.fotos"
+                            }
+                          }
+                        },
+                        {
+                          "type": "FileDropZone",
+                          "props": {
+                            "lines": [
+                              "$t.form.documentoLineas"
+                            ],
+                            "accept": ".pdf"
+                          },
+                          "on": {
+                            "files": {
+                              "set": "borrador.documento"
+                            }
+                          }
+                        },
+                        {
+                          "type": "FormFields",
+                          "props": {
+                            "fields": [
+                              {
+                                "name": "lugar",
+                                "label": "$t.form.lugar",
+                                "placeholder": "$t.form.lugarHint"
+                              },
+                              {
+                                "name": "resumen",
+                                "label": "$t.form.resumen"
+                              },
+                              {
+                                "name": "descripcion",
+                                "label": "$t.form.descripcion",
+                                "type": "textarea",
+                                "rows": 4,
+                                "placeholder": "$t.form.descripcionHint"
+                              }
+                            ],
+                            "gap": "gap-3",
+                            "submitLabel": "$t.form.enviar"
+                          },
+                          "bind": {
+                            "modelValue": "$state.borrador"
+                          },
+                          "on": {
+                            "update:modelValue": {
+                              "set": "borrador"
+                            },
+                            "submit": [
+                              {
+                                "call": "saveTo",
+                                "args": "propuestas"
+                              },
+                              {
+                                "set": "nuevas",
+                                "value": []
+                              },
+                              {
+                                "set": "enviado",
+                                "value": true
+                              }
+                            ]
+                          }
+                        },
+                        {
+                          "type": "Text",
+                          "if": "$errors.saveTo",
+                          "bind": {
+                            "text": "$errors.saveTo"
+                          },
+                          "props": {
+                            "size": "xs",
+                            "tone": "accent"
+                          }
+                        },
+                        {
+                          "type": "Stack",
+                          "props": {
+                            "direction": "row"
+                          },
+                          "children": [
+                            {
+                              "type": "Button",
+                              "props": {
+                                "color": "gray",
+                                "variant": "soft"
+                              },
+                              "text": "$t.form.atras",
+                              "on": {
+                                "click": {
+                                  "set": "paso",
+                                  "value": 1
+                                }
+                              }
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "Modal",
+          "if": "$state.enviado",
+          "props": {
+            "modelValue": true,
+            "size": "md",
+            "align": "center"
+          },
+          "bind": {
+            "title": "$t.form.gracias"
+          },
+          "on": {
+            "update:modelValue": [
+              {
+                "set": "enviado",
+                "value": false
+              },
+              {
+                "set": "borrador",
+                "value": null
+              }
+            ]
+          },
+          "children": [
+            {
+              "type": "Stack",
+              "props": {
+                "gap": "md"
+              },
+              "children": [
+                {
+                  "type": "Text",
+                  "props": {
+                    "align": "center"
+                  },
+                  "bind": {
+                    "text": "$t.form.graciasTexto"
+                  }
+                },
+                {
+                  "type": "Stack",
+                  "props": {
+                    "direction": "row",
+                    "justify": "center",
+                    "gap": "sm"
+                  },
+                  "children": [
+                    {
+                      "type": "Button",
+                      "props": {
+                        "to": "/propuestas",
+                        "color": "black"
+                      },
+                      "text": "$t.form.verLista"
+                    },
+                    {
+                      "type": "Button",
+                      "props": {
+                        "color": "gray",
+                        "variant": "soft"
+                      },
+                      "text": "$t.form.otra",
+                      "on": {
+                        "click": [
+                          {
+                            "set": "enviado",
+                            "value": false
+                          },
+                          {
+                            "set": "borrador",
+                            "value": null
+                          },
+                          {
+                            "set": "paso",
+                            "value": 1
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "Modal",
+          "if": "$state.herramienta.value == 'ayuda'",
+          "props": {
+            "modelValue": true,
+            "size": "lg",
+            "closable": true
+          },
+          "bind": {
+            "title": "$t.mapa.ayuda"
+          },
+          "on": {
+            "update:modelValue": {
+              "set": "herramienta",
+              "value": null
+            }
+          },
+          "children": [
+            {
+              "type": "ul",
+              "style": "bullets",
+              "children": [
+                {
+                  "type": "li",
+                  "text": "$t.acerca.paso1"
+                },
+                {
+                  "type": "li",
+                  "text": "$t.acerca.paso2"
+                },
+                {
+                  "type": "li",
+                  "text": "$t.acerca.paso3"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

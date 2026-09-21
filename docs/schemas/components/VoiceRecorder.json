@@ -1,0 +1,33 @@
+{
+  "name": "VoiceRecorder",
+  "description": "Record a voice note in the browser. Recordings arrive in `modelValue` as File objects, the same way PhotoDropZone and FileDropZone hand over what was picked, so the same `saveTo` uploads them.",
+  "stateful": false,
+  "emits": [
+    "update:modelValue"
+  ],
+  "slots": [],
+  "props": {
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "type": "object",
+    "properties": {
+      "modelValue": {
+        "type": "array",
+        "items": {}
+      },
+      "recordLabel": {
+        "type": "string"
+      },
+      "stopLabel": {
+        "type": "string"
+      },
+      "removeLabel": {
+        "type": "string"
+      },
+      "deniedLabel": {
+        "description": "Shown when the reader refuses the microphone, or there is none.",
+        "type": "string"
+      }
+    },
+    "additionalProperties": false
+  }
+}

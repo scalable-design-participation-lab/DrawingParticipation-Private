@@ -17,7 +17,7 @@
  * />
  -->
 <script setup>
-import { computed, onMounted, ref, watch } from 'vue'
+import { computed, onMounted } from 'vue'
 
 /**
  * Props for the GenericCheckboxGroup component
@@ -35,6 +35,16 @@ const props = defineProps({
     type: Array,
     required: true,
   },
+  // Both labels are props so a spec can pass "$t." keys: hard-coding them
+  // puts English in front of a reader using any other language.
+  selectAllLabel: {
+    type: String,
+    default: 'Select All',
+  },
+  deselectAllLabel: {
+    type: String,
+    default: 'Deselect All',
+  },
   modelValue: {
     type: Object,
     default: () => ({}),
@@ -44,56 +54,29 @@ const props = defineProps({
 const emit = defineEmits(['update:modelValue'])
 
 /**
- * The internal state of selected items
- * @type {import('vue').Ref<object>}
+ * Fully controlled: `modelValue` is the only truth. It used to keep a private
+ * copy and seed it on mount, so closing and reopening the panel silently
+ * re-selected everything while the page's own filter state said otherwise, and
+ * the two drifted apart with every click.
  */
-const selectedItems = ref({ ...props.modelValue })
-
-/**
- * Checks if all items are selected
- * @type {import('vue').ComputedRef<boolean>}
- */
-const allSelected = computed(() => {
-  return Object.values(selectedItems.value).every(value => value === true)
-})
-
-/**
- * Toggles the selection of all items
- */
-function toggleAll() {
-  const newValue = !allSelected.value
-  props.items.forEach((item) => {
-    selectedItems.value[item.value] = newValue
-  })
-  emit('update:modelValue', { ...selectedItems.value })
-}
-
-/**
- * Updates the selected state of an item
- * @param {string} key - The key of the item to update
- * @param {boolean} value - The new selected state
- */
-function updateItem(key, value) {
-  selectedItems.value[key] = value
-  emit('update:modelValue', { ...selectedItems.value })
-}
-
-// Watch for external changes to modelValue
-watch(
-  () => props.modelValue,
-  (newValue) => {
-    selectedItems.value = { ...newValue }
-  },
-  { deep: true },
+const allSelected = computed(() =>
+  props.items.length > 0 && props.items.every(item => props.modelValue[item.value] === true),
 )
 
-// Initialize all items as selected if no initial selection is provided
+function toggleAll() {
+  const next = !allSelected.value
+  emit('update:modelValue', Object.fromEntries(props.items.map(item => [item.value, next])))
+}
+
+function updateItem(key, value) {
+  emit('update:modelValue', { ...props.modelValue, [key]: value })
+}
+
+// A page that starts with no selection means "all of them": say so once, so
+// the value the page holds and the boxes on screen agree from the first frame.
 onMounted(() => {
-  if (Object.keys(selectedItems.value).length === 0 && props.items.length > 0) {
-    props.items.forEach((item) => {
-      selectedItems.value[item.value] = true
-    })
-    emit('update:modelValue', { ...selectedItems.value })
+  if (props.items.length > 0 && Object.keys(props.modelValue).length === 0) {
+    emit('update:modelValue', Object.fromEntries(props.items.map(item => [item.value, true])))
   }
 })
 </script>
@@ -104,14 +87,14 @@ onMounted(() => {
       size="sm"
       color="gray"
       variant="soft"
-      :label="allSelected ? 'Deselect All' : 'Select All'"
+      :label="allSelected ? deselectAllLabel : selectAllLabel"
       @click="toggleAll"
     />
     <UCheckbox
       v-for="item in items"
       :key="item.value"
       :label="item.label"
-      :model-value="selectedItems[item.value]"
+      :model-value="modelValue[item.value] === true"
       @update:model-value="updateItem(item.value, $event)"
     >
       {{ item.label }}

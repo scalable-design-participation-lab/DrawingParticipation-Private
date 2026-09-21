@@ -1,0 +1,90 @@
+{
+  "version": 1,
+  "name": "presupuesto-distrito",
+  "title": "Presupuesto participativo del distrito",
+  "description": "Propón mejoras para el distrito, ponles precio y vota las de tus vecinas y vecinos.",
+  "lang": "es",
+  "theme": {
+    "primary": "indigo",
+    "gray": "slate",
+    "colorMode": "light"
+  },
+  "i18n": {
+    "default": "es"
+  },
+  "shell": "shell.json",
+  "routes": {
+    "/": "mapa.json",
+    "/propuestas": "lista.json",
+    "/resultados": "resultados.json",
+    "/acerca": "acerca.json"
+  },
+  "data": {
+    "collections": {
+      "propuestas": {
+        "fields": [
+          {
+            "name": "titulo",
+            "type": "string",
+            "required": true
+          },
+          {
+            "name": "categoria",
+            "type": "string",
+            "required": true
+          },
+          {
+            "name": "coste",
+            "type": "number",
+            "required": true
+          },
+          {
+            "name": "resumen",
+            "type": "string"
+          },
+          {
+            "name": "descripcion",
+            "type": "string"
+          },
+          {
+            "name": "lugar",
+            "type": "string"
+          },
+          {
+            "name": "type",
+            "type": "string"
+          },
+          {
+            "name": "coordinates",
+            "type": "json"
+          },
+          {
+            "name": "iconName",
+            "type": "string"
+          },
+          {
+            "name": "fotos",
+            "type": "json"
+          },
+          {
+            "name": "documento",
+            "type": "json"
+          }
+        ]
+      },
+      "votos": {
+        "fields": [
+          {
+            "name": "propuestaId",
+            "type": "string",
+            "required": true
+          },
+          {
+            "name": "valor",
+            "type": "number"
+          }
+        ]
+      }
+    }
+  }
+}

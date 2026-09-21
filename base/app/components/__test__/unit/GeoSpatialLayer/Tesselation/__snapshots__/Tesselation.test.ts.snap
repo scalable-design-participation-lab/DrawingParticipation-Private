@@ -2,8 +2,30 @@
 
 exports[`tesselation.vue > renders correctly 1`] = `
 <div
-  class=""
   visible="true"
   z-index="5"
-/>
+>
+  
+  <div
+    features="[object Object],[object Object],[object Object]"
+  >
+    
+    
+  </div>
+  <div
+    override-style-function="function hexStyleFunction(feature) {
+      return new __vite_ssr_import_3__.Style({
+        fill: new __vite_ssr_import_3__.Fill({
+          color: feature.get("fillColor") || "rgba(0, 0, 0, 0)"
+          // Fallback color
+        }),
+        stroke: new __vite_ssr_import_3__.Stroke({ color: "#ffffff", width: props.width })
+      });
+    }"
+  >
+    
+    
+  </div>
+  
+</div>
 `;

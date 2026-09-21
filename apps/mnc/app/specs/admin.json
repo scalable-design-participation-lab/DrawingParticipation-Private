@@ -1,0 +1,1201 @@
+{
+  "version": 1,
+  "state": {
+    "auth": {
+      "ready": false,
+      "isAdmin": false,
+      "isSuperAdmin": false,
+      "isAnonymous": true,
+      "uid": null,
+      "email": null
+    },
+    "accounts": [],
+    "registrations": [],
+    "accountsLoading": false,
+    "mode": "signIn",
+    "login": {
+      "email": "",
+      "password": ""
+    },
+    "newAccount": {
+      "email": "",
+      "password": "",
+      "role": "moderator"
+    },
+    "showBootstrap": false,
+    "uidCopied": false,
+    "confirmRevoke": null
+  },
+  "init": [
+    {
+      "call": "watchAuth"
+    }
+  ],
+  "children": [
+    {
+      "type": "div",
+      "style": "admin-page",
+      "children": [
+        {
+          "type": "div",
+          "style": "admin-container",
+          "children": [
+            {
+              "type": "Stack",
+              "style": "admin-header",
+              "props": {
+                "direction": "row",
+                "justify": "between",
+                "align": "center",
+                "gap": "sm"
+              },
+              "children": [
+                {
+                  "type": "Stack",
+                  "props": {
+                    "gap": "none"
+                  },
+                  "children": [
+                    {
+                      "type": "Text",
+                      "props": {
+                        "as": "h1",
+                        "size": "xl",
+                        "weight": "bold",
+                        "text": "$t.admin.title"
+                      }
+                    },
+                    {
+                      "type": "Text",
+                      "props": {
+                        "size": "sm",
+                        "tone": "muted",
+                        "text": "$t.admin.subtitle"
+                      }
+                    }
+                  ]
+                },
+                {
+                  "type": "Stack",
+                  "props": {
+                    "direction": "row",
+                    "align": "center",
+                    "gap": "xs"
+                  },
+                  "children": [
+                    {
+                      "type": "Button",
+                      "props": {
+                        "size": "xs",
+                        "color": "gray",
+                        "variant": "ghost",
+                        "icon": "i-heroicons-map",
+                        "to": "/",
+                        "label": "$t.admin.backToMap"
+                      }
+                    },
+                    {
+                      "type": "Button",
+                      "if": "!$state.auth.isAnonymous && $state.auth.ready",
+                      "props": {
+                        "size": "xs",
+                        "color": "gray",
+                        "variant": "soft",
+                        "label": "$t.mod.signOut"
+                      },
+                      "on": {
+                        "click": {
+                          "call": "signOut",
+                          "payload": null
+                        }
+                      }
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "Text",
+              "if": "!$state.auth.ready",
+              "style": "admin-waiting",
+              "props": {
+                "size": "sm",
+                "tone": "muted",
+                "align": "center",
+                "text": "$t.admin.loading"
+              }
+            },
+            {
+              "type": "Panel",
+              "if": "$state.auth.ready && $state.auth.isAnonymous || $state.auth.ready && !$state.auth.uid",
+              "style": "admin-card-narrow",
+              "props": {
+                "variant": "card",
+                "padding": "lg"
+              },
+              "children": [
+                {
+                  "type": "Tabs",
+                  "style": "admin-switch",
+                  "props": {
+                    "options": [
+                      {
+                        "value": "signIn",
+                        "label": "$t.mod.signIn"
+                      },
+                      {
+                        "value": "register",
+                        "label": "$t.admin.register"
+                      }
+                    ]
+                  },
+                  "bind": {
+                    "modelValue": "$state.mode"
+                  },
+                  "on": {
+                    "update:modelValue": {
+                      "set": "mode"
+                    }
+                  }
+                },
+                {
+                  "type": "Text",
+                  "if": "$state.mode == 'register'",
+                  "style": "admin-hint",
+                  "props": {
+                    "size": "xs",
+                    "tone": "muted",
+                    "text": "$t.admin.registerHint"
+                  }
+                },
+                {
+                  "type": "FormFields",
+                  "props": {
+                    "fields": [
+                      {
+                        "name": "email",
+                        "type": "email",
+                        "placeholder": "$t.mod.email"
+                      },
+                      {
+                        "name": "password",
+                        "type": "password",
+                        "placeholder": "$t.mod.password"
+                      }
+                    ]
+                  },
+                  "bind": {
+                    "modelValue": "$state.login"
+                  },
+                  "on": {
+                    "update:modelValue": {
+                      "set": "login"
+                    }
+                  }
+                },
+                {
+                  "type": "Text",
+                  "if": "$errors.signIn || $errors.register || $errors.resetPassword",
+                  "style": "admin-error",
+                  "props": {
+                    "size": "xs"
+                  },
+                  "bind": {
+                    "text": "$errors.signIn",
+                    "fallback": "$errors.register"
+                  }
+                },
+                {
+                  "type": "Text",
+                  "if": "!$errors.signIn && !$errors.register && $errors.resetPassword",
+                  "style": "admin-error",
+                  "props": {
+                    "size": "xs"
+                  },
+                  "bind": {
+                    "text": "$errors.resetPassword"
+                  }
+                },
+                {
+                  "type": "Button",
+                  "if": "$state.mode == 'signIn'",
+                  "props": {
+                    "color": "primary",
+                    "block": true,
+                    "label": "$t.mod.signIn"
+                  },
+                  "on": {
+                    "click": {
+                      "call": "signIn",
+                      "payload": "$state.login"
+                    }
+                  }
+                },
+                {
+                  "type": "Button",
+                  "if": "$state.mode == 'register'",
+                  "props": {
+                    "color": "primary",
+                    "block": true,
+                    "label": "$t.admin.register"
+                  },
+                  "on": {
+                    "click": {
+                      "call": "register",
+                      "payload": "$state.login"
+                    }
+                  }
+                },
+                {
+                  "type": "Button",
+                  "if": "$state.mode == 'signIn'",
+                  "style": "admin-quiet-link",
+                  "props": {
+                    "block": true,
+                    "size": "xs",
+                    "color": "gray",
+                    "variant": "link",
+                    "label": "$t.mod.forgotPassword"
+                  },
+                  "on": {
+                    "click": {
+                      "call": "resetPassword",
+                      "payload": "$state.login.email"
+                    }
+                  }
+                }
+              ]
+            },
+            {
+              "type": "Panel",
+              "if": "$state.auth.ready && !$state.auth.isAnonymous && $state.auth.uid && !$state.auth.isAdmin",
+              "style": "admin-card-wide",
+              "props": {
+                "variant": "card",
+                "padding": "lg"
+              },
+              "children": [
+                {
+                  "type": "Icon",
+                  "style": "admin-icon-waiting",
+                  "props": {
+                    "name": "i-heroicons-clock",
+                    "size": "lg"
+                  }
+                },
+                {
+                  "type": "Text",
+                  "props": {
+                    "as": "h2",
+                    "size": "sm",
+                    "weight": "semibold",
+                    "align": "center",
+                    "text": "$t.admin.pendingTitle"
+                  }
+                },
+                {
+                  "type": "Stack",
+                  "style": "admin-signed-in",
+                  "props": {
+                    "direction": "row",
+                    "justify": "center",
+                    "gap": "xs"
+                  },
+                  "children": [
+                    {
+                      "type": "Text",
+                      "props": {
+                        "as": "span",
+                        "size": "sm",
+                        "tone": "muted",
+                        "text": "$t.admin.signedInAs"
+                      }
+                    },
+                    {
+                      "type": "Text",
+                      "props": {
+                        "as": "span",
+                        "size": "sm",
+                        "weight": "medium"
+                      },
+                      "bind": {
+                        "text": "$state.auth.email"
+                      }
+                    }
+                  ]
+                },
+                {
+                  "type": "Text",
+                  "props": {
+                    "size": "sm",
+                    "align": "center",
+                    "text": "$t.admin.pendingBody"
+                  }
+                },
+                {
+                  "type": "Panel",
+                  "style": "admin-uid-box",
+                  "props": {
+                    "variant": "plain",
+                    "padding": "sm"
+                  },
+                  "children": [
+                    {
+                      "type": "Text",
+                      "style": "admin-eyebrow",
+                      "props": {
+                        "size": "xs",
+                        "weight": "semibold",
+                        "tone": "muted",
+                        "text": "$t.admin.yourUid"
+                      }
+                    },
+                    {
+                      "type": "Stack",
+                      "props": {
+                        "direction": "row",
+                        "align": "center",
+                        "gap": "xs"
+                      },
+                      "children": [
+                        {
+                          "type": "code",
+                          "style": "admin-uid",
+                          "text": "$state.auth.uid"
+                        },
+                        {
+                          "type": "Button",
+                          "if": "!$state.uidCopied",
+                          "props": {
+                            "size": "xs",
+                            "color": "gray",
+                            "variant": "ghost",
+                            "icon": "i-heroicons-clipboard-document",
+                            "label": "$t.admin.copyUid"
+                          },
+                          "on": {
+                            "click": {
+                              "call": "copy",
+                              "payload": "$state.auth.uid",
+                              "args": {
+                                "into": "uidCopied"
+                              }
+                            }
+                          }
+                        },
+                        {
+                          "type": "Button",
+                          "if": "$state.uidCopied",
+                          "props": {
+                            "size": "xs",
+                            "color": "gray",
+                            "variant": "ghost",
+                            "icon": "i-heroicons-check",
+                            "label": "$t.admin.copyUid"
+                          }
+                        }
+                      ]
+                    },
+                    {
+                      "type": "Button",
+                      "style": "admin-disclosure",
+                      "props": {
+                        "size": "xs",
+                        "color": "gray",
+                        "variant": "link",
+                        "icon": "i-heroicons-chevron-right",
+                        "label": "$t.admin.bootstrapToggle"
+                      },
+                      "on": {
+                        "click": {
+                          "toggle": "showBootstrap"
+                        }
+                      }
+                    },
+                    {
+                      "type": "Stack",
+                      "if": "$state.showBootstrap",
+                      "props": {
+                        "gap": "sm"
+                      },
+                      "children": [
+                        {
+                          "type": "Text",
+                          "props": {
+                            "size": "xs",
+                            "text": "$t.admin.claimHint"
+                          }
+                        },
+                        {
+                          "type": "Button",
+                          "props": {
+                            "size": "xs",
+                            "color": "primary",
+                            "icon": "i-heroicons-key",
+                            "label": "$t.admin.claimAdmin"
+                          },
+                          "on": {
+                            "click": {
+                              "call": "claimAdmin",
+                              "payload": null
+                            }
+                          }
+                        },
+                        {
+                          "type": "Text",
+                          "if": "$errors.claimAdmin",
+                          "style": "admin-error",
+                          "props": {
+                            "size": "xs"
+                          },
+                          "bind": {
+                            "text": "$errors.claimAdmin"
+                          }
+                        },
+                        {
+                          "type": "Text",
+                          "style": "admin-eyebrow",
+                          "props": {
+                            "size": "xs",
+                            "weight": "semibold",
+                            "tone": "muted",
+                            "text": "$t.admin.claimOrManual"
+                          }
+                        },
+                        {
+                          "type": "ol",
+                          "style": "admin-steps",
+                          "children": [
+                            {
+                              "type": "li",
+                              "text": "$t.admin.bootstrapStep1"
+                            },
+                            {
+                              "type": "li",
+                              "text": "$t.admin.bootstrapStep2"
+                            },
+                            {
+                              "type": "li",
+                              "text": "$t.admin.bootstrapStep3"
+                            },
+                            {
+                              "type": "li",
+                              "text": "$t.admin.bootstrapStep4"
+                            }
+                          ]
+                        },
+                        {
+                          "type": "Text",
+                          "props": {
+                            "size": "xs",
+                            "tone": "muted",
+                            "text": "$t.admin.bootstrapNote"
+                          }
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "Panel",
+              "if": "$state.auth.isAdmin && !$state.auth.isSuperAdmin",
+              "style": "admin-card-narrow",
+              "props": {
+                "variant": "card",
+                "padding": "lg"
+              },
+              "children": [
+                {
+                  "type": "Icon",
+                  "style": "admin-icon-ok",
+                  "props": {
+                    "name": "i-heroicons-shield-check",
+                    "size": "lg"
+                  }
+                },
+                {
+                  "type": "Text",
+                  "props": {
+                    "size": "sm",
+                    "align": "center",
+                    "text": "$t.admin.moderatorOnly"
+                  }
+                },
+                {
+                  "type": "Button",
+                  "style": "admin-back",
+                  "props": {
+                    "size": "sm",
+                    "color": "primary",
+                    "variant": "soft",
+                    "icon": "i-heroicons-map",
+                    "to": "/",
+                    "label": "$t.admin.backToMap"
+                  }
+                }
+              ]
+            },
+            {
+              "type": "Text",
+              "if": "$errors.promote || $errors.removeRegistration || $errors.setRole || $errors.revoke",
+              "style": "admin-error",
+              "props": {
+                "size": "xs"
+              },
+              "bind": {
+                "text": "$errors.promote",
+                "fallback": "$errors.setRole"
+              }
+            },
+            {
+              "type": "Panel",
+              "if": "$state.auth.isSuperAdmin",
+              "style": "admin-section",
+              "props": {
+                "variant": "card",
+                "padding": "none"
+              },
+              "children": [
+                {
+                  "type": "Stack",
+                  "style": "admin-section-head",
+                  "props": {
+                    "direction": "row",
+                    "justify": "between",
+                    "align": "center",
+                    "gap": "xs"
+                  },
+                  "children": [
+                    {
+                      "type": "Stack",
+                      "props": {
+                        "direction": "row",
+                        "align": "center",
+                        "gap": "xs"
+                      },
+                      "children": [
+                        {
+                          "type": "Text",
+                          "props": {
+                            "as": "h2",
+                            "size": "sm",
+                            "weight": "semibold",
+                            "text": "$t.admin.registrations"
+                          }
+                        }
+                      ]
+                    },
+                    {
+                      "type": "Button",
+                      "props": {
+                        "size": "xs",
+                        "color": "gray",
+                        "variant": "ghost",
+                        "icon": "i-heroicons-arrow-path",
+                        "label": "$t.admin.refresh"
+                      },
+                      "bind": {
+                        "loading": "$state.accountsLoading"
+                      },
+                      "on": {
+                        "click": {
+                          "call": "loadAccounts",
+                          "payload": null
+                        }
+                      }
+                    }
+                  ]
+                },
+                {
+                  "type": "Text",
+                  "style": "admin-section-hint",
+                  "props": {
+                    "size": "xs",
+                    "tone": "muted",
+                    "text": "$t.admin.registrationsHint"
+                  }
+                },
+                {
+                  "type": "List",
+                  "props": {
+                    "gap": "none",
+                    "excludeBy": "uid",
+                    "empty": "$t.admin.noRegistrations"
+                  },
+                  "bind": {
+                    "items": "$state.registrations",
+                    "exclude": "$state.accounts"
+                  },
+                  "item": {
+                    "type": "Stack",
+                    "style": "admin-row",
+                    "props": {
+                      "direction": "row",
+                      "align": "center",
+                      "gap": "sm",
+                      "wrap": true
+                    },
+                    "children": [
+                      {
+                        "type": "Stack",
+                        "style": "admin-row-main",
+                        "props": {
+                          "gap": "none"
+                        },
+                        "children": [
+                          {
+                            "type": "Text",
+                            "props": {
+                              "size": "sm",
+                              "weight": "medium"
+                            },
+                            "bind": {
+                              "text": "$item.email",
+                              "fallback": "$item.uid"
+                            }
+                          },
+                          {
+                            "type": "Stack",
+                            "props": {
+                              "direction": "row",
+                              "gap": "xs"
+                            },
+                            "children": [
+                              {
+                                "type": "Text",
+                                "props": {
+                                  "as": "span",
+                                  "size": "xs",
+                                  "tone": "muted"
+                                },
+                                "bind": {
+                                  "text": "$item.uid"
+                                }
+                              },
+                              {
+                                "type": "Text",
+                                "if": "$item.createdAt",
+                                "props": {
+                                  "as": "span",
+                                  "size": "xs",
+                                  "tone": "muted",
+                                  "format": "date",
+                                  "prefix": "· "
+                                },
+                                "bind": {
+                                  "text": "$item.createdAt"
+                                }
+                              }
+                            ]
+                          }
+                        ]
+                      },
+                      {
+                        "type": "Stack",
+                        "props": {
+                          "direction": "row",
+                          "align": "center",
+                          "gap": "xs"
+                        },
+                        "children": [
+                          {
+                            "type": "Button",
+                            "props": {
+                              "size": "xs",
+                              "color": "primary",
+                              "label": "$t.admin.makeModerator"
+                            },
+                            "on": {
+                              "click": {
+                                "call": "promote",
+                                "payload": {
+                                  "uid": "$item.uid",
+                                  "email": "$item.email",
+                                  "role": "moderator"
+                                }
+                              }
+                            }
+                          },
+                          {
+                            "type": "Button",
+                            "props": {
+                              "size": "xs",
+                              "color": "gray",
+                              "variant": "ghost",
+                              "label": "$t.admin.makeAdmin"
+                            },
+                            "on": {
+                              "click": {
+                                "call": "promote",
+                                "payload": {
+                                  "uid": "$item.uid",
+                                  "email": "$item.email",
+                                  "role": "admin"
+                                }
+                              }
+                            }
+                          },
+                          {
+                            "type": "Button",
+                            "props": {
+                              "size": "xs",
+                              "color": "red",
+                              "variant": "ghost",
+                              "icon": "i-heroicons-x-mark",
+                              "label": "$t.admin.removeRegistration"
+                            },
+                            "on": {
+                              "click": {
+                                "call": "removeRegistration",
+                                "payload": "$item.uid"
+                              }
+                            }
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                }
+              ]
+            },
+            {
+              "type": "Panel",
+              "if": "$state.auth.isSuperAdmin",
+              "style": "admin-section",
+              "props": {
+                "variant": "card",
+                "padding": "none"
+              },
+              "children": [
+                {
+                  "type": "Stack",
+                  "style": "admin-section-head",
+                  "props": {
+                    "direction": "row",
+                    "align": "center",
+                    "gap": "xs"
+                  },
+                  "children": [
+                    {
+                      "type": "Text",
+                      "props": {
+                        "as": "h2",
+                        "size": "sm",
+                        "weight": "semibold",
+                        "text": "$t.admin.accounts"
+                      }
+                    },
+                    {
+                      "type": "Text",
+                      "props": {
+                        "as": "span",
+                        "size": "sm",
+                        "tone": "muted",
+                        "prefix": "· "
+                      },
+                      "bind": {
+                        "text": "$state.accounts.length"
+                      }
+                    }
+                  ]
+                },
+                {
+                  "type": "List",
+                  "props": {
+                    "gap": "none",
+                    "empty": "$t.admin.noAccounts"
+                  },
+                  "bind": {
+                    "items": "$state.accounts"
+                  },
+                  "item": {
+                    "type": "Stack",
+                    "style": "admin-row",
+                    "props": {
+                      "direction": "row",
+                      "align": "center",
+                      "gap": "sm",
+                      "wrap": true
+                    },
+                    "children": [
+                      {
+                        "type": "Stack",
+                        "style": "admin-row-main",
+                        "props": {
+                          "gap": "none"
+                        },
+                        "children": [
+                          {
+                            "type": "Stack",
+                            "props": {
+                              "direction": "row",
+                              "align": "baseline",
+                              "gap": "xs"
+                            },
+                            "children": [
+                              {
+                                "type": "Text",
+                                "props": {
+                                  "as": "span",
+                                  "size": "sm",
+                                  "weight": "medium"
+                                },
+                                "bind": {
+                                  "text": "$item.email",
+                                  "fallback": "$item.uid"
+                                }
+                              },
+                              {
+                                "type": "Text",
+                                "if": "$item.uid == $state.auth.uid",
+                                "props": {
+                                  "as": "span",
+                                  "size": "xs",
+                                  "tone": "muted",
+                                  "prefix": "(",
+                                  "suffix": ")",
+                                  "text": "$t.admin.you"
+                                }
+                              }
+                            ]
+                          },
+                          {
+                            "type": "Text",
+                            "props": {
+                              "size": "xs",
+                              "tone": "muted"
+                            },
+                            "bind": {
+                              "text": "$item.uid"
+                            }
+                          }
+                        ]
+                      },
+                      {
+                        "type": "Text",
+                        "style": "chip-admin",
+                        "if": "$item.role == 'admin'",
+                        "props": {
+                          "as": "span",
+                          "size": "xs",
+                          "weight": "semibold",
+                          "text": "$t.admin.roleAdmin"
+                        }
+                      },
+                      {
+                        "type": "Text",
+                        "style": "chip-moderator",
+                        "if": "$item.role != 'admin'",
+                        "props": {
+                          "as": "span",
+                          "size": "xs",
+                          "weight": "semibold",
+                          "text": "$t.admin.roleModerator"
+                        }
+                      },
+                      {
+                        "type": "Stack",
+                        "props": {
+                          "direction": "row",
+                          "align": "center",
+                          "gap": "xs"
+                        },
+                        "children": [
+                          {
+                            "type": "Button",
+                            "if": "$item.uid != $state.auth.uid && $item.role == 'admin'",
+                            "props": {
+                              "size": "xs",
+                              "color": "gray",
+                              "variant": "ghost",
+                              "label": "$t.admin.makeModerator"
+                            },
+                            "on": {
+                              "click": {
+                                "call": "setRole",
+                                "payload": {
+                                  "uid": "$item.uid",
+                                  "role": "moderator"
+                                }
+                              }
+                            }
+                          },
+                          {
+                            "type": "Button",
+                            "if": "$item.uid != $state.auth.uid && $item.role != 'admin'",
+                            "props": {
+                              "size": "xs",
+                              "color": "gray",
+                              "variant": "ghost",
+                              "label": "$t.admin.makeAdmin"
+                            },
+                            "on": {
+                              "click": {
+                                "call": "setRole",
+                                "payload": {
+                                  "uid": "$item.uid",
+                                  "role": "admin"
+                                }
+                              }
+                            }
+                          },
+                          {
+                            "type": "Button",
+                            "if": "$item.email",
+                            "props": {
+                              "size": "xs",
+                              "color": "gray",
+                              "variant": "ghost",
+                              "icon": "i-heroicons-envelope",
+                              "label": "$t.admin.sendReset"
+                            },
+                            "on": {
+                              "click": {
+                                "call": "resetPassword",
+                                "payload": "$item.email"
+                              }
+                            }
+                          },
+                          {
+                            "type": "Button",
+                            "if": "$item.uid != $state.auth.uid",
+                            "props": {
+                              "size": "xs",
+                              "color": "red",
+                              "variant": "ghost",
+                              "icon": "i-heroicons-trash",
+                              "label": "$t.admin.revoke"
+                            },
+                            "on": {
+                              "click": {
+                                "set": "confirmRevoke",
+                                "value": "$item"
+                              }
+                            }
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                }
+              ]
+            },
+            {
+              "type": "Panel",
+              "if": "$state.auth.isSuperAdmin",
+              "style": "admin-section",
+              "props": {
+                "variant": "card",
+                "padding": "lg"
+              },
+              "children": [
+                {
+                  "type": "Text",
+                  "props": {
+                    "as": "h2",
+                    "size": "sm",
+                    "weight": "semibold",
+                    "text": "$t.admin.createTitle"
+                  }
+                },
+                {
+                  "type": "Text",
+                  "style": "admin-hint",
+                  "props": {
+                    "size": "xs",
+                    "tone": "muted",
+                    "text": "$t.admin.createHint"
+                  }
+                },
+                {
+                  "type": "FormFields",
+                  "props": {
+                    "layout": "inline",
+                    "direction": "row",
+                    "fields": [
+                      {
+                        "name": "email",
+                        "type": "email",
+                        "placeholder": "$t.mod.email"
+                      },
+                      {
+                        "name": "password",
+                        "type": "password",
+                        "placeholder": "$t.admin.tempPassword"
+                      },
+                      {
+                        "name": "role",
+                        "type": "select",
+                        "options": [
+                          {
+                            "value": "moderator",
+                            "label": "$t.admin.roleModerator"
+                          },
+                          {
+                            "value": "admin",
+                            "label": "$t.admin.roleAdmin"
+                          }
+                        ]
+                      }
+                    ]
+                  },
+                  "bind": {
+                    "modelValue": "$state.newAccount"
+                  },
+                  "on": {
+                    "update:modelValue": {
+                      "set": "newAccount"
+                    }
+                  }
+                },
+                {
+                  "type": "Button",
+                  "style": "admin-create",
+                  "props": {
+                    "color": "primary",
+                    "label": "$t.admin.create"
+                  },
+                  "on": {
+                    "click": [
+                      {
+                        "call": "createAccount",
+                        "payload": "$state.newAccount"
+                      },
+                      {
+                        "set": "newAccount",
+                        "value": {
+                          "email": "",
+                          "password": "",
+                          "role": "moderator"
+                        }
+                      }
+                    ]
+                  }
+                },
+                {
+                  "type": "Text",
+                  "if": "$errors.createAccount",
+                  "style": "admin-error",
+                  "props": {
+                    "size": "xs"
+                  },
+                  "bind": {
+                    "text": "$errors.createAccount"
+                  }
+                }
+              ]
+            },
+            {
+              "type": "Text",
+              "if": "$state.auth.isSuperAdmin",
+              "style": "admin-footnote",
+              "props": {
+                "size": "xs",
+                "tone": "muted",
+                "text": "$t.admin.revokeNote"
+              }
+            },
+            {
+              "type": "Modal",
+              "props": {
+                "title": "$t.admin.revoke",
+                "size": "sm",
+                "closable": true
+              },
+              "bind": {
+                "modelValue": "$state.confirmRevoke"
+              },
+              "on": {
+                "update:modelValue": {
+                  "set": "confirmRevoke",
+                  "value": null
+                },
+                "close": {
+                  "set": "confirmRevoke",
+                  "value": null
+                }
+              },
+              "children": [
+                {
+                  "type": "Stack",
+                  "props": {
+                    "gap": "sm"
+                  },
+                  "children": [
+                    {
+                      "type": "Text",
+                      "props": {
+                        "size": "sm",
+                        "weight": "medium"
+                      },
+                      "bind": {
+                        "text": "$state.confirmRevoke.email",
+                        "fallback": "$state.confirmRevoke.uid"
+                      }
+                    },
+                    {
+                      "type": "Text",
+                      "props": {
+                        "size": "sm",
+                        "text": "$t.admin.revokeConfirm"
+                      }
+                    }
+                  ]
+                },
+                {
+                  "slot": "footer",
+                  "type": "Stack",
+                  "style": "admin-confirm-actions",
+                  "props": {
+                    "direction": "row",
+                    "justify": "end",
+                    "gap": "xs"
+                  },
+                  "children": [
+                    {
+                      "type": "Button",
+                      "props": {
+                        "size": "sm",
+                        "color": "gray",
+                        "variant": "ghost",
+                        "label": "$t.mod.close"
+                      },
+                      "on": {
+                        "click": {
+                          "set": "confirmRevoke",
+                          "value": null
+                        }
+                      }
+                    },
+                    {
+                      "type": "Button",
+                      "props": {
+                        "size": "sm",
+                        "color": "red",
+                        "label": "$t.admin.revoke"
+                      },
+                      "on": {
+                        "click": [
+                          {
+                            "call": "revoke",
+                            "payload": "$state.confirmRevoke.uid"
+                          },
+                          {
+                            "set": "confirmRevoke",
+                            "value": null
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

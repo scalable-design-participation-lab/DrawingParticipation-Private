@@ -1,0 +1,149 @@
+{
+  "name": "FormFields",
+  "description": "A form described by data: `fields` in, one values object out (`update:modelValue`, `submit`).",
+  "stateful": false,
+  "emits": [
+    "update:modelValue",
+    "submit"
+  ],
+  "slots": [],
+  "props": {
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "type": "object",
+    "properties": {
+      "fields": {
+        "type": "array",
+        "items": {
+          "type": "object",
+          "properties": {
+            "name": {
+              "type": "string"
+            },
+            "label": {
+              "type": "string"
+            },
+            "type": {
+              "type": "string",
+              "enum": [
+                "text",
+                "email",
+                "password",
+                "textarea",
+                "number",
+                "date",
+                "time",
+                "select"
+              ]
+            },
+            "placeholder": {
+              "type": "string"
+            },
+            "rows": {
+              "type": "integer",
+              "exclusiveMinimum": 0,
+              "maximum": 9007199254740991
+            },
+            "options": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "label": {
+                    "type": "string"
+                  },
+                  "value": {
+                    "type": [
+                      "string",
+                      "number"
+                    ]
+                  }
+                },
+                "required": [
+                  "label",
+                  "value"
+                ],
+                "additionalProperties": false
+              }
+            },
+            "creatable": {
+              "description": "Let someone answer with something not on the list; what they type becomes the stored value and its label.",
+              "type": "boolean"
+            },
+            "required": {
+              "type": "boolean"
+            },
+            "style": {
+              "description": "Registered style preset(s) for the control, e.g. a width. Raw classes are not accepted.",
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                }
+              ]
+            }
+          },
+          "required": [
+            "name"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "modelValue": {
+        "type": "object",
+        "propertyNames": {
+          "type": "string"
+        },
+        "additionalProperties": {}
+      },
+      "variant": {
+        "type": "string",
+        "enum": [
+          "box",
+          "underline"
+        ]
+      },
+      "layout": {
+        "type": "string",
+        "enum": [
+          "stacked",
+          "inline"
+        ]
+      },
+      "submitLabel": {
+        "type": "string"
+      },
+      "gap": {
+        "type": "string"
+      },
+      "direction": {
+        "type": "string",
+        "enum": [
+          "column",
+          "row"
+        ]
+      },
+      "labelClass": {
+        "type": "string"
+      },
+      "errors": {
+        "description": "field name -> message shown under the control",
+        "type": "object",
+        "propertyNames": {
+          "type": "string"
+        },
+        "additionalProperties": {
+          "type": "string"
+        }
+      }
+    },
+    "required": [
+      "fields"
+    ],
+    "additionalProperties": false
+  }
+}

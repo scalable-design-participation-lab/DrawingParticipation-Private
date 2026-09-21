@@ -1,0 +1,548 @@
+{
+  "version": 1,
+  "state": {
+    "cat": "",
+    "busqueda": {},
+    "abierta": null,
+    "votada": false
+  },
+  "dataSources": {
+    "propuestas": {
+      "kind": "collection",
+      "name": "propuestas",
+      "join": [
+        {
+          "from": "votos",
+          "on": "propuestaId",
+          "count": "votos"
+        }
+      ]
+    },
+    "votos": {
+      "kind": "collection",
+      "name": "votos"
+    }
+  },
+  "children": [
+    {
+      "type": "div",
+      "style": "page-wide",
+      "children": [
+        {
+          "type": "Stack",
+          "props": {
+            "gap": "lg"
+          },
+          "children": [
+            {
+              "type": "Stack",
+              "props": {
+                "direction": "row",
+                "justify": "between",
+                "align": "baseline",
+                "wrap": true
+              },
+              "children": [
+                {
+                  "type": "Text",
+                  "props": {
+                    "as": "h1"
+                  },
+                  "bind": {
+                    "text": "$t.lista.titulo"
+                  }
+                },
+                {
+                  "type": "Button",
+                  "props": {
+                    "to": "/",
+                    "color": "black"
+                  },
+                  "text": "$t.nav.mapa"
+                }
+              ]
+            },
+            {
+              "type": "Tabs",
+              "props": {
+                "options": [
+                  {
+                    "label": "$t.lista.todas",
+                    "value": ""
+                  },
+                  {
+                    "label": "$t.cat.movilidad",
+                    "value": "movilidad"
+                  },
+                  {
+                    "label": "$t.cat.verde",
+                    "value": "verde"
+                  },
+                  {
+                    "label": "$t.cat.cultura",
+                    "value": "cultura"
+                  },
+                  {
+                    "label": "$t.cat.accesibilidad",
+                    "value": "accesibilidad"
+                  },
+                  {
+                    "label": "$t.cat.limpieza",
+                    "value": "limpieza"
+                  }
+                ]
+              },
+              "bind": {
+                "modelValue": "$state.cat"
+              },
+              "on": {
+                "update:modelValue": {
+                  "set": "cat"
+                }
+              }
+            },
+            {
+              "type": "FormFields",
+              "props": {
+                "fields": [
+                  {
+                    "name": "q",
+                    "type": "text",
+                    "placeholder": "$t.lista.buscar"
+                  }
+                ],
+                "gap": "gap-0"
+              },
+              "bind": {
+                "modelValue": "$state.busqueda"
+              },
+              "on": {
+                "update:modelValue": {
+                  "set": "busqueda"
+                }
+              }
+            },
+            {
+              "type": "Text",
+              "if": "$sources.propuestas.loading",
+              "bind": {
+                "text": "$t.lista.cargando"
+              },
+              "props": {
+                "size": "sm",
+                "tone": "muted"
+              }
+            },
+            {
+              "type": "Text",
+              "if": "$sources.propuestas.error",
+              "bind": {
+                "text": "$t.lista.error"
+              },
+              "props": {
+                "tone": "accent"
+              }
+            },
+            {
+              "type": "List",
+              "props": {
+                "layout": "grid",
+                "cols": 3,
+                "gap": "md",
+                "filterKey": "categoria",
+                "searchKeys": [
+                  "titulo",
+                  "lugar"
+                ],
+                "sortBy": "votos",
+                "sortDesc": true,
+                "empty": "$t.lista.vacio"
+              },
+              "bind": {
+                "items": "$data.propuestas",
+                "filterValue": "$state.cat",
+                "search": "$state.busqueda.q"
+              },
+              "item": {
+                "type": "Panel",
+                "props": {
+                  "variant": "card",
+                  "padding": "md"
+                },
+                "children": [
+                  {
+                    "type": "Stack",
+                    "props": {
+                      "gap": "xs"
+                    },
+                    "children": [
+                      {
+                        "type": "Text",
+                        "bind": {
+                          "text": "$item.categoria"
+                        },
+                        "props": {
+                          "size": "xs",
+                          "tone": "accent",
+                          "weight": "semibold",
+                          "labels": {
+                            "movilidad": "$t.cat.movilidad",
+                            "verde": "$t.cat.verde",
+                            "cultura": "$t.cat.cultura",
+                            "accesibilidad": "$t.cat.accesibilidad",
+                            "limpieza": "$t.cat.limpieza"
+                          }
+                        }
+                      },
+                      {
+                        "type": "Text",
+                        "props": {
+                          "size": "lg",
+                          "weight": "semibold"
+                        },
+                        "bind": {
+                          "text": "$item.titulo"
+                        }
+                      },
+                      {
+                        "type": "Text",
+                        "props": {
+                          "size": "sm",
+                          "tone": "muted"
+                        },
+                        "bind": {
+                          "text": "$item.resumen"
+                        }
+                      },
+                      {
+                        "type": "Stack",
+                        "props": {
+                          "direction": "row",
+                          "gap": "xs",
+                          "align": "center"
+                        },
+                        "children": [
+                          {
+                            "type": "Icon",
+                            "props": {
+                              "name": "i-heroicons-banknotes",
+                              "size": "sm",
+                              "tone": "muted"
+                            }
+                          },
+                          {
+                            "type": "Text",
+                            "bind": {
+                              "text": "$item.coste"
+                            },
+                            "props": {
+                              "size": "sm",
+                              "format": "number"
+                            }
+                          },
+                          {
+                            "type": "Icon",
+                            "props": {
+                              "name": "i-heroicons-hand-thumb-up",
+                              "size": "sm",
+                              "tone": "muted"
+                            }
+                          },
+                          {
+                            "type": "Text",
+                            "bind": {
+                              "text": "$item.votos"
+                            },
+                            "props": {
+                              "size": "sm"
+                            }
+                          }
+                        ]
+                      },
+                      {
+                        "type": "Stack",
+                        "props": {
+                          "direction": "row"
+                        },
+                        "children": [
+                          {
+                            "type": "Button",
+                            "props": {
+                              "color": "gray",
+                              "variant": "soft",
+                              "size": "xs"
+                            },
+                            "text": "$t.lista.detalle",
+                            "on": {
+                              "click": {
+                                "set": "abierta",
+                                "value": "$item"
+                              }
+                            }
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            },
+            {
+              "type": "Modal",
+              "if": "$state.abierta",
+              "props": {
+                "modelValue": true,
+                "size": "lg",
+                "closable": true
+              },
+              "bind": {
+                "title": "$state.abierta.titulo"
+              },
+              "on": {
+                "update:modelValue": [
+                  {
+                    "set": "abierta",
+                    "value": null
+                  },
+                  {
+                    "set": "votada",
+                    "value": false
+                  }
+                ]
+              },
+              "children": [
+                {
+                  "type": "Stack",
+                  "props": {
+                    "gap": "md"
+                  },
+                  "children": [
+                    {
+                      "type": "Image",
+                      "if": "$state.abierta.fotos",
+                      "bind": {
+                        "src": "$state.abierta.fotos.0"
+                      },
+                      "props": {
+                        "width": "full",
+                        "rounded": true,
+                        "alt": "foto"
+                      }
+                    },
+                    {
+                      "type": "Stack",
+                      "props": {
+                        "direction": "row",
+                        "gap": "xs"
+                      },
+                      "children": [
+                        {
+                          "type": "Text",
+                          "bind": {
+                            "text": "$state.abierta.categoria"
+                          },
+                          "props": {
+                            "size": "sm",
+                            "tone": "accent",
+                            "labels": {
+                              "movilidad": "$t.cat.movilidad",
+                              "verde": "$t.cat.verde",
+                              "cultura": "$t.cat.cultura",
+                              "accesibilidad": "$t.cat.accesibilidad",
+                              "limpieza": "$t.cat.limpieza"
+                            }
+                          }
+                        },
+                        {
+                          "type": "Text",
+                          "props": {
+                            "size": "sm",
+                            "tone": "muted",
+                            "text": "·"
+                          }
+                        },
+                        {
+                          "type": "Text",
+                          "props": {
+                            "size": "sm",
+                            "tone": "muted"
+                          },
+                          "bind": {
+                            "text": "$state.abierta.lugar"
+                          }
+                        }
+                      ]
+                    },
+                    {
+                      "type": "Text",
+                      "props": {},
+                      "bind": {
+                        "text": "$state.abierta.descripcion"
+                      }
+                    },
+                    {
+                      "type": "Text",
+                      "if": "!$state.abierta.descripcion",
+                      "bind": {
+                        "text": "$t.lista.sinDescripcion"
+                      },
+                      "props": {
+                        "tone": "muted"
+                      }
+                    },
+                    {
+                      "type": "Divider"
+                    },
+                    {
+                      "type": "Grid",
+                      "props": {
+                        "cols": 2,
+                        "gap": "md"
+                      },
+                      "children": [
+                        {
+                          "type": "Panel",
+                          "props": {
+                            "variant": "outline",
+                            "padding": "md"
+                          },
+                          "children": [
+                            {
+                              "type": "Stack",
+                              "props": {
+                                "gap": "none"
+                              },
+                              "children": [
+                                {
+                                  "type": "Text",
+                                  "bind": {
+                                    "text": "$t.lista.coste"
+                                  },
+                                  "props": {
+                                    "size": "xs",
+                                    "tone": "muted"
+                                  }
+                                },
+                                {
+                                  "type": "Text",
+                                  "bind": {
+                                    "text": "$state.abierta.coste"
+                                  },
+                                  "props": {
+                                    "size": "xl",
+                                    "weight": "bold",
+                                    "format": "number"
+                                  }
+                                }
+                              ]
+                            }
+                          ]
+                        },
+                        {
+                          "type": "Panel",
+                          "props": {
+                            "variant": "outline",
+                            "padding": "md"
+                          },
+                          "children": [
+                            {
+                              "type": "Stack",
+                              "props": {
+                                "gap": "none"
+                              },
+                              "children": [
+                                {
+                                  "type": "Text",
+                                  "bind": {
+                                    "text": "$t.lista.votos"
+                                  },
+                                  "props": {
+                                    "size": "xs",
+                                    "tone": "muted"
+                                  }
+                                },
+                                {
+                                  "type": "Text",
+                                  "bind": {
+                                    "text": "$state.abierta.votos"
+                                  },
+                                  "props": {
+                                    "size": "xl",
+                                    "weight": "bold"
+                                  }
+                                }
+                              ]
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "div",
+                      "if": "!$state.votada",
+                      "children": [
+                        {
+                          "type": "Button",
+                          "props": {
+                            "color": "black",
+                            "icon": "i-heroicons-hand-thumb-up"
+                          },
+                          "text": "$t.lista.votar",
+                          "on": {
+                            "click": [
+                              {
+                                "call": "saveTo",
+                                "args": "votos",
+                                "payload": {
+                                  "propuestaId": "$state.abierta.id",
+                                  "valor": 1
+                                }
+                              },
+                              {
+                                "call": "refreshItem",
+                                "payload": null,
+                                "args": {
+                                  "from": "propuestas",
+                                  "into": "abierta"
+                                }
+                              },
+                              {
+                                "set": "votada",
+                                "value": true
+                              }
+                            ]
+                          }
+                        }
+                      ]
+                    },
+                    {
+                      "type": "Text",
+                      "if": "$state.votada",
+                      "bind": {
+                        "text": "$t.lista.graciasVoto"
+                      },
+                      "props": {
+                        "weight": "bold"
+                      }
+                    },
+                    {
+                      "type": "Text",
+                      "if": "$errors.saveTo",
+                      "bind": {
+                        "text": "$errors.saveTo"
+                      },
+                      "props": {
+                        "size": "xs",
+                        "tone": "accent"
+                      }
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

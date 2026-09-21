@@ -1,0 +1,13 @@
+{
+  "name": "AnalysisLayers",
+  "description": "Draws the layers AnalysisPanel turned on. Goes in the BackgroundMap \"layers\" slot.",
+  "stateful": true,
+  "emits": [],
+  "slots": [],
+  "props": {
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "type": "object",
+    "properties": {},
+    "additionalProperties": false
+  }
+}

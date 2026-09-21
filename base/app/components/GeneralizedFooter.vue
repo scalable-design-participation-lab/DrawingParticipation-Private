@@ -44,10 +44,24 @@ defineProps({
     type: Array as PropType<Array<{ name: string }>>,
     default: () => [],
   },
+  // Read aloud by a screen reader, so it is a prop like any other string.
+  supportLabel: {
+    type: String,
+    default: 'Help',
+  },
 })
 
-// Add ref for SupportModal
+// `support` is the "?" button; `buttonClick` carries the pressed `buttons` entry
+// so the page can decide what it does (they used to render and do nothing).
+const emit = defineEmits(['support', 'buttonClick'])
+
+// The help ("?") button: the app renders its own modal in the `support` slot
+// or listens to the `support` event.
 const showSupportModal = ref(false)
+function openSupport() {
+  showSupportModal.value = true
+  emit('support')
+}
 </script>
 
 <template>
@@ -76,19 +90,20 @@ const showSupportModal = ref(false)
             :key="button.label"
             color="gray"
             :label="button.label"
+            :to="button.to"
+            @click="emit('buttonClick', button)"
           />
         </div>
         <button
           class="w-12 h-12 rounded-full bg-white dark:bg-black flex items-center justify-center font-semibold text-lg md:text-xl cursor-pointer shadow-md hover:bg-black hover:text-white dark:text-white dark:hover:bg-slate-800"
-          aria-label="Help"
-          @click="showSupportModal = true"
+          :aria-label="supportLabel"
+          @click="openSupport"
         >
           ?
         </button>
       </div>
     </footer>
 
-    <!-- Add SupportModal -->
-    <SupportModal v-model="showSupportModal" />
+    <slot name="support" :open="showSupportModal" :close="() => (showSupportModal = false)" />
   </div>
 </template>

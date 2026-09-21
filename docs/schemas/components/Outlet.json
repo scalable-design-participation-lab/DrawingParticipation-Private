@@ -1,0 +1,13 @@
+{
+  "name": "Outlet",
+  "description": "Where the current page renders inside a shell spec (app.json `shell`). Exactly one per shell.",
+  "stateful": false,
+  "emits": [],
+  "slots": [],
+  "props": {
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "type": "object",
+    "properties": {},
+    "additionalProperties": false
+  }
+}

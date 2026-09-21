@@ -1,0 +1,312 @@
+{
+  "version": 1,
+  "state": {
+    "mapType": "vector",
+    "menuOpen": false,
+    "dashboard": true,
+    "supportOpen": false
+  },
+  "children": [
+    {
+      "type": "Header",
+      "props": {
+        "leftItems": [
+          {
+            "label": "Drawing Participation",
+            "to": "/about/"
+          },
+          {
+            "label": "Гуртомá",
+            "to": "/about/"
+          }
+        ],
+        "rightItems": [
+          {
+            "icon": "i-ix:analyze",
+            "onClick": {
+              "$action": {
+                "toggle": "dashboard"
+              }
+            }
+          }
+        ]
+      },
+      "on": {
+        "menu": {
+          "set": "menuOpen",
+          "value": true
+        }
+      },
+      "children": [
+        {
+          "slot": "right",
+          "type": "MapTypeToggle",
+          "bind": {
+            "modelValue": "$state.mapType"
+          },
+          "on": {
+            "update:modelValue": {
+              "set": "mapType"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "type": "Modal",
+      "props": {
+        "size": "sm"
+      },
+      "bind": {
+        "modelValue": "$state.menuOpen"
+      },
+      "on": {
+        "update:modelValue": {
+          "set": "menuOpen"
+        }
+      },
+      "children": [
+        {
+          "type": "Stack",
+          "props": {
+            "direction": "column",
+            "gap": "sm"
+          },
+          "children": [
+            {
+              "type": "Button",
+              "props": {
+                "block": true,
+                "color": "white",
+                "variant": "solid",
+                "to": "/"
+              },
+              "style": "menu-item",
+              "text": "Головна",
+              "on": {
+                "click": [
+                  {
+                    "set": "menuOpen",
+                    "value": false
+                  }
+                ]
+              }
+            },
+            {
+              "type": "Button",
+              "props": {
+                "block": true,
+                "color": "white",
+                "variant": "solid",
+                "to": "/about"
+              },
+              "style": "menu-item",
+              "text": "Про нас",
+              "on": {
+                "click": [
+                  {
+                    "set": "menuOpen",
+                    "value": false
+                  }
+                ]
+              }
+            },
+            {
+              "type": "Button",
+              "props": {
+                "block": true,
+                "color": "white",
+                "variant": "solid"
+              },
+              "style": "menu-item",
+              "text": "Підтримка",
+              "on": {
+                "click": [
+                  {
+                    "set": "menuOpen",
+                    "value": false
+                  },
+                  {
+                    "set": "supportOpen",
+                    "value": true
+                  }
+                ]
+              }
+            },
+            {
+              "type": "Button",
+              "props": {
+                "block": true,
+                "color": "white",
+                "variant": "solid",
+                "to": "/result"
+              },
+              "style": "menu-item",
+              "text": "Результати",
+              "on": {
+                "click": [
+                  {
+                    "set": "menuOpen",
+                    "value": false
+                  }
+                ]
+              }
+            },
+            {
+              "type": "Button",
+              "props": {
+                "block": true,
+                "color": "white",
+                "variant": "solid",
+                "to": "/dashboard"
+              },
+              "style": "menu-item",
+              "text": "приладова панель",
+              "on": {
+                "click": [
+                  {
+                    "set": "menuOpen",
+                    "value": false
+                  }
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "Modal",
+      "props": {
+        "title": "Допомога",
+        "size": "lg",
+        "closable": true,
+        "buttonLabel": "Повернутися до карти"
+      },
+      "bind": {
+        "modelValue": "$state.supportOpen"
+      },
+      "on": {
+        "update:modelValue": {
+          "set": "supportOpen"
+        }
+      },
+      "children": [
+        {
+          "type": "Stack",
+          "props": {
+            "gap": "md"
+          },
+          "children": [
+            {
+              "type": "Text",
+              "props": {
+                "text": "«Гуртомá» — проєкт зі спільного створення мапи завдяки містянам, який дозволяє дослідити питання використання й ставлення до навколишнього простору."
+              }
+            },
+            {
+              "type": "Stack",
+              "props": {
+                "gap": "xs"
+              },
+              "children": [
+                {
+                  "type": "Text",
+                  "props": {
+                    "as": "h3",
+                    "size": "md",
+                    "weight": "medium",
+                    "text": "Ключові особливості:"
+                  }
+                },
+                {
+                  "type": "ul",
+                  "style": "bullets",
+                  "children": [
+                    {
+                      "type": "li",
+                      "text": "Малюйте та позначайте місця, які ви відвідуєте та використовуєте для певної мети"
+                    },
+                    {
+                      "type": "li",
+                      "text": "Діліться своїм досвідом про відчуття безпеки та єдності"
+                    },
+                    {
+                      "type": "li",
+                      "text": "Робіть внесок у захист довкілля"
+                    },
+                    {
+                      "type": "li",
+                      "text": "Знайомтесь з думкою спільноти"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "Text",
+              "props": {
+                "text": "Як долучитися: Використовуйте інструменти на лівій панелі збоку, щоб позначати місця та ділитися своїм досвідом. Ваш внесок дозволить краще зрозуміти, в якому стані міський простір та як його покращити."
+              }
+            },
+            {
+              "type": "Text",
+              "children": [
+                {
+                  "type": "span",
+                  "text": "Будь ласка, "
+                },
+                {
+                  "type": "a",
+                  "props": {
+                    "href": "https://forms.gle/6d8GuBSPaingSR4L6",
+                    "target": "_blank"
+                  },
+                  "style": "link",
+                  "text": "заповніть форму"
+                },
+                {
+                  "type": "span",
+                  "text": ", якщо бажаєте залишити відгук про платформу."
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "AnalysisPanel",
+      "bind": {
+        "modelValue": "$state.dashboard"
+      },
+      "on": {
+        "update:modelValue": {
+          "set": "dashboard"
+        }
+      }
+    },
+    {
+      "type": "BackgroundMap",
+      "bind": {
+        "mapType": "$state.mapType"
+      },
+      "children": [
+        {
+          "slot": "layers",
+          "type": "AnalysisLayers"
+        },
+        {
+          "slot": "overlays",
+          "type": "ToolTips",
+          "props": {
+            "hideKeys": [
+              "fillColor",
+              "value"
+            ]
+          }
+        }
+      ]
+    }
+  ]
+}

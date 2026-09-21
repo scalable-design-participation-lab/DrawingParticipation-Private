@@ -1,7 +1,6 @@
 <script setup lang="ts">
-import { computed, onUnmounted, reactive, ref, watch } from 'vue'
-import { click, pointerMove } from 'ol/events/condition'
-import { Circle as CircleStyle, Fill, Stroke, Style } from 'ol/style'
+import { computed, inject, nextTick, onUnmounted, reactive, ref, watch } from 'vue'
+import type { Ref } from 'vue'
 import type { Feature, Map } from 'ol'
 import * as turf from '@turf/turf'
 
@@ -14,42 +13,19 @@ interface PopupState {
   position: { x: number, y: number }
 }
 
-interface StyleOptions {
-  radius: number
-  fill: string
-  stroke: {
-    color: string
-    width: number
-  }
-}
-
 interface ToolTipsProps {
   mapInstance?: Map | null
-  pointStyle?: StyleOptions
   clickTolerance?: number
-  dataProjection?: string
-  featuresProjection?: string
-  filterKeys?: string[]
+  hideKeys?: string[]
   itemsPerPage?: number
 }
 
 // Props with defaults
 const props = withDefaults(defineProps<ToolTipsProps>(), {
   mapInstance: null,
-  pointStyle: () => ({
-    radius: 6,
-    fill: 'rgba(0, 100, 255, 0.8)',
-    stroke: {
-      color: 'white',
-      width: 2,
-    },
-  }),
-  filterKeys: () => [],
+  hideKeys: () => [],
   clickTolerance: 10,
-  dataProjection: 'EPSG:4326',
-  featuresProjection: 'EPSG:3857',
   itemsPerPage: 5,
-
 })
 
 // Setup state management using composable pattern
@@ -81,7 +57,7 @@ function usePopupState() {
 
     // Extract properties
     const properties = feature.getProperties()
-    const excludedKeys = ['geometry', ...props.filterKeys]
+    const excludedKeys = ['geometry', ...props.hideKeys]
     state.content = Object.fromEntries(
       Object.entries(properties).filter(([key]) => !excludedKeys.includes(key)),
     )
@@ -107,8 +83,30 @@ const activePopup = computed(() => {
 })
 
 const isPopupVisible = computed(() => {
-  return (pinnedPopup.state.visible || hoverPopup.state.visible) && (hoverPopup.state.content.length !== 0 || pinnedPopup.state.content.length !== 0)
+  const popup = pinnedPopup.state.visible ? pinnedPopup.state : hoverPopup.state
+  return popup.visible && Object.keys(popup.content).length > 0
 })
+/**
+ * Sits above the feature, and below it when there is no room above: a popup on
+ * a feature near the top of the map used to open off-screen, behind the header.
+ * The height is measured rather than assumed, because it depends on how many
+ * properties the feature carries.
+ */
+const popupEl = ref<HTMLElement | null>(null)
+const flipBelow = ref(false)
+const HEADER_BOTTOM = 88
+
+watch(() => [activePopup.value.position.y, activePopup.value.content] as const, async () => {
+  flipBelow.value = false
+  await nextTick()
+  const height = popupEl.value?.offsetHeight ?? 0
+  flipBelow.value = activePopup.value.position.y - height - 16 < HEADER_BOTTOM
+})
+
+const popupTransform = computed(() =>
+  (flipBelow.value ? 'translate(-50%, 1rem)' : 'translate(-50%, -120%)'),
+)
+
 // State for pagination
 const itemsPerPage = props.itemsPerPage
 
@@ -126,75 +124,7 @@ const total = computed(() => {
 
 // Store map instance and setup features
 const mapInstance = ref<Map | null>(null)
-function createHighlightStyle(feature: Feature) {
-  const geomType = feature.getGeometry()?.getType()
-  const styles = []
-
-  if (geomType === 'Polygon') {
-    styles.push(
-      new Style({
-        stroke: new Stroke({
-          color: 'yellow',
-          width: 3,
-        }),
-        fill: new Fill({
-          color: 'rgba(255, 255, 0, 0.3)',
-        }),
-      }),
-    )
-  }
-  if (geomType === 'MultiPolygon') {
-    styles.push(
-      new Style({
-        stroke: new Stroke({
-          color: 'yellow',
-          width: 3,
-        }),
-        fill: new Fill({
-          color: 'rgba(255, 255, 0, 0.3)',
-        }),
-      }),
-    )
-  }
-  if (geomType === 'LineString') {
-    styles.push(
-      new Style({
-        stroke: new Stroke({
-          color: 'yellow',
-          width: 3,
-        }),
-      }),
-    )
-  }
-
-  if (geomType === 'Point') {
-    styles.push(
-      new Style({
-        image: new CircleStyle({
-          radius: 8,
-          fill: new Fill({ color: 'rgba(255, 0, 0, 0.8)' }),
-          stroke: new Stroke({ color: 'yellow', width: 3 }),
-        }),
-      }),
-    )
-  }
-  if (geomType === 'MultiLineString') {
-    styles.push(
-      new Style({
-        stroke: new Stroke({
-          color: 'yellow',
-          width: 3,
-        }),
-      }),
-    )
-  }
-
-  return styles
-}
-
 // Helper functions
-const isInteractive = (feature: Feature) => Boolean(feature)
-
 function getFeatureCentroid(feature: Feature): number[] | null {
   if (!feature)
     return null
@@ -227,9 +157,7 @@ function getFeatureCentroid(feature: Feature): number[] | null {
       const centroid = turf.centroid(multiLine)
       return centroid.geometry.coordinates
     }
-    else {
-      console.log(geomType)
-    }
+    // Anything else (a Point) is already a single coordinate.
     return coordinates
   }
   catch (error) {
@@ -254,48 +182,53 @@ function updatePopupPosition(coordinate: number[]) {
 }
 
 // Event handlers
-function handleClick(event: { selected: Feature[] }) {
-  // Clear any existing hover popup
+function handleClick(event: { pixel: number[] }) {
   hoverPopup.reset()
   page.value = 1
 
-  if (event.selected.length > 0) {
-    const feature = event.selected[0]
-    const coordinates = getFeatureCentroid(feature)
+  const feature = mapInstance.value?.forEachFeatureAtPixel(
+    event.pixel,
+    f => f as Feature,
+    { hitTolerance: props.clickTolerance },
+  ) ?? null
 
-    if (coordinates) {
-      pinnedPopup.update(feature, coordinates)
-      updatePopupPosition(coordinates)
-    }
-  }
-  else {
+  if (!feature) {
     pinnedPopup.reset()
+    return
+  }
+  const coordinates = getFeatureCentroid(feature)
+  if (coordinates) {
+    pinnedPopup.update(feature, coordinates)
+    updatePopupPosition(coordinates)
   }
 }
 
-function handleHoverSelect(event: { selected: Feature[] }) {
-  // Don't process hover when pinned popup is visible
-  if (pinnedPopup.state.visible)
+/**
+ * Hovering reads the map, it does not change it. A select interaction would
+ * redraw whatever is under the pointer in its own style, which means a
+ * category icon turns into a plain circle while you read its tooltip.
+ */
+function handlePointerMove(event: { pixel: number[], dragging: boolean }) {
+  if (pinnedPopup.state.visible || event.dragging || !mapInstance.value) {
     return
-
-  const feature = event.selected.length > 0 ? event.selected[0] : null
-
-  if (feature) {
-    // Apply highlight styling
-    feature.setStyle(createHighlightStyle(feature))
-
-    const coordinates = getFeatureCentroid(feature)
-    if (coordinates) {
-      hoverPopup.update(feature, coordinates)
-      updatePopupPosition(coordinates)
-    }
   }
-  else {
-    // Reset hover state
-    if (hoverPopup.state.feature) {
-      hoverPopup.state.feature.setStyle(null)
-    }
+  const feature = mapInstance.value.forEachFeatureAtPixel(
+    event.pixel,
+    f => f as Feature,
+    { hitTolerance: props.clickTolerance },
+  ) ?? null
+
+  if (!feature) {
     hoverPopup.reset()
+    return
+  }
+  if (feature === hoverPopup.state.feature) {
+    return
+  }
+  const coordinates = getFeatureCentroid(feature)
+  if (coordinates) {
+    hoverPopup.update(feature, coordinates)
+    updatePopupPosition(coordinates)
   }
 }
 
@@ -309,75 +242,46 @@ function postRenderHandler() {
 }
 
 // Setup map instance and listeners
-watch(() => props.mapInstance, (newInstance) => {
-  if (newInstance) {
-    mapInstance.value = newInstance
-
-    // Add postrender event to update popup positions
-    mapInstance.value.on('postrender', postRenderHandler)
+// Without an explicit prop, use the map provided by GeneralizedBackgroundMap.
+const injectedMap = inject<Ref<Map | null> | null>('olMap', null)
+function listen(map: Map | null, on: boolean) {
+  if (!map) {
+    return
   }
+  const bind = on ? map.on.bind(map) : map.un.bind(map)
+  bind('postrender', postRenderHandler)
+  bind('pointermove', handlePointerMove)
+  bind('click', handleClick)
+}
+
+// Detach from the old map before attaching to the new one, so a replaced map
+// cannot keep calling into a popup that has moved on.
+watch(() => props.mapInstance ?? injectedMap?.value ?? null, (newInstance, previous) => {
+  listen(previous ?? null, false)
+  mapInstance.value = newInstance
+  listen(newInstance, true)
 }, { immediate: true })
 
-onUnmounted(() => {
-  if (mapInstance.value) {
-    mapInstance.value.un('postrender', postRenderHandler)
-  }
-})
+onUnmounted(() => listen(mapInstance.value, false))
 </script>
 
 <template>
-  <!-- Hover Interaction -->
-  <ol-interaction-select
-    v-if="!pinnedPopup.state.visible"
-    :condition="pointerMove"
-    :filter="isInteractive"
-    @select="handleHoverSelect"
-  >
-    <ol-style>
-      <ol-style-fill color="rgba(0, 0, 0, 0)" />
-      <ol-style-stroke color="green" :width="10" />
-      <ol-style-circle :radius="pointStyle.radius">
-        <ol-style-fill :color="pointStyle.fill" />
-        <ol-style-stroke
-          :color="pointStyle.stroke.color"
-          :width="pointStyle.stroke.width"
-        />
-      </ol-style-circle>
-    </ol-style>
-  </ol-interaction-select>
-
-  <!-- Click Interaction -->
-  <ol-interaction-select
-    :condition="click"
-    :filter="isInteractive"
-    @select="handleClick"
-  >
-    <ol-style>
-      <ol-style-fill color="rgba(0, 0, 0, 0)" />
-      <ol-style-stroke color="green" :width="10" />
-      <ol-style-circle :radius="pointStyle.radius">
-        <ol-style-fill :color="pointStyle.fill" />
-        <ol-style-stroke
-          :color="pointStyle.stroke.color"
-          :width="pointStyle.stroke.width"
-        />
-      </ol-style-circle>
-    </ol-style>
-  </ol-interaction-select>
-
   <!-- Unified Popup Component -->
   <Teleport to="#map-overlays">
     <div
       v-if="isPopupVisible"
-      class="absolute bg-white p-3 rounded-xl border border-black dark:bg-black dark:text-white dark:border-white"
+      ref="popupEl"
+      class="absolute max-w-xs bg-white p-3 rounded-xl border border-black dark:bg-black dark:text-white dark:border-white"
       :style="{
         left: `${activePopup.position.x}px`,
         top: `${activePopup.position.y}px`,
-        transform: 'translate(-50%, -120%)',
+        transform: popupTransform,
         pointerEvents: 'auto',
       }"
     >
-      <div class="underline">
+      <!-- The geometry type is for whoever is debugging a layer, so it follows
+           the same list: name "geometry" in hideKeys and the line goes away. -->
+      <div v-if="!hideKeys.includes('geometry')" class="underline">
         <strong class="capitalize">Geometry: </strong> {{ activePopup.feature?.getGeometry()?.getType() }}
       </div>
       <!-- Display paginated keys -->

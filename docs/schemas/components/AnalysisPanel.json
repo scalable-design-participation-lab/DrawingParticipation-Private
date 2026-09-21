@@ -1,0 +1,35 @@
+{
+  "name": "AnalysisPanel",
+  "description": "Map analysis dashboard: counted metadata tiles, a card per layer in the layer registry, and the controls accordion for whatever the reader turned on. `modelValue` = dashboard open; the heading copy is the only app-specific part.",
+  "stateful": true,
+  "emits": [
+    "update:modelValue"
+  ],
+  "slots": [],
+  "props": {
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "type": "object",
+    "properties": {
+      "modelValue": {
+        "type": "boolean"
+      },
+      "title": {
+        "type": "string"
+      },
+      "subtitle": {
+        "type": "string"
+      },
+      "text": {
+        "type": "string"
+      },
+      "cardImage": {
+        "description": "Art behind each layer card, as a URL a served folder can resolve.",
+        "type": "string"
+      },
+      "controlsTitle": {
+        "type": "string"
+      }
+    },
+    "additionalProperties": false
+  }
+}

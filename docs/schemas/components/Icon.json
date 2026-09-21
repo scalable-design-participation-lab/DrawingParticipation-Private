@@ -1,0 +1,59 @@
+{
+  "name": "Icon",
+  "description": "An icon with the same enumerated size / tone vocabulary as Text.",
+  "stateful": false,
+  "emits": [],
+  "slots": [],
+  "props": {
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "type": "object",
+    "properties": {
+      "name": {
+        "type": "string"
+      },
+      "icons": {
+        "description": "value -> icon name, for when a row decides its own icon.",
+        "type": "object",
+        "propertyNames": {
+          "type": "string"
+        },
+        "additionalProperties": {
+          "type": "string"
+        }
+      },
+      "colors": {
+        "description": "value -> colour, for the same lookup.",
+        "type": "object",
+        "propertyNames": {
+          "type": "string"
+        },
+        "additionalProperties": {
+          "type": "string"
+        }
+      },
+      "size": {
+        "type": "string",
+        "enum": [
+          "xs",
+          "sm",
+          "md",
+          "lg",
+          "xl"
+        ]
+      },
+      "tone": {
+        "type": "string",
+        "enum": [
+          "default",
+          "muted",
+          "accent",
+          "inverse"
+        ]
+      }
+    },
+    "required": [
+      "name"
+    ],
+    "additionalProperties": false
+  }
+}

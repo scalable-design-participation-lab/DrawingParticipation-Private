@@ -1,0 +1,111 @@
+{
+  "nav": {
+    "mapa": "Map",
+    "propuestas": "Proposals",
+    "resultados": "Results",
+    "acerca": "About"
+  },
+  "app": {
+    "title": "Participatory budget",
+    "subtitle": "Central district · 2026 round"
+  },
+  "cat": {
+    "movilidad": "Mobility",
+    "verde": "Green space",
+    "cultura": "Culture",
+    "accesibilidad": "Accessibility",
+    "limpieza": "Cleanliness"
+  },
+  "mapa": {
+    "paletaTitulo": "What would you propose?",
+    "paletaTexto": "Pick a category and tap the map where the improvement would go. Then press the marker's «+» to describe it.",
+    "pendiente": "Tap the map to place your proposal.",
+    "verDetalle": "See detail",
+    "cerrar": "Close",
+    "sinCoste": "No budget yet",
+    "filtros": "Filter by category",
+    "ayuda": "How it works",
+    "total": "Proposals on the map:",
+    "confirmarBorrado": "Remove this proposal from the map?",
+    "limpiarFiltros": "Clear filters",
+    "todas": "Select all",
+    "ninguna": "Clear all"
+  },
+  "form": {
+    "nueva": "New proposal",
+    "paso": "Step",
+    "de": "of",
+    "titulo": "Proposal title",
+    "tituloHint": "E.g. Bike lane on Park Avenue",
+    "categoria": "Category",
+    "elige": "Choose a category",
+    "coste": "Estimated cost (€)",
+    "costeHint": "A rough figure is enough",
+    "lugar": "Place",
+    "lugarHint": "Street, square or landmark",
+    "resumen": "One-line summary",
+    "descripcion": "Description",
+    "descripcionHint": "What problem does it solve? Who benefits?",
+    "fotos": "Add a photo of the place (optional)",
+    "documento": "Attach a supporting document (optional)",
+    "documentoLineas": "Drag a PDF here or click to choose one",
+    "siguiente": "Next",
+    "atras": "Back",
+    "enviar": "Publish proposal",
+    "faltaTitulo": "Give it a title and a category to continue.",
+    "gracias": "Proposal published!",
+    "graciasTexto": "It is on the map and in the list now; your neighbours can vote for it.",
+    "otra": "Propose another",
+    "verLista": "See all proposals"
+  },
+  "lista": {
+    "titulo": "All proposals",
+    "todas": "All",
+    "buscar": "Search by title or place…",
+    "vacio": "No proposals match.",
+    "detalle": "Detail",
+    "votar": "Vote for this proposal",
+    "votos": "votes",
+    "coste": "Cost",
+    "sinDescripcion": "No description.",
+    "cargando": "Loading…",
+    "error": "The proposals could not be loaded.",
+    "graciasVoto": "Thanks for your vote!"
+  },
+  "res": {
+    "titulo": "Results",
+    "porCategoria": "Proposals per category",
+    "costePorCategoria": "Requested cost per category (€)",
+    "votosPorCategoria": "Votes per category",
+    "ranking": "Most voted",
+    "vacio": "No data yet.",
+    "presupuesto": "District budget",
+    "solicitado": "Total requested",
+    "propuestas": "proposals",
+    "votos": "votes"
+  },
+  "acerca": {
+    "titulo": "How participatory budgeting works",
+    "intro": "The district sets aside part of its budget for residents to decide. Anyone proposes, anyone votes, and the best-supported proposals are carried out until the money runs out.",
+    "pasosTitulo": "Three steps",
+    "paso1": "Propose: mark on the map where the improvement would go and put a price on it.",
+    "paso2": "Vote: support your neighbours' proposals.",
+    "paso3": "Follow: results update live on this very site.",
+    "faqTitulo": "Frequently asked questions",
+    "faq1": "Who can take part?",
+    "faq1r": "Anyone registered in the district, at any age.",
+    "faq2": "How much can I ask for?",
+    "faq2r": "There is no minimum. Proposals above €200,000 go through a technical report.",
+    "faq3": "What if my proposal does not win?",
+    "faq3r": "It stays published and can be presented again in the next round.",
+    "faq4": "Can I vote more than once?",
+    "faq4r": "You may support as many proposals as you like, but each one only once.",
+    "contacto": "Questions: participacion@distrito.example",
+    "irMapa": "Go to the map",
+    "irPropuestas": "See proposals"
+  },
+  "footer": {
+    "titulo": "District participatory budget",
+    "ayuda": "Help"
+  }
+}

@@ -1,0 +1,86 @@
+{
+  "name": "Grid",
+  "description": "CSS grid with enumerated columns (`cols` on phones, `colsMd` from md up).",
+  "stateful": false,
+  "emits": [],
+  "slots": [
+    "default"
+  ],
+  "props": {
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "type": "object",
+    "properties": {
+      "cols": {
+        "anyOf": [
+          {
+            "type": "number",
+            "const": 1
+          },
+          {
+            "type": "number",
+            "const": 2
+          },
+          {
+            "type": "number",
+            "const": 3
+          },
+          {
+            "type": "number",
+            "const": 4
+          },
+          {
+            "type": "number",
+            "const": 5
+          },
+          {
+            "type": "number",
+            "const": 6
+          }
+        ]
+      },
+      "colsMd": {
+        "anyOf": [
+          {
+            "type": "number",
+            "const": 1
+          },
+          {
+            "type": "number",
+            "const": 2
+          },
+          {
+            "type": "number",
+            "const": 3
+          },
+          {
+            "type": "number",
+            "const": 4
+          },
+          {
+            "type": "number",
+            "const": 5
+          },
+          {
+            "type": "number",
+            "const": 6
+          }
+        ]
+      },
+      "gap": {
+        "type": "string",
+        "enum": [
+          "none",
+          "xs",
+          "sm",
+          "md",
+          "lg",
+          "xl"
+        ]
+      },
+      "as": {
+        "type": "string"
+      }
+    },
+    "additionalProperties": false
+  }
+}

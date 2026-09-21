@@ -1,0 +1,393 @@
+{
+  "version": 1,
+  "children": [
+    {
+      "type": "div",
+      "style": "about-page",
+      "children": [
+        {
+          "type": "Header",
+          "props": {
+            "showMenu": false,
+            "leftItems": [
+              {
+                "label": "MNC",
+                "to": "https://mobilecreativity.net",
+                "target": "_blank"
+              }
+            ]
+          },
+          "children": [
+            {
+              "slot": "right",
+              "type": "Button",
+              "props": {
+                "to": "/",
+                "color": "black"
+              },
+              "text": "$t.about.backToMap"
+            }
+          ]
+        },
+        {
+          "type": "div",
+          "style": "about-block",
+          "children": [
+            {
+              "type": "Text",
+              "props": {
+                "text": "Mobile Networked Creativity"
+              },
+              "style": "eyebrow"
+            },
+            {
+              "type": "Text",
+              "bind": {
+                "text": "$t.about.heroTitle"
+              },
+              "props": {
+                "as": "h1",
+                "weight": "bold"
+              }
+            },
+            {
+              "type": "Text",
+              "bind": {
+                "text": "$t.about.heroIntro"
+              },
+              "props": {
+                "size": "lg",
+                "tone": "muted"
+              }
+            },
+            {
+              "type": "Button",
+              "props": {
+                "to": "/",
+                "color": "black"
+              },
+              "style": "pill-button",
+              "text": "$t.about.exploreMap"
+            }
+          ]
+        },
+        {
+          "type": "Divider",
+          "style": "divider-wide"
+        },
+        {
+          "type": "div",
+          "style": "about-split",
+          "children": [
+            {
+              "type": "Text",
+              "bind": {
+                "text": "$t.about.whatTitle"
+              },
+              "props": {
+                "as": "h2",
+                "size": "3xl",
+                "weight": "semibold"
+              },
+              "style": "about-heading"
+            },
+            {
+              "type": "Stack",
+              "props": {
+                "gap": "md"
+              },
+              "children": [
+                {
+                  "type": "Text",
+                  "bind": {
+                    "text": "$t.about.what1"
+                  },
+                  "props": {
+                    "tone": "muted"
+                  }
+                },
+                {
+                  "type": "Text",
+                  "bind": {
+                    "text": "$t.about.what2"
+                  },
+                  "props": {
+                    "tone": "muted"
+                  }
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "Divider",
+          "style": "divider-wide"
+        },
+        {
+          "type": "div",
+          "style": "about-section",
+          "children": [
+            {
+              "type": "Text",
+              "bind": {
+                "text": "$t.about.themesTitle"
+              },
+              "props": {
+                "as": "h2",
+                "size": "3xl",
+                "weight": "semibold"
+              }
+            },
+            {
+              "type": "Grid",
+              "props": {
+                "cols": 3,
+                "gap": "md"
+              },
+              "children": [
+                {
+                  "type": "Panel",
+                  "style": "theme-card",
+                  "children": [
+                    {
+                      "type": "Icon",
+                      "props": {
+                        "name": "i-heroicons-truck"
+                      },
+                      "style": "theme-icon"
+                    },
+                    {
+                      "type": "Text",
+                      "bind": {
+                        "text": "$t.about.themes.transport.title"
+                      },
+                      "props": {
+                        "as": "h3",
+                        "size": "lg",
+                        "weight": "semibold"
+                      }
+                    },
+                    {
+                      "type": "Text",
+                      "bind": {
+                        "text": "$t.about.themes.transport.description"
+                      },
+                      "props": {
+                        "size": "sm",
+                        "tone": "muted"
+                      }
+                    }
+                  ]
+                },
+                {
+                  "type": "Panel",
+                  "style": "theme-card",
+                  "children": [
+                    {
+                      "type": "Icon",
+                      "props": {
+                        "name": "i-heroicons-heart"
+                      },
+                      "style": "theme-icon"
+                    },
+                    {
+                      "type": "Text",
+                      "bind": {
+                        "text": "$t.about.themes.health.title"
+                      },
+                      "props": {
+                        "as": "h3",
+                        "size": "lg",
+                        "weight": "semibold"
+                      }
+                    },
+                    {
+                      "type": "Text",
+                      "bind": {
+                        "text": "$t.about.themes.health.description"
+                      },
+                      "props": {
+                        "size": "sm",
+                        "tone": "muted"
+                      }
+                    }
+                  ]
+                },
+                {
+                  "type": "Panel",
+                  "style": "theme-card",
+                  "children": [
+                    {
+                      "type": "Icon",
+                      "props": {
+                        "name": "i-heroicons-wifi"
+                      },
+                      "style": "theme-icon"
+                    },
+                    {
+                      "type": "Text",
+                      "bind": {
+                        "text": "$t.about.themes.digital.title"
+                      },
+                      "props": {
+                        "as": "h3",
+                        "size": "lg",
+                        "weight": "semibold"
+                      }
+                    },
+                    {
+                      "type": "Text",
+                      "bind": {
+                        "text": "$t.about.themes.digital.description"
+                      },
+                      "props": {
+                        "size": "sm",
+                        "tone": "muted"
+                      }
+                    }
+                  ]
+                },
+                {
+                  "type": "Panel",
+                  "style": "theme-card",
+                  "children": [
+                    {
+                      "type": "Icon",
+                      "props": {
+                        "name": "i-heroicons-map-pin"
+                      },
+                      "style": "theme-icon"
+                    },
+                    {
+                      "type": "Text",
+                      "bind": {
+                        "text": "$t.about.themes.mapping.title"
+                      },
+                      "props": {
+                        "as": "h3",
+                        "size": "lg",
+                        "weight": "semibold"
+                      }
+                    },
+                    {
+                      "type": "Text",
+                      "bind": {
+                        "text": "$t.about.themes.mapping.description"
+                      },
+                      "props": {
+                        "size": "sm",
+                        "tone": "muted"
+                      }
+                    }
+                  ]
+                },
+                {
+                  "type": "Panel",
+                  "style": "theme-card",
+                  "children": [
+                    {
+                      "type": "Icon",
+                      "props": {
+                        "name": "i-heroicons-paint-brush"
+                      },
+                      "style": "theme-icon"
+                    },
+                    {
+                      "type": "Text",
+                      "bind": {
+                        "text": "$t.about.themes.art.title"
+                      },
+                      "props": {
+                        "as": "h3",
+                        "size": "lg",
+                        "weight": "semibold"
+                      }
+                    },
+                    {
+                      "type": "Text",
+                      "bind": {
+                        "text": "$t.about.themes.art.description"
+                      },
+                      "props": {
+                        "size": "sm",
+                        "tone": "muted"
+                      }
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "Divider",
+          "style": "divider-wide"
+        },
+        {
+          "type": "div",
+          "style": "about-split",
+          "children": [
+            {
+              "type": "Text",
+              "bind": {
+                "text": "$t.about.participateTitle"
+              },
+              "props": {
+                "as": "h2",
+                "size": "3xl",
+                "weight": "semibold"
+              },
+              "style": "about-heading"
+            },
+            {
+              "type": "Stack",
+              "props": {
+                "gap": "md"
+              },
+              "children": [
+                {
+                  "type": "Text",
+                  "bind": {
+                    "text": "$t.about.participate1"
+                  },
+                  "props": {
+                    "tone": "muted"
+                  }
+                },
+                {
+                  "type": "Button",
+                  "props": {
+                    "to": "/",
+                    "color": "black"
+                  },
+                  "style": "pill-button",
+                  "text": "$t.about.startContributing"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "Divider",
+          "style": "divider-wide"
+        },
+        {
+          "type": "div",
+          "style": "about-section",
+          "children": [
+            {
+              "type": "Text",
+              "bind": {
+                "text": "$t.onboarding.footer"
+              },
+              "props": {
+                "size": "sm",
+                "tone": "muted"
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

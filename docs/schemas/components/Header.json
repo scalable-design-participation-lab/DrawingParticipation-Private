@@ -1,0 +1,95 @@
+{
+  "name": "Header",
+  "description": "Floating top bar: logo, left nav items, right action items. The logo, the accent color and the stacking order come from app.json (`brand` / `theme.accent`), not from the spec.",
+  "stateful": false,
+  "emits": [
+    "menu"
+  ],
+  "slots": [
+    "logo",
+    "center",
+    "menu",
+    "right"
+  ],
+  "props": {
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "type": "object",
+    "properties": {
+      "variant": {
+        "description": "Two finished looks: floating buttons (default) or a bar of text links.",
+        "type": "string",
+        "enum": [
+          "pill",
+          "text"
+        ]
+      },
+      "leftItems": {
+        "type": "array",
+        "items": {
+          "type": "object",
+          "properties": {
+            "label": {
+              "type": "string"
+            },
+            "to": {
+              "type": "string"
+            },
+            "icon": {
+              "type": "string"
+            },
+            "primary": {
+              "description": "Render as the emphasized item.",
+              "type": "boolean"
+            },
+            "target": {
+              "description": "Link target, e.g. \"_blank\" for an external site",
+              "type": "string"
+            }
+          },
+          "additionalProperties": false
+        }
+      },
+      "rightItems": {
+        "type": "array",
+        "items": {
+          "type": "object",
+          "properties": {
+            "label": {
+              "type": "string"
+            },
+            "to": {
+              "type": "string"
+            },
+            "icon": {
+              "type": "string"
+            },
+            "primary": {
+              "description": "Render as the emphasized item.",
+              "type": "boolean"
+            },
+            "target": {
+              "description": "Link target, e.g. \"_blank\" for an external site",
+              "type": "string"
+            }
+          },
+          "additionalProperties": false
+        }
+      },
+      "showIcon": {
+        "description": "The lab mark on the far left.",
+        "type": "boolean"
+      },
+      "showLogo": {
+        "description": "The app's own logo from app.json `brand`.",
+        "type": "boolean"
+      },
+      "showColorMode": {
+        "type": "boolean"
+      },
+      "showMenu": {
+        "type": "boolean"
+      }
+    },
+    "additionalProperties": false
+  }
+}

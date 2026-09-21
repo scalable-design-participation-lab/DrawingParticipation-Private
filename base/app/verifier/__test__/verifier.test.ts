@@ -1,0 +1,232 @@
+import { describe, expect, it } from 'vitest'
+import { z } from 'zod'
+import '../../contracts/components'
+import { declareHandler } from '../../contracts/handlers'
+import '../../utils/styles'
+import { verifyRows, verifySpec } from '../index'
+
+declareHandler('download', 'test')
+
+const valid = {
+  version: 1,
+  state: { open: true, mapType: 'vector', intro: '$query.showIntro', selected: '' },
+  dataSources: { rows: { kind: 'static', items: [] } },
+  children: [
+    {
+      type: 'BackgroundMap',
+      props: { centerLonLat: [-99.19, 19.42], zoom: 14 },
+      bind: { mapType: '$state.mapType' },
+      children: [
+        {
+          slot: 'overlays',
+          type: 'MarkerOverlay',
+          bind: { items: '$data.rows' },
+          item: { type: 'div', text: '$item.name', on: { click: { set: 'selected', value: '$item.id' } } },
+        },
+      ],
+    },
+    {
+      type: 'Header',
+      props: { rightItems: [{ icon: 'i-heroicons-arrow-down-tray-20-solid', onClick: { $action: [{ toggle: 'open' }, { call: 'download' }] } }] },
+      on: { menu: { set: 'open', value: true } },
+      children: [{ slot: 'right', type: 'MapTypeToggle', bind: { modelValue: '$state.mapType' }, on: { 'update:modelValue': { set: 'mapType' } } }],
+    },
+    { type: 'Modal', if: '$state.intro', bind: { modelValue: '$state.open' }, on: { 'update:modelValue': { set: 'open' } }, props: { text: 'hi' } },
+    { type: 'Button', props: { color: 'black', to: '/', size: 'xl', block: true }, text: 'go' },
+    { type: 'Text', if: '$sources.rows.loading', props: { text: 'loading…' } },
+    { type: 'Panel', style: ['fill', 'overlay'], props: { variant: 'card', padding: 'lg' } },
+  ],
+}
+
+describe('verifySpec', () => {
+  it('accepts a well-formed spec, also in strict mode', () => {
+    expect(verifySpec(valid)).toEqual({ pass: true, errors: [] })
+    expect(verifySpec(valid, { strict: true })).toEqual({ pass: true, errors: [] })
+  })
+
+  it('rejects styling a Nuxt UI primitive beyond its declared props', () => {
+    // No contract is `looseProps` any more: how a primitive looks is base's
+    // call, so `ui`, a raw class or an invented color has to be refused.
+    const result = verifySpec({
+      children: [
+        { type: 'Divider', props: { ui: { wrapper: 'mt-24' } } },
+        { type: 'Button', props: { color: 'hotpink' } },
+        { type: 'FormFields', props: { fields: [{ name: 'a', style: 'not-registered' }] } },
+      ],
+    })
+    expect(result.pass).toBe(false)
+    expect(result.errors.map(e => e.rule)).toEqual(
+      expect.arrayContaining(['props.invalid', 'style.unknown']),
+    )
+  })
+
+  it('rejects malformed JSON with schema paths', () => {
+    const result = verifySpec({ children: [{ props: {} }] })
+    expect(result.pass).toBe(false)
+    expect(result.errors[0]).toMatchObject({ path: 'children[0].type', rule: 'spec.schema' })
+  })
+
+  it('flags unknown components, props, slots, events, bindings, handlers, state and styles', () => {
+    const result = verifySpec({
+      state: { bad: '$state.other' },
+      children: [
+        { type: 'Nope' },
+        { type: 'BackgroundMap', props: { zoom: 'far', bogus: 1 } },
+        { type: 'BackgroundMap', children: [{ slot: 'sidebar', type: 'div' }] },
+        { type: 'Modal', on: { explode: { navigate: '/' } } },
+        { type: 'Modal', bind: { modelValue: '$state.missing', text: '$data.missing', title: 'literal' } },
+        { type: 'div', text: '$item.x' },
+        { type: 'Modal', on: { close: { set: 'missing' } } },
+        { type: 'Modal', on: { close: [{ toggle: 'missing' }, { call: 'nope' }] } },
+        { type: 'div', if: '$state.missing' },
+        { type: 'Header', props: { leftItems: [{ label: 'x', onClick: { $action: { call: 'nope' } } }] } },
+        { type: 'Header', props: { leftItems: [{ label: 'x', onClick: { $action: { explode: true } } }] } },
+        { type: 'div', style: ['fill', 'nope'] },
+        { type: 'div', if: '$sources.missing.loading' },
+        { type: 'div', on: { click: { set: 'bad', value: '$item.id' } } },
+      ],
+    })
+    const rules = result.errors.map(e => `${e.rule}@${e.path}`)
+    expect(rules).toEqual(expect.arrayContaining([
+      'state.bad-init@state.bad',
+      'component.unknown@children[0].type',
+      'props.invalid@children[1].props.zoom',
+      'props.invalid@children[1].props.bogus',
+      'slot.unknown@children[2].children[0].slot',
+      'event.unknown@children[3].on.explode',
+      'bind.unknown-state@children[4].bind.modelValue',
+      'bind.unknown-data@children[4].bind.text',
+      'bind.bad-expr@children[4].bind.title',
+      'bind.item-outside-template@children[5].text',
+      'action.unknown-state@children[6].on.close.set',
+      'action.unknown-state@children[7].on.close[0].toggle',
+      'action.unknown-handler@children[7].on.close[1].call',
+      'bind.unknown-state@children[8].if',
+      'action.unknown-handler@children[9].props.leftItems[0].onClick.$action.call',
+      'action.invalid@children[10].props.leftItems[0].onClick.$action',
+      'style.unknown@children[11].style[1]',
+      'bind.unknown-data@children[12].if',
+      'bind.item-outside-template@children[13].on.click.value',
+    ]))
+  })
+
+  it('catches wiring mistakes: write-only bindings, dead state, unknown routes, unknown $errors', () => {
+    const result = verifySpec({
+      state: { open: true, dead: 1 },
+      children: [
+        { type: 'Modal', bind: { modelValue: '$state.open' } },
+        { type: 'Text', if: '$errors.nope', props: { text: 'x' } },
+        { type: 'Button', props: { to: '/missing' }, text: 'go' },
+        { type: 'a', props: { href: '/also-missing' }, text: 'go', on: { click: { navigate: '/nowhere' } } },
+        { type: 'Button', props: { to: '/about/' }, text: 'ok' },
+      ],
+    }, { routes: ['/', '/about'] })
+    expect(result.errors.map(e => `${e.rule}@${e.path}`)).toEqual([
+      'bind.write-only@children[0].bind.modelValue',
+      'action.unknown-handler@children[1].if',
+      'link.unknown-route@children[2].props.to',
+      'link.unknown-route@children[3].props.href',
+      'link.unknown-route@children[3].on.click.navigate',
+      'state.unused@state.dead',
+    ])
+  })
+
+  it('checks init actions and accepts negated expressions', () => {
+    const spec = {
+      state: { open: false, user: null },
+      init: [{ call: 'nope' }, { set: 'open', value: '!$state.user' }],
+      children: [{ type: 'Text', if: '!$state.open', props: { text: 'closed' } }],
+    }
+    expect(verifySpec(spec).errors.map(e => `${e.rule}@${e.path}`)).toEqual(['action.unknown-handler@init[0].call'])
+    expect(verifySpec({ ...spec, init: [{ set: 'open', value: '!$state.nope' }] }).errors.map(e => `${e.rule}@${e.path}`)).toEqual(['bind.unknown-state@init[0].value', 'state.unused@state.user'])
+  })
+
+  it('accepts $t keys, == / != comparisons and && conditions', () => {
+    const spec = {
+      state: { view: 'map', n: 0 },
+      children: [
+        { type: 'Text', if: '$state.view == \'list\' && $state.n != 0', bind: { text: '$t.list.title' } },
+        { type: 'Text', if: '!$state.view == \'map\'', props: { text: 'x' } },
+      ],
+    }
+    expect(verifySpec(spec).pass).toBe(true)
+    expect(verifySpec({ ...spec, children: [{ type: 'Text', if: '$state.nope == 1 && $state.view', props: { text: 'x' } }] }).errors.map(e => e.rule)).toEqual(['bind.unknown-state', 'state.unused'])
+  })
+
+  it('checks $t keys against app/i18n messages', () => {
+    const messages = { es: { nav: { home: 'Inicio' }, form: { name: 'Nombre' } }, en: { nav: { home: 'Home' } } }
+    const spec = { children: [
+      { type: 'Text', bind: { text: '$t.nav.home' } },
+      { type: 'FormFields', props: { fields: [{ name: 'a', label: '$t.form.name' }] } },
+      { type: 'Text', bind: { text: '$t.nav.nope' } },
+    ] }
+    expect(verifySpec(spec, { messages, defaultLocale: 'es' }).errors.map(e => `${e.rule}@${e.path}`)).toEqual([
+      'i18n.missing@children[1].props.fields[0].label',
+      'i18n.unknown-key@children[2].bind.text',
+    ])
+    expect(verifySpec(spec).pass).toBe(true) // no messages loaded: keys are not checked
+  })
+
+  it('strict mode forbids raw classes', () => {
+    const spec = { children: [{ type: 'div', props: { class: 'mt-4' } }, { type: 'Panel', props: { class: 'p-8' } }] }
+    expect(verifySpec(spec).pass).toBe(true)
+    expect(verifySpec(spec, { strict: true }).errors.map(e => `${e.rule}@${e.path}`)).toEqual([
+      'style.raw-class@children[0].props.class',
+      'style.raw-class@children[1].props.class',
+    ])
+  })
+
+  it('lets host pages declare extra data names and handlers', () => {
+    const spec = { children: [{ type: 'MarkerOverlay', bind: { items: '$data.fromPage' }, on: { click: { call: 'fromPage', payload: null } } }] }
+    expect(verifySpec(spec).errors.map(e => e.rule)).toEqual(['bind.unknown-data', 'action.unknown-handler'])
+    expect(verifySpec(spec, { extraData: ['fromPage'], handlers: ['fromPage'] }).pass).toBe(true)
+  })
+
+  it('refuses to put a DOM event where a value belongs', () => {
+    // A click on an element (or on a component that does not declare `click`)
+    // hands the action a MouseEvent, so state would hold an Event and a
+    // handler would be called with one. Both are silent at runtime.
+    const spec = {
+      state: { picked: null },
+      children: [{
+        type: 'List',
+        bind: { items: '$data.rows' },
+        item: {
+          type: 'Stack',
+          on: { click: [{ set: 'picked' }, { call: 'download' }] },
+        },
+      }],
+      dataSources: { rows: { kind: 'static', items: [] } },
+    }
+    expect(verifySpec(spec).errors.map(e => `${e.rule}@${e.path}`)).toEqual([
+      'action.dom-event-payload@children[0].item.on.click[0].set',
+      'action.dom-event-payload@children[0].item.on.click[1].call',
+    ])
+    // Saying what it should carry is the fix; a component's own emit is fine.
+    const fixed = structuredClone(spec)
+    fixed.children[0].item.on.click = [{ set: 'picked', value: '$item' }, { call: 'download', payload: '$item.id' }]
+    expect(verifySpec(fixed)).toEqual({ pass: true, errors: [] })
+  })
+})
+
+describe('verifyRows', () => {
+  const schema = z.object({ id: z.string(), n: z.number() })
+
+  it('passes clean rows and pinpoints bad ones', () => {
+    expect(verifyRows([{ id: 'a', n: 1 }], schema).pass).toBe(true)
+    const result = verifyRows([{ id: 'a', n: 1 }, { id: 'b', n: 'x' }], schema)
+    expect(result.errors).toEqual([expect.objectContaining({ path: '[1].n', rule: 'row.invalid' })])
+    expect(verifyRows({ not: 'array' }, schema).errors[0].rule).toBe('rows.not-array')
+  })
+})
+
+describe('verifySpec > a tag is not a component', () => {
+  it('refuses bind.text on a native tag, which would write an attribute', () => {
+    const spec = { children: [{ type: 'li', bind: { text: '$t.a.b' } }] }
+    expect(verifySpec(spec).errors.map(e => `${e.rule}@${e.path}`)).toEqual(['bind.text-on-tag@children[0].bind.text'])
+    // The node's own `text` is the way to say it.
+    expect(verifySpec({ children: [{ type: 'li', text: '$t.a.b' }] })).toEqual({ pass: true, errors: [] })
+    // A component whose contract has a `text` prop is unaffected.
+    expect(verifySpec({ children: [{ type: 'Text', bind: { text: '$t.a.b' } }] })).toEqual({ pass: true, errors: [] })
+  })
+})

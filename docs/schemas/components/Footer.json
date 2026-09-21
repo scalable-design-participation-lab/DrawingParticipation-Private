@@ -1,0 +1,79 @@
+{
+  "name": "Footer",
+  "description": "Floating bottom bar with a title, links and buttons.",
+  "stateful": false,
+  "emits": [
+    "support",
+    "buttonClick"
+  ],
+  "slots": [
+    "support"
+  ],
+  "props": {
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "type": "object",
+    "properties": {
+      "title": {
+        "type": "string"
+      },
+      "links": {
+        "type": "array",
+        "items": {
+          "type": "object",
+          "properties": {
+            "to": {
+              "type": "string"
+            },
+            "label": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "to",
+            "label"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "buttons": {
+        "description": "Pressing one emits `buttonClick` with the entry",
+        "type": "array",
+        "items": {
+          "type": "object",
+          "properties": {
+            "label": {
+              "type": "string"
+            },
+            "to": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "label"
+          ],
+          "additionalProperties": {}
+        }
+      },
+      "icons": {
+        "type": "array",
+        "items": {
+          "type": "object",
+          "properties": {
+            "name": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "name"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "supportLabel": {
+        "description": "Accessible name of the \"?\" button; pass a \"$t.\" key to translate it.",
+        "type": "string"
+      }
+    },
+    "additionalProperties": false
+  }
+}

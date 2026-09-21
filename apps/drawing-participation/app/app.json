@@ -1,0 +1,19 @@
+{
+  "version": 1,
+  "name": "drawing-participation",
+  "title": "Drawing Participation - Interactive Drawing Tool",
+  "description": "A collaborative drawing tool for participatory design and community engagement.",
+  "styles": {
+    "canvas": "relative z-10 ml-20 h-[calc(100vh-12rem)] w-full rounded-xl bg-white shadow-lg dark:bg-gray-800"
+  },
+  "routes": {
+    "/": "index.json",
+    "/gallery": "placeholder.json",
+    "/about": "placeholder.json",
+    "/privacy": "placeholder.json"
+  },
+  "theme": {
+    "primary": "green",
+    "gray": "cool"
+  }
+}

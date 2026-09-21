@@ -1,0 +1,86 @@
+{
+  "name": "MarkerOverlay",
+  "description": "Renders one HTML overlay per item on the map. Put it in the BackgroundMap \"overlays\" slot.",
+  "stateful": false,
+  "emits": [],
+  "slots": [
+    "item"
+  ],
+  "props": {
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "type": "object",
+    "properties": {
+      "items": {
+        "type": "array",
+        "items": {
+          "type": "object",
+          "propertyNames": {
+            "type": "string"
+          },
+          "additionalProperties": {}
+        }
+      },
+      "item": {
+        "description": "A single item (e.g. the selected feature); null renders nothing.",
+        "anyOf": [
+          {
+            "type": "object",
+            "propertyNames": {
+              "type": "string"
+            },
+            "additionalProperties": {}
+          },
+          {
+            "type": "null"
+          }
+        ]
+      },
+      "positionKey": {
+        "description": "Item key holding [lon, lat] (default \"position\").",
+        "type": "string"
+      },
+      "cluster": {
+        "description": "Merge items closer than this many map units into one overlay, so overlapping markers stay reachable. The item slot then gets { position, members, count }.",
+        "type": "number",
+        "minimum": 0
+      },
+      "filterKey": {
+        "type": "string"
+      },
+      "filterIn": {
+        "description": "Keep items whose filterKey is in this set, like List filterIn.",
+        "anyOf": [
+          {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          {
+            "type": "object",
+            "propertyNames": {
+              "type": "string"
+            },
+            "additionalProperties": {
+              "type": "boolean"
+            }
+          },
+          {
+            "type": "null"
+          }
+        ]
+      },
+      "lonLat": {
+        "description": "Positions are [lon, lat] (default) rather than map coordinates.",
+        "type": "boolean"
+      },
+      "positioning": {
+        "type": "string"
+      },
+      "stopEvent": {
+        "type": "boolean"
+      }
+    },
+    "additionalProperties": false
+  }
+}

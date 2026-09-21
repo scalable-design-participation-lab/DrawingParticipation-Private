@@ -1,0 +1,6 @@
+{
+  "version": 1,
+  "children": [
+    { "type": "div", "style": "placeholder", "children": [{ "type": "Text", "props": { "size": "sm", "text": "Próximamente_" } }] }
+  ]
+}

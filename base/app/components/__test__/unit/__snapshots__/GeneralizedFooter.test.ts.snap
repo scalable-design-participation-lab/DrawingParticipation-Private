@@ -63,10 +63,7 @@ exports[`generalizedFooter > renders correctly 1`] = `
       </button>
     </div>
   </footer>
-  <!-- Add SupportModal -->
-  <div
-    class=""
-    modelvalue="false"
-  />
+  
+  
 </div>
 `;

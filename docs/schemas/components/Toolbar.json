@@ -1,0 +1,35 @@
+{
+  "name": "Toolbar",
+  "description": "Vertical tool palette. Pressing one emits `toolClick` with that tool (plus its `index`), so give each tool a `value` and branch on `$state.<key>.value`.",
+  "stateful": false,
+  "emits": [
+    "toolClick"
+  ],
+  "slots": [],
+  "props": {
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "type": "object",
+    "properties": {
+      "tools": {
+        "type": "array",
+        "items": {
+          "type": "object",
+          "properties": {
+            "icon": {
+              "type": "string"
+            },
+            "tooltip": {
+              "type": "string"
+            },
+            "value": {}
+          },
+          "additionalProperties": {}
+        }
+      }
+    },
+    "required": [
+      "tools"
+    ],
+    "additionalProperties": false
+  }
+}

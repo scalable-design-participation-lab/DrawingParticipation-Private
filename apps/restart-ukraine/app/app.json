@@ -1,0 +1,36 @@
+{
+  "version": 1,
+  "name": "restart-ukraine",
+  "title": "Гуртомá - Платформа для покращення міст",
+  "description": "Платформа від команди Restart, яка спрощує комунікацію між містянами та урбаністами.",
+  "lang": "uk",
+  "brand": {
+    "logo": "/restart-logo-icon.svg",
+    "logoAlt": "Restart Agency Logo",
+    "logoLink": "https://www.restartfuture.org/"
+  },
+  "theme": {
+    "primary": "green",
+    "gray": "slate"
+  },
+  "styles": {
+    "about-page": "mb-24 leading-tight",
+    "hero": "mt-48 px-7",
+    "section": "px-7",
+    "pill-button": "my-2 flex place-self-start rounded-full px-6 py-3",
+    "pill-button-secondary": "my-2 flex place-self-start rounded-full bg-gray-300 px-6 py-3 text-black hover:text-white dark:bg-zinc-600 dark:text-white dark:hover:bg-zinc-700",
+    "feature-card": "md:w-56",
+    "feature-card-tall": "pb-32 md:w-56",
+    "menu-item": "rounded-full py-3 text-lg font-semibold",
+    "feature-icon": "h-6 w-6 flex-shrink-0 text-blue-500",
+    "sidebar": "fixed right-6 top-24 z-40 max-h-[calc(100vh-11rem)] w-96 overflow-y-auto md:w-80",
+    "map-layer": "absolute inset-0 z-[1]",
+    "divider-wide": "mt-24 mb-8"
+  },
+  "routes": {
+    "/": "index.json",
+    "/about": "about.json",
+    "/result": "result.json",
+    "/dashboard": "dashboard.json"
+  }
+}

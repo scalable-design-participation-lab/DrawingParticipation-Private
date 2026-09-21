@@ -1,0 +1,30 @@
+{
+  "version": 1,
+  "children": [
+    {
+      "type": "div",
+      "style": "app-frame",
+      "children": [
+        {
+          "type": "Header",
+          "props": {
+            "variant": "text",
+            "showIcon": false,
+            "showColorMode": false,
+            "showMenu": false,
+            "rightItems": [
+              { "label": "Compartir\nglifo", "to": "/compartir-glifo" },
+              { "label": "¿Cómo está el\nclima hoy?", "to": "/clima-hoy" },
+              { "label": "Datos", "to": "/datos" },
+              { "label": "Acerca", "to": "/acerca" }
+            ]
+          },
+          "children": [
+            { "slot": "logo", "type": "a", "style": "wordmark", "props": { "href": "/" }, "text": "Bitácora de\nobservación\nmedioambiental" }
+          ]
+        },
+        { "type": "main", "style": "page-main", "children": [{ "type": "Outlet" }] }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,60 @@
+{
+  "version": 1,
+  "state": { "activeTool": 0, "lastAction": "" },
+  "children": [
+    {
+      "type": "div",
+      "style": "page",
+      "children": [
+        {
+          "type": "Header",
+          "props": {
+            "showIcon": true,
+            "leftItems": [
+              { "label": "Drawing", "to": "/", "primary": true, "icon": "i-heroicons-pencil" },
+              { "label": "Gallery", "to": "/gallery", "icon": "i-heroicons-photo" }
+            ],
+            "rightItems": [
+              { "label": "Share", "icon": "i-heroicons-share", "onClick": { "$action": { "set": "lastAction", "value": "share" } } },
+              { "label": "Save", "icon": "i-heroicons-document-arrow-down", "onClick": { "$action": { "set": "lastAction", "value": "save" } } }
+            ]
+          }
+        },
+        {
+          "type": "main",
+          "style": "content",
+          "children": [
+            {
+              "type": "div",
+              "style": "floating-left",
+              "children": [
+                {
+                  "type": "Toolbar",
+                  "props": {
+                    "tools": [
+                      { "icon": "i-heroicons-pencil", "tooltip": "Pencil Tool" },
+                      { "icon": "i-heroicons-square-2-stack", "tooltip": "Rectangle Tool" },
+                      { "icon": "i-heroicons-circle", "tooltip": "Circle Tool" },
+                      { "icon": "i-heroicons-arrow-path", "tooltip": "Undo" }
+                    ]
+                  },
+                  "on": { "toolClick": { "set": "activeTool" } }
+                }
+              ]
+            },
+            { "type": "div", "style": "canvas" }
+          ]
+        },
+        {
+          "type": "Footer",
+          "props": {
+            "title": "Drawing Tool",
+            "links": [{ "to": "/about", "label": "About" }, { "to": "/privacy", "label": "Privacy" }],
+            "buttons": [{ "label": "Clear Canvas" }, { "label": "Download" }],
+            "icons": [{ "name": "i-heroicons-pencil" }]
+          }
+        }
+      ]
+    }
+  ]
+}

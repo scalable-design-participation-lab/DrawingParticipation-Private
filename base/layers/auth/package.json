@@ -1,6 +1,0 @@
-{
-  "dependencies": {
-    "@vueuse/firebase": "^11.3.0",
-    "firebase": "^9"
-  }
-}

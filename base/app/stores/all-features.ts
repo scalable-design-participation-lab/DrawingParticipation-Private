@@ -1,7 +1,9 @@
+import { defineStore } from 'pinia'
 import { useFirestore } from 'vuefire'
 import { collection, getDocs } from 'firebase/firestore'
-import type { Category } from '../../../apps/restart-ukraine/app/stores/types/store'
 import type { DrawType, Feature, FrequencyType } from './types/store'
+
+type Category = string
 
 export const useAllFeatureStore = defineStore('all-features', () => {
   /**

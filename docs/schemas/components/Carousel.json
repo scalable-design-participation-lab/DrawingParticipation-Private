@@ -1,0 +1,47 @@
+{
+  "name": "Carousel",
+  "description": "A strip of images with arrows, a counter and dots. A URL that fails to load is dropped, so the counter never promises a slide that is not there. Every label is a prop, so pass \"$t.\" keys.",
+  "stateful": false,
+  "emits": [],
+  "slots": [],
+  "props": {
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "type": "object",
+    "properties": {
+      "images": {
+        "type": "array",
+        "items": {
+          "type": "string"
+        }
+      },
+      "caption": {
+        "type": "string"
+      },
+      "alt": {
+        "type": "string"
+      },
+      "height": {
+        "type": "string",
+        "enum": [
+          "sm",
+          "md",
+          "lg"
+        ]
+      },
+      "emptyTitle": {
+        "description": "Shown in place of the strip when there are no images.",
+        "type": "string"
+      },
+      "emptyText": {
+        "type": "string"
+      },
+      "prevLabel": {
+        "type": "string"
+      },
+      "nextLabel": {
+        "type": "string"
+      }
+    },
+    "additionalProperties": false
+  }
+}

@@ -1,7 +1,7 @@
 import Tesselation from '@components/GeoSpatialLayer/Tesselation/Tesselation.vue'
 import type { VueWrapper } from '@vue/test-utils'
 import { mount } from '@vue/test-utils'
-import Nop from '@components/Nop.vue'
+import Nop from '../../../../../__test__/Nop.vue'
 
 describe('tesselation.vue', () => {
   let wrapper: VueWrapper<any>

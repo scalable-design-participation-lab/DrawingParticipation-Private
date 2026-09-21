@@ -2,6 +2,148 @@
 
 exports[`interpolateController.vue > renders correctly 1`] = `
 <div
-  class="fixed right-6 top-24 w-96 md:w-80 max-h-[calc(100vh-11rem)] z-40 shadow-xl dark:bg-black flex flex-col overflow-hidden"
-/>
+  class="w-80 z-40 shadow-xl dark:bg-black flex flex-col overflow-hidden"
+>
+  
+  <div
+    class="text-lg font-semibold mb-4"
+  >
+     Interpolate Settings 
+  </div>
+  <!-- Visible -->
+  <div
+    class="flex justify-between my-2"
+  >
+    <span
+      class="my-1 capitalize text-black font-semibold dark:text-white"
+    >
+       Visibility 
+    </span>
+    <div
+      class="my-1"
+      color="green"
+      modelvalue="true"
+      off-icon="i-heroicons-x-mark-20-solid"
+      size="lg"
+    >
+      
+      
+    </div>
+  </div>
+  <div
+    class="flex items-center justify-between"
+  >
+    <span
+      class="block py-2 capitalize text-black font-semibold dark:text-white"
+    >
+      Z-Index
+    </span>
+    <div
+      class="w-20 px-1"
+      id="z-index"
+      modelmodifiers="[object Object]"
+      modelvalue="1"
+      type="number"
+    >
+      
+      
+    </div>
+  </div>
+  <div
+    class="flex items-center justify-between"
+  >
+    <span
+      class="block py-2 capitalize text-black font-semibold dark:text-white"
+    >
+      Grid Size
+    </span>
+    <div
+      class="w-20 px-1"
+      id="grid-points"
+      max="1"
+      min="0.2"
+      modelmodifiers="[object Object]"
+      step="0.2"
+      type="number"
+    >
+      
+      
+    </div>
+  </div>
+  <span
+    class="block py-2 capitalize text-black font-semibold dark:text-white"
+  >
+    Grid Type
+  </span>
+  <div
+    class="grid grid-cols-2 gap-2 mt-2"
+  >
+    <label>
+      <input
+        type="radio"
+        value="point"
+      />
+       Point 
+    </label>
+    <label>
+      <input
+        type="radio"
+        value="hex"
+      />
+       Hexagon 
+    </label>
+    <label>
+      <input
+        type="radio"
+        value="square"
+      />
+       Square 
+    </label>
+    <label>
+      <input
+        type="radio"
+        value="triangle"
+      />
+       Triangle 
+    </label>
+  </div>
+  <span
+    class="block py-2 capitalize text-black font-semibold dark:text-white"
+  >
+    Unit Type
+  </span>
+  <div
+    class="grid grid-cols-2 gap-2 mt-2"
+  >
+    <label>
+      <input
+        type="radio"
+        value="miles"
+      />
+       Miles 
+    </label>
+    <label>
+      <input
+        type="radio"
+        value="kilometers"
+      />
+       Kilometers 
+    </label>
+    <label>
+      <input
+        type="radio"
+        value="radians"
+      />
+       Radians 
+    </label>
+    <label>
+      <input
+        type="radio"
+        value="degrees"
+      />
+       Degrees 
+    </label>
+  </div>
+  
+</div>
 `;

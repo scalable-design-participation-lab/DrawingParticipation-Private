@@ -30,6 +30,8 @@ describe('toolTips.vue', () => {
       geometry: new Point([0, 0]),
       name: 'Test Feature',
     })
+    // Hover and click both ask the map what is under the pointer.
+    vi.spyOn(mapInstance, 'forEachFeatureAtPixel').mockReturnValue(feature)
 
     wrapper = mount(ToolTips, {
       props: {
@@ -57,29 +59,50 @@ describe('toolTips.vue', () => {
   })
 
   it('shows hover popup when feature is hovered', async () => {
-    await wrapper.vm.handleHoverSelect({ selected: [feature] })
+    // Hover reads the map through forEachFeatureAtPixel; it never selects.
+    vi.spyOn(mapInstance, 'forEachFeatureAtPixel').mockReturnValue(feature)
+    await wrapper.vm.handlePointerMove({ pixel: [10, 10], dragging: false })
 
     expect(wrapper.vm.hoverPopup.state.visible).toBe(true)
     expect(wrapper.vm.hoverPopup.state.feature).toStrictEqual(feature)
   })
 
+  it('does not touch the style of the feature under the pointer', async () => {
+    // A category icon must survive being pointed at and clicked: setting a
+    // style on the feature, then clearing it, used to leave a default circle
+    // for good, and a select interaction redrew it for as long as it was
+    // pinned.
+    await wrapper.vm.handlePointerMove({ pixel: [10, 10], dragging: false })
+    expect(feature.getStyle()).toBeNull()
+
+    await wrapper.vm.handleClick({ pixel: [10, 10] })
+    expect(feature.getStyle()).toBeNull()
+
+    vi.spyOn(mapInstance, 'forEachFeatureAtPixel').mockReturnValue(undefined)
+    await wrapper.vm.handlePointerMove({ pixel: [999, 999], dragging: false })
+    expect(feature.getStyle()).toBeNull()
+    expect(wrapper.vm.hoverPopup.state.visible).toBe(false)
+  })
+
   it('shows pinned popup when feature is clicked', async () => {
-    await wrapper.vm.handleClick({ selected: [feature] })
+    await wrapper.vm.handleClick({ pixel: [10, 10] })
 
     expect(wrapper.vm.pinnedPopup.state.visible).toBe(true)
     expect(wrapper.vm.pinnedPopup.state.feature).toStrictEqual(feature)
   })
 
   it('hides hover popup when pinned popup is active', async () => {
-    await wrapper.vm.handleClick({ selected: [feature] })
-    await wrapper.vm.handleHoverSelect({ selected: [feature] })
+    vi.spyOn(mapInstance, 'forEachFeatureAtPixel').mockReturnValue(feature)
+    await wrapper.vm.handleClick({ pixel: [10, 10] })
+    await wrapper.vm.handlePointerMove({ pixel: [10, 10], dragging: false })
 
     expect(wrapper.vm.hoverPopup.state.visible).toBe(false)
   })
 
   it('resets pinned popup on second click', async () => {
-    await wrapper.vm.handleClick({ selected: [feature] })
-    await wrapper.vm.handleClick({ selected: [] })
+    await wrapper.vm.handleClick({ pixel: [10, 10] })
+    vi.spyOn(mapInstance, 'forEachFeatureAtPixel').mockReturnValue(undefined)
+    await wrapper.vm.handleClick({ pixel: [999, 999] })
 
     expect(wrapper.vm.pinnedPopup.state.visible).toBe(false)
   })
@@ -91,7 +114,7 @@ describe('toolTips.vue', () => {
 
     mapInstance.getPixelFromCoordinate = getPixelFromCoordinateMock
 
-    await wrapper.vm.handleClick({ selected: [feature] })
+    await wrapper.vm.handleClick({ pixel: [10, 10] })
 
     expect(wrapper.vm.pinnedPopup.state.position).toEqual({ x: 100, y: 200 })
   })

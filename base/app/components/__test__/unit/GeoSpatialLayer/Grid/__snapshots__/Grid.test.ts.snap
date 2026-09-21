@@ -2,9 +2,28 @@
 
 exports[`grid.vue > renders correctly 1`] = `
 <div
-  class=""
   id="gridLayer"
   visible="false"
   z-index="0"
-/>
+>
+  
+  <div
+    features=""
+  >
+    
+    
+  </div>
+  <div
+    override-style-function="function hexStyleFunction(feature) {
+      return new __vite_ssr_import_4__.Style({
+        fill: new __vite_ssr_import_4__.Fill({ color: feature.get("fillColor") || "hsla(0, 0%, 0%, 0)" }),
+        stroke: new __vite_ssr_import_4__.Stroke({ color: "#ffffff", width: props.width })
+      });
+    }"
+  >
+    
+    
+  </div>
+  
+</div>
 `;

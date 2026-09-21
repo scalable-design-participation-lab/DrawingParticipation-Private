@@ -1,0 +1,165 @@
+{
+  "version": 1,
+  "state": {
+    "answers": {
+      "escuchan": "",
+      "nubes": "",
+      "cielo": "",
+      "huele": ""
+    },
+    "sent": false
+  },
+  "children": [
+    {
+      "type": "div",
+      "style": "form-layout",
+      "children": [
+        {
+          "type": "Panel",
+          "style": "panel",
+          "props": {
+            "as": "section",
+            "padding": "md"
+          },
+          "children": [
+            {
+              "type": "Stack",
+              "props": {
+                "gap": "xl"
+              },
+              "children": [
+                {
+                  "type": "Text",
+                  "props": {
+                    "as": "h1",
+                    "size": "sm",
+                    "weight": "bold",
+                    "align": "center",
+                    "text": "¿Cómo está el clima hoy?"
+                  }
+                },
+                {
+                  "type": "FormFields",
+                  "props": {
+                    "variant": "underline",
+                    "layout": "inline",
+                    "gap": "gap-12",
+                    "labelClass": "font-bold",
+                    "fields": [
+                      {
+                        "name": "escuchan",
+                        "label": "Se escuchan",
+                        "placeholder": "_"
+                      },
+                      {
+                        "name": "nubes",
+                        "label": "Las nubes",
+                        "placeholder": "_"
+                      },
+                      {
+                        "name": "cielo",
+                        "label": "El cielo",
+                        "placeholder": "_"
+                      },
+                      {
+                        "name": "huele",
+                        "label": "Huele a",
+                        "placeholder": "_"
+                      }
+                    ],
+                    "submitLabel": "Enviar"
+                  },
+                  "bind": {
+                    "modelValue": "$state.answers"
+                  },
+                  "on": {
+                    "update:modelValue": {
+                      "set": "answers"
+                    },
+                    "submit": [
+                      {
+                        "call": "saveTo",
+                        "args": "observaciones"
+                      },
+                      {
+                        "set": "sent",
+                        "value": true
+                      }
+                    ]
+                  }
+                },
+                {
+                  "type": "Text",
+                  "if": "$state.sent",
+                  "props": {
+                    "size": "sm",
+                    "weight": "bold",
+                    "text": "¡Gracias! Tu observación quedó registrada."
+                  }
+                },
+                {
+                  "type": "Text",
+                  "if": "$errors.saveTo",
+                  "bind": {
+                    "text": "$errors.saveTo"
+                  },
+                  "props": {
+                    "size": "xs",
+                    "tone": "accent"
+                  }
+                },
+                {
+                  "type": "Stack",
+                  "props": {
+                    "direction": "row",
+                    "gap": "sm",
+                    "align": "baseline"
+                  },
+                  "children": [
+                    {
+                      "type": "Text",
+                      "props": {
+                        "size": "xs",
+                        "tone": "muted",
+                        "text": "Observaciones registradas:"
+                      }
+                    },
+                    {
+                      "type": "Text",
+                      "bind": {
+                        "text": "$data.observaciones.length"
+                      },
+                      "props": {
+                        "size": "xs",
+                        "tone": "muted"
+                      }
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "PhotoDropZone",
+          "style": "panel",
+          "props": {
+            "capture": "environment",
+            "lines": [
+              "Tomar foto",
+              "o",
+              "Arrastra tu\nfoto aquí"
+            ]
+          }
+        }
+      ]
+    }
+  ],
+  "dataSources": {
+    "observaciones": {
+      "kind": "collection",
+      "name": "observaciones",
+      "contract": "observacion"
+    }
+  }
+}

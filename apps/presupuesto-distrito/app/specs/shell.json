@@ -1,0 +1,60 @@
+{
+  "version": 1,
+  "children": [
+    {
+      "type": "Header",
+      "props": {
+        "showMenu": false,
+        "showColorMode": true,
+        "variant": "text",
+        "leftItems": [
+          {
+            "label": "$t.nav.mapa",
+            "to": "/"
+          },
+          {
+            "label": "$t.nav.propuestas",
+            "to": "/propuestas"
+          },
+          {
+            "label": "$t.nav.resultados",
+            "to": "/resultados"
+          },
+          {
+            "label": "$t.nav.acerca",
+            "to": "/acerca"
+          }
+        ]
+      },
+      "children": [
+        {
+          "slot": "right",
+          "type": "Tabs",
+          "props": {
+            "options": [
+              {
+                "label": "ES",
+                "value": "es"
+              },
+              {
+                "label": "EN",
+                "value": "en"
+              }
+            ]
+          },
+          "bind": {
+            "modelValue": "$locale"
+          },
+          "on": {
+            "update:modelValue": {
+              "call": "setLocale"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "type": "Outlet"
+    }
+  ]
+}

@@ -2,7 +2,7 @@
 // color and glyph used to render them consistently across the map markers,
 // the detail-panel tag chip, and the bottom-bar quick filters.
 
-export interface CategoryMeta {
+interface CategoryMeta {
   // Vivid accent, used for the marker ring/glyph and (in dark mode) chip text.
   color: string
   icon: string
@@ -39,7 +39,7 @@ function withInk(raw: RawMeta): CategoryMeta {
   return { ...raw, ink: darken(raw.color) }
 }
 
-export const CATEGORY_META: Record<string, CategoryMeta> = Object.fromEntries(
+const CATEGORY_META: Record<string, CategoryMeta> = Object.fromEntries(
   Object.entries(RAW).map(([tag, raw]) => [tag, withInk(raw)]),
 )
 

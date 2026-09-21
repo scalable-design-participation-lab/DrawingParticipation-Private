@@ -22,14 +22,15 @@ const props = defineProps<{
 }>()
 
 const emit = defineEmits<{
-  (e: 'toolClick', index: number): void
+  // The pressed tool itself (plus its index), so a page can act on what it
+  // means rather than on a position in the list.
+  (e: 'toolClick', tool: Tool & { index: number }): void
 }>()
 
 function handleToolClick(index: number) {
-  if (props.tools[index].action) {
-    props.tools[index].action!()
-  }
-  emit('toolClick', index)
+  const tool = props.tools[index]
+  tool.action?.()
+  emit('toolClick', { ...tool, index })
 }
 </script>
 

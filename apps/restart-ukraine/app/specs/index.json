@@ -1,0 +1,1369 @@
+{
+  "version": 1,
+  "state": {
+    "loading": true,
+    "mapType": "vector",
+    "menuOpen": false,
+    "supportOpen": false,
+    "showDownload": false,
+    "onboarding": true,
+    "registration": false,
+    "needsRegistration": true,
+    "user": null,
+    "returning": false,
+    "form": {},
+    "formErrors": {},
+    "features": [],
+    "draw": null,
+    "selected": null,
+    "step": {
+      "space": 1,
+      "belonging": 1,
+      "safety": 1,
+      "environment": 1
+    },
+    "thanks": false
+  },
+  "children": [
+    {
+      "type": "LoadingScreen",
+      "if": "$state.loading",
+      "on": {
+        "done": {
+          "set": "loading",
+          "value": false
+        }
+      },
+      "props": {
+        "title": "Завантаження карти",
+        "message": "Будь ласка, зачекайте...",
+        "steps": [
+          "Ініціалізація...",
+          "Завантаження карти...",
+          "Підготовка даних...",
+          "Майже готово..."
+        ]
+      }
+    },
+    {
+      "type": "Panel",
+      "style": "sidebar",
+      "props": {
+        "variant": "card",
+        "padding": "sm"
+      },
+      "children": [
+        {
+          "type": "Stack",
+          "props": {
+            "gap": "sm"
+          },
+          "children": [
+            {
+              "type": "Accordion",
+              "props": {
+                "items": [
+                  {
+                    "label": "Середовище",
+                    "defaultOpen": true
+                  },
+                  {
+                    "label": "Приналежність"
+                  },
+                  {
+                    "label": "Безпека"
+                  },
+                  {
+                    "label": "Екологія"
+                  }
+                ]
+              },
+              "children": [
+                {
+                  "slot": "item-0",
+                  "type": "StepCard",
+                  "props": {
+                    "steps": [
+                      {
+                        "title": "Позначте місця, які ви відвідували навколо р. Тяжилівка",
+                        "text": "Оберіть частоту відвідування за допомогою кнопки нижче, а потім позначте відповідні місця на мапі. Натисніть на іконку «Плюс», щоб додати коментарі та розповісти, з ким та з якою метою ви відвідували ці локації.",
+                        "buttons": [
+                          {
+                            "label": "щодня",
+                            "color": "blue",
+                            "variant": "outline",
+                            "value": {
+                              "type": "Point",
+                              "frequency": "every day",
+                              "color": "#0000FF"
+                            }
+                          },
+                          {
+                            "label": "щотижня",
+                            "color": "green",
+                            "variant": "outline",
+                            "value": {
+                              "type": "Point",
+                              "frequency": "every week",
+                              "color": "#00FF00"
+                            }
+                          },
+                          {
+                            "label": "інколи",
+                            "color": "purple",
+                            "variant": "outline",
+                            "value": {
+                              "type": "Point",
+                              "frequency": "sometimes",
+                              "color": "#800080"
+                            }
+                          },
+                          {
+                            "label": "лише раз",
+                            "color": "yellow",
+                            "variant": "outline",
+                            "value": {
+                              "type": "Point",
+                              "frequency": "only once",
+                              "color": "#B2FB4C"
+                            }
+                          },
+                          {
+                            "label": "ніколи",
+                            "color": "red",
+                            "variant": "outline",
+                            "value": {
+                              "type": "Point",
+                              "frequency": "never",
+                              "color": "#FF0000"
+                            }
+                          }
+                        ]
+                      },
+                      {
+                        "title": "Позначте місця для дозвілля навколо р. Тяжилівка",
+                        "text": "Натисніть «Додати» і виділіть територію на мапі, де хочете проводити час у майбутньому — відпочивати з друзями, гуляти з собакою тощо. Щоб зберегти результат, двічі натисніть на виділену зону.",
+                        "buttons": [
+                          {
+                            "label": "додати",
+                            "color": "primary",
+                            "value": {
+                              "type": "Polygon"
+                            }
+                          }
+                        ]
+                      },
+                      {
+                        "title": "Позначте дороги, які ведуть до р. Тяжилівка",
+                        "text": "Щоб зручніше позначити місця, наблизьте мапу за допомогою масштабування та натисніть «Додати». Далі у кілька натискань відмітьте всі відомі вам дороги до річки.",
+                        "buttons": [
+                          {
+                            "label": "додати",
+                            "color": "red",
+                            "value": {
+                              "type": "LineString",
+                              "color": "red"
+                            }
+                          }
+                        ]
+                      },
+                      {
+                        "title": "Позначте на мапі місця навколо р. Тяжилівка, де ви стикалися з перешкодами",
+                        "text": "За допомогою іконки нижче вкажіть, де ви зустрічали перепони на шляху на кшталт розбитої дороги, непрохідного лісу тощо. Після цього переходьте до розділу «Приналежність».",
+                        "iconGrid": {
+                          "icons": [
+                            {
+                              "name": "prohibit",
+                              "src": "/icons/prohibit.svg",
+                              "tooltip": "Місця, які потрібно заборонити",
+                              "value": {
+                                "type": "Point",
+                                "isProhibit": true
+                              }
+                            }
+                          ]
+                        }
+                      }
+                    ]
+                  },
+                  "bind": {
+                    "step": "$state.step.space"
+                  },
+                  "on": {
+                    "update:step": {
+                      "set": "step.space"
+                    },
+                    "select": {
+                      "set": "draw"
+                    }
+                  }
+                },
+                {
+                  "slot": "item-1",
+                  "type": "StepCard",
+                  "props": {
+                    "steps": [
+                      {
+                        "title": "Поділіться думкою про місця навколо р. Тяжилівка",
+                        "text": "Оберіть іконку (навівши на неї, побачити підказку) та позначте на мапі місця, які вам подобаються, не подобаються або які викликають відчуття спокою. Додайте коментар із поясненням, і після цього переходьте до розділу «Безпека».",
+                        "iconGrid": {
+                          "icons": [
+                            {
+                              "name": "dislike",
+                              "src": "/icons/dislike.svg",
+                              "tooltip": "місця, які не подобаються",
+                              "value": {
+                                "type": "Point",
+                                "iconName": "dislike"
+                              }
+                            },
+                            {
+                              "name": "heart",
+                              "src": "/icons/heart.svg",
+                              "tooltip": "місця, які подобаються",
+                              "value": {
+                                "type": "Point",
+                                "iconName": "heart"
+                              }
+                            },
+                            {
+                              "name": "smile",
+                              "src": "/icons/smile.svg",
+                              "tooltip": "Спогади",
+                              "value": {
+                                "type": "Point",
+                                "iconName": "smile"
+                              }
+                            }
+                          ]
+                        }
+                      }
+                    ]
+                  },
+                  "bind": {
+                    "step": "$state.step.belonging"
+                  },
+                  "on": {
+                    "update:step": {
+                      "set": "step.belonging"
+                    },
+                    "select": {
+                      "set": "draw"
+                    }
+                  }
+                },
+                {
+                  "slot": "item-2",
+                  "type": "StepCard",
+                  "props": {
+                    "steps": [
+                      {
+                        "title": "Поділіться думкою про рівень безпеки навколо р. Тяжилівка",
+                        "text": "Оберіть іконку (навівши на неї, побачите підказку) та позначте на мапі місця, які вам подобаються, не подобаються або пов'язані із певними спогадами. Додайте коментар із поясненням, і після цього переходьте до розділу «Екологія».",
+                        "iconGrid": {
+                          "icons": [
+                            {
+                              "name": "broken",
+                              "src": "/icons/broken.svg",
+                              "tooltip": "місця, де вам небезпечно",
+                              "value": {
+                                "type": "Point",
+                                "iconName": "broken"
+                              }
+                            },
+                            {
+                              "name": "calm",
+                              "src": "/icons/calm.svg",
+                              "tooltip": "місця, де вам спокійно",
+                              "value": {
+                                "type": "Point",
+                                "iconName": "calm"
+                              }
+                            },
+                            {
+                              "name": "lock",
+                              "src": "/icons/lock.svg",
+                              "tooltip": "місця, де вам безпечно",
+                              "value": {
+                                "type": "Point",
+                                "iconName": "lock"
+                              }
+                            }
+                          ]
+                        }
+                      }
+                    ]
+                  },
+                  "bind": {
+                    "step": "$state.step.safety"
+                  },
+                  "on": {
+                    "update:step": {
+                      "set": "step.safety"
+                    },
+                    "select": {
+                      "set": "draw"
+                    }
+                  }
+                },
+                {
+                  "slot": "item-3",
+                  "type": "StepCard",
+                  "props": {
+                    "steps": [
+                      {
+                        "title": "Поділіться думкою про рівень засміченості навколо р. Тяжилівка",
+                        "text": "Оберіть іконку (навівши на неї, побачити підказку) та позначте на мапі місця, де ви помічали сміття — навкруги річки та у воді. Додайте коментар із поясненням, і після цього натисніть стрілку «Вправо».",
+                        "iconGrid": {
+                          "icons": [
+                            {
+                              "name": "trash",
+                              "src": "/icons/trash.svg",
+                              "tooltip": "сміття навколо",
+                              "value": {
+                                "type": "Point",
+                                "iconName": "trash"
+                              }
+                            },
+                            {
+                              "name": "pollution",
+                              "src": "/icons/pollution.svg",
+                              "tooltip": "сміття у воді",
+                              "value": {
+                                "type": "Point",
+                                "iconName": "pollution"
+                              }
+                            }
+                          ]
+                        }
+                      },
+                      {
+                        "title": "Поділіться думкою про рівень засміченості р. Тяжилівка",
+                        "text": "Оберіть іконку (навівши на неї, побачити підказку) та позначте на мапі місця, де ви зустрічали незвичні рослини та тварин. Додайте коментар із поясненням, і після цього натисніть «Завершити».",
+                        "iconGrid": {
+                          "icons": [
+                            {
+                              "name": "leaf",
+                              "src": "/icons/leaf.svg",
+                              "tooltip": "місця з цікавими тваринами і рослинами",
+                              "value": {
+                                "type": "Point",
+                                "iconName": "leaf"
+                              }
+                            }
+                          ]
+                        }
+                      }
+                    ]
+                  },
+                  "bind": {
+                    "step": "$state.step.environment"
+                  },
+                  "on": {
+                    "update:step": {
+                      "set": "step.environment"
+                    },
+                    "select": {
+                      "set": "draw"
+                    }
+                  }
+                }
+              ]
+            },
+            {
+              "type": "Stack",
+              "props": {
+                "direction": "row",
+                "justify": "end"
+              },
+              "children": [
+                {
+                  "type": "Button",
+                  "props": {
+                    "color": "black"
+                  },
+                  "style": "pill-button",
+                  "text": "завершити",
+                  "on": {
+                    "click": [
+                      {
+                        "call": "saveProject",
+                        "payload": null,
+                        "args": "$state.features"
+                      },
+                      {
+                        "set": "thanks",
+                        "value": true
+                      }
+                    ]
+                  }
+                }
+              ]
+            },
+            {
+              "type": "Text",
+              "if": "$errors.saveProject",
+              "bind": {
+                "text": "$errors.saveProject"
+              },
+              "props": {
+                "size": "xs",
+                "tone": "accent"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "BackgroundMap",
+      "bind": {
+        "mapType": "$state.mapType"
+      },
+      "children": [
+        {
+          "slot": "layers",
+          "type": "FeatureLayer",
+          "props": {
+            "icons": {
+              "every day": "/icons/blue.svg",
+              "every week": "/icons/green.svg",
+              "sometimes": "/icons/purple.svg",
+              "only once": "/icons/yellow.svg",
+              "once": "/icons/yellow.svg",
+              "never": "/icons/red.svg",
+              "prohibit": "/icons/prohibit.svg",
+              "heart": "/icons/heart.svg",
+              "love": "/icons/heart.svg",
+              "smile": "/icons/smile.svg",
+              "positive": "/icons/smile.svg",
+              "dislike": "/icons/dislike.svg",
+              "negative": "/icons/dislike.svg",
+              "broken": "/icons/broken.svg",
+              "unsafe": "/icons/broken.svg",
+              "calm": "/icons/calm.svg",
+              "safe": "/icons/calm.svg",
+              "lock": "/icons/lock.svg",
+              "great": "/icons/lock.svg",
+              "trash": "/icons/trash.svg",
+              "pollution": "/icons/pollution.svg",
+              "leaf": "/icons/leaf.svg",
+              "flora-fauna": "/icons/leaf.svg",
+              "default": "/icons/red.svg",
+              "everyday": "/icons/blue.svg",
+              "everyweek": "/icons/green.svg"
+            },
+            "labels": {
+              "prohibit": "Заборонена зона",
+              "pollution": "Точка забруднення",
+              "leaf": "Зелена зона",
+              "flora-fauna": "Флора та фауна",
+              "lock": "Безпечна зона",
+              "great": "Дуже безпечна зона",
+              "calm": "Спокійна зона",
+              "safe": "Безпечна територія",
+              "broken": "Небезпечна зона",
+              "unsafe": "Небезпечна територія",
+              "dislike": "Не подобається",
+              "negative": "Негативне",
+              "heart": "Улюблене",
+              "love": "Улюблене місце",
+              "smile": "Щасливе місце",
+              "positive": "Позитивне",
+              "trash": "Сміття",
+              "every day": "Щоденне відвідування",
+              "everyday": "Щоденне відвідування",
+              "every week": "Щотижневе відвідування",
+              "everyweek": "Щотижневе відвідування",
+              "sometimes": "Випадкове відвідування",
+              "only once": "Одноразове відвідування",
+              "once": "Одноразове відвідування",
+              "never": "Ніколи не відвідував"
+            },
+            "defaultLabel": "Деталі локації",
+            "confirmDelete": "Ви впевнені, що хочете видалити цю відмітку?",
+            "editable": true,
+            "deletable": true
+          },
+          "bind": {
+            "features": "$state.features",
+            "draw": "$state.draw"
+          },
+          "on": {
+            "update:features": {
+              "set": "features"
+            },
+            "update:draw": {
+              "set": "draw"
+            },
+            "open": {
+              "set": "selected"
+            }
+          }
+        },
+        {
+          "slot": "overlays",
+          "type": "MarkerOverlay",
+          "props": {
+            "positionKey": "position",
+            "lonLat": false,
+            "positioning": "bottom-center",
+            "stopEvent": true
+          },
+          "bind": {
+            "item": "$state.selected"
+          },
+          "item": {
+            "type": "Panel",
+            "props": {
+              "variant": "card",
+              "padding": "sm"
+            },
+            "children": [
+              {
+                "type": "FormFields",
+                "props": {
+                  "fields": [
+                    {
+                      "name": "comment",
+                      "type": "textarea",
+                      "rows": 3,
+                      "placeholder": "напишіть коментар"
+                    }
+                  ],
+                  "submitLabel": "Зберегти",
+                  "gap": "gap-2"
+                },
+                "bind": {
+                  "modelValue": "$state.selected"
+                },
+                "on": {
+                  "update:modelValue": {
+                    "set": "selected"
+                  },
+                  "submit": [
+                    {
+                      "call": "updateItem",
+                      "args": "features"
+                    },
+                    {
+                      "set": "selected",
+                      "value": null
+                    }
+                  ]
+                }
+              },
+              {
+                "type": "Button",
+                "props": {
+                  "variant": "ghost",
+                  "color": "black",
+                  "size": "xs"
+                },
+                "text": "Закрити",
+                "on": {
+                  "click": {
+                    "set": "selected",
+                    "value": null
+                  }
+                }
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "type": "Header",
+      "props": {
+        "leftItems": [
+          {
+            "label": "Drawing Participation",
+            "to": "/about/"
+          },
+          {
+            "label": "Гуртомá",
+            "to": "/about/"
+          }
+        ],
+        "rightItems": [
+          {
+            "icon": "i-heroicons-arrow-down-tray-20-solid",
+            "onClick": {
+              "$action": {
+                "set": "showDownload",
+                "value": true
+              }
+            }
+          }
+        ]
+      },
+      "on": {
+        "menu": {
+          "set": "menuOpen",
+          "value": true
+        }
+      },
+      "children": [
+        {
+          "slot": "right",
+          "type": "MapTypeToggle",
+          "bind": {
+            "modelValue": "$state.mapType"
+          },
+          "on": {
+            "update:modelValue": {
+              "set": "mapType"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "type": "Modal",
+      "props": {
+        "size": "sm"
+      },
+      "bind": {
+        "modelValue": "$state.menuOpen"
+      },
+      "on": {
+        "update:modelValue": {
+          "set": "menuOpen"
+        }
+      },
+      "children": [
+        {
+          "type": "Stack",
+          "props": {
+            "direction": "column",
+            "gap": "sm"
+          },
+          "children": [
+            {
+              "type": "Button",
+              "props": {
+                "block": true,
+                "color": "white",
+                "variant": "solid",
+                "to": "/"
+              },
+              "style": "menu-item",
+              "text": "Головна",
+              "on": {
+                "click": [
+                  {
+                    "set": "menuOpen",
+                    "value": false
+                  }
+                ]
+              }
+            },
+            {
+              "type": "Button",
+              "props": {
+                "block": true,
+                "color": "white",
+                "variant": "solid",
+                "to": "/about"
+              },
+              "style": "menu-item",
+              "text": "Про нас",
+              "on": {
+                "click": [
+                  {
+                    "set": "menuOpen",
+                    "value": false
+                  }
+                ]
+              }
+            },
+            {
+              "type": "Button",
+              "props": {
+                "block": true,
+                "color": "white",
+                "variant": "solid"
+              },
+              "style": "menu-item",
+              "text": "Підтримка",
+              "on": {
+                "click": [
+                  {
+                    "set": "menuOpen",
+                    "value": false
+                  },
+                  {
+                    "set": "supportOpen",
+                    "value": true
+                  }
+                ]
+              }
+            },
+            {
+              "type": "Button",
+              "props": {
+                "block": true,
+                "color": "white",
+                "variant": "solid",
+                "to": "/result"
+              },
+              "style": "menu-item",
+              "text": "Результати",
+              "on": {
+                "click": [
+                  {
+                    "set": "menuOpen",
+                    "value": false
+                  }
+                ]
+              }
+            },
+            {
+              "type": "Button",
+              "props": {
+                "block": true,
+                "color": "white",
+                "variant": "solid",
+                "to": "/dashboard"
+              },
+              "style": "menu-item",
+              "text": "приладова панель",
+              "on": {
+                "click": [
+                  {
+                    "set": "menuOpen",
+                    "value": false
+                  }
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "Footer",
+      "on": {
+        "support": {
+          "set": "supportOpen",
+          "value": true
+        }
+      }
+    },
+    {
+      "type": "Modal",
+      "props": {
+        "title": "Допомога",
+        "size": "lg",
+        "closable": true,
+        "buttonLabel": "Повернутися до карти"
+      },
+      "bind": {
+        "modelValue": "$state.supportOpen"
+      },
+      "on": {
+        "update:modelValue": {
+          "set": "supportOpen"
+        }
+      },
+      "children": [
+        {
+          "type": "Stack",
+          "props": {
+            "gap": "md"
+          },
+          "children": [
+            {
+              "type": "Text",
+              "props": {
+                "text": "«Гуртомá» — проєкт зі спільного створення мапи завдяки містянам, який дозволяє дослідити питання використання й ставлення до навколишнього простору."
+              }
+            },
+            {
+              "type": "Stack",
+              "props": {
+                "gap": "xs"
+              },
+              "children": [
+                {
+                  "type": "Text",
+                  "props": {
+                    "as": "h3",
+                    "size": "md",
+                    "weight": "medium",
+                    "text": "Ключові особливості:"
+                  }
+                },
+                {
+                  "type": "ul",
+                  "style": "bullets",
+                  "children": [
+                    {
+                      "type": "li",
+                      "text": "Малюйте та позначайте місця, які ви відвідуєте та використовуєте для певної мети"
+                    },
+                    {
+                      "type": "li",
+                      "text": "Діліться своїм досвідом про відчуття безпеки та єдності"
+                    },
+                    {
+                      "type": "li",
+                      "text": "Робіть внесок у захист довкілля"
+                    },
+                    {
+                      "type": "li",
+                      "text": "Знайомтесь з думкою спільноти"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "Text",
+              "props": {
+                "text": "Як долучитися: Використовуйте інструменти на лівій панелі збоку, щоб позначати місця та ділитися своїм досвідом. Ваш внесок дозволить краще зрозуміти, в якому стані міський простір та як його покращити."
+              }
+            },
+            {
+              "type": "Text",
+              "children": [
+                {
+                  "type": "span",
+                  "text": "Будь ласка, "
+                },
+                {
+                  "type": "a",
+                  "props": {
+                    "href": "https://forms.gle/6d8GuBSPaingSR4L6",
+                    "target": "_blank"
+                  },
+                  "style": "link",
+                  "text": "заповніть форму"
+                },
+                {
+                  "type": "span",
+                  "text": ", якщо бажаєте залишити відгук про платформу."
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "Modal",
+      "props": {
+        "title": "Ласкаво просимо до Гуртома́!",
+        "align": "center",
+        "size": "md"
+      },
+      "bind": {
+        "modelValue": "$state.onboarding"
+      },
+      "on": {
+        "update:modelValue": {
+          "set": "onboarding"
+        }
+      },
+      "children": [
+        {
+          "type": "Stack",
+          "props": {
+            "gap": "lg"
+          },
+          "children": [
+            {
+              "type": "Text",
+              "props": {
+                "align": "center",
+                "text": "Гуртома́ — платформа, яка допомагає змінювати українські міста на краще."
+              }
+            },
+            {
+              "type": "Stack",
+              "props": {
+                "gap": "sm"
+              },
+              "children": [
+                {
+                  "type": "Stack",
+                  "props": {
+                    "direction": "row",
+                    "gap": "sm",
+                    "align": "start"
+                  },
+                  "children": [
+                    {
+                      "type": "Icon",
+                      "props": {
+                        "name": "i-heroicons-map"
+                      },
+                      "style": "feature-icon"
+                    },
+                    {
+                      "type": "Text",
+                      "props": {
+                        "align": "left",
+                        "text": "Досліджуйте мапу та діліться думкою про місця навколо річки Тяжилівка"
+                      }
+                    }
+                  ]
+                },
+                {
+                  "type": "Stack",
+                  "props": {
+                    "direction": "row",
+                    "gap": "sm",
+                    "align": "start"
+                  },
+                  "children": [
+                    {
+                      "type": "Icon",
+                      "props": {
+                        "name": "i-heroicons-chat-bubble-left-right"
+                      },
+                      "style": "feature-icon"
+                    },
+                    {
+                      "type": "Text",
+                      "props": {
+                        "align": "left",
+                        "text": "Беріть участь в обговореннях з іншими користувачами"
+                      }
+                    }
+                  ]
+                },
+                {
+                  "type": "Stack",
+                  "props": {
+                    "direction": "row",
+                    "gap": "sm",
+                    "align": "start"
+                  },
+                  "children": [
+                    {
+                      "type": "Icon",
+                      "props": {
+                        "name": "i-heroicons-camera"
+                      },
+                      "style": "feature-icon"
+                    },
+                    {
+                      "type": "Text",
+                      "props": {
+                        "align": "left",
+                        "text": "Додавайте коментарі, щоб поділитися спогадами та ідеями для покращення річки"
+                      }
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "Stack",
+              "props": {
+                "direction": "row",
+                "justify": "center"
+              },
+              "children": [
+                {
+                  "type": "Button",
+                  "props": {
+                    "color": "black"
+                  },
+                  "style": "pill-button",
+                  "text": "Розпочати реєстрацію",
+                  "on": {
+                    "click": [
+                      {
+                        "set": "onboarding",
+                        "value": false
+                      },
+                      {
+                        "set": "registration",
+                        "value": true
+                      }
+                    ]
+                  }
+                }
+              ]
+            },
+            {
+              "type": "Text",
+              "props": {
+                "size": "xs",
+                "tone": "muted",
+                "align": "center"
+              },
+              "children": [
+                {
+                  "type": "span",
+                  "text": "Гуртомá – це спільний проєкт "
+                },
+                {
+                  "type": "a",
+                  "props": {
+                    "href": "https://www.restartfuture.org/",
+                    "target": "_blank"
+                  },
+                  "style": "link",
+                  "text": "Restart"
+                },
+                {
+                  "type": "span",
+                  "text": " та "
+                },
+                {
+                  "type": "a",
+                  "props": {
+                    "href": "https://northeastern.edu",
+                    "target": "_blank"
+                  },
+                  "style": "link",
+                  "text": "Northeastern University"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "Modal",
+      "props": {
+        "title": "реєстрація",
+        "align": "center",
+        "size": "md"
+      },
+      "bind": {
+        "modelValue": "$state.registration"
+      },
+      "on": {
+        "update:modelValue": {
+          "set": "registration"
+        }
+      },
+      "children": [
+        {
+          "type": "Stack",
+          "props": {
+            "gap": "md"
+          },
+          "children": [
+            {
+              "type": "Text",
+              "props": {
+                "align": "left",
+                "text": "Щоб взяти участь у Гуртома́, дайте відповіді на запитання"
+              }
+            },
+            {
+              "type": "FormFields",
+              "props": {
+                "fields": [
+                  {
+                    "name": "lastname",
+                    "label": "Прізвище",
+                    "placeholder": "Вкажіть своє прізвище"
+                  },
+                  {
+                    "name": "firstname",
+                    "label": "Ім'я",
+                    "placeholder": "Вкажіть своє ім'я"
+                  },
+                  {
+                    "name": "age",
+                    "label": "Вік",
+                    "type": "number",
+                    "placeholder": "Вкажіть свій вік"
+                  },
+                  {
+                    "name": "gender",
+                    "label": "Стать",
+                    "type": "select",
+                    "placeholder": "Оберіть свою стать",
+                    "options": [
+                      {
+                        "label": "Чоловік",
+                        "value": "male"
+                      },
+                      {
+                        "label": "Жінка",
+                        "value": "female"
+                      },
+                      {
+                        "label": "Інше",
+                        "value": "other"
+                      }
+                    ]
+                  },
+                  {
+                    "name": "educationLevel",
+                    "label": "Рівень освіти",
+                    "type": "select",
+                    "placeholder": "Оберіть свій рівень освіти",
+                    "options": [
+                      {
+                        "label": "Середня",
+                        "value": "average"
+                      },
+                      {
+                        "label": "Неповна вища",
+                        "value": "incomplete_higher"
+                      },
+                      {
+                        "label": "Вища",
+                        "value": "higher"
+                      }
+                    ]
+                  },
+                  {
+                    "name": "residentSince",
+                    "label": "Скільки ви мешкаєте у Вінниці",
+                    "type": "select",
+                    "placeholder": "Напишіть, скільки років ви проживаєте у місті",
+                    "options": [
+                      {
+                        "label": "Менш як 1 рік",
+                        "value": "less_than_1_year"
+                      },
+                      {
+                        "label": "1-5 років",
+                        "value": "1_5_years"
+                      },
+                      {
+                        "label": "5-10 років",
+                        "value": "5_10_years"
+                      },
+                      {
+                        "label": "Понад 10 років",
+                        "value": "more_than_10_years"
+                      }
+                    ]
+                  },
+                  {
+                    "name": "residentNearRiverSince",
+                    "label": "Ви живете біля річки Тяжилівка",
+                    "type": "select",
+                    "placeholder": "Оберіть, чи живете ви біля річки Тяжилівка",
+                    "options": [
+                      {
+                        "label": "Так",
+                        "value": "yes"
+                      },
+                      {
+                        "label": "Ні",
+                        "value": "no"
+                      },
+                      {
+                        "label": "Вперше чую про неї",
+                        "value": "unfamiliar"
+                      }
+                    ]
+                  }
+                ],
+                "submitLabel": "перейти до карти",
+                "gap": "gap-3"
+              },
+              "bind": {
+                "modelValue": "$state.form",
+                "errors": "$state.formErrors"
+              },
+              "on": {
+                "update:modelValue": {
+                  "set": "form"
+                },
+                "submit": [
+                  {
+                    "call": "register"
+                  },
+                  {
+                    "set": "registration",
+                    "value": false
+                  },
+                  {
+                    "set": "needsRegistration",
+                    "value": false
+                  }
+                ]
+              }
+            },
+            {
+              "type": "Text",
+              "if": "$errors.register",
+              "bind": {
+                "text": "$errors.register"
+              },
+              "props": {
+                "size": "xs",
+                "tone": "accent"
+              }
+            },
+            {
+              "type": "Text",
+              "props": {
+                "size": "xs",
+                "tone": "muted",
+                "align": "left",
+                "text": "Беручи участь у цьому опитуванні, ви погоджуєтесь на збір, обробку та використання ваших відповідей у дослідницьких цілях відповідно до чинного законодавства України. Ваші персональні дані залишаються конфіденційними та не передаватимуться третім особам без вашої згоди, за винятком випадків, передбачених законом. Зверніть увагу, що надані вами медіафайли чи коментарі можуть бути опубліковані для загального доступу. Участь у дослідженні є добровільною, і ви можете припинити її у будь-який момент."
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "Modal",
+      "props": {
+        "title": "Ласкаво просимо",
+        "align": "center",
+        "buttonLabel": "Продовжити"
+      },
+      "bind": {
+        "modelValue": "$state.returning"
+      },
+      "on": {
+        "update:modelValue": {
+          "set": "returning"
+        }
+      },
+      "children": [
+        {
+          "type": "Stack",
+          "props": {
+            "gap": "sm"
+          },
+          "children": [
+            {
+              "type": "Text",
+              "props": {
+                "align": "center",
+                "text": "Рада бачити вас знову на платформі Гуртомá!"
+              }
+            },
+            {
+              "type": "Text",
+              "bind": {
+                "text": "$state.user.name.firstname"
+              },
+              "props": {
+                "size": "sm",
+                "tone": "muted",
+                "align": "center"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "div",
+      "if": "$state.needsRegistration",
+      "style": "overlay",
+      "on": {
+        "click": {
+          "set": "registration",
+          "value": true
+        }
+      }
+    },
+    {
+      "type": "Modal",
+      "props": {
+        "title": "Доступ до відкритих даних",
+        "align": "center",
+        "size": "md",
+        "buttonLabel": "Повернутися до карти",
+        "text": "Ми працюємо над тим, щоб дані, створені на платформі, стали відкритими та доступними для всіх. Повертайтеся незабаром, щоб перевірити оновлення."
+      },
+      "bind": {
+        "modelValue": "$state.showDownload"
+      },
+      "on": {
+        "update:modelValue": {
+          "set": "showDownload"
+        }
+      }
+    },
+    {
+      "type": "Modal",
+      "props": {
+        "title": "Дякуємо за участь!",
+        "align": "center",
+        "size": "lg"
+      },
+      "bind": {
+        "modelValue": "$state.thanks"
+      },
+      "on": {
+        "update:modelValue": {
+          "set": "thanks"
+        }
+      },
+      "children": [
+        {
+          "type": "Stack",
+          "props": {
+            "gap": "md"
+          },
+          "children": [
+            {
+              "type": "Text",
+              "props": {
+                "text": "Дякуємо за участь в опитуванні. Завдяки вам ми на крок ближче до оновлення території навколо річки Тяжилівка."
+              }
+            },
+            {
+              "type": "Text",
+              "props": {
+                "text": "Запрошуйте друзів реєструватись на платформі та дивіться результати інших учасників."
+              }
+            },
+            {
+              "type": "Stack",
+              "props": {
+                "direction": "row",
+                "justify": "center"
+              },
+              "children": [
+                {
+                  "type": "Button",
+                  "props": {
+                    "color": "black"
+                  },
+                  "style": "pill-button",
+                  "text": "Переглянути результати",
+                  "on": {
+                    "click": [
+                      {
+                        "set": "thanks",
+                        "value": false
+                      },
+                      {
+                        "navigate": "/result?showIntro=false"
+                      }
+                    ]
+                  }
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "init": [
+    {
+      "call": "checkUser"
+    },
+    {
+      "set": "onboarding",
+      "value": "!$state.returning"
+    },
+    {
+      "set": "needsRegistration",
+      "value": "!$state.returning"
+    }
+  ]
+}

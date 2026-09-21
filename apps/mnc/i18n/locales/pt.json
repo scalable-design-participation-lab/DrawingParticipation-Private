@@ -156,7 +156,7 @@
     "errRegisterIncomplete": "Seu login foi criado, mas ainda não pôde ser listado para revisão. Entre novamente mais tarde ou contate um administrador.",
     "errEmailInUseRegister": "Este e-mail já possui um login — mude para “Entrar”. Seu registro é concluído automaticamente ao entrar.",
     "pendingTitle": "Sua conta está registrada",
-    "pendingBody": "Conectado como {email}. Um administrador precisa conceder o acesso de moderação antes que você possa revisar envios.",
+    "pendingBody": "Um administrador precisa conceder o acesso de moderação antes que você possa revisar envios.",
     "yourUid": "ID da sua conta (UID)",
     "copyUid": "Copiar ID da conta",
     "bootstrapToggle": "Configurando o primeiro administrador?",
@@ -195,10 +195,11 @@
     "sendReset": "Enviar e-mail de redefinição de senha",
     "resetSent": "E-mail de redefinição de senha enviado para {email}.",
     "revoke": "Revogar acesso",
-    "revokeConfirm": "Remover o acesso de moderação de {email}? A pessoa não poderá mais revisar envios nem entrar como moderador.",
+    "revokeConfirm": "Remover o acesso de moderação desta conta? A pessoa não poderá mais revisar envios nem entrar como moderador.",
     "revoked": "Acesso revogado para {email}.",
     "revokeNote": "Administradores podem revisar envios e gerenciar contas; moderadores apenas revisam. Revogar remove todos os direitos de moderação imediatamente.",
-    "errAction": "A ação falhou. Tente novamente."
+    "errAction": "A ação falhou. Tente novamente.",
+    "signedInAs": "Conectado como"
   },
   "contribute": {
     "title": "Participe da Nossa Pesquisa",
@@ -297,5 +298,15 @@
         "description": "Práticas criativas e culturais transmitidas pelas redes móveis."
       }
     }
+  },
+  "loading": {
+    "title": "A carregar o mapa",
+    "message": "Um momento...",
+    "steps": [
+      "A iniciar...",
+      "A carregar o mapa...",
+      "A preparar os dados...",
+      "Quase pronto..."
+    ]
   }
 }

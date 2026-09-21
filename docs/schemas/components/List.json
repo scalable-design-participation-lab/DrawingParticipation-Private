@@ -1,0 +1,183 @@
+{
+  "name": "List",
+  "description": "Repeat the `item` template for every row of `items` (bind to `$data.<source>` or a state list), as a stack or a grid. Inside the template use `$item.<field>`.",
+  "stateful": false,
+  "emits": [],
+  "slots": [
+    "item"
+  ],
+  "props": {
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "type": "object",
+    "properties": {
+      "items": {
+        "description": "Rows to repeat over. A plain object is repeated over its entries instead, each arriving as { key, value } (a row-shaped value is spread, keeping its key).",
+        "anyOf": [
+          {
+            "type": "array",
+            "items": {}
+          },
+          {
+            "type": "object",
+            "propertyNames": {
+              "type": "string"
+            },
+            "additionalProperties": {}
+          }
+        ]
+      },
+      "layout": {
+        "type": "string",
+        "enum": [
+          "stack",
+          "grid"
+        ]
+      },
+      "cols": {
+        "anyOf": [
+          {
+            "type": "number",
+            "const": 1
+          },
+          {
+            "type": "number",
+            "const": 2
+          },
+          {
+            "type": "number",
+            "const": 3
+          },
+          {
+            "type": "number",
+            "const": 4
+          }
+        ]
+      },
+      "gap": {
+        "type": "string",
+        "enum": [
+          "none",
+          "xs",
+          "sm",
+          "md",
+          "lg"
+        ]
+      },
+      "empty": {
+        "description": "Text shown when there are no items",
+        "type": "string"
+      },
+      "filterKey": {
+        "description": "Keep rows whose field equals filterValue (bind filterValue to state; empty = all)",
+        "type": "string"
+      },
+      "filterValue": {},
+      "groupBy": {
+        "description": "Group rows by this key: the item template then repeats per group and gets { value, count, rows }, so a nested List over `$item.rows` renders one group.",
+        "type": "string"
+      },
+      "groupOrder": {
+        "description": "Groups that come first, in this order.",
+        "type": "array",
+        "items": {
+          "type": "string"
+        }
+      },
+      "filterIn": {
+        "description": "Keep rows whose filterKey is in this set: a list, or the { value: boolean } map a checkbox group or an IconBar emits. An empty selection keeps all.",
+        "anyOf": [
+          {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          {
+            "type": "object",
+            "propertyNames": {
+              "type": "string"
+            },
+            "additionalProperties": {
+              "type": "boolean"
+            }
+          },
+          {
+            "type": "null"
+          }
+        ]
+      },
+      "exclude": {
+        "description": "Rows to subtract: keep only those whose excludeBy field appears in none of them, e.g. the registrations that are not already accounts.",
+        "anyOf": [
+          {
+            "type": "array",
+            "items": {}
+          },
+          {
+            "type": "null"
+          }
+        ]
+      },
+      "excludeBy": {
+        "description": "Field compared on both sides of exclude; dotted paths allowed.",
+        "type": "string"
+      },
+      "search": {
+        "description": "Case-insensitive text search (bind to state)",
+        "type": "string"
+      },
+      "searchKeys": {
+        "type": "array",
+        "items": {
+          "type": "string"
+        }
+      },
+      "sortBy": {
+        "type": "string"
+      },
+      "sortDesc": {
+        "type": "boolean"
+      },
+      "near": {
+        "description": "Sort nearest-first from this [lon, lat] and give the item template a `distanceKm`. Bind the state `watchLocation` fills.",
+        "anyOf": [
+          {
+            "type": "array",
+            "prefixItems": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "number"
+              }
+            ],
+            "items": false,
+            "minItems": 2,
+            "maxItems": 2
+          },
+          {
+            "type": "null"
+          }
+        ]
+      },
+      "coordinatesKey": {
+        "description": "Where a row keeps its position (default \"coordinates\"); a dotted path works.",
+        "type": "string"
+      },
+      "coordinates": {
+        "description": "What those numbers are (default \"lonlat\"); map features are usually \"webmercator\".",
+        "type": "string",
+        "enum": [
+          "lonlat",
+          "webmercator"
+        ]
+      },
+      "limit": {
+        "type": "integer",
+        "exclusiveMinimum": 0,
+        "maximum": 9007199254740991
+      }
+    },
+    "additionalProperties": false
+  }
+}

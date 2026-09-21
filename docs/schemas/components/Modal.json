@@ -1,0 +1,72 @@
+{
+  "name": "Modal",
+  "description": "The one modal: title, `text` or children, optional confirm button (`buttonLabel`, emits `confirm` then closes), optional `footer` slot, × when `closable`. Intro, help, menu, thank-you, coming-soon dialogs are all this plus JSON.",
+  "stateful": false,
+  "emits": [
+    "update:modelValue",
+    "close",
+    "confirm"
+  ],
+  "slots": [
+    "default",
+    "footer"
+  ],
+  "props": {
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "type": "object",
+    "properties": {
+      "modelValue": {
+        "type": "boolean"
+      },
+      "title": {
+        "type": "string"
+      },
+      "text": {
+        "type": "string"
+      },
+      "buttonLabel": {
+        "description": "Confirm button label; omit for no button",
+        "type": "string"
+      },
+      "align": {
+        "type": "string",
+        "enum": [
+          "left",
+          "center"
+        ]
+      },
+      "size": {
+        "type": "string",
+        "enum": [
+          "sm",
+          "md",
+          "lg",
+          "xl",
+          "2xl",
+          "3xl"
+        ]
+      },
+      "scroll": {
+        "description": "Cap the height and scroll the body, keeping the title and the button in place.",
+        "type": "boolean"
+      },
+      "closable": {
+        "description": "Show a × in the header",
+        "type": "boolean"
+      },
+      "bodyClass": {
+        "description": "Classes for the body box, e.g. a bordered \"paper\" panel.",
+        "type": "string"
+      },
+      "ui": {
+        "description": "Nuxt UI `ui` override for the underlying UModal.",
+        "type": "object",
+        "propertyNames": {
+          "type": "string"
+        },
+        "additionalProperties": {}
+      }
+    },
+    "additionalProperties": false
+  }
+}

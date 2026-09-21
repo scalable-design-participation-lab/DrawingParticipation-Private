@@ -1,0 +1,62 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "properties": {
+    "lastname": {
+      "type": "string",
+      "minLength": 1
+    },
+    "firstname": {
+      "type": "string",
+      "minLength": 1
+    },
+    "age": {
+      "type": "integer",
+      "exclusiveMinimum": 0,
+      "maximum": 9007199254740991
+    },
+    "gender": {
+      "type": "string",
+      "enum": [
+        "male",
+        "female",
+        "other"
+      ]
+    },
+    "educationLevel": {
+      "type": "string",
+      "enum": [
+        "average",
+        "incomplete_higher",
+        "higher"
+      ]
+    },
+    "residentSince": {
+      "type": "string",
+      "enum": [
+        "less_than_1_year",
+        "1_5_years",
+        "5_10_years",
+        "more_than_10_years"
+      ]
+    },
+    "residentNearRiverSince": {
+      "type": "string",
+      "enum": [
+        "yes",
+        "no",
+        "unfamiliar"
+      ]
+    }
+  },
+  "required": [
+    "lastname",
+    "firstname",
+    "age",
+    "gender",
+    "educationLevel",
+    "residentSince",
+    "residentNearRiverSince"
+  ],
+  "additionalProperties": false
+}

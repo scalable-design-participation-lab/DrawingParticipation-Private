@@ -1,0 +1,1204 @@
+{
+  "version": 1,
+  "state": {
+    "entry": {
+      "descripcion": "",
+      "fecha": "",
+      "hora": ""
+    }
+  },
+  "children": [
+    {
+      "type": "div",
+      "style": "legend-layout",
+      "children": [
+        {
+          "type": "Stack",
+          "style": "legend-panel",
+          "props": {
+            "gap": "md",
+            "as": "section"
+          },
+          "children": [
+            {
+              "type": "div",
+              "children": [
+                {
+                  "type": "div",
+                  "style": "legend-example",
+                  "children": [
+                    {
+                      "type": "Glyph",
+                      "props": {
+                        "size": 300,
+                        "labels": true,
+                        "viewBox": "0 0 160 160",
+                        "parts": [
+                          {
+                            "mode": "spiral",
+                            "at": [
+                              30,
+                              30
+                            ],
+                            "value": "$data.example.0.humedad",
+                            "suffix": "%",
+                            "turns": [
+                              2,
+                              6
+                            ],
+                            "max": 100,
+                            "radius": 46,
+                            "accent": true,
+                            "label": "HUMEDAD"
+                          },
+                          {
+                            "mode": "ticks",
+                            "at": [
+                              30,
+                              30
+                            ],
+                            "length": 72,
+                            "count": 11
+                          },
+                          {
+                            "kind": "nubes",
+                            "value": "$data.example.0.nubes",
+                            "at": [
+                              8,
+                              4
+                            ],
+                            "size": 28,
+                            "label": "NUBES"
+                          },
+                          {
+                            "kind": "lluvia",
+                            "value": "$data.example.0.lluvia",
+                            "at": [
+                              6,
+                              50
+                            ],
+                            "size": 24,
+                            "label": "LLUVIA"
+                          },
+                          {
+                            "kind": "viento",
+                            "value": "$data.example.0.viento",
+                            "at": [
+                              6,
+                              100
+                            ],
+                            "size": 28,
+                            "label": "VIENTO",
+                            "rotate": {
+                              "suave": 0,
+                              "leve": 15,
+                              "moderada": 55,
+                              "fuerte": 85
+                            }
+                          },
+                          {
+                            "kind": "olor",
+                            "value": "$data.example.0.olor",
+                            "at": [
+                              126,
+                              4
+                            ],
+                            "size": 28,
+                            "label": "OLOR"
+                          },
+                          {
+                            "mode": "repeat",
+                            "kind": "temperatura",
+                            "value": "$data.example.0.temperatura",
+                            "at": [
+                              116,
+                              112
+                            ],
+                            "size": 40,
+                            "per": 2,
+                            "columns": 5,
+                            "step": 7.5,
+                            "suffix": "°C",
+                            "label": "TEMPERATURA"
+                          }
+                        ]
+                      },
+                      "bind": {
+                        "shapes": "$data.glyph.0"
+                      }
+                    }
+                  ]
+                },
+                {
+                  "type": "Text",
+                  "style": "legend-label",
+                  "props": {
+                    "as": "p",
+                    "size": "xs",
+                    "text": "Ejemplo"
+                  }
+                }
+              ]
+            },
+            {
+              "type": "Grid",
+              "props": {
+                "cols": 2,
+                "gap": "md"
+              },
+              "children": [
+                {
+                  "type": "div",
+                  "children": [
+                    {
+                      "type": "Text",
+                      "style": "legend-label",
+                      "props": {
+                        "as": "p",
+                        "size": "xs",
+                        "text": "Humedad"
+                      }
+                    },
+                    {
+                      "type": "div",
+                      "style": "legend-card-centred",
+                      "children": [
+                        {
+                          "type": "Glyph",
+                          "props": {
+                            "size": 130,
+                            "viewBox": "0 0 160 160",
+                            "parts": [
+                              {
+                                "mode": "spiral",
+                                "at": [
+                                  30,
+                                  30
+                                ],
+                                "value": 28,
+                                "suffix": "%",
+                                "turns": [
+                                  2,
+                                  6
+                                ],
+                                "max": 100,
+                                "radius": 46,
+                                "accent": true
+                              },
+                              {
+                                "mode": "ticks",
+                                "at": [
+                                  30,
+                                  30
+                                ],
+                                "length": 72,
+                                "count": 11
+                              }
+                            ]
+                          },
+                          "bind": {
+                            "shapes": "$data.glyph.0"
+                          }
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "type": "div",
+                  "children": [
+                    {
+                      "type": "Text",
+                      "style": "legend-label",
+                      "props": {
+                        "as": "p",
+                        "size": "xs",
+                        "text": "Lluvia"
+                      }
+                    },
+                    {
+                      "type": "Stack",
+                      "style": "legend-card",
+                      "props": {
+                        "direction": "row",
+                        "justify": "around",
+                        "align": "end",
+                        "gap": "sm"
+                      },
+                      "children": [
+                        {
+                          "type": "Stack",
+                          "style": "swatch",
+                          "props": {
+                            "align": "center",
+                            "gap": "xs"
+                          },
+                          "children": [
+                            {
+                              "type": "Glyph",
+                              "style": "swatch-mark",
+                              "props": {
+                                "size": 36,
+                                "viewBox": "0 0 40 40",
+                                "parts": [
+                                  {
+                                    "kind": "lluvia",
+                                    "value": "suave",
+                                    "at": [
+                                      0,
+                                      0
+                                    ],
+                                    "size": 40
+                                  }
+                                ]
+                              },
+                              "bind": {
+                                "shapes": "$data.glyph.0"
+                              }
+                            },
+                            {
+                              "type": "Text",
+                              "style": "swatch-name",
+                              "props": {
+                                "as": "span",
+                                "size": "xs",
+                                "align": "center",
+                                "text": "Suave"
+                              }
+                            }
+                          ]
+                        },
+                        {
+                          "type": "Stack",
+                          "style": "swatch",
+                          "props": {
+                            "align": "center",
+                            "gap": "xs"
+                          },
+                          "children": [
+                            {
+                              "type": "Glyph",
+                              "style": "swatch-mark",
+                              "props": {
+                                "size": 36,
+                                "viewBox": "0 0 40 40",
+                                "parts": [
+                                  {
+                                    "kind": "lluvia",
+                                    "value": "moderada",
+                                    "at": [
+                                      0,
+                                      0
+                                    ],
+                                    "size": 40
+                                  }
+                                ]
+                              },
+                              "bind": {
+                                "shapes": "$data.glyph.0"
+                              }
+                            },
+                            {
+                              "type": "Text",
+                              "style": "swatch-name",
+                              "props": {
+                                "as": "span",
+                                "size": "xs",
+                                "align": "center",
+                                "text": "Moderada"
+                              }
+                            }
+                          ]
+                        },
+                        {
+                          "type": "Stack",
+                          "style": "swatch",
+                          "props": {
+                            "align": "center",
+                            "gap": "xs"
+                          },
+                          "children": [
+                            {
+                              "type": "Glyph",
+                              "style": "swatch-mark",
+                              "props": {
+                                "size": 36,
+                                "viewBox": "0 0 40 40",
+                                "parts": [
+                                  {
+                                    "kind": "lluvia",
+                                    "value": "fuerte",
+                                    "at": [
+                                      0,
+                                      0
+                                    ],
+                                    "size": 40
+                                  }
+                                ]
+                              },
+                              "bind": {
+                                "shapes": "$data.glyph.0"
+                              }
+                            },
+                            {
+                              "type": "Text",
+                              "style": "swatch-name",
+                              "props": {
+                                "as": "span",
+                                "size": "xs",
+                                "align": "center",
+                                "text": "Fuerte"
+                              }
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "type": "div",
+                  "children": [
+                    {
+                      "type": "Text",
+                      "style": "legend-label",
+                      "props": {
+                        "as": "p",
+                        "size": "xs",
+                        "text": "Viento"
+                      }
+                    },
+                    {
+                      "type": "Stack",
+                      "style": "legend-card",
+                      "props": {
+                        "direction": "row",
+                        "justify": "around",
+                        "align": "end",
+                        "gap": "sm"
+                      },
+                      "children": [
+                        {
+                          "type": "Stack",
+                          "style": "swatch",
+                          "props": {
+                            "align": "center",
+                            "gap": "xs"
+                          },
+                          "children": [
+                            {
+                              "type": "Glyph",
+                              "style": "swatch-mark",
+                              "props": {
+                                "size": 36,
+                                "viewBox": "0 0 40 40",
+                                "parts": [
+                                  {
+                                    "kind": "viento",
+                                    "value": "suave",
+                                    "at": [
+                                      0,
+                                      0
+                                    ],
+                                    "size": 40,
+                                    "rotate": {
+                                      "suave": 0,
+                                      "leve": 15,
+                                      "moderada": 55,
+                                      "fuerte": 85
+                                    }
+                                  }
+                                ]
+                              },
+                              "bind": {
+                                "shapes": "$data.glyph.0"
+                              }
+                            },
+                            {
+                              "type": "Text",
+                              "style": "swatch-name",
+                              "props": {
+                                "as": "span",
+                                "size": "xs",
+                                "align": "center",
+                                "text": "Suave"
+                              }
+                            }
+                          ]
+                        },
+                        {
+                          "type": "Stack",
+                          "style": "swatch",
+                          "props": {
+                            "align": "center",
+                            "gap": "xs"
+                          },
+                          "children": [
+                            {
+                              "type": "Glyph",
+                              "style": "swatch-mark",
+                              "props": {
+                                "size": 36,
+                                "viewBox": "0 0 40 40",
+                                "parts": [
+                                  {
+                                    "kind": "viento",
+                                    "value": "leve",
+                                    "at": [
+                                      0,
+                                      0
+                                    ],
+                                    "size": 40,
+                                    "rotate": {
+                                      "suave": 0,
+                                      "leve": 15,
+                                      "moderada": 55,
+                                      "fuerte": 85
+                                    }
+                                  }
+                                ]
+                              },
+                              "bind": {
+                                "shapes": "$data.glyph.0"
+                              }
+                            },
+                            {
+                              "type": "Text",
+                              "style": "swatch-name",
+                              "props": {
+                                "as": "span",
+                                "size": "xs",
+                                "align": "center",
+                                "text": "Leve"
+                              }
+                            }
+                          ]
+                        },
+                        {
+                          "type": "Stack",
+                          "style": "swatch",
+                          "props": {
+                            "align": "center",
+                            "gap": "xs"
+                          },
+                          "children": [
+                            {
+                              "type": "Glyph",
+                              "style": "swatch-mark",
+                              "props": {
+                                "size": 36,
+                                "viewBox": "0 0 40 40",
+                                "parts": [
+                                  {
+                                    "kind": "viento",
+                                    "value": "moderada",
+                                    "at": [
+                                      0,
+                                      0
+                                    ],
+                                    "size": 40,
+                                    "rotate": {
+                                      "suave": 0,
+                                      "leve": 15,
+                                      "moderada": 55,
+                                      "fuerte": 85
+                                    }
+                                  }
+                                ]
+                              },
+                              "bind": {
+                                "shapes": "$data.glyph.0"
+                              }
+                            },
+                            {
+                              "type": "Text",
+                              "style": "swatch-name",
+                              "props": {
+                                "as": "span",
+                                "size": "xs",
+                                "align": "center",
+                                "text": "Moderada"
+                              }
+                            }
+                          ]
+                        },
+                        {
+                          "type": "Stack",
+                          "style": "swatch",
+                          "props": {
+                            "align": "center",
+                            "gap": "xs"
+                          },
+                          "children": [
+                            {
+                              "type": "Glyph",
+                              "style": "swatch-mark",
+                              "props": {
+                                "size": 36,
+                                "viewBox": "0 0 40 40",
+                                "parts": [
+                                  {
+                                    "kind": "viento",
+                                    "value": "fuerte",
+                                    "at": [
+                                      0,
+                                      0
+                                    ],
+                                    "size": 40,
+                                    "rotate": {
+                                      "suave": 0,
+                                      "leve": 15,
+                                      "moderada": 55,
+                                      "fuerte": 85
+                                    }
+                                  }
+                                ]
+                              },
+                              "bind": {
+                                "shapes": "$data.glyph.0"
+                              }
+                            },
+                            {
+                              "type": "Text",
+                              "style": "swatch-name",
+                              "props": {
+                                "as": "span",
+                                "size": "xs",
+                                "align": "center",
+                                "text": "Fuerte"
+                              }
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "type": "div",
+                  "children": [
+                    {
+                      "type": "Text",
+                      "style": "legend-label",
+                      "props": {
+                        "as": "p",
+                        "size": "xs",
+                        "text": "Nubes"
+                      }
+                    },
+                    {
+                      "type": "Stack",
+                      "style": "legend-card",
+                      "props": {
+                        "direction": "row",
+                        "justify": "around",
+                        "align": "end",
+                        "gap": "sm"
+                      },
+                      "children": [
+                        {
+                          "type": "Stack",
+                          "style": "swatch",
+                          "props": {
+                            "align": "center",
+                            "gap": "xs"
+                          },
+                          "children": [
+                            {
+                              "type": "Glyph",
+                              "style": "swatch-mark",
+                              "props": {
+                                "size": 36,
+                                "viewBox": "0 0 40 40",
+                                "parts": [
+                                  {
+                                    "kind": "nubes",
+                                    "value": "stratus",
+                                    "at": [
+                                      0,
+                                      0
+                                    ],
+                                    "size": 40
+                                  }
+                                ]
+                              },
+                              "bind": {
+                                "shapes": "$data.glyph.0"
+                              }
+                            },
+                            {
+                              "type": "Text",
+                              "style": "swatch-name",
+                              "props": {
+                                "as": "span",
+                                "size": "xs",
+                                "align": "center",
+                                "text": "Stratus"
+                              }
+                            }
+                          ]
+                        },
+                        {
+                          "type": "Stack",
+                          "style": "swatch",
+                          "props": {
+                            "align": "center",
+                            "gap": "xs"
+                          },
+                          "children": [
+                            {
+                              "type": "Glyph",
+                              "style": "swatch-mark",
+                              "props": {
+                                "size": 36,
+                                "viewBox": "0 0 40 40",
+                                "parts": [
+                                  {
+                                    "kind": "nubes",
+                                    "value": "cirrus",
+                                    "at": [
+                                      0,
+                                      0
+                                    ],
+                                    "size": 40
+                                  }
+                                ]
+                              },
+                              "bind": {
+                                "shapes": "$data.glyph.0"
+                              }
+                            },
+                            {
+                              "type": "Text",
+                              "style": "swatch-name",
+                              "props": {
+                                "as": "span",
+                                "size": "xs",
+                                "align": "center",
+                                "text": "Cirrus"
+                              }
+                            }
+                          ]
+                        },
+                        {
+                          "type": "Stack",
+                          "style": "swatch",
+                          "props": {
+                            "align": "center",
+                            "gap": "xs"
+                          },
+                          "children": [
+                            {
+                              "type": "Glyph",
+                              "style": "swatch-mark",
+                              "props": {
+                                "size": 36,
+                                "viewBox": "0 0 40 40",
+                                "parts": [
+                                  {
+                                    "kind": "nubes",
+                                    "value": "cumulus",
+                                    "at": [
+                                      0,
+                                      0
+                                    ],
+                                    "size": 40
+                                  }
+                                ]
+                              },
+                              "bind": {
+                                "shapes": "$data.glyph.0"
+                              }
+                            },
+                            {
+                              "type": "Text",
+                              "style": "swatch-name",
+                              "props": {
+                                "as": "span",
+                                "size": "xs",
+                                "align": "center",
+                                "text": "Cumulus"
+                              }
+                            }
+                          ]
+                        },
+                        {
+                          "type": "Stack",
+                          "style": "swatch",
+                          "props": {
+                            "align": "center",
+                            "gap": "xs"
+                          },
+                          "children": [
+                            {
+                              "type": "Glyph",
+                              "style": "swatch-mark",
+                              "props": {
+                                "size": 36,
+                                "viewBox": "0 0 40 40",
+                                "parts": [
+                                  {
+                                    "kind": "nubes",
+                                    "value": "cirrocumulus",
+                                    "at": [
+                                      0,
+                                      0
+                                    ],
+                                    "size": 40
+                                  }
+                                ]
+                              },
+                              "bind": {
+                                "shapes": "$data.glyph.0"
+                              }
+                            },
+                            {
+                              "type": "Text",
+                              "style": "swatch-name",
+                              "props": {
+                                "as": "span",
+                                "size": "xs",
+                                "align": "center",
+                                "text": "Cirro cumulus"
+                              }
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "type": "div",
+                  "children": [
+                    {
+                      "type": "Text",
+                      "style": "legend-label",
+                      "props": {
+                        "as": "p",
+                        "size": "xs",
+                        "text": "Olor"
+                      }
+                    },
+                    {
+                      "type": "Stack",
+                      "style": "legend-card",
+                      "props": {
+                        "direction": "row",
+                        "justify": "around",
+                        "align": "end",
+                        "gap": "sm"
+                      },
+                      "children": [
+                        {
+                          "type": "Stack",
+                          "style": "swatch",
+                          "props": {
+                            "align": "center",
+                            "gap": "xs"
+                          },
+                          "children": [
+                            {
+                              "type": "Glyph",
+                              "style": "swatch-mark",
+                              "props": {
+                                "size": 36,
+                                "viewBox": "0 0 40 40",
+                                "parts": [
+                                  {
+                                    "kind": "olor",
+                                    "value": "bajo",
+                                    "at": [
+                                      0,
+                                      0
+                                    ],
+                                    "size": 40
+                                  }
+                                ]
+                              },
+                              "bind": {
+                                "shapes": "$data.glyph.0"
+                              }
+                            },
+                            {
+                              "type": "Text",
+                              "style": "swatch-name",
+                              "props": {
+                                "as": "span",
+                                "size": "xs",
+                                "align": "center",
+                                "text": "Bajo"
+                              }
+                            }
+                          ]
+                        },
+                        {
+                          "type": "Stack",
+                          "style": "swatch",
+                          "props": {
+                            "align": "center",
+                            "gap": "xs"
+                          },
+                          "children": [
+                            {
+                              "type": "Glyph",
+                              "style": "swatch-mark",
+                              "props": {
+                                "size": 36,
+                                "viewBox": "0 0 40 40",
+                                "parts": [
+                                  {
+                                    "kind": "olor",
+                                    "value": "alto",
+                                    "at": [
+                                      0,
+                                      0
+                                    ],
+                                    "size": 40
+                                  }
+                                ]
+                              },
+                              "bind": {
+                                "shapes": "$data.glyph.0"
+                              }
+                            },
+                            {
+                              "type": "Text",
+                              "style": "swatch-name",
+                              "props": {
+                                "as": "span",
+                                "size": "xs",
+                                "align": "center",
+                                "text": "Alto"
+                              }
+                            }
+                          ]
+                        },
+                        {
+                          "type": "Stack",
+                          "style": "swatch",
+                          "props": {
+                            "align": "center",
+                            "gap": "xs"
+                          },
+                          "children": [
+                            {
+                              "type": "Glyph",
+                              "style": "swatch-mark",
+                              "props": {
+                                "size": 36,
+                                "viewBox": "0 0 40 40",
+                                "parts": [
+                                  {
+                                    "kind": "olor",
+                                    "value": "intermitente",
+                                    "at": [
+                                      0,
+                                      0
+                                    ],
+                                    "size": 40
+                                  }
+                                ]
+                              },
+                              "bind": {
+                                "shapes": "$data.glyph.0"
+                              }
+                            },
+                            {
+                              "type": "Text",
+                              "style": "swatch-name",
+                              "props": {
+                                "as": "span",
+                                "size": "xs",
+                                "align": "center",
+                                "text": "Intermitente"
+                              }
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "type": "div",
+                  "children": [
+                    {
+                      "type": "Text",
+                      "style": "legend-label",
+                      "props": {
+                        "as": "p",
+                        "size": "xs",
+                        "text": "Temperatura"
+                      }
+                    },
+                    {
+                      "type": "Stack",
+                      "style": "legend-card",
+                      "props": {
+                        "align": "center",
+                        "gap": "xs"
+                      },
+                      "children": [
+                        {
+                          "type": "Glyph",
+                          "props": {
+                            "size": 64,
+                            "viewBox": "0 0 40 40",
+                            "parts": [
+                              {
+                                "mode": "repeat",
+                                "kind": "temperatura",
+                                "value": 24,
+                                "at": [
+                                  0,
+                                  0
+                                ],
+                                "size": 40,
+                                "per": 2,
+                                "columns": 5,
+                                "step": 7.5
+                              }
+                            ]
+                          },
+                          "bind": {
+                            "shapes": "$data.glyph.0"
+                          }
+                        },
+                        {
+                          "type": "Text",
+                          "style": "swatch-name",
+                          "props": {
+                            "as": "span",
+                            "size": "xs",
+                            "text": "24°C"
+                          }
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "Panel",
+          "style": "panel",
+          "props": {
+            "as": "section"
+          },
+          "children": [
+            {
+              "type": "Stack",
+              "props": {
+                "gap": "none"
+              },
+              "children": [
+                {
+                  "type": "div",
+                  "style": "canvas-slot",
+                  "children": [
+                    {
+                      "type": "Glyph",
+                      "props": {
+                        "size": 600,
+                        "viewBox": "0 0 600 420",
+                        "parts": [
+                          {
+                            "mode": "repeat",
+                            "kind": "punto",
+                            "value": 14,
+                            "at": [
+                              295,
+                              25
+                            ],
+                            "size": 10,
+                            "per": 1,
+                            "columns": 1,
+                            "step": 27
+                          },
+                          {
+                            "mode": "repeat",
+                            "kind": "punto",
+                            "value": 7,
+                            "at": [
+                              85,
+                              205
+                            ],
+                            "size": 10,
+                            "per": 1,
+                            "columns": 7,
+                            "step": 30
+                          },
+                          {
+                            "mode": "ticks",
+                            "at": [
+                              250,
+                              160
+                            ],
+                            "length": 250,
+                            "count": 11
+                          },
+                          {
+                            "mode": "text",
+                            "at": [
+                              40,
+                              112
+                            ],
+                            "value": "NUBES"
+                          },
+                          {
+                            "mode": "text",
+                            "at": [
+                              40,
+                              232
+                            ],
+                            "value": "LLUVIA"
+                          },
+                          {
+                            "mode": "text",
+                            "at": [
+                              40,
+                              352
+                            ],
+                            "value": "VIENTO"
+                          },
+                          {
+                            "mode": "text",
+                            "at": [
+                              530,
+                              182
+                            ],
+                            "value": "OLOR"
+                          },
+                          {
+                            "mode": "text",
+                            "at": [
+                              250,
+                              387
+                            ],
+                            "value": "HUMEDAD _____"
+                          },
+                          {
+                            "mode": "text",
+                            "at": [
+                              460,
+                              370
+                            ],
+                            "value": "TEMPERATURA _____"
+                          }
+                        ]
+                      },
+                      "bind": {
+                        "shapes": "$data.glyph.0"
+                      }
+                    }
+                  ]
+                },
+                {
+                  "type": "Stack",
+                  "props": {
+                    "gap": "lg",
+                    "as": "div"
+                  },
+                  "children": [
+                    {
+                      "type": "Panel",
+                      "props": {
+                        "padding": "md"
+                      },
+                      "children": [
+                        {
+                          "type": "Stack",
+                          "props": {
+                            "gap": "lg"
+                          },
+                          "children": [
+                            {
+                              "type": "FormFields",
+                              "props": {
+                                "variant": "underline",
+                                "fields": [
+                                  {
+                                    "name": "descripcion",
+                                    "label": "Descripción",
+                                    "type": "textarea",
+                                    "rows": 4,
+                                    "style": "input-plain"
+                                  }
+                                ]
+                              },
+                              "bind": {
+                                "modelValue": "$state.entry"
+                              },
+                              "on": {
+                                "update:modelValue": {
+                                  "set": "entry"
+                                }
+                              }
+                            },
+                            {
+                              "type": "FormFields",
+                              "props": {
+                                "variant": "underline",
+                                "layout": "inline",
+                                "direction": "row",
+                                "gap": "gap-12",
+                                "fields": [
+                                  {
+                                    "name": "fecha",
+                                    "label": "Fecha",
+                                    "type": "date",
+                                    "style": "field-date"
+                                  },
+                                  {
+                                    "name": "hora",
+                                    "label": "Hora",
+                                    "type": "time",
+                                    "style": "field-time"
+                                  }
+                                ]
+                              },
+                              "bind": {
+                                "modelValue": "$state.entry"
+                              },
+                              "on": {
+                                "update:modelValue": {
+                                  "set": "entry"
+                                }
+                              }
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "dataSources": {
+    "glyph": {
+      "kind": "rest",
+      "url": "/glyph.json"
+    },
+    "example": {
+      "kind": "static",
+      "items": [
+        {
+          "humedad": 61.5,
+          "temperatura": 24,
+          "nubes": "cirrocumulus",
+          "lluvia": "moderada",
+          "viento": "leve",
+          "olor": "alto"
+        }
+      ]
+    }
+  }
+}

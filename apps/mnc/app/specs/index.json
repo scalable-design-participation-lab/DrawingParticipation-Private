@@ -1,0 +1,4686 @@
+{
+  "version": 1,
+  "state": {
+    "loading": true,
+    "mapType": "vector",
+    "isMobile": false,
+    "features": [],
+    "visibleTags": [
+      "Health & Crisis Response",
+      "Transportation & Mobility",
+      "Digital Access & Connectivity",
+      "Community Mapping & Visibility",
+      "Art & Cultural Expression"
+    ],
+    "selected": null,
+    "detail": false,
+    "panelOpen": false,
+    "listOpen": false,
+    "onboarding": true,
+    "mobileView": "map",
+    "cardState": "peek",
+    "picking": false,
+    "pin": null,
+    "contributions": [],
+    "contributionsLoading": false,
+    "auth": {
+      "ready": false,
+      "isAdmin": false,
+      "isSuperAdmin": false,
+      "isAnonymous": true,
+      "uid": null,
+      "email": null
+    },
+    "moderation": [],
+    "pendingContributions": [],
+    "loginOpen": false,
+    "reviewOpen": false,
+    "login": {},
+    "mode": "map",
+    "listSearch": {
+      "q": ""
+    },
+    "location": null,
+    "reviewCollapsed": false,
+    "uploadFor": null,
+    "uploadMedia": [],
+    "uploadDraft": {
+      "comment": ""
+    },
+    "uploadBusy": false,
+    "tagLabels": {},
+    "linkLabels": {},
+    "wizardOpen": false,
+    "wizardStep": 1,
+    "wizardSteps": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7
+    ],
+    "wizardSubmitted": false,
+    "wizardConfirmPin": false,
+    "entry": {
+      "title": "",
+      "primaryTag": "",
+      "location": "",
+      "coordinate": null,
+      "example": "",
+      "why": "",
+      "date": "",
+      "additionalInfo": "",
+      "connectInfo": null,
+      "fullName": "",
+      "email": "",
+      "country": "",
+      "city": ""
+    },
+    "entryFiles": {
+      "example": [],
+      "why": [],
+      "media": [],
+      "additional": [],
+      "voiceExample": [],
+      "voiceWhy": []
+    },
+    "placeName": ""
+  },
+  "init": [
+    {
+      "call": "watchViewport"
+    },
+    {
+      "call": "watchAuth"
+    },
+    {
+      "call": "loadCatalog"
+    },
+    {
+      "set": "loading",
+      "value": false
+    },
+    {
+      "call": "watchSolutions"
+    },
+    {
+      "call": "watchLocation"
+    },
+    {
+      "call": "loadLabels"
+    }
+  ],
+  "children": [
+    {
+      "type": "LoadingScreen",
+      "if": "$state.loading",
+      "props": {
+        "title": "$t.loading.title",
+        "message": "$t.loading.message",
+        "steps": [
+          "$t.loading.steps.0",
+          "$t.loading.steps.1",
+          "$t.loading.steps.2",
+          "$t.loading.steps.3"
+        ]
+      }
+    },
+    {
+      "type": "div",
+      "style": "page-shell",
+      "if": "!$state.loading",
+      "children": [
+        {
+          "type": "BackgroundMap",
+          "props": {
+            "mapHeight": "100dvh",
+            "mapboxStyleLight": "restartukraine/cm3p0s3gw00yd01seasye5jdw",
+            "mapboxStyleDark": "restartukraine/cm3p4jqnj009y01s79ngdah4r"
+          },
+          "bind": {
+            "mapType": "$state.mapType"
+          },
+          "on": {
+            "mapClick": [
+              {
+                "set": "pin",
+                "value": "$payload.coordinate",
+                "if": "$state.picking"
+              },
+              {
+                "set": "entry.coordinate",
+                "value": "$payload.coordinate",
+                "if": "$state.picking"
+              },
+              {
+                "set": "wizardConfirmPin",
+                "value": true,
+                "if": "$state.picking"
+              },
+              {
+                "call": "placeName",
+                "payload": "$payload.coordinate",
+                "args": {
+                  "into": "placeName",
+                  "coordinates": "webmercator"
+                },
+                "if": "$state.picking"
+              },
+              {
+                "set": "picking",
+                "value": false,
+                "if": "$state.picking"
+              },
+              {
+                "set": "pin",
+                "value": null,
+                "if": "!$state.picking"
+              }
+            ]
+          },
+          "children": [
+            {
+              "slot": "overlays",
+              "type": "MarkerOverlay",
+              "props": {
+                "positionKey": "coordinates",
+                "lonLat": false,
+                "positioning": "bottom-center",
+                "cluster": 250,
+                "filterKey": "properties.primaryTag"
+              },
+              "bind": {
+                "items": "$state.features",
+                "filterIn": "$state.visibleTags"
+              },
+              "item": {
+                "type": "List",
+                "props": {
+                  "layout": "stack",
+                  "gap": "xs"
+                },
+                "style": "map-pins",
+                "bind": {
+                  "items": "$item.members"
+                },
+                "item": {
+                  "type": "div",
+                  "style": "map-pin",
+                  "on": {
+                    "click": [
+                      {
+                        "set": "selected",
+                        "value": "$item"
+                      },
+                      {
+                        "set": "cardState",
+                        "value": "peek"
+                      },
+                      {
+                        "call": "loadContributions",
+                        "payload": "$item.properties.string_id"
+                      }
+                    ]
+                  },
+                  "children": [
+                    {
+                      "type": "Icon",
+                      "props": {
+                        "icons": {
+                          "Health & Crisis Response": "i-heroicons-heart",
+                          "Transportation & Mobility": "i-ph-bus",
+                          "Digital Access & Connectivity": "i-heroicons-wifi",
+                          "Community Mapping & Visibility": "i-heroicons-user-group",
+                          "Art & Cultural Expression": "i-heroicons-light-bulb"
+                        },
+                        "colors": {
+                          "Health & Crisis Response": "#F26D6D",
+                          "Transportation & Mobility": "#4C9BEA",
+                          "Digital Access & Connectivity": "#57C9C0",
+                          "Community Mapping & Visibility": "#6FCF97",
+                          "Art & Cultural Expression": "#EBC24A"
+                        },
+                        "size": "md"
+                      },
+                      "bind": {
+                        "name": "$item.properties.primaryTag"
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          ]
+        },
+        {
+          "type": "div",
+          "if": "!$state.isMobile",
+          "children": [
+            {
+              "type": "Header",
+              "props": {
+                "showMenu": false,
+                "leftItems": [
+                  {
+                    "label": "MNC",
+                    "to": "https://mobilecreativity.net",
+                    "target": "_blank"
+                  }
+                ]
+              },
+              "children": [
+                {
+                  "slot": "right",
+                  "type": "Tabs",
+                  "props": {
+                    "options": [
+                      {
+                        "label": "EN",
+                        "value": "en"
+                      },
+                      {
+                        "label": "PT",
+                        "value": "pt"
+                      },
+                      {
+                        "label": "ES",
+                        "value": "es"
+                      }
+                    ]
+                  },
+                  "bind": {
+                    "modelValue": "$locale"
+                  },
+                  "on": {
+                    "update:modelValue": {
+                      "call": "setLocale"
+                    }
+                  }
+                },
+                {
+                  "slot": "right",
+                  "type": "MapTypeToggle",
+                  "bind": {
+                    "modelValue": "$state.mapType"
+                  },
+                  "on": {
+                    "update:modelValue": {
+                      "set": "mapType"
+                    }
+                  }
+                }
+              ]
+            },
+            {
+              "type": "IconBar",
+              "if": "!$state.wizardOpen",
+              "props": {
+                "position": "top",
+                "multiple": true,
+                "field": "primaryTag",
+                "first": [
+                  "Health & Crisis Response",
+                  "Transportation & Mobility",
+                  "Digital Access & Connectivity",
+                  "Community Mapping & Visibility",
+                  "Art & Cultural Expression"
+                ],
+                "exclude": [
+                  "Uncategorized"
+                ],
+                "icons": {
+                  "Health & Crisis Response": "i-heroicons-heart",
+                  "Transportation & Mobility": "i-ph-bus",
+                  "Digital Access & Connectivity": "i-heroicons-wifi",
+                  "Community Mapping & Visibility": "i-heroicons-user-group",
+                  "Art & Cultural Expression": "i-heroicons-light-bulb"
+                },
+                "colors": {
+                  "Health & Crisis Response": "#F26D6D",
+                  "Transportation & Mobility": "#4C9BEA",
+                  "Digital Access & Connectivity": "#57C9C0",
+                  "Community Mapping & Visibility": "#6FCF97",
+                  "Art & Cultural Expression": "#EBC24A"
+                }
+              },
+              "bind": {
+                "rows": "$state.features",
+                "modelValue": "$state.visibleTags"
+              },
+              "on": {
+                "update:modelValue": {
+                  "set": "visibleTags"
+                }
+              }
+            },
+            {
+              "type": "IconBar",
+              "if": "!$state.onboarding && !$state.wizardOpen && !$state.detail && !$state.selected",
+              "props": {
+                "position": "bottom",
+                "size": "lg",
+                "items": [
+                  {
+                    "value": "map",
+                    "icon": "i-heroicons-map",
+                    "label": "$t.nav.map",
+                    "color": "#57C9C0",
+                    "onClick": {
+                      "$action": [
+                        {
+                          "set": "panelOpen",
+                          "value": false
+                        },
+                        {
+                          "set": "listOpen",
+                          "value": false
+                        }
+                      ]
+                    }
+                  },
+                  {
+                    "value": "list",
+                    "icon": "i-heroicons-square-3-stack-3d",
+                    "label": "$t.nav.list",
+                    "color": "#57C9C0",
+                    "onClick": {
+                      "$action": [
+                        {
+                          "set": "listOpen",
+                          "value": true
+                        },
+                        {
+                          "set": "panelOpen",
+                          "value": false
+                        }
+                      ]
+                    }
+                  },
+                  {
+                    "value": "info",
+                    "icon": "i-heroicons-information-circle",
+                    "label": "$t.nav.info",
+                    "color": "#57C9C0",
+                    "onClick": {
+                      "$action": [
+                        {
+                          "set": "onboarding",
+                          "value": true
+                        }
+                      ]
+                    }
+                  },
+                  {
+                    "value": "add",
+                    "icon": "i-heroicons-plus",
+                    "label": "$t.nav.addEntry",
+                    "color": "#57C9C0",
+                    "onClick": {
+                      "$action": [
+                        {
+                          "set": "wizardOpen",
+                          "value": true
+                        },
+                        {
+                          "set": "picking",
+                          "value": false
+                        },
+                        {
+                          "set": "pin",
+                          "value": null
+                        }
+                      ]
+                    }
+                  }
+                ]
+              },
+              "bind": {
+                "modelValue": "$state.mode"
+              },
+              "on": {
+                "update:modelValue": {
+                  "set": "mode"
+                }
+              }
+            },
+            {
+              "type": "div",
+              "if": "$state.panelOpen",
+              "style": "sidebar",
+              "children": [
+                {
+                  "type": "Text",
+                  "props": {
+                    "as": "h3",
+                    "text": "$t.list.title"
+                  },
+                  "style": "sidebar-title"
+                },
+                {
+                  "type": "List",
+                  "props": {
+                    "gap": "sm",
+                    "groupBy": "properties.primaryTag",
+                    "groupOrder": [
+                      "Health & Crisis Response",
+                      "Transportation & Mobility",
+                      "Digital Access & Connectivity",
+                      "Community Mapping & Visibility",
+                      "Art & Cultural Expression"
+                    ],
+                    "empty": "$t.list.emptyList"
+                  },
+                  "bind": {
+                    "items": "$state.features"
+                  },
+                  "item": {
+                    "type": "Stack",
+                    "props": {
+                      "gap": "xs"
+                    },
+                    "children": [
+                      {
+                        "type": "Stack",
+                        "props": {
+                          "direction": "row",
+                          "gap": "sm",
+                          "align": "center"
+                        },
+                        "style": "sidebar-group",
+                        "children": [
+                          {
+                            "type": "Icon",
+                            "props": {
+                              "icons": {
+                                "Health & Crisis Response": "i-heroicons-heart",
+                                "Transportation & Mobility": "i-ph-bus",
+                                "Digital Access & Connectivity": "i-heroicons-wifi",
+                                "Community Mapping & Visibility": "i-heroicons-user-group",
+                                "Art & Cultural Expression": "i-heroicons-light-bulb"
+                              },
+                              "colors": {
+                                "Health & Crisis Response": "#F26D6D",
+                                "Transportation & Mobility": "#4C9BEA",
+                                "Digital Access & Connectivity": "#57C9C0",
+                                "Community Mapping & Visibility": "#6FCF97",
+                                "Art & Cultural Expression": "#EBC24A"
+                              }
+                            },
+                            "bind": {
+                              "name": "$item.value"
+                            }
+                          },
+                          {
+                            "type": "Text",
+                            "props": {
+                              "size": "sm",
+                              "weight": "semibold"
+                            },
+                            "style": "sidebar-group-name",
+                            "bind": {
+                              "text": "$item.value"
+                            }
+                          },
+                          {
+                            "type": "Text",
+                            "props": {
+                              "size": "xs",
+                              "tone": "muted"
+                            },
+                            "bind": {
+                              "text": "$item.count"
+                            }
+                          },
+                          {
+                            "type": "Button",
+                            "props": {
+                              "icon": "i-heroicons-eye",
+                              "color": "gray",
+                              "variant": "ghost",
+                              "size": "xs"
+                            },
+                            "on": {
+                              "click": {
+                                "call": "toggleItem",
+                                "args": "visibleTags",
+                                "payload": "$item.value"
+                              }
+                            }
+                          }
+                        ]
+                      },
+                      {
+                        "type": "List",
+                        "props": {
+                          "gap": "none"
+                        },
+                        "bind": {
+                          "items": "$item.rows"
+                        },
+                        "item": {
+                          "type": "Stack",
+                          "props": {
+                            "direction": "row",
+                            "gap": "sm",
+                            "align": "center"
+                          },
+                          "style": "sidebar-entry",
+                          "on": {
+                            "click": [
+                              {
+                                "set": "selected",
+                                "value": "$item"
+                              },
+                              {
+                                "call": "loadContributions",
+                                "payload": "$item.properties.string_id"
+                              }
+                            ]
+                          },
+                          "children": [
+                            {
+                              "type": "Icon",
+                              "props": {
+                                "icons": {
+                                  "Health & Crisis Response": "i-heroicons-heart",
+                                  "Transportation & Mobility": "i-ph-bus",
+                                  "Digital Access & Connectivity": "i-heroicons-wifi",
+                                  "Community Mapping & Visibility": "i-heroicons-user-group",
+                                  "Art & Cultural Expression": "i-heroicons-light-bulb"
+                                },
+                                "colors": {
+                                  "Health & Crisis Response": "#F26D6D",
+                                  "Transportation & Mobility": "#4C9BEA",
+                                  "Digital Access & Connectivity": "#57C9C0",
+                                  "Community Mapping & Visibility": "#6FCF97",
+                                  "Art & Cultural Expression": "#EBC24A"
+                                },
+                                "size": "sm"
+                              },
+                              "bind": {
+                                "name": "$item.properties.primaryTag"
+                              }
+                            },
+                            {
+                              "type": "Stack",
+                              "props": {
+                                "gap": "none"
+                              },
+                              "style": "sidebar-entry-text",
+                              "children": [
+                                {
+                                  "type": "Text",
+                                  "props": {
+                                    "size": "sm",
+                                    "weight": "medium"
+                                  },
+                                  "bind": {
+                                    "text": "$item.properties.i18n.$locale.title",
+                                    "fallback": "$item.comment"
+                                  }
+                                },
+                                {
+                                  "type": "Text",
+                                  "props": {
+                                    "size": "xs",
+                                    "tone": "muted"
+                                  },
+                                  "bind": {
+                                    "text": "$item.properties.location"
+                                  }
+                                }
+                              ]
+                            }
+                          ]
+                        }
+                      }
+                    ]
+                  }
+                }
+              ]
+            },
+            {
+              "type": "Modal",
+              "if": "$state.listOpen",
+              "props": {
+                "title": "$t.list.title",
+                "size": "3xl",
+                "scroll": true,
+                "closable": true
+              },
+              "bind": {
+                "modelValue": "$state.listOpen"
+              },
+              "on": {
+                "close": {
+                  "set": "listOpen",
+                  "value": false
+                },
+                "update:modelValue": {
+                  "set": "listOpen"
+                }
+              },
+              "children": [
+                {
+                  "type": "FormFields",
+                  "props": {
+                    "fields": [
+                      {
+                        "name": "q",
+                        "type": "text",
+                        "placeholder": "$t.list.search"
+                      }
+                    ],
+                    "gap": "gap-0"
+                  },
+                  "bind": {
+                    "modelValue": "$state.listSearch"
+                  },
+                  "on": {
+                    "update:modelValue": {
+                      "set": "listSearch"
+                    }
+                  }
+                },
+                {
+                  "type": "List",
+                  "props": {
+                    "layout": "grid",
+                    "cols": 3,
+                    "gap": "md",
+                    "filterKey": "properties.primaryTag",
+                    "searchKeys": [
+                      "comment",
+                      "properties.location",
+                      "properties.primaryTag"
+                    ],
+                    "sortBy": "comment",
+                    "empty": "$t.list.emptyList"
+                  },
+                  "bind": {
+                    "items": "$state.features",
+                    "filterIn": "$state.visibleTags",
+                    "search": "$state.listSearch.q"
+                  },
+                  "item": {
+                    "type": "div",
+                    "style": "entry-card",
+                    "on": {
+                      "click": [
+                        {
+                          "set": "selected",
+                          "value": "$item"
+                        },
+                        {
+                          "set": "listOpen",
+                          "value": false
+                        },
+                        {
+                          "call": "loadContributions",
+                          "payload": "$item.properties.string_id"
+                        }
+                      ]
+                    },
+                    "children": [
+                      {
+                        "type": "div",
+                        "style": "entry-cover",
+                        "children": [
+                          {
+                            "type": "Image",
+                            "props": {
+                              "width": "full",
+                              "alt": "",
+                              "variant": "thumb"
+                            },
+                            "bind": {
+                              "src": "$item.properties.photos.0"
+                            },
+                            "if": "$item.properties.photos.0"
+                          },
+                          {
+                            "type": "Icon",
+                            "props": {
+                              "icons": {
+                                "Health & Crisis Response": "i-heroicons-heart",
+                                "Transportation & Mobility": "i-ph-bus",
+                                "Digital Access & Connectivity": "i-heroicons-wifi",
+                                "Community Mapping & Visibility": "i-heroicons-user-group",
+                                "Art & Cultural Expression": "i-heroicons-light-bulb"
+                              },
+                              "colors": {
+                                "Health & Crisis Response": "#F26D6D",
+                                "Transportation & Mobility": "#4C9BEA",
+                                "Digital Access & Connectivity": "#57C9C0",
+                                "Community Mapping & Visibility": "#6FCF97",
+                                "Art & Cultural Expression": "#EBC24A"
+                              },
+                              "size": "xl"
+                            },
+                            "bind": {
+                              "name": "$item.properties.primaryTag"
+                            },
+                            "if": "!$item.properties.photos.0"
+                          }
+                        ]
+                      },
+                      {
+                        "type": "Stack",
+                        "props": {
+                          "gap": "xs"
+                        },
+                        "style": "entry-body",
+                        "children": [
+                          {
+                            "type": "Stack",
+                            "props": {
+                              "direction": "row",
+                              "gap": "xs",
+                              "align": "center"
+                            },
+                            "style": "entry-chip",
+                            "if": "$item.properties.primaryTag",
+                            "children": [
+                              {
+                                "type": "Icon",
+                                "props": {
+                                  "icons": {
+                                    "Health & Crisis Response": "i-heroicons-heart",
+                                    "Transportation & Mobility": "i-ph-bus",
+                                    "Digital Access & Connectivity": "i-heroicons-wifi",
+                                    "Community Mapping & Visibility": "i-heroicons-user-group",
+                                    "Art & Cultural Expression": "i-heroicons-light-bulb"
+                                  },
+                                  "colors": {
+                                    "Health & Crisis Response": "#F26D6D",
+                                    "Transportation & Mobility": "#4C9BEA",
+                                    "Digital Access & Connectivity": "#57C9C0",
+                                    "Community Mapping & Visibility": "#6FCF97",
+                                    "Art & Cultural Expression": "#EBC24A"
+                                  },
+                                  "size": "xs"
+                                },
+                                "bind": {
+                                  "name": "$item.properties.primaryTag"
+                                }
+                              },
+                              {
+                                "type": "Text",
+                                "props": {
+                                  "size": "xs",
+                                  "weight": "medium"
+                                },
+                                "bind": {
+                                  "text": "$item.properties.primaryTag"
+                                }
+                              }
+                            ]
+                          },
+                          {
+                            "type": "Text",
+                            "props": {
+                              "size": "sm",
+                              "weight": "semibold"
+                            },
+                            "bind": {
+                              "text": "$item.properties.i18n.$locale.title",
+                              "fallback": "$item.comment"
+                            }
+                          },
+                          {
+                            "type": "Text",
+                            "props": {
+                              "size": "xs",
+                              "tone": "muted"
+                            },
+                            "bind": {
+                              "text": "$item.properties.location"
+                            }
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                }
+              ]
+            },
+            {
+              "type": "div",
+              "if": "$state.detail && $state.selected",
+              "style": "detail-backdrop",
+              "children": [
+                {
+                  "type": "div",
+                  "style": "detail-frame",
+                  "children": [
+                    {
+                      "type": "Panel",
+                      "style": "detail-card",
+                      "props": {
+                        "variant": "card",
+                        "padding": "lg"
+                      },
+                      "children": [
+                        {
+                          "type": "Stack",
+                          "props": {
+                            "direction": "row",
+                            "justify": "between",
+                            "align": "start",
+                            "gap": "md"
+                          },
+                          "children": [
+                            {
+                              "type": "Text",
+                              "style": "detail-title",
+                              "props": {
+                                "as": "h2",
+                                "size": "3xl",
+                                "weight": "bold"
+                              },
+                              "bind": {
+                                "text": "$state.selected.properties.i18n.$locale.title",
+                                "fallback": "$state.selected.comment"
+                              }
+                            },
+                            {
+                              "type": "Stack",
+                              "props": {
+                                "direction": "row",
+                                "align": "center",
+                                "gap": "xs"
+                              },
+                              "children": [
+                                {
+                                  "type": "Button",
+                                  "if": "$state.selected.properties.string_id",
+                                  "style": "round",
+                                  "props": {
+                                    "size": "sm",
+                                    "color": "primary",
+                                    "variant": "soft",
+                                    "icon": "i-heroicons-camera",
+                                    "label": "$t.detail.addPhoto"
+                                  },
+                                  "on": {
+                                    "click": {
+                                      "set": "uploadFor",
+                                      "value": "$state.selected.properties.string_id"
+                                    }
+                                  }
+                                },
+                                {
+                                  "type": "Button",
+                                  "style": "round",
+                                  "props": {
+                                    "size": "sm",
+                                    "color": "gray",
+                                    "variant": "ghost",
+                                    "icon": "i-heroicons-x-mark",
+                                    "label": "$t.detail.close"
+                                  },
+                                  "on": {
+                                    "click": [
+                                      {
+                                        "set": "detail",
+                                        "value": false
+                                      },
+                                      {
+                                        "set": "selected",
+                                        "value": null
+                                      }
+                                    ]
+                                  }
+                                }
+                              ]
+                            }
+                          ]
+                        },
+                        {
+                          "type": "Stack",
+                          "style": "detail-facts",
+                          "props": {
+                            "direction": "row",
+                            "gap": "sm",
+                            "wrap": true
+                          },
+                          "children": [
+                            {
+                              "type": "Stack",
+                              "if": "$state.selected.properties.date",
+                              "style": "fact-chip",
+                              "props": {
+                                "direction": "row",
+                                "align": "center",
+                                "gap": "xs"
+                              },
+                              "children": [
+                                {
+                                  "type": "Icon",
+                                  "style": "fact-icon",
+                                  "props": {
+                                    "name": "i-heroicons-calendar-days",
+                                    "size": "xs"
+                                  }
+                                },
+                                {
+                                  "type": "Text",
+                                  "props": {
+                                    "as": "span",
+                                    "size": "sm",
+                                    "weight": "medium"
+                                  },
+                                  "bind": {
+                                    "text": "$state.selected.properties.date"
+                                  }
+                                }
+                              ]
+                            },
+                            {
+                              "type": "Stack",
+                              "if": "$state.selected.properties.location",
+                              "style": "fact-chip",
+                              "props": {
+                                "direction": "row",
+                                "align": "center",
+                                "gap": "xs"
+                              },
+                              "children": [
+                                {
+                                  "type": "Icon",
+                                  "style": "fact-icon",
+                                  "props": {
+                                    "name": "i-heroicons-map-pin",
+                                    "size": "xs"
+                                  }
+                                },
+                                {
+                                  "type": "Text",
+                                  "props": {
+                                    "as": "span",
+                                    "size": "sm",
+                                    "weight": "medium"
+                                  },
+                                  "bind": {
+                                    "text": "$state.selected.properties.i18n.$locale.location",
+                                    "fallback": "$state.selected.properties.location"
+                                  }
+                                }
+                              ]
+                            }
+                          ]
+                        },
+                        {
+                          "type": "Grid",
+                          "style": "detail-columns",
+                          "props": {
+                            "cols": 1,
+                            "colsMd": 2,
+                            "gap": "lg"
+                          },
+                          "children": [
+                            {
+                              "type": "Stack",
+                              "props": {
+                                "gap": "md"
+                              },
+                              "children": [
+                                {
+                                  "type": "Carousel",
+                                  "props": {
+                                    "height": "lg",
+                                    "emptyTitle": "$t.photo.noPhoto",
+                                    "emptyText": "$t.photo.beFirst",
+                                    "prevLabel": "$t.photo.prevPhoto",
+                                    "nextLabel": "$t.photo.nextPhoto"
+                                  },
+                                  "bind": {
+                                    "images": "$state.selected.properties.photos",
+                                    "alt": "$state.selected.comment"
+                                  }
+                                },
+                                {
+                                  "type": "Panel",
+                                  "if": "$state.selected.properties.audio.length",
+                                  "style": "detail-teal",
+                                  "props": {
+                                    "variant": "plain",
+                                    "padding": "md"
+                                  },
+                                  "children": [
+                                    {
+                                      "type": "Audio",
+                                      "props": {
+                                        "label": "$t.detail.voiceNotes"
+                                      },
+                                      "bind": {
+                                        "src": "$state.selected.properties.audio"
+                                      }
+                                    }
+                                  ]
+                                },
+                                {
+                                  "type": "Panel",
+                                  "if": "$state.selected.properties.mncConnection",
+                                  "style": "detail-teal",
+                                  "props": {
+                                    "variant": "plain",
+                                    "padding": "md"
+                                  },
+                                  "children": [
+                                    {
+                                      "type": "Text",
+                                      "style": "detail-eyebrow-teal",
+                                      "props": {
+                                        "size": "xs",
+                                        "weight": "semibold",
+                                        "text": "$t.detail.connection"
+                                      }
+                                    },
+                                    {
+                                      "type": "Text",
+                                      "props": {
+                                        "size": "sm",
+                                        "clamp": 6,
+                                        "moreLabel": "$t.detail.readMore",
+                                        "lessLabel": "$t.detail.readLess"
+                                      },
+                                      "bind": {
+                                        "text": "$state.selected.properties.i18n.$locale.mncConnection",
+                                        "fallback": "$state.selected.properties.mncConnection"
+                                      }
+                                    }
+                                  ]
+                                }
+                              ]
+                            },
+                            {
+                              "type": "Stack",
+                              "props": {
+                                "gap": "md"
+                              },
+                              "children": [
+                                {
+                                  "type": "Panel",
+                                  "if": "$state.selected.properties.description",
+                                  "style": "detail-grey",
+                                  "props": {
+                                    "variant": "plain",
+                                    "padding": "md"
+                                  },
+                                  "children": [
+                                    {
+                                      "type": "Text",
+                                      "style": "detail-eyebrow",
+                                      "props": {
+                                        "size": "xs",
+                                        "weight": "semibold",
+                                        "tone": "muted",
+                                        "text": "$t.detail.description"
+                                      }
+                                    },
+                                    {
+                                      "type": "Text",
+                                      "props": {
+                                        "size": "sm",
+                                        "clamp": 12,
+                                        "moreLabel": "$t.detail.readMore",
+                                        "lessLabel": "$t.detail.readLess"
+                                      },
+                                      "bind": {
+                                        "text": "$state.selected.properties.i18n.$locale.description",
+                                        "fallback": "$state.selected.properties.description"
+                                      }
+                                    }
+                                  ]
+                                },
+                                {
+                                  "type": "div",
+                                  "children": [
+                                    {
+                                      "type": "Text",
+                                      "style": "detail-eyebrow",
+                                      "props": {
+                                        "size": "xs",
+                                        "weight": "semibold",
+                                        "tone": "muted",
+                                        "text": "$t.detail.tags"
+                                      }
+                                    },
+                                    {
+                                      "type": "Stack",
+                                      "props": {
+                                        "direction": "row",
+                                        "gap": "sm",
+                                        "wrap": true
+                                      },
+                                      "children": [
+                                        {
+                                          "type": "Stack",
+                                          "if": "$state.selected.properties.primaryTag",
+                                          "style": "theme-chip",
+                                          "props": {
+                                            "direction": "row",
+                                            "align": "center",
+                                            "gap": "xs"
+                                          },
+                                          "on": {
+                                            "click": [
+                                              {
+                                                "set": "visibleTags",
+                                                "value": [
+                                                  "$state.selected.properties.primaryTag"
+                                                ]
+                                              },
+                                              {
+                                                "set": "listOpen",
+                                                "value": true
+                                              },
+                                              {
+                                                "set": "detail",
+                                                "value": false
+                                              },
+                                              {
+                                                "set": "selected",
+                                                "value": null
+                                              }
+                                            ]
+                                          },
+                                          "children": [
+                                            {
+                                              "type": "Icon",
+                                              "props": {
+                                                "size": "xs",
+                                                "icons": {
+                                                  "Health & Crisis Response": "i-heroicons-heart",
+                                                  "Transportation & Mobility": "i-ph-bus",
+                                                  "Digital Access & Connectivity": "i-heroicons-wifi",
+                                                  "Community Mapping & Visibility": "i-heroicons-user-group",
+                                                  "Art & Cultural Expression": "i-heroicons-light-bulb"
+                                                },
+                                                "colors": {
+                                                  "Health & Crisis Response": "#F26D6D",
+                                                  "Transportation & Mobility": "#4C9BEA",
+                                                  "Digital Access & Connectivity": "#57C9C0",
+                                                  "Community Mapping & Visibility": "#6FCF97",
+                                                  "Art & Cultural Expression": "#EBC24A"
+                                                }
+                                              },
+                                              "bind": {
+                                                "name": "$state.selected.properties.primaryTag"
+                                              }
+                                            },
+                                            {
+                                              "type": "Text",
+                                              "props": {
+                                                "as": "span",
+                                                "size": "sm",
+                                                "weight": "medium",
+                                                "colors": {
+                                                  "Health & Crisis Response": "#F26D6D",
+                                                  "Transportation & Mobility": "#4C9BEA",
+                                                  "Digital Access & Connectivity": "#57C9C0",
+                                                  "Community Mapping & Visibility": "#6FCF97",
+                                                  "Art & Cultural Expression": "#EBC24A"
+                                                }
+                                              },
+                                              "bind": {
+                                                "text": "$state.selected.properties.primaryTag",
+                                                "labels": "$state.tagLabels"
+                                              }
+                                            }
+                                          ]
+                                        },
+                                        {
+                                          "type": "List",
+                                          "props": {
+                                            "layout": "stack",
+                                            "gap": "xs"
+                                          },
+                                          "style": "tag-row",
+                                          "bind": {
+                                            "items": "$state.selected.properties.secondaryTags"
+                                          },
+                                          "item": {
+                                            "type": "Text",
+                                            "style": "tag-chip",
+                                            "props": {
+                                              "as": "span",
+                                              "size": "sm"
+                                            },
+                                            "bind": {
+                                              "text": "$item"
+                                            }
+                                          }
+                                        }
+                                      ]
+                                    }
+                                  ]
+                                }
+                              ]
+                            }
+                          ]
+                        },
+                        {
+                          "type": "div",
+                          "if": "$state.selected.properties.linkList.length",
+                          "style": "detail-section",
+                          "children": [
+                            {
+                              "type": "Text",
+                              "style": "detail-eyebrow",
+                              "props": {
+                                "size": "xs",
+                                "weight": "semibold",
+                                "tone": "muted",
+                                "text": "$t.detail.learnMore"
+                              }
+                            },
+                            {
+                              "type": "List",
+                              "props": {
+                                "layout": "grid",
+                                "cols": 2,
+                                "gap": "sm"
+                              },
+                              "bind": {
+                                "items": "$state.selected.properties.linkList"
+                              },
+                              "item": {
+                                "type": "a",
+                                "if": "$item.url",
+                                "style": "link-card",
+                                "props": {
+                                  "target": "_blank",
+                                  "rel": "noopener noreferrer"
+                                },
+                                "bind": {
+                                  "href": "$item.url"
+                                },
+                                "children": [
+                                  {
+                                    "type": "Icon",
+                                    "style": "link-card-icon",
+                                    "props": {
+                                      "name": "i-heroicons-arrow-top-right-on-square",
+                                      "size": "xs"
+                                    }
+                                  },
+                                  {
+                                    "type": "Stack",
+                                    "props": {
+                                      "gap": "none"
+                                    },
+                                    "children": [
+                                      {
+                                        "type": "Text",
+                                        "props": {
+                                          "size": "sm",
+                                          "weight": "medium"
+                                        },
+                                        "bind": {
+                                          "text": "$item.label",
+                                          "labels": "$state.linkLabels"
+                                        }
+                                      },
+                                      {
+                                        "type": "Text",
+                                        "props": {
+                                          "size": "xs",
+                                          "tone": "muted",
+                                          "format": "host"
+                                        },
+                                        "bind": {
+                                          "text": "$item.url"
+                                        }
+                                      }
+                                    ]
+                                  }
+                                ]
+                              }
+                            }
+                          ]
+                        },
+                        {
+                          "type": "div",
+                          "if": "$state.selected.properties.string_id",
+                          "style": "detail-community",
+                          "children": [
+                            {
+                              "type": "Stack",
+                              "style": "detail-community-head",
+                              "props": {
+                                "direction": "row",
+                                "justify": "between",
+                                "align": "center",
+                                "gap": "sm"
+                              },
+                              "children": [
+                                {
+                                  "type": "Stack",
+                                  "props": {
+                                    "direction": "row",
+                                    "align": "baseline",
+                                    "gap": "xs"
+                                  },
+                                  "children": [
+                                    {
+                                      "type": "Text",
+                                      "props": {
+                                        "as": "h3",
+                                        "size": "lg",
+                                        "weight": "semibold",
+                                        "text": "$t.detail.contributions"
+                                      }
+                                    },
+                                    {
+                                      "type": "Text",
+                                      "if": "$state.contributions.length",
+                                      "props": {
+                                        "as": "span",
+                                        "size": "lg",
+                                        "tone": "muted",
+                                        "prefix": "(",
+                                        "suffix": ")"
+                                      },
+                                      "bind": {
+                                        "text": "$state.contributions.length"
+                                      }
+                                    }
+                                  ]
+                                },
+                                {
+                                  "type": "Button",
+                                  "style": "round",
+                                  "props": {
+                                    "size": "xs",
+                                    "color": "primary",
+                                    "variant": "soft",
+                                    "icon": "i-heroicons-plus",
+                                    "label": "$t.detail.add"
+                                  },
+                                  "on": {
+                                    "click": {
+                                      "set": "uploadFor",
+                                      "value": "$state.selected.properties.string_id"
+                                    }
+                                  }
+                                }
+                              ]
+                            },
+                            {
+                              "type": "Text",
+                              "if": "$state.contributionsLoading",
+                              "props": {
+                                "size": "sm",
+                                "tone": "muted",
+                                "text": "$t.detail.loading"
+                              }
+                            },
+                            {
+                              "type": "Panel",
+                              "if": "!$state.contributionsLoading && !$state.contributions.length",
+                              "style": "detail-empty",
+                              "props": {
+                                "variant": "outline",
+                                "padding": "lg"
+                              },
+                              "children": [
+                                {
+                                  "type": "Icon",
+                                  "style": "detail-empty-icon",
+                                  "props": {
+                                    "name": "i-heroicons-camera",
+                                    "size": "lg"
+                                  }
+                                },
+                                {
+                                  "type": "Text",
+                                  "props": {
+                                    "size": "sm",
+                                    "tone": "muted",
+                                    "align": "center",
+                                    "text": "$t.detail.noContributions"
+                                  }
+                                }
+                              ]
+                            },
+                            {
+                              "type": "List",
+                              "if": "!$state.contributionsLoading",
+                              "props": {
+                                "gap": "md"
+                              },
+                              "bind": {
+                                "items": "$state.contributions"
+                              },
+                              "item": {
+                                "type": "Panel",
+                                "style": "contrib-panel",
+                                "props": {
+                                  "variant": "outline",
+                                  "padding": "md"
+                                },
+                                "children": [
+                                  {
+                                    "type": "Stack",
+                                    "style": "contrib-byline",
+                                    "props": {
+                                      "direction": "row",
+                                      "align": "center",
+                                      "gap": "xs"
+                                    },
+                                    "children": [
+                                      {
+                                        "type": "Icon",
+                                        "props": {
+                                          "name": "i-heroicons-user-circle",
+                                          "size": "xs"
+                                        }
+                                      },
+                                      {
+                                        "type": "Text",
+                                        "if": "$item.userId == 'anonymous'",
+                                        "props": {
+                                          "as": "span",
+                                          "size": "xs",
+                                          "tone": "muted",
+                                          "text": "$t.detail.anonymous"
+                                        }
+                                      },
+                                      {
+                                        "type": "Text",
+                                        "if": "$item.userId != 'anonymous'",
+                                        "props": {
+                                          "as": "span",
+                                          "size": "xs",
+                                          "tone": "muted",
+                                          "text": "$t.detail.contributor"
+                                        }
+                                      },
+                                      {
+                                        "type": "Text",
+                                        "if": "$item.createdAt",
+                                        "props": {
+                                          "as": "span",
+                                          "size": "xs",
+                                          "tone": "muted",
+                                          "format": "relative",
+                                          "prefix": "· "
+                                        },
+                                        "bind": {
+                                          "text": "$item.createdAt"
+                                        }
+                                      },
+                                      {
+                                        "type": "Text",
+                                        "if": "!$item.approved",
+                                        "style": "chip-pending",
+                                        "props": {
+                                          "as": "span",
+                                          "size": "xs",
+                                          "weight": "semibold",
+                                          "text": "$t.detail.pending"
+                                        }
+                                      }
+                                    ]
+                                  },
+                                  {
+                                    "type": "List",
+                                    "if": "$item.media.length",
+                                    "style": "contrib-media",
+                                    "props": {
+                                      "layout": "grid",
+                                      "cols": 3,
+                                      "gap": "sm"
+                                    },
+                                    "bind": {
+                                      "items": "$item.media"
+                                    },
+                                    "item": {
+                                      "type": "div",
+                                      "children": [
+                                        {
+                                          "type": "Audio",
+                                          "if": "$item.kind == 'audio'",
+                                          "bind": {
+                                            "src": "$item.url"
+                                          }
+                                        },
+                                        {
+                                          "type": "Image",
+                                          "if": "$item.kind != 'audio'",
+                                          "style": "contrib-photo",
+                                          "props": {
+                                            "width": "full",
+                                            "rounded": true
+                                          },
+                                          "bind": {
+                                            "src": "$item.url",
+                                            "alt": "$item.name",
+                                            "href": "$item.url"
+                                          }
+                                        }
+                                      ]
+                                    }
+                                  },
+                                  {
+                                    "type": "Text",
+                                    "if": "$item.comment",
+                                    "props": {
+                                      "size": "sm"
+                                    },
+                                    "bind": {
+                                      "text": "$item.comment"
+                                    }
+                                  },
+                                  {
+                                    "type": "Stack",
+                                    "if": "$state.auth.isAdmin",
+                                    "style": "contrib-admin",
+                                    "props": {
+                                      "direction": "row",
+                                      "gap": "xs"
+                                    },
+                                    "children": [
+                                      {
+                                        "type": "Button",
+                                        "if": "!$item.approved",
+                                        "props": {
+                                          "size": "xs",
+                                          "color": "primary",
+                                          "label": "$t.detail.approve"
+                                        },
+                                        "on": {
+                                          "click": {
+                                            "call": "approveContribution",
+                                            "payload": "$item"
+                                          }
+                                        }
+                                      },
+                                      {
+                                        "type": "Button",
+                                        "props": {
+                                          "size": "xs",
+                                          "color": "red",
+                                          "variant": "soft",
+                                          "label": "$t.detail.delete"
+                                        },
+                                        "on": {
+                                          "click": {
+                                            "call": "deleteContribution",
+                                            "payload": "$item"
+                                          }
+                                        }
+                                      }
+                                    ]
+                                  }
+                                ]
+                              }
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "div",
+          "if": "$state.isMobile",
+          "children": [
+            {
+              "type": "Header",
+              "if": "!$state.onboarding && $state.mobileView != 'more'",
+              "props": {
+                "showMenu": false,
+                "showColorMode": false,
+                "showLogo": false
+              },
+              "children": [
+                {
+                  "slot": "center",
+                  "type": "a",
+                  "style": "wordmark",
+                  "props": {
+                    "href": "https://mobilecreativity.net",
+                    "target": "_blank"
+                  },
+                  "text": "MNC"
+                },
+                {
+                  "slot": "right",
+                  "type": "Dropdown",
+                  "props": {
+                    "items": [
+                      {
+                        "value": "en",
+                        "label": "English"
+                      },
+                      {
+                        "value": "pt",
+                        "label": "Português"
+                      },
+                      {
+                        "value": "es",
+                        "label": "Español"
+                      }
+                    ],
+                    "uppercase": true,
+                    "title": "$t.lang.label",
+                    "showValue": true
+                  },
+                  "bind": {
+                    "modelValue": "$locale"
+                  },
+                  "on": {
+                    "update:modelValue": {
+                      "call": "setLocale"
+                    }
+                  }
+                },
+                {
+                  "slot": "right",
+                  "type": "MapTypeToggle",
+                  "bind": {
+                    "modelValue": "$state.mapType"
+                  },
+                  "on": {
+                    "update:modelValue": {
+                      "set": "mapType"
+                    }
+                  }
+                }
+              ]
+            },
+            {
+              "type": "div",
+              "if": "$state.mobileView == 'list'",
+              "style": "bottom-sheet",
+              "children": [
+                {
+                  "type": "div",
+                  "style": "bottom-sheet-card",
+                  "children": [
+                    {
+                      "type": "Stack",
+                      "props": {
+                        "gap": "sm"
+                      },
+                      "style": "bottom-sheet-head",
+                      "children": [
+                        {
+                          "type": "Text",
+                          "props": {
+                            "text": "$t.list.all",
+                            "size": "xs",
+                            "tone": "muted"
+                          }
+                        },
+                        {
+                          "type": "FormFields",
+                          "props": {
+                            "fields": [
+                              {
+                                "name": "q",
+                                "type": "text",
+                                "placeholder": "$t.list.search"
+                              }
+                            ],
+                            "gap": "gap-0"
+                          },
+                          "bind": {
+                            "modelValue": "$state.listSearch"
+                          },
+                          "on": {
+                            "update:modelValue": {
+                              "set": "listSearch"
+                            }
+                          }
+                        }
+                      ]
+                    },
+                    {
+                      "type": "div",
+                      "style": "bottom-sheet-body",
+                      "children": [
+                        {
+                          "type": "List",
+                          "props": {
+                            "gap": "none",
+                            "searchKeys": [
+                              "properties.title",
+                              "properties.location",
+                              "properties.primaryTag"
+                            ],
+                            "sortBy": "properties.date",
+                            "sortDesc": true,
+                            "coordinatesKey": "coordinates",
+                            "coordinates": "webmercator",
+                            "empty": "$t.list.emptyList"
+                          },
+                          "bind": {
+                            "items": "$state.features",
+                            "search": "$state.listSearch.q",
+                            "near": "$state.location"
+                          },
+                          "item": {
+                            "type": "Stack",
+                            "props": {
+                              "direction": "row",
+                              "gap": "md",
+                              "align": "center"
+                            },
+                            "style": "list-row",
+                            "on": {
+                              "click": [
+                                {
+                                  "set": "selected",
+                                  "value": "$item"
+                                },
+                                {
+                                  "set": "mobileView",
+                                  "value": "map"
+                                },
+                                {
+                                  "set": "cardState",
+                                  "value": "peek"
+                                },
+                                {
+                                  "call": "loadContributions",
+                                  "payload": "$item.properties.string_id"
+                                }
+                              ]
+                            },
+                            "children": [
+                              {
+                                "type": "div",
+                                "style": "list-disc",
+                                "children": [
+                                  {
+                                    "type": "Icon",
+                                    "props": {
+                                      "icons": {
+                                        "Health & Crisis Response": "i-heroicons-heart",
+                                        "Transportation & Mobility": "i-ph-bus",
+                                        "Digital Access & Connectivity": "i-heroicons-wifi",
+                                        "Community Mapping & Visibility": "i-heroicons-user-group",
+                                        "Art & Cultural Expression": "i-heroicons-light-bulb"
+                                      },
+                                      "colors": {
+                                        "Health & Crisis Response": "#F26D6D",
+                                        "Transportation & Mobility": "#4C9BEA",
+                                        "Digital Access & Connectivity": "#57C9C0",
+                                        "Community Mapping & Visibility": "#6FCF97",
+                                        "Art & Cultural Expression": "#EBC24A"
+                                      }
+                                    },
+                                    "bind": {
+                                      "name": "$item.properties.primaryTag"
+                                    }
+                                  }
+                                ]
+                              },
+                              {
+                                "type": "Stack",
+                                "props": {
+                                  "gap": "none"
+                                },
+                                "style": "list-text",
+                                "children": [
+                                  {
+                                    "type": "Text",
+                                    "props": {
+                                      "weight": "semibold",
+                                      "size": "sm"
+                                    },
+                                    "bind": {
+                                      "text": "$item.properties.i18n.$locale.title",
+                                      "fallback": "$item.comment"
+                                    }
+                                  },
+                                  {
+                                    "type": "Text",
+                                    "props": {
+                                      "size": "xs",
+                                      "tone": "muted",
+                                      "decimals": 1,
+                                      "suffix": " km"
+                                    },
+                                    "bind": {
+                                      "text": "$item.distanceKm"
+                                    },
+                                    "if": "$item.distanceKm"
+                                  },
+                                  {
+                                    "type": "Text",
+                                    "props": {
+                                      "size": "xs",
+                                      "tone": "muted"
+                                    },
+                                    "bind": {
+                                      "text": "$item.properties.location"
+                                    },
+                                    "if": "!$item.distanceKm"
+                                  }
+                                ]
+                              }
+                            ]
+                          }
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "Sheet",
+              "if": "$state.selected",
+              "props": {
+                "tone": "accent",
+                "closeLabel": "$t.mDetail.close",
+                "toggleLabel": "$t.mDetail.tapToExpand",
+                "expandLabel": "$t.mDetail.tapToExpand"
+              },
+              "bind": {
+                "state": "$state.cardState"
+              },
+              "on": {
+                "update:state": {
+                  "set": "cardState"
+                },
+                "close": {
+                  "set": "selected",
+                  "value": null
+                }
+              },
+              "children": [
+                {
+                  "slot": "peek",
+                  "type": "Stack",
+                  "props": {
+                    "direction": "row",
+                    "align": "start",
+                    "gap": "md"
+                  },
+                  "children": [
+                    {
+                      "type": "div",
+                      "style": "entry-avatar",
+                      "children": [
+                        {
+                          "type": "Icon",
+                          "style": "entry-avatar-icon",
+                          "props": {
+                            "name": "i-heroicons-light-bulb",
+                            "size": "sm"
+                          }
+                        }
+                      ]
+                    },
+                    {
+                      "type": "Stack",
+                      "style": "peek-text",
+                      "props": {
+                        "gap": "none"
+                      },
+                      "children": [
+                        {
+                          "type": "Text",
+                          "props": {
+                            "size": "sm",
+                            "weight": "bold"
+                          },
+                          "bind": {
+                            "text": "$state.selected.properties.i18n.$locale.title",
+                            "fallback": "$state.selected.comment"
+                          }
+                        },
+                        {
+                          "type": "Text",
+                          "if": "$state.selected.properties.primaryTag",
+                          "style": "peek-theme",
+                          "props": {
+                            "size": "xs",
+                            "weight": "medium"
+                          },
+                          "bind": {
+                            "text": "$state.selected.properties.primaryTag",
+                            "labels": "$state.tagLabels"
+                          }
+                        },
+                        {
+                          "type": "Text",
+                          "style": "clamp-3",
+                          "props": {
+                            "size": "xs",
+                            "tone": "muted"
+                          },
+                          "bind": {
+                            "text": "$state.selected.properties.i18n.$locale.shortDesc",
+                            "fallback": "$state.selected.properties.shortDesc"
+                          }
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "type": "Text",
+                  "style": "sheet-title",
+                  "props": {
+                    "as": "h2",
+                    "size": "2xl",
+                    "weight": "bold",
+                    "tone": "inverse"
+                  },
+                  "bind": {
+                    "text": "$state.selected.properties.i18n.$locale.title",
+                    "fallback": "$state.selected.comment"
+                  }
+                },
+                {
+                  "type": "Stack",
+                  "if": "$state.selected.properties.date",
+                  "props": {
+                    "direction": "row",
+                    "align": "center",
+                    "gap": "sm",
+                    "wrap": true
+                  },
+                  "children": [
+                    {
+                      "type": "Text",
+                      "style": "entry-badge",
+                      "props": {
+                        "as": "span",
+                        "size": "sm",
+                        "weight": "medium",
+                        "text": "$t.mDetail.datePublished"
+                      }
+                    },
+                    {
+                      "type": "Text",
+                      "props": {
+                        "as": "span",
+                        "size": "sm",
+                        "tone": "inverse"
+                      },
+                      "bind": {
+                        "text": "$state.selected.properties.date"
+                      }
+                    }
+                  ]
+                },
+                {
+                  "type": "Stack",
+                  "if": "$state.selected.properties.location",
+                  "props": {
+                    "direction": "row",
+                    "align": "center",
+                    "gap": "sm",
+                    "wrap": true
+                  },
+                  "children": [
+                    {
+                      "type": "Text",
+                      "style": "entry-badge",
+                      "props": {
+                        "as": "span",
+                        "size": "sm",
+                        "weight": "medium",
+                        "text": "$t.mDetail.location"
+                      }
+                    },
+                    {
+                      "type": "Text",
+                      "props": {
+                        "as": "span",
+                        "size": "sm",
+                        "tone": "inverse"
+                      },
+                      "bind": {
+                        "text": "$state.selected.properties.i18n.$locale.location",
+                        "fallback": "$state.selected.properties.location"
+                      }
+                    }
+                  ]
+                },
+                {
+                  "type": "div",
+                  "if": "$state.selected.properties.description",
+                  "children": [
+                    {
+                      "type": "Text",
+                      "style": "entry-badge",
+                      "props": {
+                        "as": "span",
+                        "size": "sm",
+                        "weight": "medium",
+                        "text": "$t.mDetail.description"
+                      }
+                    },
+                    {
+                      "type": "Text",
+                      "style": "sheet-body",
+                      "props": {
+                        "size": "sm",
+                        "tone": "inverse"
+                      },
+                      "bind": {
+                        "text": "$state.selected.properties.i18n.$locale.description",
+                        "fallback": "$state.selected.properties.description"
+                      }
+                    }
+                  ]
+                },
+                {
+                  "type": "div",
+                  "if": "$state.selected.properties.photos.length",
+                  "style": "photo-frame",
+                  "children": [
+                    {
+                      "type": "Carousel",
+                      "props": {
+                        "height": "lg",
+                        "emptyTitle": "$t.photo.noPhoto",
+                        "emptyText": "$t.photo.beFirst",
+                        "prevLabel": "$t.photo.prevPhoto",
+                        "nextLabel": "$t.photo.nextPhoto"
+                      },
+                      "bind": {
+                        "images": "$state.selected.properties.photos",
+                        "alt": "$state.selected.comment"
+                      }
+                    }
+                  ]
+                },
+                {
+                  "type": "Audio",
+                  "props": {
+                    "label": "$t.detail.voiceNotes",
+                    "tone": "inverse"
+                  },
+                  "bind": {
+                    "src": "$state.selected.properties.audio"
+                  }
+                },
+                {
+                  "type": "div",
+                  "if": "$state.selected.properties.linkList.length",
+                  "children": [
+                    {
+                      "type": "Text",
+                      "style": "sheet-label",
+                      "props": {
+                        "size": "sm",
+                        "weight": "bold",
+                        "tone": "inverse",
+                        "text": "$t.mDetail.learnMore"
+                      }
+                    },
+                    {
+                      "type": "List",
+                      "props": {
+                        "gap": "xs"
+                      },
+                      "bind": {
+                        "items": "$state.selected.properties.linkList"
+                      },
+                      "item": {
+                        "type": "Stack",
+                        "props": {
+                          "direction": "row",
+                          "align": "start",
+                          "gap": "xs"
+                        },
+                        "children": [
+                          {
+                            "type": "Icon",
+                            "style": "link-icon",
+                            "props": {
+                              "name": "i-heroicons-link",
+                              "size": "xs"
+                            }
+                          },
+                          {
+                            "type": "Text",
+                            "if": "!$item.url",
+                            "props": {
+                              "as": "span",
+                              "size": "xs",
+                              "tone": "inverse"
+                            },
+                            "bind": {
+                              "text": "$item.label",
+                              "labels": "$state.linkLabels"
+                            }
+                          },
+                          {
+                            "type": "a",
+                            "if": "$item.url",
+                            "style": "sheet-link",
+                            "props": {
+                              "target": "_blank",
+                              "rel": "noopener noreferrer"
+                            },
+                            "bind": {
+                              "href": "$item.url"
+                            },
+                            "children": [
+                              {
+                                "type": "Text",
+                                "props": {
+                                  "as": "span",
+                                  "size": "xs",
+                                  "tone": "inverse"
+                                },
+                                "bind": {
+                                  "text": "$item.label",
+                                  "labels": "$state.linkLabels"
+                                }
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                },
+                {
+                  "type": "div",
+                  "if": "$state.selected.properties.string_id",
+                  "style": "sheet-community",
+                  "children": [
+                    {
+                      "type": "Stack",
+                      "style": "sheet-community-head",
+                      "props": {
+                        "direction": "row",
+                        "justify": "between",
+                        "align": "center",
+                        "gap": "sm"
+                      },
+                      "children": [
+                        {
+                          "type": "Stack",
+                          "props": {
+                            "direction": "row",
+                            "align": "baseline",
+                            "gap": "xs"
+                          },
+                          "children": [
+                            {
+                              "type": "Text",
+                              "props": {
+                                "as": "span",
+                                "size": "sm",
+                                "weight": "bold",
+                                "tone": "inverse",
+                                "text": "$t.mDetail.community"
+                              }
+                            },
+                            {
+                              "type": "Text",
+                              "if": "$state.contributions.length",
+                              "style": "sheet-count",
+                              "props": {
+                                "as": "span",
+                                "size": "sm",
+                                "prefix": "(",
+                                "suffix": ")"
+                              },
+                              "bind": {
+                                "text": "$state.contributions.length"
+                              }
+                            }
+                          ]
+                        },
+                        {
+                          "type": "Button",
+                          "style": "sheet-add",
+                          "props": {
+                            "size": "sm",
+                            "color": "white",
+                            "variant": "ghost",
+                            "icon": "i-heroicons-plus",
+                            "label": "$t.detail.add"
+                          },
+                          "on": {
+                            "click": {
+                              "set": "uploadFor",
+                              "value": "$state.selected.properties.string_id"
+                            }
+                          }
+                        }
+                      ]
+                    },
+                    {
+                      "type": "Text",
+                      "if": "!$state.contributions.length",
+                      "style": "sheet-quiet",
+                      "props": {
+                        "size": "xs",
+                        "text": "$t.mDetail.beFirst"
+                      }
+                    },
+                    {
+                      "type": "List",
+                      "props": {
+                        "gap": "sm"
+                      },
+                      "bind": {
+                        "items": "$state.contributions"
+                      },
+                      "item": {
+                        "type": "div",
+                        "style": "contrib-card",
+                        "children": [
+                          {
+                            "type": "List",
+                            "if": "$item.media.length",
+                            "style": "contrib-media",
+                            "props": {
+                              "layout": "grid",
+                              "cols": 3,
+                              "gap": "xs"
+                            },
+                            "bind": {
+                              "items": "$item.media"
+                            },
+                            "item": {
+                              "type": "div",
+                              "children": [
+                                {
+                                  "type": "Audio",
+                                  "if": "$item.kind == 'audio'",
+                                  "bind": {
+                                    "src": "$item.url"
+                                  }
+                                },
+                                {
+                                  "type": "Image",
+                                  "if": "$item.kind != 'audio'",
+                                  "style": "contrib-thumb",
+                                  "props": {
+                                    "width": "full"
+                                  },
+                                  "bind": {
+                                    "src": "$item.url",
+                                    "alt": "$item.name",
+                                    "href": "$item.url"
+                                  }
+                                }
+                              ]
+                            }
+                          },
+                          {
+                            "type": "Text",
+                            "if": "$item.comment",
+                            "props": {
+                              "size": "xs",
+                              "tone": "inverse"
+                            },
+                            "bind": {
+                              "text": "$item.comment"
+                            }
+                          },
+                          {
+                            "type": "Stack",
+                            "if": "$state.auth.isAdmin",
+                            "style": "contrib-actions",
+                            "props": {
+                              "direction": "row",
+                              "align": "center",
+                              "gap": "xs"
+                            },
+                            "children": [
+                              {
+                                "type": "Text",
+                                "if": "!$item.approved",
+                                "style": "chip-pending",
+                                "props": {
+                                  "as": "span",
+                                  "size": "xs",
+                                  "weight": "semibold",
+                                  "text": "$t.detail.pending"
+                                }
+                              },
+                              {
+                                "type": "Button",
+                                "if": "!$item.approved",
+                                "props": {
+                                  "size": "xs",
+                                  "color": "white",
+                                  "label": "$t.detail.approve"
+                                },
+                                "on": {
+                                  "click": {
+                                    "call": "approveContribution",
+                                    "payload": "$item"
+                                  }
+                                }
+                              },
+                              {
+                                "type": "Button",
+                                "props": {
+                                  "size": "xs",
+                                  "color": "red",
+                                  "label": "$t.detail.delete"
+                                },
+                                "on": {
+                                  "click": {
+                                    "call": "deleteContribution",
+                                    "payload": "$item"
+                                  }
+                                }
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "IconBar",
+              "if": "!$state.onboarding && !$state.selected && $state.mobileView != 'more' && $state.mobileView != 'info'",
+              "props": {
+                "position": "bottom",
+                "size": "lg",
+                "items": [
+                  {
+                    "value": "map",
+                    "icon": "i-heroicons-map",
+                    "label": "$t.nav.map",
+                    "color": "#57C9C0"
+                  },
+                  {
+                    "value": "list",
+                    "icon": "i-heroicons-square-3-stack-3d",
+                    "label": "$t.nav.list",
+                    "color": "#57C9C0"
+                  },
+                  {
+                    "value": "info",
+                    "icon": "i-heroicons-information-circle",
+                    "label": "$t.nav.info",
+                    "color": "#57C9C0"
+                  },
+                  {
+                    "value": "more",
+                    "icon": "i-heroicons-plus",
+                    "label": "$t.nav.addEntryMobile",
+                    "color": "#57C9C0"
+                  }
+                ]
+              },
+              "bind": {
+                "modelValue": "$state.mobileView"
+              },
+              "on": {
+                "update:modelValue": {
+                  "set": "mobileView"
+                }
+              }
+            },
+            {
+              "type": "Modal",
+              "if": "$state.mobileView == 'info'",
+              "props": {
+                "title": "$t.onboarding.title",
+                "align": "center",
+                "size": "lg",
+                "buttonLabel": "$t.onboarding.getStarted"
+              },
+              "on": {
+                "confirm": {
+                  "set": "mobileView",
+                  "value": "map"
+                },
+                "close": {
+                  "set": "mobileView",
+                  "value": "map"
+                }
+              },
+              "children": [
+                {
+                  "type": "Stack",
+                  "props": {
+                    "gap": "lg"
+                  },
+                  "children": [
+                    {
+                      "type": "Stack",
+                      "props": {
+                        "direction": "row",
+                        "justify": "end"
+                      },
+                      "children": [
+                        {
+                          "type": "Tabs",
+                          "props": {
+                            "options": [
+                              {
+                                "label": "EN",
+                                "value": "en"
+                              },
+                              {
+                                "label": "PT",
+                                "value": "pt"
+                              },
+                              {
+                                "label": "ES",
+                                "value": "es"
+                              }
+                            ]
+                          },
+                          "bind": {
+                            "modelValue": "$locale"
+                          },
+                          "on": {
+                            "update:modelValue": {
+                              "call": "setLocale"
+                            }
+                          }
+                        }
+                      ]
+                    },
+                    {
+                      "type": "Text",
+                      "props": {
+                        "text": "$t.onboarding.intro"
+                      }
+                    },
+                    {
+                      "type": "Stack",
+                      "props": {
+                        "gap": "sm"
+                      },
+                      "children": [
+                        {
+                          "type": "Stack",
+                          "props": {
+                            "direction": "row",
+                            "gap": "sm",
+                            "align": "start"
+                          },
+                          "children": [
+                            {
+                              "type": "Icon",
+                              "props": {
+                                "name": "i-heroicons-map",
+                                "size": "lg",
+                                "tone": "accent"
+                              }
+                            },
+                            {
+                              "type": "Text",
+                              "props": {
+                                "text": "$t.onboarding.point1"
+                              }
+                            }
+                          ]
+                        },
+                        {
+                          "type": "Stack",
+                          "props": {
+                            "direction": "row",
+                            "gap": "sm",
+                            "align": "start"
+                          },
+                          "children": [
+                            {
+                              "type": "Icon",
+                              "props": {
+                                "name": "i-heroicons-cursor-arrow-rays",
+                                "size": "lg",
+                                "tone": "accent"
+                              }
+                            },
+                            {
+                              "type": "Text",
+                              "props": {
+                                "text": "$t.onboarding.point2"
+                              }
+                            }
+                          ]
+                        },
+                        {
+                          "type": "Stack",
+                          "props": {
+                            "direction": "row",
+                            "gap": "sm",
+                            "align": "start"
+                          },
+                          "children": [
+                            {
+                              "type": "Icon",
+                              "props": {
+                                "name": "i-heroicons-camera",
+                                "size": "lg",
+                                "tone": "accent"
+                              }
+                            },
+                            {
+                              "type": "Text",
+                              "props": {
+                                "text": "$t.onboarding.point3"
+                              }
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "slot": "footer",
+                  "type": "Text",
+                  "props": {
+                    "text": "$t.onboarding.footer",
+                    "size": "xs",
+                    "tone": "muted",
+                    "align": "center"
+                  }
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "div",
+          "style": "pick-banner",
+          "if": "$state.picking",
+          "children": [
+            {
+              "type": "Icon",
+              "props": {
+                "name": "i-heroicons-map-pin"
+              },
+              "style": "pick-icon"
+            },
+            {
+              "type": "Text",
+              "bind": {
+                "text": "$t.add.pickBanner"
+              },
+              "props": {
+                "size": "sm",
+                "weight": "medium"
+              }
+            }
+          ]
+        },
+        {
+          "type": "div",
+          "style": "moderate-trigger",
+          "if": "$state.mobileView == 'map'",
+          "children": [
+            {
+              "type": "Button",
+              "if": "!$state.auth.isAdmin",
+              "props": {
+                "icon": "i-heroicons-lock-closed",
+                "color": "gray",
+                "variant": "solid",
+                "size": "sm"
+              },
+              "style": "round-shadow",
+              "on": {
+                "click": {
+                  "set": "loginOpen",
+                  "value": true
+                }
+              }
+            },
+            {
+              "type": "Button",
+              "if": "$state.auth.isAdmin",
+              "props": {
+                "icon": "i-heroicons-shield-check",
+                "color": "gray",
+                "variant": "solid",
+                "size": "sm"
+              },
+              "style": "round-shadow",
+              "text": "$t.mod.moderate",
+              "on": {
+                "click": {
+                  "toggle": "reviewOpen"
+                }
+              }
+            }
+          ]
+        },
+        {
+          "type": "Modal",
+          "props": {
+            "size": "sm"
+          },
+          "bind": {
+            "modelValue": "$state.loginOpen",
+            "title": "$t.mod.signInTitle"
+          },
+          "on": {
+            "update:modelValue": {
+              "set": "loginOpen"
+            }
+          },
+          "children": [
+            {
+              "type": "Stack",
+              "props": {
+                "gap": "sm"
+              },
+              "children": [
+                {
+                  "type": "FormFields",
+                  "props": {
+                    "fields": [
+                      {
+                        "name": "email",
+                        "type": "email",
+                        "placeholder": "Email"
+                      },
+                      {
+                        "name": "password",
+                        "type": "password",
+                        "placeholder": "Password"
+                      }
+                    ],
+                    "submitLabel": "Sign in",
+                    "gap": "gap-3"
+                  },
+                  "bind": {
+                    "modelValue": "$state.login"
+                  },
+                  "on": {
+                    "update:modelValue": {
+                      "set": "login"
+                    },
+                    "submit": [
+                      {
+                        "call": "signInModerator"
+                      },
+                      {
+                        "set": "loginOpen",
+                        "value": false
+                      },
+                      {
+                        "set": "login",
+                        "value": {}
+                      },
+                      {
+                        "set": "reviewOpen",
+                        "value": true
+                      }
+                    ]
+                  }
+                },
+                {
+                  "type": "Text",
+                  "if": "$errors.signInModerator",
+                  "bind": {
+                    "text": "$errors.signInModerator"
+                  },
+                  "props": {
+                    "size": "xs",
+                    "tone": "accent"
+                  }
+                },
+                {
+                  "type": "Text",
+                  "if": "$errors.resetPassword",
+                  "bind": {
+                    "text": "$errors.resetPassword"
+                  },
+                  "props": {
+                    "size": "xs",
+                    "tone": "accent"
+                  }
+                },
+                {
+                  "type": "Button",
+                  "props": {
+                    "variant": "link",
+                    "color": "gray",
+                    "size": "xs"
+                  },
+                  "text": "$t.mod.forgotPassword",
+                  "on": {
+                    "click": {
+                      "call": "resetPassword",
+                      "payload": "$state.login.email"
+                    }
+                  }
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "div",
+          "style": "review-panel",
+          "if": "$state.auth.isAdmin && $state.reviewOpen",
+          "children": [
+            {
+              "type": "div",
+              "style": "review-head",
+              "children": [
+                {
+                  "type": "Stack",
+                  "props": {
+                    "direction": "row",
+                    "align": "center",
+                    "gap": "xs"
+                  },
+                  "children": [
+                    {
+                      "type": "Button",
+                      "if": "$state.isMobile && !$state.reviewCollapsed",
+                      "props": {
+                        "size": "xs",
+                        "color": "gray",
+                        "variant": "ghost",
+                        "icon": "i-heroicons-chevron-down",
+                        "label": "$t.mod.collapse"
+                      },
+                      "on": {
+                        "click": {
+                          "set": "reviewCollapsed",
+                          "value": true
+                        }
+                      }
+                    },
+                    {
+                      "type": "Button",
+                      "if": "$state.isMobile && $state.reviewCollapsed",
+                      "props": {
+                        "size": "xs",
+                        "color": "gray",
+                        "variant": "ghost",
+                        "icon": "i-heroicons-chevron-up",
+                        "label": "$t.mod.expand"
+                      },
+                      "on": {
+                        "click": {
+                          "set": "reviewCollapsed",
+                          "value": false
+                        }
+                      }
+                    },
+                    {
+                      "type": "Text",
+                      "props": {
+                        "as": "h3",
+                        "size": "sm",
+                        "weight": "semibold",
+                        "text": "$t.mod.review"
+                      }
+                    }
+                  ]
+                },
+                {
+                  "type": "Stack",
+                  "props": {
+                    "direction": "row",
+                    "align": "center",
+                    "gap": "xs"
+                  },
+                  "children": [
+                    {
+                      "type": "Button",
+                      "if": "$state.auth.isSuperAdmin",
+                      "props": {
+                        "size": "xs",
+                        "color": "gray",
+                        "variant": "ghost",
+                        "icon": "i-heroicons-users",
+                        "to": "/admin",
+                        "label": "$t.admin.accounts"
+                      }
+                    },
+                    {
+                      "type": "Button",
+                      "props": {
+                        "size": "xs",
+                        "color": "gray",
+                        "variant": "ghost",
+                        "label": "$t.mod.signOut"
+                      },
+                      "on": {
+                        "click": [
+                          {
+                            "call": "signOut",
+                            "payload": null
+                          },
+                          {
+                            "set": "reviewOpen",
+                            "value": false
+                          }
+                        ]
+                      }
+                    },
+                    {
+                      "type": "Button",
+                      "props": {
+                        "size": "xs",
+                        "color": "gray",
+                        "variant": "ghost",
+                        "icon": "i-heroicons-x-mark",
+                        "label": "$t.mod.close"
+                      },
+                      "on": {
+                        "click": {
+                          "set": "reviewOpen",
+                          "value": false
+                        }
+                      }
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "div",
+              "style": "review-body",
+              "if": "!$state.reviewCollapsed",
+              "children": [
+                {
+                  "type": "Stack",
+                  "style": "review-eyebrow",
+                  "props": {
+                    "direction": "row",
+                    "gap": "xs"
+                  },
+                  "children": [
+                    {
+                      "type": "Text",
+                      "props": {
+                        "as": "span",
+                        "size": "xs",
+                        "text": "$t.mod.entries"
+                      }
+                    },
+                    {
+                      "type": "Text",
+                      "props": {
+                        "as": "span",
+                        "size": "xs"
+                      },
+                      "bind": {
+                        "text": "$state.moderation.length"
+                      }
+                    }
+                  ]
+                },
+                {
+                  "type": "Text",
+                  "if": "!$state.moderation.length",
+                  "props": {
+                    "size": "xs",
+                    "tone": "muted",
+                    "text": "$t.mod.noEntries"
+                  }
+                },
+                {
+                  "type": "List",
+                  "props": {
+                    "gap": "none"
+                  },
+                  "bind": {
+                    "items": "$state.moderation"
+                  },
+                  "item": {
+                    "type": "div",
+                    "style": "review-card",
+                    "props": {
+                      "title": "$t.mod.showOnMap"
+                    },
+                    "on": {
+                      "click": [
+                        {
+                          "call": "selectItem",
+                          "payload": "$item.string_id",
+                          "args": {
+                            "from": "features",
+                            "into": "selected",
+                            "key": "properties.string_id"
+                          }
+                        },
+                        {
+                          "call": "loadContributions",
+                          "payload": "$item.string_id"
+                        },
+                        {
+                          "set": "reviewCollapsed",
+                          "value": true
+                        }
+                      ]
+                    },
+                    "children": [
+                      {
+                        "type": "Stack",
+                        "props": {
+                          "direction": "row",
+                          "justify": "between",
+                          "gap": "xs"
+                        },
+                        "children": [
+                          {
+                            "type": "Stack",
+                            "props": {
+                              "gap": "none"
+                            },
+                            "children": [
+                              {
+                                "type": "Text",
+                                "props": {
+                                  "size": "sm",
+                                  "weight": "medium"
+                                },
+                                "bind": {
+                                  "text": "$item.title"
+                                }
+                              },
+                              {
+                                "type": "Text",
+                                "props": {
+                                  "size": "xs",
+                                  "tone": "muted"
+                                },
+                                "bind": {
+                                  "text": "$item.location",
+                                  "fallback": "$item.primaryTag"
+                                }
+                              },
+                              {
+                                "type": "List",
+                                "props": {
+                                  "gap": "none"
+                                },
+                                "bind": {
+                                  "items": "$item.i18n"
+                                },
+                                "item": {
+                                  "type": "Stack",
+                                  "props": {
+                                    "direction": "row",
+                                    "gap": "xs"
+                                  },
+                                  "children": [
+                                    {
+                                      "type": "Text",
+                                      "style": "lang-code",
+                                      "props": {
+                                        "as": "span",
+                                        "size": "xs",
+                                        "weight": "semibold",
+                                        "tone": "muted"
+                                      },
+                                      "bind": {
+                                        "text": "$item.key"
+                                      }
+                                    },
+                                    {
+                                      "type": "Text",
+                                      "props": {
+                                        "as": "span",
+                                        "size": "xs",
+                                        "tone": "muted"
+                                      },
+                                      "bind": {
+                                        "text": "$item.title"
+                                      }
+                                    }
+                                  ]
+                                }
+                              }
+                            ]
+                          },
+                          {
+                            "type": "Text",
+                            "style": "chip-live",
+                            "if": "$item.approved",
+                            "props": {
+                              "as": "span",
+                              "size": "xs",
+                              "weight": "semibold",
+                              "text": "$t.mod.live"
+                            }
+                          },
+                          {
+                            "type": "Text",
+                            "style": "chip-pending",
+                            "if": "!$item.approved",
+                            "props": {
+                              "as": "span",
+                              "size": "xs",
+                              "weight": "semibold",
+                              "text": "$t.mod.pending"
+                            }
+                          }
+                        ]
+                      },
+                      {
+                        "type": "Stack",
+                        "style": "review-actions",
+                        "props": {
+                          "direction": "row",
+                          "gap": "xs"
+                        },
+                        "children": [
+                          {
+                            "type": "Button",
+                            "if": "!$item.approved",
+                            "props": {
+                              "size": "xs",
+                              "color": "primary",
+                              "label": "$t.mod.approve"
+                            },
+                            "on": {
+                              "click.stop": {
+                                "call": "approveEntry",
+                                "payload": "$item"
+                              }
+                            }
+                          },
+                          {
+                            "type": "Button",
+                            "props": {
+                              "size": "xs",
+                              "color": "red",
+                              "variant": "soft",
+                              "label": "$t.mod.delete"
+                            },
+                            "on": {
+                              "click.stop": {
+                                "call": "deleteEntry",
+                                "payload": "$item"
+                              }
+                            }
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                },
+                {
+                  "type": "Stack",
+                  "style": "review-eyebrow",
+                  "props": {
+                    "direction": "row",
+                    "gap": "xs"
+                  },
+                  "children": [
+                    {
+                      "type": "Text",
+                      "props": {
+                        "as": "span",
+                        "size": "xs",
+                        "text": "$t.mod.contributions"
+                      }
+                    },
+                    {
+                      "type": "Text",
+                      "props": {
+                        "as": "span",
+                        "size": "xs"
+                      },
+                      "bind": {
+                        "text": "$state.pendingContributions.length"
+                      }
+                    }
+                  ]
+                },
+                {
+                  "type": "Text",
+                  "if": "!$state.pendingContributions.length",
+                  "props": {
+                    "size": "xs",
+                    "tone": "muted",
+                    "text": "$t.mod.noContributions"
+                  }
+                },
+                {
+                  "type": "List",
+                  "props": {
+                    "gap": "none"
+                  },
+                  "bind": {
+                    "items": "$state.pendingContributions"
+                  },
+                  "item": {
+                    "type": "div",
+                    "style": "review-card",
+                    "props": {
+                      "title": "$t.mod.showOnMap"
+                    },
+                    "on": {
+                      "click": [
+                        {
+                          "call": "selectItem",
+                          "payload": "$item.projectId",
+                          "args": {
+                            "from": "features",
+                            "into": "selected",
+                            "key": "properties.string_id"
+                          }
+                        },
+                        {
+                          "call": "loadContributions",
+                          "payload": "$item.projectId"
+                        },
+                        {
+                          "set": "reviewCollapsed",
+                          "value": true
+                        }
+                      ]
+                    },
+                    "children": [
+                      {
+                        "type": "Text",
+                        "props": {
+                          "size": "xs",
+                          "weight": "medium",
+                          "tone": "muted"
+                        },
+                        "bind": {
+                          "text": "$item.projectTitle"
+                        }
+                      },
+                      {
+                        "type": "Text",
+                        "if": "$item.comment",
+                        "props": {
+                          "size": "sm"
+                        },
+                        "bind": {
+                          "text": "$item.comment"
+                        }
+                      },
+                      {
+                        "type": "List",
+                        "props": {
+                          "gap": "xs"
+                        },
+                        "bind": {
+                          "items": "$item.media"
+                        },
+                        "item": {
+                          "type": "div",
+                          "on": {
+                            "click.stop": []
+                          },
+                          "children": [
+                            {
+                              "type": "Audio",
+                              "if": "$item.kind == 'audio'",
+                              "bind": {
+                                "src": "$item.url"
+                              }
+                            },
+                            {
+                              "type": "Image",
+                              "if": "$item.kind != 'audio'",
+                              "style": "review-thumb",
+                              "props": {
+                                "width": "full"
+                              },
+                              "bind": {
+                                "src": "$item.url",
+                                "alt": "$item.name",
+                                "href": "$item.url"
+                              }
+                            }
+                          ]
+                        }
+                      },
+                      {
+                        "type": "Stack",
+                        "style": "review-actions",
+                        "props": {
+                          "direction": "row",
+                          "gap": "xs"
+                        },
+                        "children": [
+                          {
+                            "type": "Button",
+                            "props": {
+                              "size": "xs",
+                              "color": "primary",
+                              "label": "$t.mod.approve"
+                            },
+                            "on": {
+                              "click.stop": {
+                                "call": "approveContribution",
+                                "payload": "$item"
+                              }
+                            }
+                          },
+                          {
+                            "type": "Button",
+                            "props": {
+                              "size": "xs",
+                              "color": "red",
+                              "variant": "soft",
+                              "label": "$t.mod.delete"
+                            },
+                            "on": {
+                              "click.stop": {
+                                "call": "deleteContribution",
+                                "payload": "$item"
+                              }
+                            }
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "Modal",
+          "props": {
+            "title": "$t.onboarding.title",
+            "align": "center",
+            "size": "lg",
+            "buttonLabel": "$t.onboarding.getStarted"
+          },
+          "bind": {
+            "modelValue": "$state.onboarding"
+          },
+          "on": {
+            "confirm": {
+              "set": "onboarding",
+              "value": false
+            },
+            "close": {
+              "set": "onboarding",
+              "value": false
+            },
+            "update:modelValue": {
+              "set": "onboarding"
+            }
+          },
+          "children": [
+            {
+              "type": "Stack",
+              "props": {
+                "gap": "lg"
+              },
+              "children": [
+                {
+                  "type": "Stack",
+                  "props": {
+                    "direction": "row",
+                    "justify": "end"
+                  },
+                  "children": [
+                    {
+                      "type": "Tabs",
+                      "props": {
+                        "options": [
+                          {
+                            "label": "EN",
+                            "value": "en"
+                          },
+                          {
+                            "label": "PT",
+                            "value": "pt"
+                          },
+                          {
+                            "label": "ES",
+                            "value": "es"
+                          }
+                        ]
+                      },
+                      "bind": {
+                        "modelValue": "$locale"
+                      },
+                      "on": {
+                        "update:modelValue": {
+                          "call": "setLocale"
+                        }
+                      }
+                    }
+                  ]
+                },
+                {
+                  "type": "Text",
+                  "props": {
+                    "text": "$t.onboarding.intro"
+                  }
+                },
+                {
+                  "type": "Stack",
+                  "props": {
+                    "gap": "sm"
+                  },
+                  "children": [
+                    {
+                      "type": "Stack",
+                      "props": {
+                        "direction": "row",
+                        "gap": "sm",
+                        "align": "start"
+                      },
+                      "children": [
+                        {
+                          "type": "Icon",
+                          "props": {
+                            "name": "i-heroicons-map",
+                            "size": "lg",
+                            "tone": "accent"
+                          }
+                        },
+                        {
+                          "type": "Text",
+                          "props": {
+                            "text": "$t.onboarding.point1"
+                          }
+                        }
+                      ]
+                    },
+                    {
+                      "type": "Stack",
+                      "props": {
+                        "direction": "row",
+                        "gap": "sm",
+                        "align": "start"
+                      },
+                      "children": [
+                        {
+                          "type": "Icon",
+                          "props": {
+                            "name": "i-heroicons-cursor-arrow-rays",
+                            "size": "lg",
+                            "tone": "accent"
+                          }
+                        },
+                        {
+                          "type": "Text",
+                          "props": {
+                            "text": "$t.onboarding.point2"
+                          }
+                        }
+                      ]
+                    },
+                    {
+                      "type": "Stack",
+                      "props": {
+                        "direction": "row",
+                        "gap": "sm",
+                        "align": "start"
+                      },
+                      "children": [
+                        {
+                          "type": "Icon",
+                          "props": {
+                            "name": "i-heroicons-camera",
+                            "size": "lg",
+                            "tone": "accent"
+                          }
+                        },
+                        {
+                          "type": "Text",
+                          "props": {
+                            "text": "$t.onboarding.point3"
+                          }
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "slot": "footer",
+              "type": "Text",
+              "props": {
+                "text": "$t.onboarding.footer",
+                "size": "xs",
+                "tone": "muted",
+                "align": "center"
+              }
+            }
+          ]
+        },
+        {
+          "type": "Modal",
+          "props": {
+            "title": "$t.detail.addPhoto",
+            "size": "sm",
+            "closable": true,
+            "scroll": true
+          },
+          "bind": {
+            "modelValue": "$state.uploadFor"
+          },
+          "on": {
+            "update:modelValue": [
+              {
+                "set": "uploadFor",
+                "value": null
+              },
+              {
+                "set": "uploadMedia",
+                "value": []
+              },
+              {
+                "set": "uploadDraft",
+                "value": {
+                  "comment": ""
+                }
+              }
+            ],
+            "close": [
+              {
+                "set": "uploadFor",
+                "value": null
+              },
+              {
+                "set": "uploadMedia",
+                "value": []
+              },
+              {
+                "set": "uploadDraft",
+                "value": {
+                  "comment": ""
+                }
+              }
+            ]
+          },
+          "children": [
+            {
+              "type": "Stack",
+              "props": {
+                "gap": "md"
+              },
+              "children": [
+                {
+                  "type": "UploadQueue",
+                  "props": {
+                    "uploader": "uploadMedia",
+                    "recorder": true,
+                    "accept": "image/*,audio/*",
+                    "lines": [
+                      "$t.upload.clickToSelect",
+                      "$t.upload.hint"
+                    ],
+                    "recordLabel": "$t.voice.record",
+                    "stopLabel": "$t.voice.stop",
+                    "removeLabel": "$t.fileUpload.removeFile",
+                    "deniedLabel": "$t.voice.micDenied",
+                    "failedLabel": "$t.upload.uploadError"
+                  },
+                  "bind": {
+                    "modelValue": "$state.uploadMedia",
+                    "args": "$state.uploadFor"
+                  },
+                  "on": {
+                    "update:modelValue": {
+                      "set": "uploadMedia"
+                    },
+                    "busy": {
+                      "set": "uploadBusy"
+                    }
+                  }
+                },
+                {
+                  "type": "FormFields",
+                  "props": {
+                    "fields": [
+                      {
+                        "name": "comment",
+                        "type": "textarea",
+                        "rows": 3,
+                        "placeholder": "$t.upload.commentPlaceholder"
+                      }
+                    ]
+                  },
+                  "bind": {
+                    "modelValue": "$state.uploadDraft"
+                  },
+                  "on": {
+                    "update:modelValue": {
+                      "set": "uploadDraft"
+                    }
+                  }
+                },
+                {
+                  "type": "Text",
+                  "props": {
+                    "size": "xs",
+                    "tone": "muted",
+                    "text": "$t.upload.publicNote"
+                  }
+                },
+                {
+                  "type": "Text",
+                  "if": "$errors.addContribution",
+                  "style": "admin-error",
+                  "props": {
+                    "size": "xs"
+                  },
+                  "bind": {
+                    "text": "$errors.addContribution"
+                  }
+                },
+                {
+                  "type": "Stack",
+                  "props": {
+                    "direction": "row",
+                    "justify": "between",
+                    "gap": "sm"
+                  },
+                  "children": [
+                    {
+                      "type": "Button",
+                      "props": {
+                        "size": "sm",
+                        "color": "gray",
+                        "variant": "ghost",
+                        "label": "$t.upload.close"
+                      },
+                      "on": {
+                        "click": [
+                          {
+                            "set": "uploadFor",
+                            "value": null
+                          },
+                          {
+                            "set": "uploadMedia",
+                            "value": []
+                          },
+                          {
+                            "set": "uploadDraft",
+                            "value": {
+                              "comment": ""
+                            }
+                          }
+                        ]
+                      }
+                    },
+                    {
+                      "type": "Button",
+                      "props": {
+                        "size": "sm",
+                        "color": "primary",
+                        "label": "$t.detail.add"
+                      },
+                      "bind": {
+                        "loading": "$state.uploadBusy",
+                        "disabled": "$state.uploadBusy"
+                      },
+                      "on": {
+                        "click": [
+                          {
+                            "call": "addContribution",
+                            "payload": {
+                              "projectId": "$state.uploadFor",
+                              "comment": "$state.uploadDraft.comment",
+                              "media": "$state.uploadMedia"
+                            }
+                          },
+                          {
+                            "set": "uploadFor",
+                            "value": null
+                          },
+                          {
+                            "set": "uploadMedia",
+                            "value": []
+                          },
+                          {
+                            "set": "uploadDraft",
+                            "value": {
+                              "comment": ""
+                            }
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "div",
+          "if": "$state.wizardOpen && !$state.picking || $state.mobileView == 'more' && !$state.picking",
+          "style": "wizard-shell",
+          "children": [
+            {
+              "type": "div",
+              "style": "wizard-panel",
+              "children": [
+                {
+                  "type": "span",
+                  "if": "$state.isMobile",
+                  "style": "wizard-wordmark",
+                  "text": "MNC"
+                },
+                {
+                  "type": "Button",
+                  "style": "wizard-close",
+                  "props": {
+                    "size": "sm",
+                    "color": "gray",
+                    "variant": "solid",
+                    "icon": "i-heroicons-x-mark",
+                    "label": "$t.contribute.close"
+                  },
+                  "on": {
+                    "click": [
+                      {
+                        "set": "entry",
+                        "value": {
+                          "title": "",
+                          "primaryTag": "",
+                          "location": "",
+                          "coordinate": null,
+                          "example": "",
+                          "why": "",
+                          "date": "",
+                          "additionalInfo": "",
+                          "connectInfo": null,
+                          "fullName": "",
+                          "email": "",
+                          "country": "",
+                          "city": ""
+                        }
+                      },
+                      {
+                        "set": "entryFiles",
+                        "value": {
+                          "example": [],
+                          "why": [],
+                          "media": [],
+                          "additional": [],
+                          "voiceExample": [],
+                          "voiceWhy": []
+                        }
+                      },
+                      {
+                        "set": "wizardStep",
+                        "value": 1
+                      },
+                      {
+                        "set": "wizardSubmitted",
+                        "value": false
+                      },
+                      {
+                        "set": "wizardConfirmPin",
+                        "value": false
+                      },
+                      {
+                        "set": "placeName",
+                        "value": ""
+                      },
+                      {
+                        "set": "wizardOpen",
+                        "value": false
+                      },
+                      {
+                        "set": "picking",
+                        "value": false
+                      },
+                      {
+                        "set": "pin",
+                        "value": null
+                      },
+                      {
+                        "set": "mobileView",
+                        "value": "map"
+                      }
+                    ]
+                  }
+                },
+                {
+                  "type": "Stack",
+                  "if": "$state.wizardSubmitted",
+                  "style": "wizard-thanks",
+                  "props": {
+                    "align": "center",
+                    "gap": "md"
+                  },
+                  "children": [
+                    {
+                      "type": "Text",
+                      "style": "wizard-heading",
+                      "props": {
+                        "as": "h2",
+                        "size": "3xl",
+                        "weight": "bold",
+                        "align": "center",
+                        "text": "$t.contribute.title"
+                      }
+                    },
+                    {
+                      "type": "Text",
+                      "style": "wizard-subheading",
+                      "props": {
+                        "as": "h3",
+                        "size": "xl",
+                        "weight": "bold",
+                        "align": "center",
+                        "text": "$t.contribute.thankYou"
+                      }
+                    },
+                    {
+                      "type": "Text",
+                      "style": "wizard-thanks-body",
+                      "props": {
+                        "size": "sm",
+                        "align": "center",
+                        "text": "$t.contribute.received"
+                      }
+                    },
+                    {
+                      "type": "Text",
+                      "style": "wizard-thanks-body",
+                      "props": {
+                        "size": "sm",
+                        "align": "center",
+                        "text": "$t.contribute.inTouch"
+                      }
+                    },
+                    {
+                      "type": "Button",
+                      "style": "wizard-again",
+                      "props": {
+                        "color": "red",
+                        "label": "$t.contribute.anotherStory"
+                      },
+                      "on": {
+                        "click": [
+                          {
+                            "set": "entry",
+                            "value": {
+                              "title": "",
+                              "primaryTag": "",
+                              "location": "",
+                              "coordinate": null,
+                              "example": "",
+                              "why": "",
+                              "date": "",
+                              "additionalInfo": "",
+                              "connectInfo": null,
+                              "fullName": "",
+                              "email": "",
+                              "country": "",
+                              "city": ""
+                            }
+                          },
+                          {
+                            "set": "entryFiles",
+                            "value": {
+                              "example": [],
+                              "why": [],
+                              "media": [],
+                              "additional": [],
+                              "voiceExample": [],
+                              "voiceWhy": []
+                            }
+                          },
+                          {
+                            "set": "wizardStep",
+                            "value": 1
+                          },
+                          {
+                            "set": "wizardSubmitted",
+                            "value": false
+                          },
+                          {
+                            "set": "wizardConfirmPin",
+                            "value": false
+                          },
+                          {
+                            "set": "placeName",
+                            "value": ""
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                },
+                {
+                  "type": "div",
+                  "if": "!$state.wizardSubmitted",
+                  "style": "wizard-progress-box",
+                  "children": [
+                    {
+                      "type": "List",
+                      "style": "wizard-dots",
+                      "props": {
+                        "layout": "stack",
+                        "gap": "xs"
+                      },
+                      "bind": {
+                        "items": "$state.wizardSteps"
+                      },
+                      "item": {
+                        "type": "span",
+                        "children": [
+                          {
+                            "type": "i",
+                            "style": "dot-done",
+                            "if": "$item <= $state.wizardStep"
+                          },
+                          {
+                            "type": "i",
+                            "style": "dot-todo",
+                            "if": "$item > $state.wizardStep"
+                          }
+                        ]
+                      }
+                    },
+                    {
+                      "type": "Text",
+                      "style": "wizard-heading",
+                      "props": {
+                        "as": "h2",
+                        "size": "2xl",
+                        "weight": "bold",
+                        "align": "center",
+                        "text": "$t.contribute.title"
+                      }
+                    }
+                  ]
+                },
+                {
+                  "type": "div",
+                  "if": "!$state.wizardSubmitted",
+                  "style": "wizard-body",
+                  "children": [
+                    {
+                      "type": "Stack",
+                      "if": "$state.wizardStep == 1 && $state.wizardConfirmPin",
+                      "style": "wizard-step-card",
+                      "props": {
+                        "gap": "md"
+                      },
+                      "children": [
+                        {
+                          "type": "Text",
+                          "style": "wizard-prompt",
+                          "props": {
+                            "size": "sm",
+                            "weight": "semibold",
+                            "text": "$t.contribute.step1.confirmPinPrompt"
+                          }
+                        },
+                        {
+                          "type": "Stack",
+                          "if": "$state.entry.coordinate",
+                          "style": "pin-dropped",
+                          "props": {
+                            "direction": "row",
+                            "align": "center",
+                            "gap": "xs"
+                          },
+                          "children": [
+                            {
+                              "type": "Icon",
+                              "props": {
+                                "name": "i-heroicons-map-pin",
+                                "size": "xs"
+                              }
+                            },
+                            {
+                              "type": "Text",
+                              "props": {
+                                "as": "span",
+                                "size": "xs",
+                                "text": "$t.contribute.step1.pinDropped"
+                              }
+                            },
+                            {
+                              "type": "Text",
+                              "props": {
+                                "as": "span",
+                                "size": "xs",
+                                "weight": "medium"
+                              },
+                              "bind": {
+                                "text": "$state.placeName",
+                                "fallback": "$state.entry.location"
+                              }
+                            }
+                          ]
+                        },
+                        {
+                          "type": "Button",
+                          "style": "wizard-link",
+                          "props": {
+                            "size": "sm",
+                            "color": "red",
+                            "variant": "link",
+                            "label": "$t.contribute.step1.movePin"
+                          },
+                          "on": {
+                            "click": {
+                              "set": "picking",
+                              "value": true
+                            }
+                          }
+                        }
+                      ]
+                    },
+                    {
+                      "type": "Stack",
+                      "if": "$state.wizardStep == 1 && !$state.wizardConfirmPin",
+                      "style": "wizard-step-card",
+                      "props": {
+                        "gap": "md"
+                      },
+                      "children": [
+                        {
+                          "type": "Text",
+                          "style": "wizard-prompt",
+                          "props": {
+                            "size": "sm",
+                            "weight": "semibold",
+                            "text": "$t.contribute.step1.prompt"
+                          }
+                        },
+                        {
+                          "type": "FormFields",
+                          "props": {
+                            "fields": [
+                              {
+                                "name": "title",
+                                "placeholder": "$t.add.titlePlaceholder",
+                                "style": "pill-input"
+                              },
+                              {
+                                "name": "primaryTag",
+                                "type": "select",
+                                "creatable": true,
+                                "placeholder": "$t.add.themePlaceholder"
+                              },
+                              {
+                                "name": "location",
+                                "placeholder": "$t.contribute.step1.placeholder",
+                                "style": "pill-input"
+                              }
+                            ]
+                          },
+                          "bind": {
+                            "modelValue": "$state.entry"
+                          },
+                          "on": {
+                            "update:modelValue": {
+                              "set": "entry"
+                            }
+                          }
+                        },
+                        {
+                          "type": "Button",
+                          "style": "wizard-link",
+                          "props": {
+                            "size": "sm",
+                            "color": "red",
+                            "variant": "link",
+                            "label": "$t.contribute.step1.dropPin"
+                          },
+                          "on": {
+                            "click": {
+                              "set": "picking",
+                              "value": true
+                            }
+                          }
+                        },
+                        {
+                          "type": "Stack",
+                          "if": "$state.entry.coordinate",
+                          "style": "pin-dropped",
+                          "props": {
+                            "direction": "row",
+                            "align": "center",
+                            "gap": "xs"
+                          },
+                          "children": [
+                            {
+                              "type": "Icon",
+                              "props": {
+                                "name": "i-heroicons-map-pin",
+                                "size": "xs"
+                              }
+                            },
+                            {
+                              "type": "Text",
+                              "props": {
+                                "as": "span",
+                                "size": "xs",
+                                "text": "$t.contribute.step1.pinDropped"
+                              }
+                            },
+                            {
+                              "type": "Text",
+                              "props": {
+                                "as": "span",
+                                "size": "xs",
+                                "weight": "medium"
+                              },
+                              "bind": {
+                                "text": "$state.placeName",
+                                "fallback": "$state.entry.location"
+                              }
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "Stack",
+                      "if": "$state.wizardStep == 2",
+                      "props": {
+                        "gap": "md"
+                      },
+                      "children": [
+                        {
+                          "type": "Text",
+                          "style": "wizard-prompt",
+                          "props": {
+                            "size": "sm",
+                            "weight": "semibold",
+                            "text": "$t.contribute.step2.prompt"
+                          }
+                        },
+                        {
+                          "type": "FormFields",
+                          "props": {
+                            "fields": [
+                              {
+                                "name": "example",
+                                "type": "textarea",
+                                "rows": 5,
+                                "placeholder": "$t.contribute.descPlaceholder"
+                              }
+                            ]
+                          },
+                          "bind": {
+                            "modelValue": "$state.entry"
+                          },
+                          "on": {
+                            "update:modelValue": {
+                              "set": "entry"
+                            }
+                          }
+                        },
+                        {
+                          "type": "VoiceRecorder",
+                          "props": {
+                            "recordLabel": "$t.voice.record",
+                            "stopLabel": "$t.voice.stop",
+                            "removeLabel": "$t.fileUpload.removeFile",
+                            "deniedLabel": "$t.voice.micDenied"
+                          },
+                          "bind": {
+                            "modelValue": "$state.entryFiles.voiceExample"
+                          },
+                          "on": {
+                            "update:modelValue": {
+                              "set": "entryFiles.voiceExample"
+                            }
+                          }
+                        },
+                        {
+                          "type": "FileDropZone",
+                          "props": {
+                            "accept": "image/*,audio/*",
+                            "multiple": true,
+                            "maxSizeMb": 10,
+                            "lines": [
+                              "$t.fileUpload.prompt",
+                              "$t.fileUpload.hint"
+                            ],
+                            "removeLabel": "$t.fileUpload.removeFile",
+                            "tooLargeLabel": "$t.fileUpload.tooLarge",
+                            "unsupportedLabel": "$t.fileUpload.unsupported"
+                          },
+                          "bind": {
+                            "modelValue": "$state.entryFiles.example"
+                          },
+                          "on": {
+                            "update:modelValue": {
+                              "set": "entryFiles.example"
+                            }
+                          }
+                        }
+                      ]
+                    },
+                    {
+                      "type": "Stack",
+                      "if": "$state.wizardStep == 3",
+                      "props": {
+                        "gap": "md"
+                      },
+                      "children": [
+                        {
+                          "type": "Text",
+                          "style": "wizard-prompt",
+                          "props": {
+                            "size": "sm",
+                            "weight": "semibold",
+                            "text": "$t.contribute.step3.prompt"
+                          }
+                        },
+                        {
+                          "type": "FormFields",
+                          "props": {
+                            "fields": [
+                              {
+                                "name": "why",
+                                "type": "textarea",
+                                "rows": 5,
+                                "placeholder": "$t.contribute.descPlaceholder"
+                              }
+                            ]
+                          },
+                          "bind": {
+                            "modelValue": "$state.entry"
+                          },
+                          "on": {
+                            "update:modelValue": {
+                              "set": "entry"
+                            }
+                          }
+                        },
+                        {
+                          "type": "VoiceRecorder",
+                          "props": {
+                            "recordLabel": "$t.voice.record",
+                            "stopLabel": "$t.voice.stop",
+                            "removeLabel": "$t.fileUpload.removeFile",
+                            "deniedLabel": "$t.voice.micDenied"
+                          },
+                          "bind": {
+                            "modelValue": "$state.entryFiles.voiceWhy"
+                          },
+                          "on": {
+                            "update:modelValue": {
+                              "set": "entryFiles.voiceWhy"
+                            }
+                          }
+                        },
+                        {
+                          "type": "FileDropZone",
+                          "props": {
+                            "accept": "image/*,audio/*",
+                            "multiple": true,
+                            "maxSizeMb": 10,
+                            "lines": [
+                              "$t.fileUpload.prompt",
+                              "$t.fileUpload.hint"
+                            ],
+                            "removeLabel": "$t.fileUpload.removeFile",
+                            "tooLargeLabel": "$t.fileUpload.tooLarge",
+                            "unsupportedLabel": "$t.fileUpload.unsupported"
+                          },
+                          "bind": {
+                            "modelValue": "$state.entryFiles.why"
+                          },
+                          "on": {
+                            "update:modelValue": {
+                              "set": "entryFiles.why"
+                            }
+                          }
+                        }
+                      ]
+                    },
+                    {
+                      "type": "Stack",
+                      "if": "$state.wizardStep == 4",
+                      "props": {
+                        "gap": "md"
+                      },
+                      "children": [
+                        {
+                          "type": "Text",
+                          "style": "wizard-prompt",
+                          "props": {
+                            "size": "sm",
+                            "weight": "semibold",
+                            "text": "$t.contribute.step4.prompt"
+                          }
+                        },
+                        {
+                          "type": "FileDropZone",
+                          "props": {
+                            "accept": "image/*,audio/*",
+                            "multiple": true,
+                            "maxSizeMb": 10,
+                            "lines": [
+                              "$t.fileUpload.prompt",
+                              "$t.fileUpload.hint"
+                            ],
+                            "removeLabel": "$t.fileUpload.removeFile",
+                            "tooLargeLabel": "$t.fileUpload.tooLarge",
+                            "unsupportedLabel": "$t.fileUpload.unsupported"
+                          },
+                          "bind": {
+                            "modelValue": "$state.entryFiles.media"
+                          },
+                          "on": {
+                            "update:modelValue": {
+                              "set": "entryFiles.media"
+                            }
+                          }
+                        }
+                      ]
+                    },
+                    {
+                      "type": "Stack",
+                      "if": "$state.wizardStep == 5",
+                      "props": {
+                        "gap": "md"
+                      },
+                      "children": [
+                        {
+                          "type": "Text",
+                          "style": "wizard-prompt",
+                          "props": {
+                            "size": "sm",
+                            "weight": "semibold",
+                            "text": "$t.contribute.step5.prompt"
+                          }
+                        },
+                        {
+                          "type": "FormFields",
+                          "props": {
+                            "fields": [
+                              {
+                                "name": "date",
+                                "type": "date",
+                                "style": "pill-input"
+                              }
+                            ]
+                          },
+                          "bind": {
+                            "modelValue": "$state.entry"
+                          },
+                          "on": {
+                            "update:modelValue": {
+                              "set": "entry"
+                            }
+                          }
+                        }
+                      ]
+                    },
+                    {
+                      "type": "Stack",
+                      "if": "$state.wizardStep == 6",
+                      "props": {
+                        "gap": "md"
+                      },
+                      "children": [
+                        {
+                          "type": "Text",
+                          "style": "wizard-prompt",
+                          "props": {
+                            "size": "sm",
+                            "weight": "semibold",
+                            "text": "$t.contribute.step6.prompt"
+                          }
+                        },
+                        {
+                          "type": "FormFields",
+                          "props": {
+                            "fields": [
+                              {
+                                "name": "additionalInfo",
+                                "type": "textarea",
+                                "rows": 5,
+                                "placeholder": "$t.contribute.descPlaceholder"
+                              }
+                            ]
+                          },
+                          "bind": {
+                            "modelValue": "$state.entry"
+                          },
+                          "on": {
+                            "update:modelValue": {
+                              "set": "entry"
+                            }
+                          }
+                        },
+                        {
+                          "type": "FileDropZone",
+                          "props": {
+                            "accept": "image/*,audio/*",
+                            "multiple": true,
+                            "maxSizeMb": 10,
+                            "lines": [
+                              "$t.fileUpload.prompt",
+                              "$t.fileUpload.hint"
+                            ],
+                            "removeLabel": "$t.fileUpload.removeFile",
+                            "tooLargeLabel": "$t.fileUpload.tooLarge",
+                            "unsupportedLabel": "$t.fileUpload.unsupported"
+                          },
+                          "bind": {
+                            "modelValue": "$state.entryFiles.additional"
+                          },
+                          "on": {
+                            "update:modelValue": {
+                              "set": "entryFiles.additional"
+                            }
+                          }
+                        }
+                      ]
+                    },
+                    {
+                      "type": "Stack",
+                      "if": "$state.wizardStep == 7",
+                      "props": {
+                        "gap": "md"
+                      },
+                      "children": [
+                        {
+                          "type": "Text",
+                          "style": "wizard-prompt",
+                          "props": {
+                            "size": "sm",
+                            "weight": "semibold",
+                            "text": "$t.contribute.step7.prompt"
+                          }
+                        },
+                        {
+                          "type": "Stack",
+                          "props": {
+                            "gap": "sm"
+                          },
+                          "children": [
+                            {
+                              "type": "Stack",
+                              "style": "consent-row",
+                              "props": {
+                                "direction": "row",
+                                "align": "center",
+                                "gap": "sm"
+                              },
+                              "on": {
+                                "click": {
+                                  "set": "entry.connectInfo",
+                                  "value": true
+                                }
+                              },
+                              "children": [
+                                {
+                                  "type": "Icon",
+                                  "style": "consent-mark",
+                                  "if": "$state.entry.connectInfo == true",
+                                  "props": {
+                                    "name": "i-heroicons-check-circle-solid",
+                                    "size": "sm"
+                                  }
+                                },
+                                {
+                                  "type": "Icon",
+                                  "style": "consent-mark-off",
+                                  "if": "$state.entry.connectInfo != true",
+                                  "props": {
+                                    "name": "i-heroicons-stop",
+                                    "size": "sm"
+                                  }
+                                },
+                                {
+                                  "type": "Text",
+                                  "props": {
+                                    "as": "span",
+                                    "size": "sm",
+                                    "text": "$t.contribute.step7.yes"
+                                  }
+                                }
+                              ]
+                            },
+                            {
+                              "type": "Stack",
+                              "style": "consent-row",
+                              "props": {
+                                "direction": "row",
+                                "align": "center",
+                                "gap": "sm"
+                              },
+                              "on": {
+                                "click": {
+                                  "set": "entry.connectInfo",
+                                  "value": false
+                                }
+                              },
+                              "children": [
+                                {
+                                  "type": "Icon",
+                                  "style": "consent-mark",
+                                  "if": "$state.entry.connectInfo == false",
+                                  "props": {
+                                    "name": "i-heroicons-check-circle-solid",
+                                    "size": "sm"
+                                  }
+                                },
+                                {
+                                  "type": "Icon",
+                                  "style": "consent-mark-off",
+                                  "if": "$state.entry.connectInfo != false",
+                                  "props": {
+                                    "name": "i-heroicons-stop",
+                                    "size": "sm"
+                                  }
+                                },
+                                {
+                                  "type": "Text",
+                                  "props": {
+                                    "as": "span",
+                                    "size": "sm",
+                                    "text": "$t.contribute.step7.no"
+                                  }
+                                }
+                              ]
+                            }
+                          ]
+                        },
+                        {
+                          "type": "Text",
+                          "if": "$state.entry.connectInfo == true",
+                          "style": "wizard-prompt",
+                          "props": {
+                            "size": "sm",
+                            "text": "$t.contribute.step7.ifYes"
+                          }
+                        },
+                        {
+                          "type": "FormFields",
+                          "if": "$state.entry.connectInfo == true",
+                          "props": {
+                            "layout": "inline",
+                            "labelClass": "w-28 shrink-0 text-sm",
+                            "fields": [
+                              {
+                                "name": "fullName",
+                                "label": "$t.contribute.step7.fullName",
+                                "style": "pill-input"
+                              },
+                              {
+                                "name": "email",
+                                "label": "$t.contribute.step7.email",
+                                "type": "email",
+                                "style": "pill-input"
+                              },
+                              {
+                                "name": "country",
+                                "label": "$t.contribute.step7.country",
+                                "style": "pill-input"
+                              },
+                              {
+                                "name": "city",
+                                "label": "$t.contribute.step7.city",
+                                "style": "pill-input"
+                              }
+                            ]
+                          },
+                          "bind": {
+                            "modelValue": "$state.entry"
+                          },
+                          "on": {
+                            "update:modelValue": {
+                              "set": "entry"
+                            }
+                          }
+                        },
+                        {
+                          "type": "Text",
+                          "style": "wizard-privacy",
+                          "props": {
+                            "size": "xs",
+                            "tone": "muted",
+                            "text": "$t.contribute.step7.privacy"
+                          }
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "type": "Stack",
+                  "if": "!$state.wizardSubmitted",
+                  "style": "wizard-nav",
+                  "props": {
+                    "direction": "row",
+                    "justify": "between",
+                    "gap": "sm"
+                  },
+                  "children": [
+                    {
+                      "type": "Button",
+                      "style": "wizard-nav-button",
+                      "props": {
+                        "color": "gray",
+                        "variant": "soft",
+                        "label": "$t.contribute.back"
+                      },
+                      "bind": {
+                        "disabled": "$state.wizardStep == 1"
+                      },
+                      "on": {
+                        "click": {
+                          "call": "step",
+                          "payload": null,
+                          "args": {
+                            "of": "wizardStep",
+                            "by": -1,
+                            "min": 1
+                          }
+                        }
+                      }
+                    },
+                    {
+                      "type": "Button",
+                      "if": "$state.wizardStep == 1 && $state.wizardConfirmPin",
+                      "style": "wizard-nav-button",
+                      "props": {
+                        "color": "red",
+                        "label": "$t.contribute.next"
+                      },
+                      "on": {
+                        "click": {
+                          "set": "wizardConfirmPin",
+                          "value": false
+                        }
+                      }
+                    },
+                    {
+                      "type": "Button",
+                      "if": "$state.wizardStep < 7 && !$state.wizardConfirmPin",
+                      "style": "wizard-nav-button",
+                      "props": {
+                        "color": "red",
+                        "label": "$t.contribute.next"
+                      },
+                      "bind": {
+                        "disabled": "$state.wizardStep == 1 && !$state.wizardConfirmPin && !$state.entry.title || $state.wizardStep == 1 && !$state.wizardConfirmPin && !$state.entry.primaryTag || $state.wizardStep == 1 && !$state.wizardConfirmPin && !$state.entry.coordinate"
+                      },
+                      "on": {
+                        "click": {
+                          "call": "step",
+                          "payload": null,
+                          "args": {
+                            "of": "wizardStep",
+                            "by": 1,
+                            "max": 7
+                          }
+                        }
+                      }
+                    },
+                    {
+                      "type": "Button",
+                      "if": "$state.wizardStep == 7",
+                      "style": "wizard-nav-button",
+                      "props": {
+                        "color": "red",
+                        "label": "$t.contribute.submit"
+                      },
+                      "on": {
+                        "click": [
+                          {
+                            "call": "submitEntry",
+                            "payload": {
+                              "title": "$state.entry.title",
+                              "primaryTag": "$state.entry.primaryTag",
+                              "location": "$state.entry.location",
+                              "coordinate": "$state.entry.coordinate",
+                              "example": "$state.entry.example",
+                              "why": "$state.entry.why",
+                              "date": "$state.entry.date",
+                              "additionalInfo": "$state.entry.additionalInfo",
+                              "connectInfo": "$state.entry.connectInfo",
+                              "fullName": "$state.entry.fullName",
+                              "email": "$state.entry.email",
+                              "country": "$state.entry.country",
+                              "city": "$state.entry.city",
+                              "files": {
+                                "example": "$state.entryFiles.example",
+                                "why": "$state.entryFiles.why",
+                                "media": "$state.entryFiles.media",
+                                "additional": "$state.entryFiles.additional",
+                                "voiceExample": "$state.entryFiles.voiceExample",
+                                "voiceWhy": "$state.entryFiles.voiceWhy"
+                              }
+                            }
+                          },
+                          {
+                            "set": "wizardSubmitted",
+                            "value": true
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "div",
+          "style": "dimmer",
+          "if": "$state.onboarding"
+        }
+      ]
+    }
+  ]
+}

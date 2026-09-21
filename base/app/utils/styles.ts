@@ -1,0 +1,52 @@
+/**
+ * Style presets: the only way a spec applies layout/visual classes in strict
+ * mode. A preset is a name -> Tailwind classes pair registered by base or an
+ * app, so the verifier can check the name and an LLM picks from a list instead
+ * of inventing class strings.
+ *
+ * Keep this file under `utils/` so Tailwind scans the class strings.
+ */
+export interface StylePreset {
+  name: string
+  classes: string
+  description: string
+}
+
+const presets = new Map<string, StylePreset>()
+
+export function registerStyle(name: string, classes: string, description = '') {
+  presets.set(name, { name, classes, description })
+}
+
+export function getStyle(name: string) {
+  return presets.get(name)
+}
+
+export function listStyles() {
+  return [...presets.values()]
+}
+
+/** Resolve one or more preset names to a class string (unknown names are skipped; the verifier reports them). */
+export function styleClasses(style: string | string[] | undefined) {
+  if (!style) {
+    return ''
+  }
+  return (Array.isArray(style) ? style : [style]).map(name => getStyle(name)?.classes ?? '').filter(Boolean).join(' ')
+}
+
+// ---------------------------------------------------------------------------
+// Base presets: positioning and page scaffolding every app needs.
+// ---------------------------------------------------------------------------
+registerStyle('page', 'min-h-screen bg-gray-50 dark:bg-gray-900', 'Full-height page background')
+registerStyle('screen', 'relative h-screen w-full', 'Viewport-sized positioned container (maps)')
+registerStyle('fill', 'absolute inset-0', 'Fill the nearest positioned parent')
+registerStyle('overlay', 'absolute inset-0 z-40 bg-black bg-opacity-50', 'Dim everything behind a modal-like element')
+registerStyle('content', 'relative px-6 pb-24 pt-24', 'Main content area under a floating header and above a floating footer')
+registerStyle('floating-left', 'fixed left-6 top-1/2 z-30 w-80 max-w-[calc(100vw-3rem)] -translate-y-1/2', 'Panel anchored to the left edge (fixed width)')
+registerStyle('link', 'hover:underline', 'Inline text link')
+registerStyle('bullets', 'list-disc space-y-1 pl-6', 'Bulleted list (put on a ul; children are li)')
+registerStyle('floating-right', 'fixed right-6 top-1/2 z-30 flex w-auto -translate-y-1/2 flex-col items-end gap-2', 'Narrow tool column anchored to the right edge')
+registerStyle('sheet-right', 'fixed right-24 top-24 z-40 max-h-[calc(100vh-8rem)] overflow-y-auto', 'Panel under the header at the right edge, clear of a floating-right toolbar')
+registerStyle('page-narrow', 'mx-auto w-full max-w-2xl px-6 pb-24 pt-28', 'Centered reading column under the floating header')
+registerStyle('page-wide', 'mx-auto w-full max-w-5xl px-6 pb-24 pt-28', 'Centered wide column under the floating header')
+registerStyle('logo', 'hover:scale-105 dark:invert', 'Partner / sponsor logo image')

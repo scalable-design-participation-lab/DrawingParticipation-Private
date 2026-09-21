@@ -1,0 +1,89 @@
+{
+  "name": "Button",
+  "description": "Nuxt UI button / link.",
+  "stateful": false,
+  "emits": [
+    "click"
+  ],
+  "slots": [
+    "default"
+  ],
+  "props": {
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "type": "object",
+    "properties": {
+      "label": {
+        "type": "string"
+      },
+      "to": {
+        "type": "string"
+      },
+      "target": {
+        "type": "string"
+      },
+      "icon": {
+        "type": "string"
+      },
+      "trailing": {
+        "type": "boolean"
+      },
+      "block": {
+        "description": "Fill the width of its container",
+        "type": "boolean"
+      },
+      "disabled": {
+        "type": "boolean"
+      },
+      "loading": {
+        "type": "boolean"
+      },
+      "color": {
+        "type": "string",
+        "enum": [
+          "primary",
+          "black",
+          "white",
+          "gray",
+          "red",
+          "orange",
+          "amber",
+          "yellow",
+          "lime",
+          "green",
+          "emerald",
+          "teal",
+          "cyan",
+          "blue",
+          "indigo",
+          "violet",
+          "purple",
+          "fuchsia",
+          "pink",
+          "rose"
+        ]
+      },
+      "variant": {
+        "type": "string",
+        "enum": [
+          "solid",
+          "outline",
+          "soft",
+          "subtle",
+          "ghost",
+          "link"
+        ]
+      },
+      "size": {
+        "type": "string",
+        "enum": [
+          "xs",
+          "sm",
+          "md",
+          "lg",
+          "xl"
+        ]
+      }
+    },
+    "additionalProperties": false
+  }
+}

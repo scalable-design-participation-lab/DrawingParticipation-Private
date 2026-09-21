@@ -44,3 +44,4 @@ coverage
 
 # Never commit Google service-account keys
 service-account*.json
+.playwright-mcp/

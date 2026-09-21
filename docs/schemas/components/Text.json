@@ -1,0 +1,148 @@
+{
+  "name": "Text",
+  "description": "Typography: element, size, weight, tone, alignment. Size and weight default from the element.",
+  "stateful": false,
+  "emits": [],
+  "slots": [
+    "default"
+  ],
+  "props": {
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "type": "object",
+    "properties": {
+      "as": {
+        "type": "string",
+        "enum": [
+          "h1",
+          "h2",
+          "h3",
+          "p",
+          "span",
+          "label"
+        ]
+      },
+      "size": {
+        "type": "string",
+        "enum": [
+          "xs",
+          "sm",
+          "md",
+          "lg",
+          "xl",
+          "2xl",
+          "3xl"
+        ]
+      },
+      "weight": {
+        "type": "string",
+        "enum": [
+          "normal",
+          "medium",
+          "semibold",
+          "bold"
+        ]
+      },
+      "tone": {
+        "type": "string",
+        "enum": [
+          "default",
+          "muted",
+          "accent",
+          "inverse"
+        ]
+      },
+      "align": {
+        "type": "string",
+        "enum": [
+          "left",
+          "center",
+          "right"
+        ]
+      },
+      "text": {
+        "type": [
+          "string",
+          "number"
+        ]
+      },
+      "format": {
+        "description": "Render the value: an ISO date or a number in the reader locale, `relative` for how long ago, `host` for the domain of a URL.",
+        "type": "string",
+        "enum": [
+          "date",
+          "datetime",
+          "number",
+          "relative",
+          "host"
+        ]
+      },
+      "labels": {
+        "description": "value -> label for stored codes; unknown values show as-is. Nest it by language ({ pt: { bici: \"Bicicleta\" } }) when the label differs per locale and the stored code does not.",
+        "type": "object",
+        "propertyNames": {
+          "type": "string"
+        },
+        "additionalProperties": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "object",
+              "propertyNames": {
+                "type": "string"
+              },
+              "additionalProperties": {
+                "type": "string"
+              }
+            }
+          ]
+        }
+      },
+      "fallback": {
+        "description": "Shown when the bound text is empty, e.g. a row untranslated original.",
+        "type": [
+          "string",
+          "number"
+        ]
+      },
+      "prefix": {
+        "description": "Put in front of the formatted value, e.g. a currency symbol.",
+        "type": "string"
+      },
+      "suffix": {
+        "description": "Put after it, e.g. a unit. Pass a \"$t.\" key to translate it.",
+        "type": "string"
+      },
+      "decimals": {
+        "description": "Round a number to this many decimals.",
+        "type": "integer",
+        "minimum": 0,
+        "maximum": 9007199254740991
+      },
+      "colors": {
+        "description": "value -> colour for stored codes, like `labels` but for how it reads. Pair it with the same map on an Icon so a theme looks the same wherever it appears.",
+        "type": "object",
+        "propertyNames": {
+          "type": "string"
+        },
+        "additionalProperties": {
+          "type": "string"
+        }
+      },
+      "clamp": {
+        "description": "Fold to this many lines with a link to open it; the link appears only when the text really is longer.",
+        "type": "integer",
+        "exclusiveMinimum": 0,
+        "maximum": 9007199254740991
+      },
+      "moreLabel": {
+        "type": "string"
+      },
+      "lessLabel": {
+        "type": "string"
+      }
+    },
+    "additionalProperties": false
+  }
+}

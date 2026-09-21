@@ -1,0 +1,54 @@
+{
+  "name": "Tally",
+  "description": "Results as data: groups `items` by a field and shows one bar per group with the count, or the sum / average of `valueKey`.",
+  "stateful": false,
+  "emits": [],
+  "slots": [],
+  "props": {
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "type": "object",
+    "properties": {
+      "items": {
+        "type": "array",
+        "items": {}
+      },
+      "by": {
+        "type": "string"
+      },
+      "mode": {
+        "type": "string",
+        "enum": [
+          "count",
+          "sum",
+          "avg"
+        ]
+      },
+      "valueKey": {
+        "description": "Numeric field for sum / avg",
+        "type": "string"
+      },
+      "labels": {
+        "description": "value -> label",
+        "type": "object",
+        "propertyNames": {
+          "type": "string"
+        },
+        "additionalProperties": {
+          "type": "string"
+        }
+      },
+      "empty": {
+        "type": "string"
+      },
+      "decimals": {
+        "type": "integer",
+        "minimum": 0,
+        "maximum": 4
+      }
+    },
+    "required": [
+      "by"
+    ],
+    "additionalProperties": false
+  }
+}

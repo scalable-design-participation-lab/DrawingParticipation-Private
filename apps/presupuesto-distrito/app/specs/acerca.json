@@ -1,0 +1,313 @@
+{
+  "version": 1,
+  "state": {
+    "contacto": false
+  },
+  "children": [
+    {
+      "type": "div",
+      "style": "page-narrow",
+      "children": [
+        {
+          "type": "Stack",
+          "props": {
+            "gap": "lg"
+          },
+          "children": [
+            {
+              "type": "Text",
+              "props": {
+                "as": "h1"
+              },
+              "bind": {
+                "text": "$t.acerca.titulo"
+              }
+            },
+            {
+              "type": "Text",
+              "props": {
+                "size": "lg",
+                "tone": "muted"
+              },
+              "bind": {
+                "text": "$t.acerca.intro"
+              }
+            },
+            {
+              "type": "Image",
+              "props": {
+                "src": "/plaza.svg",
+                "width": "full",
+                "rounded": true,
+                "alt": "Plaza"
+              }
+            },
+            {
+              "type": "Divider"
+            },
+            {
+              "type": "Text",
+              "props": {
+                "as": "h2"
+              },
+              "bind": {
+                "text": "$t.acerca.pasosTitulo"
+              }
+            },
+            {
+              "type": "Grid",
+              "props": {
+                "cols": 1,
+                "colsMd": 3,
+                "gap": "md"
+              },
+              "children": [
+                {
+                  "type": "Card",
+                  "children": [
+                    {
+                      "type": "Stack",
+                      "props": {
+                        "gap": "xs"
+                      },
+                      "children": [
+                        {
+                          "type": "Icon",
+                          "props": {
+                            "name": "i-heroicons-map-pin",
+                            "size": "lg",
+                            "tone": "accent"
+                          }
+                        },
+                        {
+                          "type": "Text",
+                          "props": {
+                            "size": "sm"
+                          },
+                          "bind": {
+                            "text": "$t.acerca.paso1"
+                          }
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "type": "Card",
+                  "children": [
+                    {
+                      "type": "Stack",
+                      "props": {
+                        "gap": "xs"
+                      },
+                      "children": [
+                        {
+                          "type": "Icon",
+                          "props": {
+                            "name": "i-heroicons-hand-thumb-up",
+                            "size": "lg",
+                            "tone": "accent"
+                          }
+                        },
+                        {
+                          "type": "Text",
+                          "props": {
+                            "size": "sm"
+                          },
+                          "bind": {
+                            "text": "$t.acerca.paso2"
+                          }
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "type": "Card",
+                  "children": [
+                    {
+                      "type": "Stack",
+                      "props": {
+                        "gap": "xs"
+                      },
+                      "children": [
+                        {
+                          "type": "Icon",
+                          "props": {
+                            "name": "i-heroicons-chart-bar",
+                            "size": "lg",
+                            "tone": "accent"
+                          }
+                        },
+                        {
+                          "type": "Text",
+                          "props": {
+                            "size": "sm"
+                          },
+                          "bind": {
+                            "text": "$t.acerca.paso3"
+                          }
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "Divider"
+            },
+            {
+              "type": "Text",
+              "props": {
+                "as": "h2"
+              },
+              "bind": {
+                "text": "$t.acerca.faqTitulo"
+              }
+            },
+            {
+              "type": "Accordion",
+              "props": {
+                "items": [
+                  {
+                    "label": "$t.acerca.faq1"
+                  },
+                  {
+                    "label": "$t.acerca.faq2"
+                  },
+                  {
+                    "label": "$t.acerca.faq3"
+                  },
+                  {
+                    "label": "$t.acerca.faq4"
+                  }
+                ]
+              },
+              "children": [
+                {
+                  "slot": "item-0",
+                  "type": "Text",
+                  "bind": {
+                    "text": "$t.acerca.faq1r"
+                  },
+                  "props": {
+                    "size": "sm"
+                  }
+                },
+                {
+                  "slot": "item-1",
+                  "type": "Text",
+                  "bind": {
+                    "text": "$t.acerca.faq2r"
+                  },
+                  "props": {
+                    "size": "sm"
+                  }
+                },
+                {
+                  "slot": "item-2",
+                  "type": "Text",
+                  "bind": {
+                    "text": "$t.acerca.faq3r"
+                  },
+                  "props": {
+                    "size": "sm"
+                  }
+                },
+                {
+                  "slot": "item-3",
+                  "type": "Text",
+                  "bind": {
+                    "text": "$t.acerca.faq4r"
+                  },
+                  "props": {
+                    "size": "sm"
+                  }
+                }
+              ]
+            },
+            {
+              "type": "Divider"
+            },
+            {
+              "type": "Stack",
+              "props": {
+                "direction": "row",
+                "gap": "sm"
+              },
+              "children": [
+                {
+                  "type": "Button",
+                  "props": {
+                    "to": "/",
+                    "color": "black"
+                  },
+                  "text": "$t.acerca.irMapa"
+                },
+                {
+                  "type": "Button",
+                  "props": {
+                    "to": "/propuestas",
+                    "color": "gray",
+                    "variant": "soft"
+                  },
+                  "text": "$t.acerca.irPropuestas"
+                }
+              ]
+            },
+            {
+              "type": "Footer",
+              "props": {
+                "title": "$t.footer.titulo",
+                "buttons": [
+                  {
+                    "label": "$t.footer.ayuda"
+                  }
+                ],
+                "supportLabel": "$t.footer.ayuda"
+              },
+              "on": {
+                "support": {
+                  "set": "contacto",
+                  "value": true
+                },
+                "buttonClick": {
+                  "set": "contacto",
+                  "value": true
+                }
+              }
+            },
+            {
+              "type": "Modal",
+              "if": "$state.contacto",
+              "props": {
+                "modelValue": true,
+                "size": "sm",
+                "closable": true
+              },
+              "bind": {
+                "title": "$t.footer.ayuda"
+              },
+              "on": {
+                "update:modelValue": {
+                  "set": "contacto",
+                  "value": false
+                }
+              },
+              "children": [
+                {
+                  "type": "Text",
+                  "props": {},
+                  "bind": {
+                    "text": "$t.acerca.contacto"
+                  }
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

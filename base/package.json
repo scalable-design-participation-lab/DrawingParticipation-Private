@@ -10,10 +10,15 @@
     "postinstall": "nuxt prepare",
     "lint": "eslint .",
     "typecheck": "nuxt typecheck",
+    "verify": "npx vite-node scripts/verify.ts",
+    "schemas": "npx vite-node scripts/export-schemas.ts -- --contracts ../apps/mnc/app/contracts.ts,../apps/open-sensing-chapultepec/app/contracts.ts,../apps/restart-ukraine/app/contracts.ts",
+    "gen-spec": "npx vite-node scripts/generate.ts",
+    "visual-check": "npx vite-node scripts/visual-check.ts",
     "test": "vitest",
     "coverage": "vitest --coverage"
   },
   "dependencies": {
+    "@anthropic-ai/sdk": "^0.127.0",
     "@iconify-json/heroicons": "^1.1.24",
     "@iconify-json/simple-icons": "^1.1.112",
     "@nuxt/fonts": "^0.7.1",
@@ -24,8 +29,12 @@
     "@vueuse/nuxt": "^10.11.0",
     "date-fns": "^3.6.0",
     "nuxt": "^3",
+    "ol": "^10.2.1",
     "pinia": "^2.3.0",
-    "v-calendar": "^3.1.2"
+    "playwright-core": "^1.63.0",
+    "v-calendar": "^3.1.2",
+    "vue3-openlayers": "^11.2.1",
+    "zod": "^4"
   },
   "devDependencies": {
     "@nuxt/eslint": "^0.5.0",
@@ -35,7 +44,6 @@
     "@vitejs/plugin-vue": "^5.2.1",
     "@vue/test-utils": "^2.4.6",
     "eslint": "^9",
-    "happy-dom": "^16.5.3",
     "jsdom": "^26.0.0",
     "typescript": "^5",
     "vitest": "^2.1.8",
