@@ -470,16 +470,68 @@
           "if": "$state.isMobile",
           "children": [
             {
-              "type": "MobileHeader",
+              "type": "Header",
               "if": "!$state.onboarding && $state.mobileView != 'more'",
-              "bind": {
-                "mapType": "$state.mapType"
+              "props": {
+                "showMenu": false,
+                "showColorMode": false,
+                "showLogo": false
               },
-              "on": {
-                "update:mapType": {
-                  "set": "mapType"
+              "children": [
+                {
+                  "slot": "center",
+                  "type": "a",
+                  "style": "wordmark",
+                  "props": {
+                    "href": "https://mobilecreativity.net",
+                    "target": "_blank"
+                  },
+                  "text": "MNC"
+                },
+                {
+                  "slot": "right",
+                  "type": "Dropdown",
+                  "props": {
+                    "items": [
+                      {
+                        "value": "en",
+                        "label": "English"
+                      },
+                      {
+                        "value": "pt",
+                        "label": "Português"
+                      },
+                      {
+                        "value": "es",
+                        "label": "Español"
+                      }
+                    ],
+                    "uppercase": true,
+                    "title": "$t.lang.label",
+                    "showValue": true
+                  },
+                  "bind": {
+                    "modelValue": "$locale"
+                  },
+                  "on": {
+                    "update:modelValue": {
+                      "call": "setLocale"
+                    }
+                  }
+                },
+                {
+                  "slot": "right",
+                  "type": "MapTypeToggle",
+                  "bind": {
+                    "modelValue": "$state.mapType"
+                  },
+                  "on": {
+                    "update:modelValue": {
+                      "set": "mapType"
+                    }
+                  }
                 }
-              }
+              ]
             },
             {
               "type": "MobileProximityList",

@@ -1,0 +1,60 @@
+{
+  "name": "Dropdown",
+  "description": "A one-of choice that costs one button of space: the trigger shows the current item, the list opens on press. Use `Tabs` where the options fit and this where they do not, e.g. a language switcher in a phone header.",
+  "stateful": false,
+  "emits": [
+    "update:modelValue"
+  ],
+  "slots": [],
+  "props": {
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "type": "object",
+    "properties": {
+      "items": {
+        "type": "array",
+        "items": {
+          "type": "object",
+          "properties": {
+            "value": {
+              "type": "string"
+            },
+            "label": {
+              "type": "string"
+            },
+            "icon": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "value",
+            "label"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "modelValue": {
+        "type": "string"
+      },
+      "label": {
+        "description": "Trigger text; the selected label otherwise.",
+        "type": "string"
+      },
+      "icon": {
+        "description": "Trigger icon, in place of text.",
+        "type": "string"
+      },
+      "title": {
+        "description": "Accessible name for the trigger.",
+        "type": "string"
+      },
+      "showValue": {
+        "description": "Trigger shows the selected value, not its label, so the list can read \"Portugues\" while the button reads \"PT\".",
+        "type": "boolean"
+      },
+      "uppercase": {
+        "type": "boolean"
+      }
+    },
+    "additionalProperties": false
+  }
+}

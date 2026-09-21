@@ -4,7 +4,6 @@ import EntryDetail from '../components/EntryDetail.vue'
 import FilteredSelectionSidebar from '../components/FilteredSelectionSidebar.vue'
 import MncMap from '../components/MncMap.vue'
 import MobileContributeFlow from '../components/Mobile/MobileContributeFlow.vue'
-import MobileHeader from '../components/Mobile/MobileHeader.vue'
 import MobileInfoPopup from '../components/Mobile/MobileInfoPopup.vue'
 import MobileProximityList from '../components/Mobile/MobileProximityList.vue'
 import ModerationPanel from '../components/ModerationPanel.vue'
@@ -20,7 +19,6 @@ export default defineNuxtPlugin(() => {
     FilteredSelectionSidebar,
     ProjectListPanel,
     MobileProximityList,
-    MobileHeader,
     MobileContributeFlow,
     MobileInfoPopup,
     EntryDetail,

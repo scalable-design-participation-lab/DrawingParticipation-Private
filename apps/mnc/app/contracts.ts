@@ -48,13 +48,6 @@ registerContract({
 })
 
 registerContract({
-  name: 'MobileHeader',
-  description: 'Mobile top bar with the language menu and the vector / satellite toggle (`update:mapType`).',
-  props: z.strictObject({ title: z.string().optional(), titleLink: z.boolean().optional(), mapType: z.enum(['vector', 'satellite']).optional() }),
-  emits: ['update:mapType'],
-})
-
-registerContract({
   name: 'MobileContributeFlow',
   description: '"Join Our Research" wizard. `pick-location` asks the page to let the user tap the map; `pickedCoordinate` feeds the tap back; `submit` emits the whole payload (title, theme, coordinate, answers, files).',
   props: z.strictObject({ pickedCoordinate: Coordinate.nullable().optional() }),

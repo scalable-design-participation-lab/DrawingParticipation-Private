@@ -7,6 +7,7 @@
   ],
   "slots": [
     "logo",
+    "center",
     "menu",
     "right"
   ],
@@ -75,6 +76,11 @@
         }
       },
       "showIcon": {
+        "description": "The lab mark on the far left.",
+        "type": "boolean"
+      },
+      "showLogo": {
+        "description": "The app's own logo from app.json `brand`.",
         "type": "boolean"
       },
       "showColorMode": {

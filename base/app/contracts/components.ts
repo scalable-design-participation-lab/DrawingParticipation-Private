@@ -75,12 +75,13 @@ registerContract({
     variant: z.enum(['pill', 'text']).optional().describe('Two finished looks: floating buttons (default) or a bar of text links.'),
     leftItems: z.array(HeaderItem).optional(),
     rightItems: z.array(HeaderItem).optional(),
-    showIcon: z.boolean().optional(),
+    showIcon: z.boolean().optional().describe('The lab mark on the far left.'),
+    showLogo: z.boolean().optional().describe('The app\'s own logo from app.json `brand`.'),
     showColorMode: z.boolean().optional(),
     showMenu: z.boolean().optional(),
   }),
   emits: ['menu'],
-  slots: ['logo', 'menu', 'right'],
+  slots: ['logo', 'center', 'menu', 'right'],
 })
 
 registerContract({
@@ -324,6 +325,25 @@ registerContract({
     capture: z.enum(['user', 'environment']).optional(),
   }),
   emits: ['files'],
+})
+
+registerContract({
+  name: 'Dropdown',
+  description: 'A one-of choice that costs one button of space: the trigger shows the current item, the list opens on press. Use `Tabs` where the options fit and this where they do not, e.g. a language switcher in a phone header.',
+  props: z.strictObject({
+    items: z.array(z.strictObject({
+      value: z.string(),
+      label: z.string(),
+      icon: z.string().optional(),
+    })).optional(),
+    modelValue: z.string().optional(),
+    label: z.string().optional().describe('Trigger text; the selected label otherwise.'),
+    icon: z.string().optional().describe('Trigger icon, in place of text.'),
+    title: z.string().optional().describe('Accessible name for the trigger.'),
+    showValue: z.boolean().optional().describe('Trigger shows the selected value, not its label, so the list can read "Portugues" while the button reads "PT".'),
+    uppercase: z.boolean().optional(),
+  }),
+  emits: ['update:modelValue'],
 })
 
 registerContract({

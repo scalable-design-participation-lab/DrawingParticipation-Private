@@ -77,6 +77,10 @@ const props = defineProps({
     type: Boolean,
     default: true,
   },
+  showLogo: {
+    type: Boolean,
+    default: true,
+  },
   iconLink: {
     type: String,
     default: brand.iconLink ?? 'https://www.northeastern.edu/',
@@ -170,7 +174,7 @@ const accentTextStyle = computed(() => {
           🤲
         </UButton>
         <UButton
-          v-if="logoSrc"
+          v-if="showLogo && logoSrc"
           class="w-10 lg:w-12 !rounded-lg flex justify-center !bg-gray-50 dark:!bg-black shadow-lg hover:scale-105" :class="[
             shapeClass,
           ]"
@@ -233,6 +237,15 @@ const accentTextStyle = computed(() => {
           </UButton>
         </template>
       </div>
+      <!-- A wordmark or title centred across the bar, independent of how wide
+           the two sides are. Pointer events only on the content itself, so it
+           never swallows a click meant for the map behind it. -->
+      <div v-if="$slots.center" class="pointer-events-none absolute inset-0 flex items-center justify-center">
+        <div class="pointer-events-auto">
+          <slot name="center" />
+        </div>
+      </div>
+
       <!-- items right -->
       <div class="h-full flex items-center relative z-10" :class="variant === 'text' ? 'gap-3' : 'space-x-2 sm:space-x-3'">
         <div

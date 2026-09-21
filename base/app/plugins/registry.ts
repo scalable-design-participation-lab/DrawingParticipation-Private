@@ -22,6 +22,7 @@ import Grid from '../components/Grid.vue'
 import Panel from '../components/Panel.vue'
 import Text from '../components/Text.vue'
 import Image from '../components/Image.vue'
+import Dropdown from '../components/Dropdown.vue'
 import IconBar from '../components/IconBar.vue'
 import LoadingScreen from '../components/LoadingScreen.vue'
 import { registerComponent } from '../utils/registry'
@@ -59,6 +60,7 @@ export default defineNuxtPlugin(() => {
   registerComponent('Panel', Panel)
   registerComponent('Text', Text)
   registerComponent('Image', Image)
+  registerComponent('Dropdown', Dropdown)
   registerComponent('IconBar', IconBar)
   registerComponent('LoadingScreen', LoadingScreen)
 

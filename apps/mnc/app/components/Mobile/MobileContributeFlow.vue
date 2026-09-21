@@ -5,7 +5,6 @@ import { PRIMARY_TAGS } from '../../composables/catalog'
 import { useLocalizedEntry } from '../../composables/useLocalizedEntry'
 import { useIsMobile } from '../../composables/useIsMobile'
 import ContributeFileUpload from './ContributeFileUpload.vue'
-import MobileHeader from './MobileHeader.vue'
 
 /**
  * Mobile "Join Our Research" flow — a 7-step wizard plus a thank-you screen,
@@ -257,7 +256,12 @@ function prettyCoord(coord: [number, number]): string {
         ? 'relative flex w-full flex-1 flex-col'
         : 'pointer-events-auto relative flex max-h-[88vh] w-full max-w-xl flex-col overflow-hidden rounded-2xl bg-white shadow-2xl dark:bg-zinc-900'"
     >
-      <MobileHeader v-if="isMobile" :title-link="false" />
+      <!-- The wizard keeps the wordmark for continuity, but none of the
+           header's controls: no language switch, no map type, and the mark
+           itself is not a link out of a half-finished submission. -->
+      <div v-if="isMobile" class="pointer-events-none fixed inset-x-0 top-4 z-20 flex items-center justify-center px-4">
+        <span class="mnc-wordmark">MNC</span>
+      </div>
 
       <!-- Close button. Solid white circle so it stays visible over the map on
            step 1. On mobile it sits below the header row (whose language + map
@@ -560,6 +564,20 @@ function prettyCoord(coord: [number, number]): string {
 </template>
 
 <style scoped>
+.mnc-wordmark {
+  font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  font-weight: 900;
+  font-size: 1.4rem;
+  line-height: 1;
+  text-transform: uppercase;
+  letter-spacing: -0.03em;
+  background: linear-gradient(90deg, #e8998d, #adb2b8, #5fc3b5, #c7e896);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  -webkit-text-fill-color: transparent;
+}
+
 .contribute-textarea :deep(textarea) {
   background-color: #fceaea;
   border-color: #f5b5b5;

@@ -36,7 +36,8 @@
     "upload-float-mobile": "pointer-events-auto fixed left-1/2 top-20 z-[60] -translate-x-1/2",
     "pick-banner": "fixed left-1/2 top-24 z-[60] flex -translate-x-1/2 items-center gap-3 rounded-full border-2 border-[#FB6D6D] bg-white px-5 py-2.5 shadow-lg dark:bg-black",
     "pick-icon": "h-5 w-5 text-[#FB6D6D]",
-    "round-shadow": "rounded-full shadow-lg"
+    "round-shadow": "rounded-full shadow-lg",
+    "wordmark": "bg-gradient-to-r from-[#e8998d] via-[#5fc3b5] to-[#c7e896] bg-clip-text text-[1.4rem] font-black uppercase leading-none tracking-tighter text-transparent"
   },
   "routes": {
     "/": "index.json",
