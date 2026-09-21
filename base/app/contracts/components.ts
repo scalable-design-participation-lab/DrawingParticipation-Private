@@ -563,6 +563,45 @@ registerContract({
   }),
 })
 
+const GlyphStroke = z.strictObject({
+  d: z.string().optional().describe('SVG path, drawn inside a 40x40 box.'),
+  circle: z.tuple([z.number(), z.number(), z.number()]).optional().describe('[cx, cy, r], for a vocabulary made of dots.'),
+  width: z.number().positive().optional(),
+  dash: z.string().optional().describe('Dash pattern, e.g. "1 4" for an intermittent mark.'),
+  filled: z.boolean().optional(),
+})
+
+registerContract({
+  name: 'Glyph',
+  description: 'A reading drawn as a symbol: several variables in one mark. `shapes` is the project vocabulary (kind -> value -> strokes, each in its own 40x40 box) and `parts` says which to draw, where, and how the value decides -- looked up (`shape`), counted out (`repeat`), wound (`spiral`), measured (`ticks`) or printed (`text`).',
+  props: z.strictObject({
+    shapes: z.record(z.string(), z.record(z.string(), z.array(GlyphStroke))).optional().describe('kind -> value -> the strokes that draw it.'),
+    parts: z.array(z.strictObject({
+      mode: z.enum(['shape', 'repeat', 'spiral', 'ticks', 'text']).optional(),
+      kind: z.string().optional().describe('Which vocabulary to read, for `shape` and `repeat`.'),
+      value: z.union([z.string(), z.number()]).optional(),
+      at: z.tuple([z.number(), z.number()]).optional().describe('Top-left of this part, in the glyph coordinates.'),
+      size: z.number().positive().optional(),
+      label: z.string().optional(),
+      suffix: z.string().optional().describe('Printed beside the value, e.g. "%" or "°C".'),
+      rotate: z.record(z.string(), z.number()).optional().describe('value -> degrees, for a vocabulary that points somewhere.'),
+      unit: z.string().optional().describe('repeat: which shape is the unit (default "unit").'),
+      per: z.number().positive().optional().describe('repeat: one unit per this much.'),
+      columns: z.number().int().positive().optional(),
+      step: z.number().positive().optional(),
+      turns: z.tuple([z.number(), z.number()]).optional().describe('`spiral`: turns at zero and at `max`.'),
+      max: z.number().positive().optional(),
+      radius: z.number().positive().optional(),
+      length: z.number().positive().optional(),
+      count: z.number().int().positive().optional(),
+      accent: z.boolean().optional().describe('Paint it in the app accent rather than the ink colour.'),
+    })).optional(),
+    size: z.number().positive().optional(),
+    viewBox: z.string().optional().describe('The coordinate space `at` is expressed in.'),
+    labels: z.boolean().optional(),
+  }),
+})
+
 registerContract({
   name: 'UploadQueue',
   description: 'Attach photos and recordings, one upload at a time with the progress of each on screen. Where they go is the app business: `uploader` names a handler, called with { file, onProgress } plus `args`, and whatever it returns lands in `modelValue`. It never submits anything -- the page decides when the collected media is saved.',

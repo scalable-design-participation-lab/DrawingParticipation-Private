@@ -93,6 +93,10 @@
           }
         }
       ]
+    },
+    "glyph": {
+      "kind": "rest",
+      "url": "/glyph.json"
     }
   },
   "children": [
@@ -122,12 +126,103 @@
                 "items": "$data.readings"
               },
               "item": {
-                "type": "WeatherGlyph",
-                "bind": {
-                  "reading": "$item.reading"
-                },
+                "type": "Glyph",
                 "props": {
-                  "size": 180
+                  "size": 180,
+                  "labels": false,
+                  "viewBox": "0 0 160 160",
+                  "parts": [
+                    {
+                      "mode": "spiral",
+                      "at": [
+                        30,
+                        30
+                      ],
+                      "value": "$item.reading.humedad",
+                      "suffix": "%",
+                      "turns": [
+                        2,
+                        6
+                      ],
+                      "max": 100,
+                      "radius": 46,
+                      "accent": true,
+                      "label": "HUMEDAD"
+                    },
+                    {
+                      "mode": "ticks",
+                      "at": [
+                        30,
+                        30
+                      ],
+                      "length": 72,
+                      "count": 11
+                    },
+                    {
+                      "kind": "nubes",
+                      "value": "$item.reading.nubes",
+                      "at": [
+                        8,
+                        4
+                      ],
+                      "size": 28,
+                      "label": "NUBES"
+                    },
+                    {
+                      "kind": "lluvia",
+                      "value": "$item.reading.lluvia",
+                      "at": [
+                        6,
+                        50
+                      ],
+                      "size": 24,
+                      "label": "LLUVIA"
+                    },
+                    {
+                      "kind": "viento",
+                      "value": "$item.reading.viento",
+                      "at": [
+                        6,
+                        100
+                      ],
+                      "size": 28,
+                      "label": "VIENTO",
+                      "rotate": {
+                        "suave": 0,
+                        "leve": 15,
+                        "moderada": 55,
+                        "fuerte": 85
+                      }
+                    },
+                    {
+                      "kind": "olor",
+                      "value": "$item.reading.olor",
+                      "at": [
+                        126,
+                        4
+                      ],
+                      "size": 28,
+                      "label": "OLOR"
+                    },
+                    {
+                      "mode": "repeat",
+                      "kind": "temperatura",
+                      "value": "$item.reading.temperatura",
+                      "at": [
+                        116,
+                        112
+                      ],
+                      "size": 40,
+                      "per": 2,
+                      "columns": 5,
+                      "step": 7.5,
+                      "suffix": "°C",
+                      "label": "TEMPERATURA"
+                    }
+                  ]
+                },
+                "bind": {
+                  "shapes": "$data.glyph.0"
                 }
               }
             }

@@ -221,9 +221,12 @@ function isPlainObject(value: unknown): value is Record<string, unknown> {
  * toolbar tools) without a slot or an event on the parent.
  */
 export function materializeProps(value: unknown, ctx: SpecContext, item?: unknown): unknown {
-  // Translations may sit anywhere in literal props (field labels, step titles, menu items).
-  if (typeof value === 'string' && value.startsWith('$t.')) {
-    return resolveExpr(value, ctx, item)
+  // An expression may sit anywhere inside a literal prop, the way it may
+  // inside an action's `value`: a translation in a field label, the row being
+  // rendered inside a list of parts. Anything else starting with "$" (a price,
+  // a currency) is not one of the roots and passes through untouched.
+  if (typeof value === 'string' && /^!?\$/.test(value)) {
+    return evaluate(value, ctx, item)
   }
   if (Array.isArray(value)) {
     return value.map(v => materializeProps(v, ctx, item))

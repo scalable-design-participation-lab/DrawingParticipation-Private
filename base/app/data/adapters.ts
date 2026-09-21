@@ -38,7 +38,10 @@ export const restAdapter: DataAdapter = {
     if (Array.isArray(body)) {
       return body
     }
-    return body.items ?? body.features ?? []
+    // A wrapper hands over its rows; anything else is one thing, so it is one
+    // row. Returning nothing for a document-shaped response reads as "the
+    // endpoint is empty", which is the wrong thing to believe.
+    return body.items ?? body.features ?? [body]
   },
 }
 

@@ -244,6 +244,11 @@ export function verifySpec(spec: unknown, options: VerifySpecOptions = {}): Veri
   const checkProps = (value: unknown, at: string, inItem: boolean) => {
     if (typeof value === 'string') {
       checkKey(value, at)
+      // A literal prop may hold an expression, so a typo inside one is caught
+      // where any other expression would be.
+      if (/^!?\$/.test(value) && !value.startsWith('$t.')) {
+        conditionExprs(value).forEach(expr => checkExpr(expr, at, inItem, true))
+      }
       return
     }
     if (Array.isArray(value)) {

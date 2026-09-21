@@ -21,7 +21,15 @@
     "wordmark": "whitespace-pre-line text-[11px] font-bold leading-tight",
     "input-plain": "normal-case !border-0",
     "field-date": "w-36",
-    "field-time": "w-28"
+    "field-time": "w-28",
+    "legend-panel": "p-4",
+    "legend-example": "panel flex justify-center py-2",
+    "legend-label": "label mb-1 mt-1",
+    "legend-card": "panel p-3",
+    "legend-card-centred": "panel flex items-center justify-center p-2",
+    "swatch": "flex-1",
+    "swatch-mark": "h-9 w-9",
+    "swatch-name": "label text-[9px] leading-tight"
   },
   "shell": "shell.json",
   "routes": {

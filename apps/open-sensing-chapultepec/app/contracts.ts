@@ -1,8 +1,12 @@
 import { z } from 'zod'
-import { LonLat, registerCollection, registerContract } from '../../../base/app/contracts'
+import { LonLat, registerCollection } from '../../../base/app/contracts'
 
 /**
- * App-specific contracts. Plain module (no Nuxt auto-imports) so the verifier
+ * What this app stores. Every component it draws is base's, so there are no
+ * component contracts left -- the weather glyph is base's Glyph plus the
+ * vocabulary in public/glyph.json.
+ *
+ * Plain module (no Nuxt auto-imports) so the verifier
  * CLI can load it: `yarn workspace @mono/base verify <spec> --contracts apps/open-sensing-chapultepec/app/contracts.ts`.
  */
 
@@ -21,20 +25,6 @@ registerCollection('reading', z.strictObject({
   position: LonLat,
   reading: ReadingSchema,
 }))
-
-export const weatherGlyphContract = registerContract({
-  name: 'WeatherGlyph',
-  description: 'SVG weather glyph: humidity spiral in the middle, one symbol per variable around it.',
-  props: z.strictObject({
-    reading: ReadingSchema,
-    size: z.number().positive().optional().describe('Rendered size in px (default 240).'),
-    labels: z.boolean().optional().describe('Print the variable names under each symbol.'),
-    spiralOnly: z.boolean().optional(),
-  }),
-})
-
-registerContract({ name: 'GlyphLegend', description: 'EJEMPLO glyph plus the six legend cards.', props: z.strictObject({}) })
-registerContract({ name: 'GlyphCanvas', description: 'Axes where a visitor composes their glyph (static for now).', props: z.strictObject({}) })
 
 /** One answer to "¿Cómo está el clima hoy?" (stored by base's collections API). */
 registerCollection('observacion', z.strictObject({

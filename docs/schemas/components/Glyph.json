@@ -1,0 +1,199 @@
+{
+  "name": "Glyph",
+  "description": "A reading drawn as a symbol: several variables in one mark. `shapes` is the project vocabulary (kind -> value -> strokes, each in its own 40x40 box) and `parts` says which to draw, where, and how the value decides -- looked up (`shape`), counted out (`repeat`), wound (`spiral`), measured (`ticks`) or printed (`text`).",
+  "stateful": false,
+  "emits": [],
+  "slots": [],
+  "props": {
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "type": "object",
+    "properties": {
+      "shapes": {
+        "description": "kind -> value -> the strokes that draw it.",
+        "type": "object",
+        "propertyNames": {
+          "type": "string"
+        },
+        "additionalProperties": {
+          "type": "object",
+          "propertyNames": {
+            "type": "string"
+          },
+          "additionalProperties": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "d": {
+                  "description": "SVG path, drawn inside a 40x40 box.",
+                  "type": "string"
+                },
+                "circle": {
+                  "description": "[cx, cy, r], for a vocabulary made of dots.",
+                  "type": "array",
+                  "prefixItems": [
+                    {
+                      "type": "number"
+                    },
+                    {
+                      "type": "number"
+                    },
+                    {
+                      "type": "number"
+                    }
+                  ],
+                  "items": false,
+                  "minItems": 3,
+                  "maxItems": 3
+                },
+                "width": {
+                  "type": "number",
+                  "exclusiveMinimum": 0
+                },
+                "dash": {
+                  "description": "Dash pattern, e.g. \"1 4\" for an intermittent mark.",
+                  "type": "string"
+                },
+                "filled": {
+                  "type": "boolean"
+                }
+              },
+              "additionalProperties": false
+            }
+          }
+        }
+      },
+      "parts": {
+        "type": "array",
+        "items": {
+          "type": "object",
+          "properties": {
+            "mode": {
+              "type": "string",
+              "enum": [
+                "shape",
+                "repeat",
+                "spiral",
+                "ticks",
+                "text"
+              ]
+            },
+            "kind": {
+              "description": "Which vocabulary to read, for `shape` and `repeat`.",
+              "type": "string"
+            },
+            "value": {
+              "type": [
+                "string",
+                "number"
+              ]
+            },
+            "at": {
+              "description": "Top-left of this part, in the glyph coordinates.",
+              "type": "array",
+              "prefixItems": [
+                {
+                  "type": "number"
+                },
+                {
+                  "type": "number"
+                }
+              ],
+              "items": false,
+              "minItems": 2,
+              "maxItems": 2
+            },
+            "size": {
+              "type": "number",
+              "exclusiveMinimum": 0
+            },
+            "label": {
+              "type": "string"
+            },
+            "suffix": {
+              "description": "Printed beside the value, e.g. \"%\" or \"°C\".",
+              "type": "string"
+            },
+            "rotate": {
+              "description": "value -> degrees, for a vocabulary that points somewhere.",
+              "type": "object",
+              "propertyNames": {
+                "type": "string"
+              },
+              "additionalProperties": {
+                "type": "number"
+              }
+            },
+            "unit": {
+              "description": "repeat: which shape is the unit (default \"unit\").",
+              "type": "string"
+            },
+            "per": {
+              "description": "repeat: one unit per this much.",
+              "type": "number",
+              "exclusiveMinimum": 0
+            },
+            "columns": {
+              "type": "integer",
+              "exclusiveMinimum": 0,
+              "maximum": 9007199254740991
+            },
+            "step": {
+              "type": "number",
+              "exclusiveMinimum": 0
+            },
+            "turns": {
+              "description": "`spiral`: turns at zero and at `max`.",
+              "type": "array",
+              "prefixItems": [
+                {
+                  "type": "number"
+                },
+                {
+                  "type": "number"
+                }
+              ],
+              "items": false,
+              "minItems": 2,
+              "maxItems": 2
+            },
+            "max": {
+              "type": "number",
+              "exclusiveMinimum": 0
+            },
+            "radius": {
+              "type": "number",
+              "exclusiveMinimum": 0
+            },
+            "length": {
+              "type": "number",
+              "exclusiveMinimum": 0
+            },
+            "count": {
+              "type": "integer",
+              "exclusiveMinimum": 0,
+              "maximum": 9007199254740991
+            },
+            "accent": {
+              "description": "Paint it in the app accent rather than the ink colour.",
+              "type": "boolean"
+            }
+          },
+          "additionalProperties": false
+        }
+      },
+      "size": {
+        "type": "number",
+        "exclusiveMinimum": 0
+      },
+      "viewBox": {
+        "description": "The coordinate space `at` is expressed in.",
+        "type": "string"
+      },
+      "labels": {
+        "type": "boolean"
+      }
+    },
+    "additionalProperties": false
+  }
+}

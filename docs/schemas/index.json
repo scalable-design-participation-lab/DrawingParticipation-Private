@@ -32,15 +32,13 @@
     "Panel",
     "Text",
     "Image",
+    "Glyph",
     "UploadQueue",
     "Sheet",
     "Audio",
     "Outlet",
     "AnalysisPanel",
-    "AnalysisLayers",
-    "WeatherGlyph",
-    "GlyphLegend",
-    "GlyphCanvas"
+    "AnalysisLayers"
   ],
   "collections": [
     "feature",

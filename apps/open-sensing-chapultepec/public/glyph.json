@@ -1,0 +1,44 @@
+{
+  "_note": "The weather-glyph vocabulary: kind -> value -> the strokes that draw it, each inside a 40x40 box. This is the project's own drawn language (see the legend on /compartir-glifo); base's Glyph component only places and scales it.",
+  "nubes": {
+    "stratus": [{ "d": "M6 22h28" }],
+    "cirrus": [{ "d": "M6 24h24c3 0 4-1 4-4" }],
+    "cumulus": [{ "d": "M6 26h28M8 26a12 12 0 0 1 24 0" }],
+    "cirrocumulus": [{ "d": "M8 10c8-6 12 0 6 6s-2 12 6 6c6-4 10 0 8 6s-8 6-12 0" }]
+  },
+  "lluvia": {
+    "suave": [{ "d": "M20 12v16M13 16l14 8M27 16l-14 8", "width": 2.5 }],
+    "moderada": [
+      { "d": "M11 12v16M4 16l14 8M18 16L4 24", "width": 2.5 },
+      { "d": "M29 12v16M22 16l14 8M36 16l-14 8", "width": 2.5 }
+    ],
+    "fuerte": [
+      { "d": "M11 18v14M5 21l12 8M17 21l-12 8", "width": 2.5 },
+      { "d": "M29 18v14M23 21l12 8M35 21l-12 8", "width": 2.5 },
+      { "d": "M20 4v12M15 7l10 6M25 7l-10 6", "width": 2.5 }
+    ]
+  },
+  "viento": {
+    "suave": [{ "d": "M20 34V8" }, { "d": "M16 8h8" }, { "circle": [20, 34, 2], "filled": true }],
+    "leve": [{ "d": "M20 34V8" }, { "d": "M16 8h8" }, { "circle": [20, 34, 2], "filled": true }],
+    "moderada": [{ "d": "M20 34V8" }, { "d": "M16 8h8" }, { "circle": [20, 34, 2], "filled": true }],
+    "fuerte": [{ "d": "M20 34V8" }, { "d": "M16 8h8" }, { "circle": [20, 34, 2], "filled": true }]
+  },
+  "olor": {
+    "bajo": [
+      { "d": "M20 4c-6 4 6 8 0 12s6 8 0 12 6 8 0 12" },
+      { "d": "M8 12h6M26 20h6M8 30h6", "width": 1.5 }
+    ],
+    "alto": [
+      { "d": "M20 4c-6 4 6 8 0 12s6 8 0 12 6 8 0 12" },
+      { "d": "M8 12h6M11 9v6M26 20h6M29 17v6M8 30h6M11 27v6", "width": 1.5 }
+    ],
+    "intermitente": [{ "d": "M20 4v32", "dash": "1 4", "width": 3 }]
+  },
+  "temperatura": {
+    "unit": [{ "circle": [5, 5, 2.8], "width": 1.8 }]
+  },
+  "punto": {
+    "unit": [{ "circle": [5, 5, 1.2], "width": 0, "filled": true }]
+  }
+}

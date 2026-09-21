@@ -30,6 +30,7 @@ import LoadingScreen from '../components/LoadingScreen.vue'
 import Audio from '../components/Audio.vue'
 import Sheet from '../components/Sheet.vue'
 import UploadQueue from '../components/UploadQueue.vue'
+import Glyph from '../components/Glyph.vue'
 import AnalysisPanel from '../components/AnalysisPanel.vue'
 import AnalysisLayers from '../components/AnalysisLayers.vue'
 import { registerComponent } from '../utils/registry'
@@ -65,6 +66,7 @@ export default defineNuxtPlugin(() => {
   registerComponent('Audio', Audio)
   registerComponent('Sheet', Sheet)
   registerComponent('UploadQueue', UploadQueue)
+  registerComponent('Glyph', Glyph)
   registerComponent('AnalysisPanel', AnalysisPanel)
   registerComponent('AnalysisLayers', AnalysisLayers)
   registerComponent('Stack', Stack)
