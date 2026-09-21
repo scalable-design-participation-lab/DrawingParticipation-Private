@@ -83,11 +83,13 @@ function dialog(state: Record<string, unknown> = {}) {
   })
 }
 
-const pick = (w: ReturnType<typeof dialog>, name: string) =>
-  w.findComponent(FileDropZone).vm.$emit('files', [new File(['x'], name, { type: 'image/png' })])
+function pick(w: ReturnType<typeof dialog>, name: string) {
+  return w.findComponent(FileDropZone).vm.$emit('files', [new File(['x'], name, { type: 'image/png' })])
+}
 
-const press = (w: ReturnType<typeof dialog>, label: string) =>
-  w.findAll('button').find(b => b.text() === label)!.trigger('click')
+function press(w: ReturnType<typeof dialog>, label: string) {
+  return w.findAll('button').find(b => b.text() === label)!.trigger('click')
+}
 
 describe('the add-media dialog', () => {
   beforeEach(() => {

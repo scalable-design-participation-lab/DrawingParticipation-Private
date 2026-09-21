@@ -206,6 +206,20 @@ export function registerHandlers() {
   }, 'Bootstrap: a project owner grants themselves the admin role (rules reject everyone else).')
 
   // ---------------------------------------------------------------- catalogue + user entries
+  registerHandler('loadLabels', async (_p, ctx) => {
+    // The stored value of a theme or a "Learn more" link stays the English
+    // key everywhere it is filtered and compared; these are only what the
+    // reader sees. Handing them to the page as state lets a `Text` translate
+    // a code with `labels`, instead of a composable doing it per component.
+    const [tags, links] = await Promise.all([
+      import('../content/mncTags.i18n.json'),
+      import('../content/mncLinks.i18n.json'),
+    ])
+    const drop = ({ _note, ...rest }: Record<string, unknown>) => rest
+    ctx.state.tagLabels = drop(tags.default as Record<string, unknown>)
+    ctx.state.linkLabels = drop(links.default as Record<string, unknown>)
+  }, 'Put the per-language theme and link label tables into state.tagLabels / state.linkLabels, for a Text `labels` binding.')
+
   registerHandler('loadCatalog', async (_p, ctx) => {
     const { default: data } = await import('../content/mncData.json') as { default: Record<string, unknown>[] }
     const links = mncLinks as Record<string, { label: string, url: string }[]>

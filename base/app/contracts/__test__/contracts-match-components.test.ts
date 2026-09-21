@@ -15,6 +15,21 @@ import { listContracts } from '../components'
  * So the two are compared here rather than by eye.
  */
 
+/** Props a spec reaches through the node itself rather than through `props`. */
+const PASSTHROUGH = new Set(['class', 'style', 'modelValue'])
+
+/**
+ * Props a component takes that a spec deliberately cannot set, with the reason.
+ * Anything else missing from a contract is an oversight, not a decision.
+ */
+const OUT_OF_REACH: Record<string, string[]> = {
+  // Who the app belongs to and what colour it is come from app.json, so a page
+  // cannot dress the chrome differently from one route to the next.
+  Header: ['logoLink', 'logoSrc', 'logoAlt', 'iconLink', 'primaryAccentColor', 'shape', 'z'],
+  // Injected by BackgroundMap, not passed.
+  ToolTips: ['mapInstance'],
+}
+
 const here = dirname(fileURLToPath(import.meta.url))
 const registrySource = readFileSync(resolve(here, '../../plugins/registry.ts'), 'utf8')
 
@@ -61,5 +76,14 @@ describe('every contract matches its component', () => {
   it.each(cases.map(c => [c.contract.name, c] as const))('%s declares only events it emits', (_name, { contract, component }) => {
     const real = keys(component.emits)
     expect((contract.emits ?? []).filter(event => !real.includes(event))).toEqual([])
+  })
+
+  // The other direction: a prop the component takes but the contract omits is
+  // a capability no spec can reach, and the failure only shows up as
+  // "Unrecognized key" the first time someone tries to use it.
+  it.each(cases.map(c => [c.contract.name, c] as const))('%s declares every prop it takes', (name, { contract, component }) => {
+    const declared = [...Object.keys(contract.props.shape), ...(OUT_OF_REACH[name] ?? [])]
+    const real = keys(component.props).filter(prop => !PASSTHROUGH.has(prop))
+    expect(real.filter(prop => !declared.includes(prop))).toEqual([])
   })
 })

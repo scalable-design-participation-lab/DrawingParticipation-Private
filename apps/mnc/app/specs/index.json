@@ -48,7 +48,9 @@
     "uploadDraft": {
       "comment": ""
     },
-    "uploadBusy": false
+    "uploadBusy": false,
+    "tagLabels": {},
+    "linkLabels": {}
   },
   "init": [
     {
@@ -69,6 +71,9 @@
     },
     {
       "call": "watchLocation"
+    },
+    {
+      "call": "loadLabels"
     }
   ],
   "children": [
@@ -1110,32 +1115,515 @@
               ]
             },
             {
-              "type": "MobileInfoPopup",
+              "type": "Sheet",
               "if": "$state.selected",
+              "props": {
+                "tone": "accent",
+                "closeLabel": "$t.mDetail.close",
+                "toggleLabel": "$t.mDetail.tapToExpand",
+                "expandLabel": "$t.mDetail.tapToExpand"
+              },
               "bind": {
-                "entry": "$state.selected",
-                "state": "$state.cardState",
-                "contributions": "$state.contributions",
-                "isAdmin": "$state.auth.isAdmin"
+                "state": "$state.cardState"
               },
               "on": {
-                "close": {
-                  "set": "selected",
-                  "value": null
-                },
                 "update:state": {
                   "set": "cardState"
                 },
-                "approve": {
-                  "call": "approveContribution"
-                },
-                "delete": {
-                  "call": "deleteContribution"
-                },
-                "addMedia": {
-                  "set": "uploadFor"
+                "close": {
+                  "set": "selected",
+                  "value": null
                 }
-              }
+              },
+              "children": [
+                {
+                  "slot": "peek",
+                  "type": "Stack",
+                  "props": {
+                    "direction": "row",
+                    "align": "start",
+                    "gap": "md"
+                  },
+                  "children": [
+                    {
+                      "type": "div",
+                      "style": "entry-avatar",
+                      "children": [
+                        {
+                          "type": "Icon",
+                          "style": "entry-avatar-icon",
+                          "props": {
+                            "name": "i-heroicons-light-bulb",
+                            "size": "sm"
+                          }
+                        }
+                      ]
+                    },
+                    {
+                      "type": "Stack",
+                      "style": "peek-text",
+                      "props": {
+                        "gap": "none"
+                      },
+                      "children": [
+                        {
+                          "type": "Text",
+                          "props": {
+                            "size": "sm",
+                            "weight": "bold"
+                          },
+                          "bind": {
+                            "text": "$state.selected.properties.i18n.$locale.title",
+                            "fallback": "$state.selected.comment"
+                          }
+                        },
+                        {
+                          "type": "Text",
+                          "if": "$state.selected.properties.primaryTag",
+                          "style": "peek-theme",
+                          "props": {
+                            "size": "xs",
+                            "weight": "medium"
+                          },
+                          "bind": {
+                            "text": "$state.selected.properties.primaryTag",
+                            "labels": "$state.tagLabels"
+                          }
+                        },
+                        {
+                          "type": "Text",
+                          "style": "clamp-3",
+                          "props": {
+                            "size": "xs",
+                            "tone": "muted"
+                          },
+                          "bind": {
+                            "text": "$state.selected.properties.i18n.$locale.shortDesc",
+                            "fallback": "$state.selected.properties.shortDesc"
+                          }
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "type": "Text",
+                  "style": "sheet-title",
+                  "props": {
+                    "as": "h2",
+                    "size": "2xl",
+                    "weight": "bold",
+                    "tone": "inverse"
+                  },
+                  "bind": {
+                    "text": "$state.selected.properties.i18n.$locale.title",
+                    "fallback": "$state.selected.comment"
+                  }
+                },
+                {
+                  "type": "Stack",
+                  "if": "$state.selected.properties.date",
+                  "props": {
+                    "direction": "row",
+                    "align": "center",
+                    "gap": "sm",
+                    "wrap": true
+                  },
+                  "children": [
+                    {
+                      "type": "Text",
+                      "style": "entry-badge",
+                      "props": {
+                        "as": "span",
+                        "size": "sm",
+                        "weight": "medium",
+                        "text": "$t.mDetail.datePublished"
+                      }
+                    },
+                    {
+                      "type": "Text",
+                      "props": {
+                        "as": "span",
+                        "size": "sm",
+                        "tone": "inverse"
+                      },
+                      "bind": {
+                        "text": "$state.selected.properties.date"
+                      }
+                    }
+                  ]
+                },
+                {
+                  "type": "Stack",
+                  "if": "$state.selected.properties.location",
+                  "props": {
+                    "direction": "row",
+                    "align": "center",
+                    "gap": "sm",
+                    "wrap": true
+                  },
+                  "children": [
+                    {
+                      "type": "Text",
+                      "style": "entry-badge",
+                      "props": {
+                        "as": "span",
+                        "size": "sm",
+                        "weight": "medium",
+                        "text": "$t.mDetail.location"
+                      }
+                    },
+                    {
+                      "type": "Text",
+                      "props": {
+                        "as": "span",
+                        "size": "sm",
+                        "tone": "inverse"
+                      },
+                      "bind": {
+                        "text": "$state.selected.properties.i18n.$locale.location",
+                        "fallback": "$state.selected.properties.location"
+                      }
+                    }
+                  ]
+                },
+                {
+                  "type": "div",
+                  "if": "$state.selected.properties.description",
+                  "children": [
+                    {
+                      "type": "Text",
+                      "style": "entry-badge",
+                      "props": {
+                        "as": "span",
+                        "size": "sm",
+                        "weight": "medium",
+                        "text": "$t.mDetail.description"
+                      }
+                    },
+                    {
+                      "type": "Text",
+                      "style": "sheet-body",
+                      "props": {
+                        "size": "sm",
+                        "tone": "inverse"
+                      },
+                      "bind": {
+                        "text": "$state.selected.properties.i18n.$locale.description",
+                        "fallback": "$state.selected.properties.description"
+                      }
+                    }
+                  ]
+                },
+                {
+                  "type": "div",
+                  "if": "$state.selected.properties.photos.length",
+                  "style": "photo-frame",
+                  "children": [
+                    {
+                      "type": "Carousel",
+                      "props": {
+                        "height": "lg",
+                        "emptyTitle": "$t.photo.noPhoto",
+                        "emptyText": "$t.photo.beFirst",
+                        "prevLabel": "$t.photo.prevPhoto",
+                        "nextLabel": "$t.photo.nextPhoto"
+                      },
+                      "bind": {
+                        "images": "$state.selected.properties.photos",
+                        "alt": "$state.selected.comment"
+                      }
+                    }
+                  ]
+                },
+                {
+                  "type": "Audio",
+                  "props": {
+                    "label": "$t.detail.voiceNotes",
+                    "tone": "inverse"
+                  },
+                  "bind": {
+                    "src": "$state.selected.properties.audio"
+                  }
+                },
+                {
+                  "type": "div",
+                  "if": "$state.selected.properties.linkList.length",
+                  "children": [
+                    {
+                      "type": "Text",
+                      "style": "sheet-label",
+                      "props": {
+                        "size": "sm",
+                        "weight": "bold",
+                        "tone": "inverse",
+                        "text": "$t.mDetail.learnMore"
+                      }
+                    },
+                    {
+                      "type": "List",
+                      "props": {
+                        "gap": "xs"
+                      },
+                      "bind": {
+                        "items": "$state.selected.properties.linkList"
+                      },
+                      "item": {
+                        "type": "Stack",
+                        "props": {
+                          "direction": "row",
+                          "align": "start",
+                          "gap": "xs"
+                        },
+                        "children": [
+                          {
+                            "type": "Icon",
+                            "style": "link-icon",
+                            "props": {
+                              "name": "i-heroicons-link",
+                              "size": "xs"
+                            }
+                          },
+                          {
+                            "type": "Text",
+                            "if": "!$item.url",
+                            "props": {
+                              "as": "span",
+                              "size": "xs",
+                              "tone": "inverse"
+                            },
+                            "bind": {
+                              "text": "$item.label",
+                              "labels": "$state.linkLabels"
+                            }
+                          },
+                          {
+                            "type": "a",
+                            "if": "$item.url",
+                            "style": "sheet-link",
+                            "props": {
+                              "target": "_blank",
+                              "rel": "noopener noreferrer"
+                            },
+                            "bind": {
+                              "href": "$item.url"
+                            },
+                            "children": [
+                              {
+                                "type": "Text",
+                                "props": {
+                                  "as": "span",
+                                  "size": "xs",
+                                  "tone": "inverse"
+                                },
+                                "bind": {
+                                  "text": "$item.label",
+                                  "labels": "$state.linkLabels"
+                                }
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                },
+                {
+                  "type": "div",
+                  "if": "$state.selected.properties.string_id",
+                  "style": "sheet-community",
+                  "children": [
+                    {
+                      "type": "Stack",
+                      "style": "sheet-community-head",
+                      "props": {
+                        "direction": "row",
+                        "justify": "between",
+                        "align": "center",
+                        "gap": "sm"
+                      },
+                      "children": [
+                        {
+                          "type": "Stack",
+                          "props": {
+                            "direction": "row",
+                            "align": "baseline",
+                            "gap": "xs"
+                          },
+                          "children": [
+                            {
+                              "type": "Text",
+                              "props": {
+                                "as": "span",
+                                "size": "sm",
+                                "weight": "bold",
+                                "tone": "inverse",
+                                "text": "$t.mDetail.community"
+                              }
+                            },
+                            {
+                              "type": "Text",
+                              "if": "$state.contributions.length",
+                              "style": "sheet-count",
+                              "props": {
+                                "as": "span",
+                                "size": "sm",
+                                "prefix": "(",
+                                "suffix": ")"
+                              },
+                              "bind": {
+                                "text": "$state.contributions.length"
+                              }
+                            }
+                          ]
+                        },
+                        {
+                          "type": "Button",
+                          "style": "sheet-add",
+                          "props": {
+                            "size": "sm",
+                            "color": "white",
+                            "variant": "ghost",
+                            "icon": "i-heroicons-plus",
+                            "label": "$t.detail.add"
+                          },
+                          "on": {
+                            "click": {
+                              "set": "uploadFor",
+                              "value": "$state.selected.properties.string_id"
+                            }
+                          }
+                        }
+                      ]
+                    },
+                    {
+                      "type": "Text",
+                      "if": "!$state.contributions.length",
+                      "style": "sheet-quiet",
+                      "props": {
+                        "size": "xs",
+                        "text": "$t.mDetail.beFirst"
+                      }
+                    },
+                    {
+                      "type": "List",
+                      "props": {
+                        "gap": "sm"
+                      },
+                      "bind": {
+                        "items": "$state.contributions"
+                      },
+                      "item": {
+                        "type": "div",
+                        "style": "contrib-card",
+                        "children": [
+                          {
+                            "type": "List",
+                            "if": "$item.media.length",
+                            "style": "contrib-media",
+                            "props": {
+                              "layout": "grid",
+                              "cols": 3,
+                              "gap": "xs"
+                            },
+                            "bind": {
+                              "items": "$item.media"
+                            },
+                            "item": {
+                              "type": "div",
+                              "children": [
+                                {
+                                  "type": "Audio",
+                                  "if": "$item.kind == 'audio'",
+                                  "bind": {
+                                    "src": "$item.url"
+                                  }
+                                },
+                                {
+                                  "type": "Image",
+                                  "if": "$item.kind != 'audio'",
+                                  "style": "contrib-thumb",
+                                  "props": {
+                                    "width": "full"
+                                  },
+                                  "bind": {
+                                    "src": "$item.url",
+                                    "alt": "$item.name",
+                                    "href": "$item.url"
+                                  }
+                                }
+                              ]
+                            }
+                          },
+                          {
+                            "type": "Text",
+                            "if": "$item.comment",
+                            "props": {
+                              "size": "xs",
+                              "tone": "inverse"
+                            },
+                            "bind": {
+                              "text": "$item.comment"
+                            }
+                          },
+                          {
+                            "type": "Stack",
+                            "if": "$state.auth.isAdmin",
+                            "style": "contrib-actions",
+                            "props": {
+                              "direction": "row",
+                              "align": "center",
+                              "gap": "xs"
+                            },
+                            "children": [
+                              {
+                                "type": "Text",
+                                "if": "!$item.approved",
+                                "style": "chip-pending",
+                                "props": {
+                                  "as": "span",
+                                  "size": "xs",
+                                  "weight": "semibold",
+                                  "text": "$t.detail.pending"
+                                }
+                              },
+                              {
+                                "type": "Button",
+                                "if": "!$item.approved",
+                                "props": {
+                                  "size": "xs",
+                                  "color": "white",
+                                  "label": "$t.detail.approve"
+                                },
+                                "on": {
+                                  "click": {
+                                    "call": "approveContribution",
+                                    "payload": "$item"
+                                  }
+                                }
+                              },
+                              {
+                                "type": "Button",
+                                "props": {
+                                  "size": "xs",
+                                  "color": "red",
+                                  "label": "$t.detail.delete"
+                                },
+                                "on": {
+                                  "click": {
+                                    "call": "deleteContribution",
+                                    "payload": "$item"
+                                  }
+                                }
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                }
+              ]
             },
             {
               "type": "IconBar",

@@ -63,6 +63,21 @@
       "rotation": {
         "type": "number"
       },
+      "pitch": {
+        "type": "number"
+      },
+      "bearing": {
+        "type": "number"
+      },
+      "extent": {
+        "description": "Bounds panning, in the map projection. Defaults to one world, so the view cannot drift into the repeated copies where HTML overlays do not render.",
+        "minItems": 4,
+        "maxItems": 4,
+        "type": "array",
+        "items": {
+          "type": "number"
+        }
+      },
       "mapHeight": {
         "description": "CSS height, e.g. \"100vh\" or \"100%\".",
         "type": "string"

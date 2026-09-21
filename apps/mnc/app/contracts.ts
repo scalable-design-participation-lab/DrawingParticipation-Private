@@ -18,13 +18,6 @@ registerContract({
 })
 
 registerContract({
-  name: 'MobileInfoPopup',
-  description: 'How mnc reads one entry inside base Sheet (peek or full). Contributions come from the page; `contribute` / `approve` / `delete` go back to it.',
-  props: z.strictObject({ entry: Row, state: z.enum(['peek', 'full']).optional(), contributions: Rows.optional(), isAdmin: z.boolean().optional() }),
-  emits: ['close', 'update:state', 'addMedia', 'approve', 'delete'],
-})
-
-registerContract({
   name: 'EntryDetail',
   description: 'Desktop detail panel for one entry: text, gallery, voice notes, links, community contributions. `show-tag` emits the theme to narrow to.',
   props: z.strictObject({ entry: Row, contributions: Rows.optional(), loading: z.boolean().optional(), isAdmin: z.boolean().optional() }),
@@ -38,6 +31,7 @@ declareHandler('register', 'Create a plain account with { email, password }.')
 declareHandler('signOut', 'Sign out.')
 declareHandler('resetPassword', 'Email a password-reset link; payload is the email.')
 declareHandler('claimAdmin', 'Bootstrap: a project owner grants themselves the admin role.')
+declareHandler('loadLabels', 'Per-language theme and link label tables into state.tagLabels / state.linkLabels, for a Text labels binding.')
 declareHandler('loadCatalog', 'Load the curated case studies into state.features.')
 declareHandler('watchSolutions', 'Live-sync user entries into state.features (+ state.moderation for admins).')
 declareHandler('submitEntry', 'Persist a "Join Our Research" submission as a pending entry.')

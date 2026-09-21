@@ -36,6 +36,10 @@
       "closeLabel": {
         "type": "string"
       },
+      "toggleLabel": {
+        "description": "Accessible name of the grip that switches between the two states.",
+        "type": "string"
+      },
       "expandLabel": {
         "description": "Button under the peek content; omit for no button.",
         "type": "string"
