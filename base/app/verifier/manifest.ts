@@ -1,6 +1,7 @@
 import { getCollection } from '../contracts/collections'
 import { AppManifestSchema } from '../contracts/manifest'
 import type { RootSpec, SpecNode } from '../contracts/spec'
+import { registerStyle } from '../utils/styles'
 import { verifySpec } from './index'
 import type { VerifyError, VerifyResult } from './index'
 
@@ -20,6 +21,13 @@ export function verifyApp(manifest: unknown, specs: Record<string, unknown>, mes
     return { pass: false, errors }
   }
   const m = parsed.data
+
+  // The app's own presets are data, so the verifier learns them from the
+  // manifest rather than from a module it would have to import.
+  for (const [name, classes] of Object.entries(m.styles ?? {})) {
+    registerStyle(name, classes, `From ${m.name}'s app.json`)
+  }
+
   const routes = Object.keys(m.routes)
   if (m.i18n && !(m.i18n.default in messages) && Object.keys(messages).length) {
     errors.push({ path: 'app.json:i18n.default', rule: 'manifest.unknown-locale', message: `no i18n/${m.i18n.default}.json` })

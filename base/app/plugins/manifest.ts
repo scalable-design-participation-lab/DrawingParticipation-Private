@@ -5,6 +5,7 @@ import { SPEC_I18N, createTranslator } from '../utils/i18n'
 import { DATA_ADAPTER, composeAdapters, restAdapter, staticAdapter } from '../data/adapters'
 import { registerHandler } from '../utils/handlers'
 import { registerComponent } from '../utils/registry'
+import { registerStyle } from '../utils/styles'
 import Outlet from '../components/Outlet.vue'
 import { defineNuxtPlugin, updateAppConfig } from '#app'
 
@@ -91,6 +92,10 @@ export default defineNuxtPlugin((nuxtApp) => {
     }
     catch { /* private mode */ }
   }, 'Switch the UI language; payload is a locale the app has (an app/i18n/<locale>.json, or one vue-i18n knows).')
+
+  for (const [name, classes] of Object.entries(manifest.styles ?? {})) {
+    registerStyle(name, classes, `From ${manifest.name}'s app.json`)
+  }
 
   if (manifest.theme?.primary || manifest.theme?.gray) {
     updateAppConfig({ ui: { ...(manifest.theme.primary && { primary: manifest.theme.primary }), ...(manifest.theme.gray && { gray: manifest.theme.gray }) } })

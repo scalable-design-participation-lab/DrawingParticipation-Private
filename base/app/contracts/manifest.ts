@@ -45,6 +45,13 @@ export const AppManifestSchema = z.strictObject({
     logoLink: z.string().optional().describe('Where the logo links to.'),
     iconLink: z.string().optional().describe('Where the lab icon links to.'),
   }).optional(),
+  /**
+   * Style presets this app adds to base's, as `name -> Tailwind classes`. A
+   * node then says `"style": "<name>"`. They live here rather than in a
+   * `utils/styles.ts` so an app is data: base registers them at startup, the
+   * verifier knows the names, and Tailwind sees the classes.
+   */
+  styles: z.record(z.string().regex(/^[\w-]+$/), z.string()).optional(),
   /** Spec rendered around every page; it must contain one `Outlet` node. */
   shell: z.string().optional().describe('Spec file name under specs/, e.g. "shell.json".'),
   /** Translations live in app/i18n/<locale>.json; specs use "$t.some.key". */
