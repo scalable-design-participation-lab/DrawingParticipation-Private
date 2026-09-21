@@ -39,6 +39,37 @@
         "description": "Item key holding [lon, lat] (default \"position\").",
         "type": "string"
       },
+      "cluster": {
+        "description": "Merge items closer than this many map units into one overlay, so overlapping markers stay reachable. The item slot then gets { position, members, count }.",
+        "type": "number",
+        "minimum": 0
+      },
+      "filterKey": {
+        "type": "string"
+      },
+      "filterIn": {
+        "description": "Keep items whose filterKey is in this set, like List filterIn.",
+        "anyOf": [
+          {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          {
+            "type": "object",
+            "propertyNames": {
+              "type": "string"
+            },
+            "additionalProperties": {
+              "type": "boolean"
+            }
+          },
+          {
+            "type": "null"
+          }
+        ]
+      },
       "lonLat": {
         "description": "Positions are [lon, lat] (default) rather than map coordinates.",
         "type": "boolean"

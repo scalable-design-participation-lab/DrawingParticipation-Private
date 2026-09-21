@@ -11,22 +11,6 @@ const Rows = z.array(Row)
 const Coordinate = z.tuple([z.number(), z.number()])
 
 registerContract({
-  name: 'MncMap',
-  description: 'The MNC map: category pins for the visible entries plus the QuickLook card. `selected` / `quickLook` are owned by the page; taps on the empty map emit `add-at` (desktop) or `pick` while `picking`.',
-  props: z.strictObject({
-    features: Rows.optional(),
-    visibleTags: z.array(z.string()).optional(),
-    selected: Row.nullable().optional(),
-    quickLook: z.boolean().optional(),
-    picking: z.boolean().optional(),
-    pin: Coordinate.nullable().optional(),
-    mapType: z.enum(['vector', 'satellite']).optional(),
-    isMobile: z.boolean().optional(),
-  }),
-  emits: ['update:selected', 'update:quickLook', 'expand', 'pick', 'addAt'],
-})
-
-registerContract({
   name: 'MobileContributeFlow',
   description: '"Join Our Research" wizard. `pick-location` asks the page to let the user tap the map; `pickedCoordinate` feeds the tap back; `submit` emits the whole payload (title, theme, coordinate, answers, files).',
   props: z.strictObject({ pickedCoordinate: Coordinate.nullable().optional() }),

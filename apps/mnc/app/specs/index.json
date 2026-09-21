@@ -13,7 +13,6 @@
       "Art & Cultural Expression"
     ],
     "selected": null,
-    "quickLook": false,
     "detail": false,
     "panelOpen": false,
     "listOpen": false,
@@ -86,63 +85,93 @@
       "if": "!$state.loading",
       "children": [
         {
-          "type": "MncMap",
+          "type": "BackgroundMap",
+          "props": {
+            "mapHeight": "100dvh",
+            "mapboxStyleLight": "restartukraine/cm3p0s3gw00yd01seasye5jdw",
+            "mapboxStyleDark": "restartukraine/cm3p4jqnj009y01s79ngdah4r"
+          },
           "bind": {
-            "features": "$state.features",
-            "visibleTags": "$state.visibleTags",
-            "selected": "$state.selected",
-            "quickLook": "$state.quickLook",
-            "picking": "$state.picking",
-            "pin": "$state.pin",
-            "mapType": "$state.mapType",
-            "isMobile": "$state.isMobile"
+            "mapType": "$state.mapType"
           },
           "on": {
-            "update:selected": [
-              {
-                "set": "selected"
+            "mapClick": {
+              "set": "pin",
+              "value": null
+            }
+          },
+          "children": [
+            {
+              "slot": "overlays",
+              "type": "MarkerOverlay",
+              "props": {
+                "positionKey": "coordinates",
+                "lonLat": false,
+                "positioning": "bottom-center",
+                "cluster": 250,
+                "filterKey": "properties.primaryTag"
               },
-              {
-                "set": "cardState",
-                "value": "expanded"
+              "bind": {
+                "items": "$state.features",
+                "filterIn": "$state.visibleTags"
               },
-              {
-                "call": "loadContributions",
-                "args": "$state.selected.properties.string_id"
+              "item": {
+                "type": "List",
+                "props": {
+                  "layout": "stack",
+                  "gap": "xs"
+                },
+                "style": "map-pins",
+                "bind": {
+                  "items": "$item.members"
+                },
+                "item": {
+                  "type": "div",
+                  "style": "map-pin",
+                  "on": {
+                    "click": [
+                      {
+                        "set": "selected"
+                      },
+                      {
+                        "set": "cardState",
+                        "value": "expanded"
+                      },
+                      {
+                        "call": "loadContributions",
+                        "args": "$state.selected.properties.string_id"
+                      }
+                    ]
+                  },
+                  "children": [
+                    {
+                      "type": "Icon",
+                      "props": {
+                        "icons": {
+                          "Health & Crisis Response": "i-heroicons-heart",
+                          "Transportation & Mobility": "i-ph-bus",
+                          "Digital Access & Connectivity": "i-heroicons-wifi",
+                          "Community Mapping & Visibility": "i-heroicons-user-group",
+                          "Art & Cultural Expression": "i-heroicons-light-bulb"
+                        },
+                        "colors": {
+                          "Health & Crisis Response": "#F26D6D",
+                          "Transportation & Mobility": "#4C9BEA",
+                          "Digital Access & Connectivity": "#57C9C0",
+                          "Community Mapping & Visibility": "#6FCF97",
+                          "Art & Cultural Expression": "#EBC24A"
+                        },
+                        "size": "md"
+                      },
+                      "bind": {
+                        "name": "$item.properties.primaryTag"
+                      }
+                    }
+                  ]
+                }
               }
-            ],
-            "update:quickLook": {
-              "set": "quickLook"
-            },
-            "expand": [
-              {
-                "set": "detail",
-                "value": true
-              },
-              {
-                "set": "quickLook",
-                "value": false
-              }
-            ],
-            "pick": [
-              {
-                "set": "pin"
-              },
-              {
-                "set": "picking",
-                "value": false
-              }
-            ],
-            "addAt": [
-              {
-                "set": "pin"
-              },
-              {
-                "set": "contribute",
-                "value": true
-              }
-            ]
-          }
+            }
+          ]
         },
         {
           "type": "div",

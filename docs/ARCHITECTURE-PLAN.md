@@ -104,6 +104,33 @@ a `FormFields` field takes a `style` preset instead of a raw `class` (the last r
 and spacing around a `Divider` is a preset -- which is how one app already did it while another reached for
 `ui: { wrapper: … }`. A verifier test pins all of it.
 
+**Status (2026-09-21, round 8): app code moves into base, on a stated goal — "everything in base, all of it
+generalized, the same way of doing things everywhere".** Two apps now hold nothing but `app.json` and specs
+(presupuesto-distrito, drawing-participation); the other three are down to what is genuinely theirs.
+
+What base gained, each one shaped like something already there:
+
+| New | Replaces |
+| --- | --- |
+| `LoadingScreen`, `IconBar`, `Dropdown` | a splash both map apps had twice, mnc's desktop toolbar + mobile nav, its language menu |
+| `Header` centre slot, `showLogo` | mnc's separate phone header |
+| `List` `near` / `groupBy` / `filterIn` / dotted keys | its proximity list, category sidebar, solutions grid |
+| `Icon` `icons` / `colors` maps | per-row category glyphs, the way FeatureLayer already took marker icons |
+| `Text` `fallback` / `prefix` / `suffix` / `decimals` | localized titles with an original to fall back on, "1.4 km" |
+| `Modal` `scroll` and wider sizes | mnc's AppModal |
+| `app.json` `styles` and `brand` | four `utils/styles.ts`, three `app.config.ts`, three `layouts/default.vue` |
+| handlers `selectItem`, `watchViewport`, `watchLocation`, `download` | four app handlers, one of which never worked |
+| `$locale` as a path segment | reading a row that stores its text per language |
+
+`$locale` and `setLocale` follow vue-i18n when an app installed it, so a spec binds one language whichever
+catalogue the app uses. Dead things found on the way: a `download` handler writing an empty object, an events
+list no component emitted, a category panel nothing opens.
+
+Left in the apps, and why: chapultepec's four SVG glyph components (its own visual language, and a fifth app
+would not want them), restart-ukraine's analysis panel over base's GeoSpatialLayer, and both apps' Firebase
+layers. The last is the real remaining block — making it data means a declarative backend in `app.json`, which
+is the next piece of work.
+
 ## Next
 
 1. ~~Delete the dashboard leftovers~~ done.

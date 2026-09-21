@@ -54,7 +54,9 @@
     "sidebar-group-name": "flex-1 truncate",
     "sidebar-entry": "w-full cursor-pointer rounded-md px-4 py-1.5 text-left hover:bg-gray-50 dark:hover:bg-zinc-900",
     "sidebar-entry-text": "min-w-0 flex-1",
-    "sidebar": "fixed right-6 top-24 z-40 max-h-[calc(100vh-11rem)] w-96 overflow-y-auto rounded-2xl border-2 border-[#FB6D6D] bg-white shadow-xl dark:bg-black md:w-80"
+    "sidebar": "fixed right-6 top-24 z-40 max-h-[calc(100vh-11rem)] w-96 overflow-y-auto rounded-2xl border-2 border-[#FB6D6D] bg-white shadow-xl dark:bg-black md:w-80",
+    "map-pins": "pointer-events-auto inline-flex items-end gap-1",
+    "map-pin": "relative mb-2 flex h-10 w-10 cursor-pointer items-center justify-center rounded-full border-2 border-current bg-zinc-900/90 shadow-lg transition hover:-translate-y-0.5"
   },
   "routes": {
     "/": "index.json",
