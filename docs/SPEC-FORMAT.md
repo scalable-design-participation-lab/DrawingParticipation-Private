@@ -129,6 +129,26 @@ In **strict mode** (`verifySpec(spec, { strict: true })`, CLI `--strict`) a raw
 `class` prop anywhere is an error (`style.raw-class`). Every spec in this repo
 passes strict mode; run LLM output in strict mode.
 
+**Chrome is not the spec's to paint.** A page says what goes in the header,
+never how it looks: `Header` takes `leftItems` / `rightItems` / `variant` and
+the three `show*` switches, and nothing else. The logo, the accent color and
+the stacking order moved to `app.json` (`brand`, `theme.accent`), where they
+are written once for the whole app instead of once per page. Everything a
+spec used to be able to restyle is gone from the contract, so a stale key is
+now an error rather than a prop that quietly does nothing:
+
+| Was in the spec | Now |
+| --- | --- |
+| `z` | fixed: the header sits with the footer, under every modal |
+| `shape`, `primaryAccentColor` | `theme.accent` in app.json; the shape is base's |
+| `logoSrc` / `logoAlt` / `logoLink` / `iconLink` | `brand` in app.json |
+| item `color` / `variant` | base paints every item; `primary: true` is the one emphasis a page can ask for |
+
+Nine of these appeared across the specs, several of them dead: `variant: "text"`
+ignores an item's `color`, and `z` was written three different ways for the same
+bar. Use the same rule for a new component: enumerate the looks, and keep what
+belongs to the whole app in the manifest.
+
 A `call` action can build what the handler receives instead of passing the
 event through: `payload` is resolved at any depth, so a button can save a row
 made of page state.
@@ -356,7 +376,8 @@ static verifier over all of its specs.
   "name": "open-sensing-chapultepec",
   "title": "Bitácora de observación medioambiental",
   "lang": "es",
-  "theme": { "primary": "red", "gray": "neutral", "colorMode": "light" },
+  "theme": { "primary": "red", "gray": "neutral", "colorMode": "light", "accent": "#4FA19D" },
+  "brand": { "logo": "/logo.svg", "logoAlt": "...", "logoLink": "https://...", "iconLink": "https://..." },
   "shell": "shell.json", // rendered around every page; contains one { "type": "Outlet" }
   "routes": { "/": "map.json", "/datos": "datos.json" },
   "data": { "collections": { "observaciones": { "contract": "observacion" } } } // and/or "restBase"
@@ -369,6 +390,10 @@ static verifier over all of its specs.
   marks where it goes inside the shell.
 - Title / description / lang come from the manifest (base `app.vue`); theme
   colors and color mode are applied at runtime.
+- `brand` and `theme.accent` are read straight from the manifest by the chrome
+  components, so a spec never carries a logo or a color and every page of an
+  app agrees. An app without a manifest (or a component under test) falls back
+  to the component's own prop defaults.
 - `data.collections` declares the collections the app owns. Base serves each
   one at `/api/collections/<name>` (`GET` list, `POST` row, `DELETE :id`;
   rows are files under `.data/collections`, gitignored) and validates every

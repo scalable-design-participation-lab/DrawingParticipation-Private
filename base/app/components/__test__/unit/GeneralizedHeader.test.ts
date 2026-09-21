@@ -2,9 +2,9 @@ import { describe, expect, it, vi } from 'vitest'
 import type { VueWrapper } from '@vue/test-utils'
 import { config, mount } from '@vue/test-utils'
 import GeneralizedHeader from '@components/GeneralizedHeader.vue'
-import Nop from '@components/Nop.vue'
 
 // Mock NuxtUI components
+const Nop = { name: 'Nop', render: () => null }
 const UButton = {
   name: 'UButton',
   template: '<button :class="$attrs.class"><slot></slot></button>',
@@ -105,7 +105,9 @@ describe('generalizedHeader', () => {
     const rightItems = wrapper.findAll(
       '.flex.items-center.space-x-2:last-child > *',
     )
-    expect(rightItems.length).toBe(mockProps.rightItems.length + 2)
+    // Every right item, plus the menu button. UColorModeButton is stubbed out
+    // with a render-nothing component, so it contributes no element.
+    expect(rightItems.length).toBe(mockProps.rightItems.length + 1)
   })
 
   it('applies the correct shape class based on the shape prop', () => {
@@ -131,7 +133,9 @@ describe('generalizedHeader', () => {
 
   it('renders NuxtLink for items with "to" prop', () => {
     const links = wrapper.findAllComponents(NuxtLink)
-    expect(links.length).toBe(3) // 2 from leftItems, 1 from rightItems
+    // Only the right side uses NuxtLink directly; a left item with `to` is a
+    // UButton that takes `to`, which the stub renders as a plain <button>.
+    expect(links.length).toBe(1)
   })
 
   it('renders UButton for items without "to" prop', () => {

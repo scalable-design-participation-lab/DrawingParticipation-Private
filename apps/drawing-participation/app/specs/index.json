@@ -9,16 +9,14 @@
         {
           "type": "Header",
           "props": {
-            "z": 50,
             "showIcon": true,
-            "shape": "rounded",
             "leftItems": [
               { "label": "Drawing", "to": "/", "primary": true, "icon": "i-heroicons-pencil" },
               { "label": "Gallery", "to": "/gallery", "icon": "i-heroicons-photo" }
             ],
             "rightItems": [
-              { "label": "Share", "icon": "i-heroicons-share", "color": "gray", "onClick": { "$action": { "set": "lastAction", "value": "share" } } },
-              { "label": "Save", "icon": "i-heroicons-document-arrow-down", "color": "gray", "onClick": { "$action": { "set": "lastAction", "value": "save" } } }
+              { "label": "Share", "icon": "i-heroicons-share", "onClick": { "$action": { "set": "lastAction", "value": "share" } } },
+              { "label": "Save", "icon": "i-heroicons-document-arrow-down", "onClick": { "$action": { "set": "lastAction", "value": "save" } } }
             ]
           }
         },

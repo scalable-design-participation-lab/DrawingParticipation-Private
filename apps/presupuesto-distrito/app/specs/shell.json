@@ -4,30 +4,25 @@
     {
       "type": "Header",
       "props": {
-        "z": 30,
         "showMenu": false,
         "showColorMode": true,
         "variant": "text",
         "leftItems": [
           {
             "label": "$t.nav.mapa",
-            "to": "/",
-            "color": "black"
+            "to": "/"
           },
           {
             "label": "$t.nav.propuestas",
-            "to": "/propuestas",
-            "color": "black"
+            "to": "/propuestas"
           },
           {
             "label": "$t.nav.resultados",
-            "to": "/resultados",
-            "color": "black"
+            "to": "/resultados"
           },
           {
             "label": "$t.nav.acerca",
-            "to": "/acerca",
-            "color": "black"
+            "to": "/acerca"
           }
         ]
       },

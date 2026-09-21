@@ -84,6 +84,19 @@ tool, a `FilterSidebar` contract describing a shape the component never reads, `
 three layout presets. The four smaller demo apps of rounds 3-5 were deleted once this one covered every
 component they did; base keeps everything they taught it, and `docs/SPEC-FORMAT.md` keeps the patterns.
 
+**Status (2026-09, round 7): chrome stops being the spec's to paint.** Looking at a header whose links were
+`text-gray-400` floating unreadably over a map, the user asked for the rule directly: base decides almost
+everything, and a spec changes only what is tied to the theme. So `Header`'s contract lost `z`, `shape`,
+`primaryAccentColor`, `logoSrc` / `logoAlt` / `logoLink` / `iconLink` and per-item `color` / `variant` (nine
+uses across the specs, several of them dead -- the text variant ignored `color`, and the same bar was given
+three different `z` values). What belongs to the whole app moved to `app.json` as `brand` and `theme.accent`,
+read straight from the manifest by the component, so it is written once instead of once per page. The text
+variant now puts its links in the same floating pill as everything else, which is what made them readable.
+Two real bugs fell out: a full-screen date-picker backdrop sat *under* the header at `z-30`, and a right-hand
+item rendered twice in the text variant. `GeneralizedHeader.test.ts` went green for the first time in months:
+it could not even load (it imported a component deleted with the dashboard), and behind that were two
+assertions counting a rendering the component stopped doing in August.
+
 ## Next
 
 1. ~~Delete the dashboard leftovers~~ done.

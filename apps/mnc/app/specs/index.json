@@ -133,17 +133,10 @@
             {
               "type": "Header",
               "props": {
-                "z": 20,
-                "logoSrc": "/mnc-logo.svg",
-                "logoLink": "https://mobilecreativity.net",
-                "logoAlt": "Mobile Networked Creativity",
-                "iconLink": "https://scalabledesignparticipation.org/",
-                "primaryAccentColor": "#4FA19D",
                 "showMenu": false,
                 "leftItems": [
                   {
                     "label": "MNC",
-                    "color": "black",
                     "to": "https://mobilecreativity.net",
                     "target": "_blank"
                   }

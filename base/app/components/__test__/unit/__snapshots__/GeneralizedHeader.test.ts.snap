@@ -6,9 +6,8 @@ exports[`generalizedHeader > renders correctly 1`] = `
   data-v-7abae708=""
 >
   <header
-    class="h-10 lg:h-12 fixed top-6 left-6 right-6 flex justify-between bg-transparent"
+    class="h-10 lg:h-12 fixed top-6 left-6 right-6 flex justify-between bg-transparent z-40"
     data-v-7abae708=""
-    style="z-index: 50;"
   >
     <!-- items left -->
     <div
@@ -44,6 +43,7 @@ exports[`generalizedHeader > renders correctly 1`] = `
       <!-- Anything that isn't an image logo: a text wordmark, an SVG, ... -->
       
       
+      <!--v-if-->
       
       
       <button
@@ -74,6 +74,7 @@ exports[`generalizedHeader > renders correctly 1`] = `
       class="h-full flex items-center relative z-10 space-x-2 sm:space-x-3"
       data-v-7abae708=""
     >
+      <!--v-if-->
       
       
       <button
@@ -107,10 +108,7 @@ exports[`generalizedHeader > renders correctly 1`] = `
       
       
       <!-- Dark Mode Toggle -->
-      <div
-        class="h-full px-2 md:px-3 lg:px-4 text-xs hidden md:flex shadow-lg rounded-full !bg-gray-50 hover:!bg-black hover:!text-white dark:!bg-black dark:hover:!bg-slate-800 text-black dark:text-white"
-        data-v-7abae708=""
-      />
+      <!---->
       <!-- Menu -->
       <button
         class="h-full px-2 md:px-2 lg:px-3.5 text-lg shadow-lg rounded-full !bg-gray-50 hover:!bg-black hover:!text-white dark:!bg-black dark:hover:!bg-slate-800 text-black dark:text-white"

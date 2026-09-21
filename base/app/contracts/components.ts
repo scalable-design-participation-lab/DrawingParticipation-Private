@@ -22,13 +22,15 @@ export function listContracts() {
 
 export const LonLat = z.tuple([z.number().min(-180).max(180), z.number().min(-90).max(90)])
 
+/**
+ * What goes in the header, never how it looks: base paints every item the same
+ * way, and `primary` is the one emphasis a page can ask for.
+ */
 export const HeaderItem = z.strictObject({
   label: z.string().optional(),
   to: z.string().optional(),
   icon: z.string().optional(),
-  color: z.string().optional(),
-  variant: z.string().optional(),
-  primary: z.boolean().optional(),
+  primary: z.boolean().optional().describe('Render as the emphasized item.'),
   target: z.string().optional().describe('Link target, e.g. "_blank" for an external site'),
 })
 
@@ -61,21 +63,14 @@ registerContract({
 
 registerContract({
   name: 'Header',
-  description: 'Floating top bar: logo, left nav items, right action items.',
+  description: 'Floating top bar: logo, left nav items, right action items. The logo, the accent color and the stacking order come from app.json (`brand` / `theme.accent`), not from the spec.',
   props: z.strictObject({
-    variant: z.enum(['pill', 'text']).optional(),
+    variant: z.enum(['pill', 'text']).optional().describe('Two finished looks: floating buttons (default) or a bar of text links.'),
     leftItems: z.array(HeaderItem).optional(),
     rightItems: z.array(HeaderItem).optional(),
-    logoSrc: z.string().optional(),
-    logoAlt: z.string().optional(),
-    logoLink: z.string().optional(),
     showIcon: z.boolean().optional(),
     showColorMode: z.boolean().optional(),
     showMenu: z.boolean().optional(),
-    iconLink: z.string().optional().describe('Where the lab icon links to'),
-    primaryAccentColor: z.string().optional().describe('Text / icon color for every header button'),
-    shape: z.enum(['rounded', 'rectangular']).optional(),
-    z: z.union([z.string(), z.number()]).optional(),
   }),
   emits: ['menu'],
   slots: ['logo', 'menu', 'right'],

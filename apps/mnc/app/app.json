@@ -4,6 +4,15 @@
   "title": "Mobile Networked Creativity",
   "description": "An interactive map of real-world examples of how communities around the world creatively adapt mobile and networked technology to meet local needs.",
   "lang": "en",
+  "theme": {
+    "accent": "#4FA19D"
+  },
+  "brand": {
+    "logo": "/mnc-logo.svg",
+    "logoAlt": "Mobile Networked Creativity",
+    "logoLink": "https://mobilecreativity.net",
+    "iconLink": "https://scalabledesignparticipation.org/"
+  },
   "routes": {
     "/": "index.json",
     "/about": "about.json",

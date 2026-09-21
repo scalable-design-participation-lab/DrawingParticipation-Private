@@ -27,33 +27,9 @@
     "Panel",
     "Text",
     "Image",
-    "Outlet",
-    "WeatherGlyph",
-    "GlyphLegend",
-    "GlyphCanvas",
-    "LoadingScreen",
-    "AnalysisPanel",
-    "AnalysisLayers",
-    "MncMap",
-    "ThemeFilterBar",
-    "BottomBar",
-    "FilteredSelectionSidebar",
-    "ProjectListPanel",
-    "MobileProximityList",
-    "MobileHeader",
-    "MobileBottomNav",
-    "MobileContributeFlow",
-    "MobileInfoPopup",
-    "EntryDetail",
-    "ModerationPanel",
-    "AdminAccounts",
-    "OnboardingModal",
-    "LocaleSwitcher"
+    "Outlet"
   ],
   "collections": [
-    "feature",
-    "reading",
-    "observacion",
-    "user"
+    "feature"
   ]
 }

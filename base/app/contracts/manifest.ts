@@ -33,6 +33,17 @@ export const AppManifestSchema = z.strictObject({
     primary: z.string().optional().describe('Nuxt UI primary color name, e.g. "teal".'),
     gray: z.string().optional().describe('Nuxt UI gray scale name, e.g. "neutral".'),
     colorMode: z.enum(['light', 'dark', 'system']).optional(),
+    accent: z.string().optional().describe('CSS color for header text / icons, e.g. "#4FA19D".'),
+  }).optional(),
+  /**
+   * Who the app belongs to. Chrome components (currently the header) read it
+   * from here so a spec never repeats it per page, and never restyles it.
+   */
+  brand: z.strictObject({
+    logo: z.string().optional().describe('Logo image served from public/, e.g. "/mnc-logo.svg".'),
+    logoAlt: z.string().optional(),
+    logoLink: z.string().optional().describe('Where the logo links to.'),
+    iconLink: z.string().optional().describe('Where the lab icon links to.'),
   }).optional(),
   /** Spec rendered around every page; it must contain one `Outlet` node. */
   shell: z.string().optional().describe('Spec file name under specs/, e.g. "shell.json".'),

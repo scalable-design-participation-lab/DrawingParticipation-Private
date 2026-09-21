@@ -17,9 +17,20 @@
  * />
  -->
 
-<script setup lang="ts">
+<script lang="ts">
+// Who the app belongs to and its accent color come from app.json (`brand` /
+// `theme.accent`), not from a spec: chrome is base's job, so a page cannot
+// restyle the header and no spec repeats the logo per page. Props still win,
+// for apps without a manifest and for tests. This has to be a plain <script>
+// block: defineProps() is hoisted out of setup and cannot see setup locals.
 import { computed, ref } from 'vue'
+import { useAppManifest } from '../composables/useAppManifest'
 
+const { manifest } = useAppManifest()
+const brand = manifest?.brand ?? {}
+</script>
+
+<script setup lang="ts">
 /**
  * Props for the GeneralizedHeader component
  * @typedef {object} GeneralizedHeaderProps
@@ -48,19 +59,19 @@ const props = defineProps({
   },
   logoLink: {
     type: String,
-    default: '',
+    default: brand.logoLink ?? '',
   },
   logoSrc: {
     type: String,
-    default: '',
+    default: brand.logo ?? '',
   },
   logoAlt: {
     type: String,
-    default: 'Logo',
+    default: brand.logoAlt ?? 'Logo',
   },
   primaryAccentColor: {
     type: String,
-    default: '',
+    default: manifest?.theme?.accent ?? '',
   },
   showIcon: {
     type: Boolean,
@@ -68,16 +79,12 @@ const props = defineProps({
   },
   iconLink: {
     type: String,
-    default: 'https://www.northeastern.edu/',
+    default: brand.iconLink ?? 'https://www.northeastern.edu/',
   },
   shape: {
     type: String,
     default: 'rounded',
     validator: (value: string) => ['rounded', 'rectangular'].includes(value),
-  },
-  z: {
-    type: [String, Number],
-    default: 50,
   },
   // Whether to show the top-right ellipsis menu button. Apps that have moved
   // their nav elsewhere (e.g. MNC) can hide it without affecting other apps.
@@ -113,7 +120,10 @@ function closeMenu() {
   showMenuModal.value = false
 }
 
-const textLinkClass = 'whitespace-pre-line text-center text-xs leading-tight text-gray-400 hover:text-black dark:hover:text-white'
+// The floating look every piece of header chrome shares. It is a constant, not
+// a prop: a page picks what goes in the header, never how it is painted.
+const chromeClass = '!bg-gray-50 dark:!bg-black shadow-lg'
+const textLinkClass = 'whitespace-pre-line text-center text-xs leading-tight text-gray-500 hover:text-black dark:text-gray-400 dark:hover:text-white'
 const textLinkActiveClass = '!text-black dark:!text-white'
 
 /**
@@ -143,12 +153,9 @@ const accentTextStyle = computed(() => {
 
 <template>
   <div class="relative">
-    <header
-      class="h-10 lg:h-12 fixed top-6 left-6 right-6 flex justify-between bg-transparent"
-      :style="{ zIndex: z }"
-    >
+    <header class="h-10 lg:h-12 fixed top-6 left-6 right-6 flex justify-between bg-transparent z-40">
       <!-- items left -->
-      <div class="h-full flex relative" :class="variant === 'text' ? 'gap-16' : 'space-x-2 sm:space-x-3'">
+      <div class="h-full flex relative" :class="variant === 'text' ? 'gap-3' : 'space-x-2 sm:space-x-3'">
         <UButton
           v-if="showIcon"
           class="w-10 lg:w-12 text-xl sm:text-2xl !rounded-lg flex justify-center !bg-gray-50 dark:!bg-black shadow-lg hover:scale-105 relative z-10" :class="[
@@ -178,18 +185,25 @@ const accentTextStyle = computed(() => {
         </UButton>
         <!-- Anything that isn't an image logo: a text wordmark, an SVG, ... -->
         <slot name="logo" />
-        <template v-for="(item, index) in leftItems" :key="index">
+        <div
+          v-if="variant === 'text' && leftItems.length"
+          class="h-full flex items-center gap-6 px-6 relative z-10" :class="[shapeClass, chromeClass]"
+        >
           <NuxtLink
-            v-if="variant === 'text'"
+            v-for="(item, index) in leftItems"
+            :key="index"
             :to="item.to"
             :class="textLinkClass"
             :active-class="textLinkActiveClass"
+            :style="accentTextStyle"
             @click="item.onClick"
           >
             {{ item.label }}
           </NuxtLink>
+        </div>
+        <template v-for="(item, index) in leftItems" :key="index">
           <UButton
-            v-else-if="item.to"
+            v-if="variant !== 'text' && item.to"
             :to="item.to"
             :target="item.target"
             :variant="item.variant"
@@ -204,7 +218,7 @@ const accentTextStyle = computed(() => {
             {{ item.label }}
           </UButton>
           <UButton
-            v-else
+            v-else-if="variant !== 'text'"
             :variant="item.variant"
             :color="item.color || (item.primary ? 'black' : 'gray')"
             :icon="item.icon"
@@ -220,18 +234,25 @@ const accentTextStyle = computed(() => {
         </template>
       </div>
       <!-- items right -->
-      <div class="h-full flex items-center relative z-10" :class="variant === 'text' ? 'gap-16' : 'space-x-2 sm:space-x-3'">
-        <template v-for="(item, index) in rightItems" :key="index">
+      <div class="h-full flex items-center relative z-10" :class="variant === 'text' ? 'gap-3' : 'space-x-2 sm:space-x-3'">
+        <div
+          v-if="variant === 'text' && rightItems.length"
+          class="h-full flex items-center gap-6 px-6" :class="[shapeClass, chromeClass]"
+        >
           <NuxtLink
-            v-if="variant === 'text'"
+            v-for="(item, index) in rightItems"
+            :key="index"
             :to="item.to"
             :class="textLinkClass"
             :active-class="textLinkActiveClass"
+            :style="accentTextStyle"
             @click="item.onClick"
           >
             {{ item.label }}
           </NuxtLink>
-          <UDropdown v-else-if="item.dropdown" v-bind="item.dropdown">
+        </div>
+        <template v-for="(item, index) in rightItems" :key="index">
+          <UDropdown v-if="variant !== 'text' && item.dropdown" v-bind="item.dropdown">
             <UButton
               :icon="item.icon"
               class="h-full px-3 md:px-5 lg:px-6 text-xs sm:text-sm md:text-base lg:text-lg rounded-full !bg-gray-50 dark:!bg-black shadow-lg" :class="[
@@ -246,7 +267,7 @@ const accentTextStyle = computed(() => {
             </UButton>
           </UDropdown>
           <NuxtLink
-            v-else-if="item.to"
+            v-else-if="variant !== 'text' && item.to"
             v-slot="{ navigate }"
             :to="item.to"
             custom
@@ -268,7 +289,7 @@ const accentTextStyle = computed(() => {
             </UButton>
           </NuxtLink>
           <UButton
-            v-else
+            v-else-if="variant !== 'text'"
             :icon="item.icon"
             class="h-full px-2 md:px-3 lg:px-4 text-xs md:text-base lg:text-lg rounded-full hidden md:flex shadow-lg" :class="[
               shapeClass,

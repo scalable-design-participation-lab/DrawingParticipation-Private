@@ -16,20 +16,12 @@
         {
           "type": "Header",
           "props": {
-            "z": 20,
-            "logoSrc": "/restart-logo-icon.svg",
-            "logoAlt": "Restart Agency Logo",
-            "logoLink": "https://www.restartfuture.org/",
             "leftItems": [
               {
-                "label": "Drawing Participation",
-                "variant": "solid",
-                "color": "black"
+                "label": "Drawing Participation"
               },
               {
-                "label": "Гуртомá",
-                "variant": "solid",
-                "color": "black"
+                "label": "Гуртомá"
               }
             ]
           },

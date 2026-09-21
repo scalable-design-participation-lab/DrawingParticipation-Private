@@ -1,6 +1,6 @@
 {
   "name": "Header",
-  "description": "Floating top bar: logo, left nav items, right action items.",
+  "description": "Floating top bar: logo, left nav items, right action items. The logo, the accent color and the stacking order come from app.json (`brand` / `theme.accent`), not from the spec.",
   "stateful": false,
   "emits": [
     "menu"
@@ -15,6 +15,7 @@
     "type": "object",
     "properties": {
       "variant": {
+        "description": "Two finished looks: floating buttons (default) or a bar of text links.",
         "type": "string",
         "enum": [
           "pill",
@@ -35,13 +36,8 @@
             "icon": {
               "type": "string"
             },
-            "color": {
-              "type": "string"
-            },
-            "variant": {
-              "type": "string"
-            },
             "primary": {
+              "description": "Render as the emphasized item.",
               "type": "boolean"
             },
             "target": {
@@ -66,13 +62,8 @@
             "icon": {
               "type": "string"
             },
-            "color": {
-              "type": "string"
-            },
-            "variant": {
-              "type": "string"
-            },
             "primary": {
+              "description": "Render as the emphasized item.",
               "type": "boolean"
             },
             "target": {
@@ -83,15 +74,6 @@
           "additionalProperties": false
         }
       },
-      "logoSrc": {
-        "type": "string"
-      },
-      "logoAlt": {
-        "type": "string"
-      },
-      "logoLink": {
-        "type": "string"
-      },
       "showIcon": {
         "type": "boolean"
       },
@@ -100,27 +82,6 @@
       },
       "showMenu": {
         "type": "boolean"
-      },
-      "iconLink": {
-        "description": "Where the lab icon links to",
-        "type": "string"
-      },
-      "primaryAccentColor": {
-        "description": "Text / icon color for every header button",
-        "type": "string"
-      },
-      "shape": {
-        "type": "string",
-        "enum": [
-          "rounded",
-          "rectangular"
-        ]
-      },
-      "z": {
-        "type": [
-          "string",
-          "number"
-        ]
       }
     },
     "additionalProperties": false
