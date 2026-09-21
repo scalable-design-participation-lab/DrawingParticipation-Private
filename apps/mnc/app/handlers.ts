@@ -385,6 +385,11 @@ export function registerHandlers() {
     }
   }, 'Load a project\'s community contributions into state.contributions; payload is the project string_id.')
 
+  registerHandler('uploadMedia', async (payload, _ctx, args) => {
+    const { file, onProgress } = payload as { file: File, onProgress: (percent: number) => void }
+    return uploadFile(String(args ?? ''), file, onProgress)
+  }, 'Upload one file to this project\'s storage and return the stored media; base\'s UploadQueue calls it with { file, onProgress } and the project string_id as args.')
+
   registerHandler('addContribution', async (payload, ctx) => {
     const { projectId, comment, media } = payload as { projectId: string, comment: string, media: MediaItem[] }
     await addContribution(projectId, { comment, media })

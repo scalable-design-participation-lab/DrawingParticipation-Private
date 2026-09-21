@@ -556,6 +556,29 @@ registerContract({
 })
 
 registerContract({
+  name: 'UploadQueue',
+  description: 'Attach photos and recordings, one upload at a time with the progress of each on screen. Where they go is the app business: `uploader` names a handler, called with { file, onProgress } plus `args`, and whatever it returns lands in `modelValue`. It never submits anything -- the page decides when the collected media is saved.',
+  props: z.strictObject({
+    uploader: z.string().describe('Handler that uploads one file and returns what should be stored.'),
+    args: z.unknown().optional().describe('Passed to the handler as its `args`, e.g. which entry this belongs to.'),
+    modelValue: z.array(z.unknown()).optional().describe('What the uploader returned, in the order the files were picked.'),
+    accept: z.string().optional(),
+    maxSizeMb: z.number().positive().optional(),
+    lines: z.array(z.string()).optional().describe('Lines inside the dashed pick box.'),
+    recorder: z.boolean().optional().describe('Offer to record in place as well as pick a file.'),
+    recordLabel: z.string().optional(),
+    stopLabel: z.string().optional(),
+    removeLabel: z.string().optional(),
+    deniedLabel: z.string().optional(),
+    failedLabel: z.string().optional(),
+    tooLargeLabel: z.string().optional(),
+    unsupportedLabel: z.string().optional(),
+  }),
+  emits: ['update:modelValue', 'busy'],
+  stateful: true,
+})
+
+registerContract({
   name: 'Sheet',
   description: 'A phone bottom sheet in two states: a compact card peeking over the bottom bar, and the same sheet pulled up. The grip and the peek card switch between them, the x closes it. The `accent` tone paints the full sheet in the app own accent (theme.accent).',
   props: z.strictObject({

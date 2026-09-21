@@ -18,6 +18,10 @@
  -->
 
 <script setup lang="ts">
+// Explicit, not Nuxt's auto-import: base components are mounted in tests and
+// inside apps that need not share the same auto-import config.
+import { computed, ref } from 'vue'
+
 const props = withDefaults(defineProps<{
   accept?: string
   multiple?: boolean

@@ -5,7 +5,7 @@
   "emits": [
     "close",
     "showTag",
-    "contribute",
+    "addMedia",
     "approve",
     "delete"
   ],

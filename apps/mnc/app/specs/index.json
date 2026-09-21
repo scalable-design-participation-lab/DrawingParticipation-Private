@@ -42,7 +42,13 @@
       "q": ""
     },
     "location": null,
-    "reviewCollapsed": false
+    "reviewCollapsed": false,
+    "uploadFor": null,
+    "uploadMedia": [],
+    "uploadDraft": {
+      "comment": ""
+    },
+    "uploadBusy": false
   },
   "init": [
     {
@@ -841,14 +847,14 @@
                     "value": null
                   }
                 ],
-                "contribute": {
-                  "call": "addContribution"
-                },
                 "approve": {
                   "call": "approveContribution"
                 },
                 "delete": {
                   "call": "deleteContribution"
+                },
+                "addMedia": {
+                  "set": "uploadFor"
                 }
               }
             }
@@ -1120,14 +1126,14 @@
                 "update:state": {
                   "set": "cardState"
                 },
-                "contribute": {
-                  "call": "addContribution"
-                },
                 "approve": {
                   "call": "approveContribution"
                 },
                 "delete": {
                   "call": "deleteContribution"
+                },
+                "addMedia": {
+                  "set": "uploadFor"
                 }
               }
             },
@@ -2226,6 +2232,206 @@
                 "tone": "muted",
                 "align": "center"
               }
+            }
+          ]
+        },
+        {
+          "type": "Modal",
+          "props": {
+            "title": "$t.detail.addPhoto",
+            "size": "sm",
+            "closable": true,
+            "scroll": true
+          },
+          "bind": {
+            "modelValue": "$state.uploadFor"
+          },
+          "on": {
+            "update:modelValue": [
+              {
+                "set": "uploadFor",
+                "value": null
+              },
+              {
+                "set": "uploadMedia",
+                "value": []
+              },
+              {
+                "set": "uploadDraft",
+                "value": {
+                  "comment": ""
+                }
+              }
+            ],
+            "close": [
+              {
+                "set": "uploadFor",
+                "value": null
+              },
+              {
+                "set": "uploadMedia",
+                "value": []
+              },
+              {
+                "set": "uploadDraft",
+                "value": {
+                  "comment": ""
+                }
+              }
+            ]
+          },
+          "children": [
+            {
+              "type": "Stack",
+              "props": {
+                "gap": "md"
+              },
+              "children": [
+                {
+                  "type": "UploadQueue",
+                  "props": {
+                    "uploader": "uploadMedia",
+                    "recorder": true,
+                    "accept": "image/*,audio/*",
+                    "lines": [
+                      "$t.upload.clickToSelect",
+                      "$t.upload.hint"
+                    ],
+                    "recordLabel": "$t.voice.record",
+                    "stopLabel": "$t.voice.stop",
+                    "removeLabel": "$t.fileUpload.removeFile",
+                    "deniedLabel": "$t.voice.micDenied",
+                    "failedLabel": "$t.upload.uploadError"
+                  },
+                  "bind": {
+                    "modelValue": "$state.uploadMedia",
+                    "args": "$state.uploadFor"
+                  },
+                  "on": {
+                    "update:modelValue": {
+                      "set": "uploadMedia"
+                    },
+                    "busy": {
+                      "set": "uploadBusy"
+                    }
+                  }
+                },
+                {
+                  "type": "FormFields",
+                  "props": {
+                    "fields": [
+                      {
+                        "name": "comment",
+                        "type": "textarea",
+                        "rows": 3,
+                        "placeholder": "$t.upload.commentPlaceholder"
+                      }
+                    ]
+                  },
+                  "bind": {
+                    "modelValue": "$state.uploadDraft"
+                  },
+                  "on": {
+                    "update:modelValue": {
+                      "set": "uploadDraft"
+                    }
+                  }
+                },
+                {
+                  "type": "Text",
+                  "props": {
+                    "size": "xs",
+                    "tone": "muted",
+                    "text": "$t.upload.publicNote"
+                  }
+                },
+                {
+                  "type": "Text",
+                  "if": "$errors.addContribution",
+                  "style": "admin-error",
+                  "props": {
+                    "size": "xs"
+                  },
+                  "bind": {
+                    "text": "$errors.addContribution"
+                  }
+                },
+                {
+                  "type": "Stack",
+                  "props": {
+                    "direction": "row",
+                    "justify": "between",
+                    "gap": "sm"
+                  },
+                  "children": [
+                    {
+                      "type": "Button",
+                      "props": {
+                        "size": "sm",
+                        "color": "gray",
+                        "variant": "ghost",
+                        "label": "$t.upload.close"
+                      },
+                      "on": {
+                        "click": [
+                          {
+                            "set": "uploadFor",
+                            "value": null
+                          },
+                          {
+                            "set": "uploadMedia",
+                            "value": []
+                          },
+                          {
+                            "set": "uploadDraft",
+                            "value": {
+                              "comment": ""
+                            }
+                          }
+                        ]
+                      }
+                    },
+                    {
+                      "type": "Button",
+                      "props": {
+                        "size": "sm",
+                        "color": "primary",
+                        "label": "$t.detail.add"
+                      },
+                      "bind": {
+                        "loading": "$state.uploadBusy",
+                        "disabled": "$state.uploadBusy"
+                      },
+                      "on": {
+                        "click": [
+                          {
+                            "call": "addContribution",
+                            "payload": {
+                              "projectId": "$state.uploadFor",
+                              "comment": "$state.uploadDraft.comment",
+                              "media": "$state.uploadMedia"
+                            }
+                          },
+                          {
+                            "set": "uploadFor",
+                            "value": null
+                          },
+                          {
+                            "set": "uploadMedia",
+                            "value": []
+                          },
+                          {
+                            "set": "uploadDraft",
+                            "value": {
+                              "comment": ""
+                            }
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                }
+              ]
             }
           ]
         },

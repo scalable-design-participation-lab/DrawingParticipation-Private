@@ -32,6 +32,7 @@
     "Panel",
     "Text",
     "Image",
+    "UploadQueue",
     "Sheet",
     "Audio",
     "Outlet",

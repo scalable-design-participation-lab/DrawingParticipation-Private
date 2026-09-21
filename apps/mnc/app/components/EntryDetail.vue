@@ -24,8 +24,8 @@ const emit = defineEmits<{
   close: []
   /** The primary-tag chip: show only this theme. */
   showTag: [tag: string]
-  /** A finished upload: { projectId, comment, media }. */
-  contribute: [payload: { projectId: string, comment: string, media: unknown[] }]
+  /** Ask the page to open its upload dialog for this entry. */
+  addMedia: [projectId: string]
   approve: [contribution: Contribution]
   delete: [contribution: Contribution]
 }>()
@@ -56,7 +56,6 @@ const links = computed(() => {
 
 const descriptionExpanded = ref(false)
 const connectionExpanded = ref(false)
-const showUpload = ref(false)
 
 const primaryMeta = computed(() => categoryMeta(primaryTag.value))
 const colorMode = useColorMode()
@@ -90,11 +89,6 @@ function relativeTime(iso: string) {
   const days = Math.floor(hrs / 24)
   return days < 30 ? t('detail.daysAgo', { n: days }) : new Date(iso).toLocaleDateString()
 }
-
-function onUploaded(payload: { comment: string, media: unknown[] }) {
-  showUpload.value = false
-  emit('contribute', { projectId: stringId.value, ...payload })
-}
 </script>
 
 <template>
@@ -107,7 +101,7 @@ function onUploaded(payload: { comment: string, media: unknown[] }) {
               {{ title }}
             </h2>
             <div class="flex shrink-0 items-center gap-2">
-              <UButton v-if="stringId" color="primary" variant="soft" size="sm" icon="i-heroicons-camera" class="rounded-full" @click="showUpload = !showUpload">
+              <UButton v-if="stringId" color="primary" variant="soft" size="sm" icon="i-heroicons-camera" class="rounded-full" @click="emit('addMedia', stringId)">
                 <span class="hidden sm:inline">{{ $t('detail.addPhoto') }}</span>
                 <span class="sm:hidden">{{ $t('detail.add') }}</span>
               </UButton>
@@ -195,7 +189,7 @@ function onUploaded(payload: { comment: string, media: unknown[] }) {
               <h3 class="text-lg font-semibold text-gray-900 dark:text-white">
                 {{ $t('detail.contributions') }} <span v-if="contributions.length" class="font-normal text-gray-400">({{ contributions.length }})</span>
               </h3>
-              <UButton color="primary" variant="soft" size="xs" icon="i-heroicons-plus" class="shrink-0 rounded-full" @click="showUpload = true">
+              <UButton color="primary" variant="soft" size="xs" icon="i-heroicons-plus" class="shrink-0 rounded-full" @click="emit('addMedia', stringId)">
                 {{ $t('detail.add') }}
               </UButton>
             </div>
@@ -240,10 +234,6 @@ function onUploaded(payload: { comment: string, media: unknown[] }) {
           </section>
         </div>
       </UCard>
-    </div>
-
-    <div v-if="showUpload" class="fixed right-5 top-5 z-[60]">
-      <ImageUploadModal :is-visible="showUpload" :project-id="stringId" @close="showUpload = false" @uploaded="onUploaded" />
     </div>
   </div>
 </template>

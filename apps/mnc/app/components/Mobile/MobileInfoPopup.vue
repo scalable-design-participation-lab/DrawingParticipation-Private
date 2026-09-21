@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, ref } from 'vue'
+import { computed } from 'vue'
 import type { Contribution } from '../../api/firebase'
 import type { Entry } from '../../composables/catalog'
 import { useLocalizedEntry } from '../../composables/useLocalizedEntry'
@@ -23,7 +23,8 @@ const props = withDefaults(defineProps<{
 const emit = defineEmits<{
   'close': []
   'update:state': [state: 'peek' | 'full']
-  'contribute': [payload: { projectId: string, comment: string, media: unknown[] }]
+  /** Ask the page to open its upload dialog for this entry. */
+  'addMedia': [projectId: string]
   'approve': [contribution: Contribution]
   'delete': [contribution: Contribution]
 }>()
@@ -39,12 +40,6 @@ const links = computed(() => {
   }
   return (p.value.links || '').split(';').map(l => l.trim()).filter(Boolean).map(l => ({ label: l, url: '' }))
 })
-const showUpload = ref(false)
-
-function onUploaded(payload: { comment: string, media: unknown[] }) {
-  showUpload.value = false
-  emit('contribute', { projectId: stringId.value, ...payload })
-}
 </script>
 
 <template>
@@ -113,7 +108,7 @@ function onUploaded(payload: { comment: string, media: unknown[] }) {
         <p class="text-sm font-bold text-white">
           {{ $t('mDetail.community') }} <span v-if="contributions.length" class="font-normal text-white/70">({{ contributions.length }})</span>
         </p>
-        <button type="button" class="flex min-h-11 touch-manipulation items-center gap-1 rounded-full bg-white/20 px-4 text-sm font-medium text-white" @click="showUpload = true">
+        <button type="button" class="flex min-h-11 touch-manipulation items-center gap-1 rounded-full bg-white/20 px-4 text-sm font-medium text-white" @click="emit('addMedia', stringId)">
           <UIcon name="i-heroicons-plus" class="h-4 w-4" />{{ $t('detail.add') }}
         </button>
       </div>
@@ -142,10 +137,6 @@ function onUploaded(payload: { comment: string, media: unknown[] }) {
           </div>
         </div>
       </div>
-    </div>
-
-    <div v-if="showUpload" class="pointer-events-auto fixed left-1/2 top-20 z-[60] -translate-x-1/2">
-      <ImageUploadModal :is-visible="showUpload" :project-id="stringId" @close="showUpload = false" @uploaded="onUploaded" />
     </div>
   </Sheet>
 </template>

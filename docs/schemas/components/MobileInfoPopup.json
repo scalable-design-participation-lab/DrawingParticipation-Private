@@ -5,7 +5,7 @@
   "emits": [
     "close",
     "update:state",
-    "contribute",
+    "addMedia",
     "approve",
     "delete"
   ],

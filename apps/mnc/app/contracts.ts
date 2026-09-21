@@ -21,14 +21,14 @@ registerContract({
   name: 'MobileInfoPopup',
   description: 'How mnc reads one entry inside base Sheet (peek or full). Contributions come from the page; `contribute` / `approve` / `delete` go back to it.',
   props: z.strictObject({ entry: Row, state: z.enum(['peek', 'full']).optional(), contributions: Rows.optional(), isAdmin: z.boolean().optional() }),
-  emits: ['close', 'update:state', 'contribute', 'approve', 'delete'],
+  emits: ['close', 'update:state', 'addMedia', 'approve', 'delete'],
 })
 
 registerContract({
   name: 'EntryDetail',
   description: 'Desktop detail panel for one entry: text, gallery, voice notes, links, community contributions. `show-tag` emits the theme to narrow to.',
   props: z.strictObject({ entry: Row, contributions: Rows.optional(), loading: z.boolean().optional(), isAdmin: z.boolean().optional() }),
-  emits: ['close', 'showTag', 'contribute', 'approve', 'delete'],
+  emits: ['close', 'showTag', 'addMedia', 'approve', 'delete'],
 })
 
 declareHandler('watchAuth', 'Keep state.auth in sync with Firebase Auth; admins also get the review queues.')
@@ -44,6 +44,7 @@ declareHandler('submitEntry', 'Persist a "Join Our Research" submission as a pen
 declareHandler('approveEntry', 'Moderator: approve a user entry (payload from state.moderation).')
 declareHandler('deleteEntry', 'Moderator: delete a user entry (payload from state.moderation).')
 declareHandler('loadContributions', 'Load a project\'s contributions into state.contributions; payload is the string_id.')
+declareHandler('uploadMedia', 'Upload one file and return the stored media; UploadQueue calls it with { file, onProgress } and the project string_id as args.')
 declareHandler('addContribution', 'Save an uploaded contribution { projectId, comment, media }.')
 declareHandler('loadPending', 'Moderator: unapproved contributions into state.pendingContributions, each carrying the projectTitle it belongs to.')
 declareHandler('approveContribution', 'Moderator: approve a contribution (payload).')
