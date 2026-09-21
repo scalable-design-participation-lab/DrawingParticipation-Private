@@ -121,6 +121,23 @@ export default defineNuxtPlugin((nuxtApp) => {
     URL.revokeObjectURL(url)
   }, 'Save a data source to a file: args { from, format?: "json" | "csv", filename? }.')
 
+  registerHandler('copy', async (payload, ctx, args) => {
+    const text = String(payload ?? '')
+    if (!text) {
+      return
+    }
+    await navigator.clipboard.writeText(text)
+    // A copy leaves no trace on screen, so the page can flash a confirmation:
+    // the state named in `args` goes true and comes back down on its own.
+    const { into, seconds = 2 } = (args ?? {}) as { into?: string, seconds?: number }
+    if (into) {
+      ctx.state[into] = true
+      setTimeout(() => {
+        ctx.state[into] = false
+      }, seconds * 1000)
+    }
+  }, 'Copy the payload to the clipboard; args { into, seconds? } flashes a state flag so the page can say it worked.')
+
   const { manifest, messages } = useAppManifest()
   if (!manifest) {
     return

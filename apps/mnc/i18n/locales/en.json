@@ -156,7 +156,7 @@
     "errRegisterIncomplete": "Your login was created, but it could not be listed for review yet. Sign in again later or contact an administrator.",
     "errEmailInUseRegister": "This email already has a login — switch to “Sign in”. Your registration is completed automatically on sign-in.",
     "pendingTitle": "Your account is registered",
-    "pendingBody": "Signed in as {email}. An administrator needs to grant you moderation access before you can review submissions.",
+    "pendingBody": "An administrator needs to grant you moderation access before you can review submissions.",
     "yourUid": "Your account ID (UID)",
     "copyUid": "Copy account ID",
     "bootstrapToggle": "Setting up the very first administrator?",
@@ -195,10 +195,11 @@
     "sendReset": "Send password-reset email",
     "resetSent": "Password-reset email sent to {email}.",
     "revoke": "Revoke access",
-    "revokeConfirm": "Remove moderation access for {email}? They will no longer be able to review submissions or sign in as a moderator.",
+    "revokeConfirm": "Remove moderation access for this account? They will no longer be able to review submissions or sign in as a moderator.",
     "revoked": "Access revoked for {email}.",
     "revokeNote": "Admins can review submissions and manage accounts; moderators can only review. Revoking removes all moderation rights immediately.",
-    "errAction": "That action failed. Please try again."
+    "errAction": "That action failed. Please try again.",
+    "signedInAs": "Signed in as"
   },
   "contribute": {
     "title": "Join Our Research",

@@ -128,6 +128,12 @@ export function registerHandlers() {
       if (auth(ctx).isAdmin) {
         loadQueues(ctx)
       }
+      // The accounts page used to ask for these itself, once it saw who was
+      // signed in. Knowing that is this handler's job, so it says so.
+      if (auth(ctx).isSuperAdmin) {
+        const handlers = await import('../../../base/app/utils/handlers')
+        await handlers.getHandler('loadAccounts')?.(undefined, ctx, undefined)
+      }
     })
   }, 'Keep state.auth { uid, email, isAnonymous, isAdmin, isSuperAdmin, role, ready } in sync with Firebase Auth (anonymous sign-in for visitors).')
 

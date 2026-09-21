@@ -27,6 +27,14 @@ const props = withDefaults(defineProps<{
    * keep all, which is what an empty selection means everywhere else.
    */
   filterIn?: string[] | Record<string, boolean> | null
+  /**
+   * Rows to subtract: keep only those whose `excludeBy` field does not appear
+   * in any of these. How a page shows the registrations that are not already
+   * accounts, without computing the difference somewhere else first.
+   */
+  exclude?: unknown[] | null
+  /** Field compared on both sides; dotted paths allowed. */
+  excludeBy?: string
   /** Case-insensitive text search over `searchKeys` (all string fields when omitted). */
   search?: string
   searchKeys?: string[]
@@ -59,6 +67,8 @@ const props = withDefaults(defineProps<{
   filterKey: '',
   filterValue: '',
   filterIn: null,
+  exclude: null,
+  excludeBy: '',
   search: '',
   searchKeys: () => [],
   sortBy: '',
@@ -131,6 +141,10 @@ const rows = computed(() => {
     if (allowed.size) {
       out = out.filter(row => allowed.has(String(field(row, props.filterKey))))
     }
+  }
+  if (props.excludeBy && props.exclude?.length) {
+    const gone = new Set(props.exclude.map(row => String(field(row, props.excludeBy))))
+    out = out.filter(row => !gone.has(String(field(row, props.excludeBy))))
   }
   const q = props.search.trim().toLowerCase()
   if (q) {

@@ -136,3 +136,63 @@ describe('specNode event modifiers', () => {
     expect(wrapper.vm.state).toMatchObject({ acted: 'bubbled', picked: 'row' })
   })
 })
+
+describe('or in a condition', () => {
+  const spec = {
+    version: 1 as const,
+    state: { a: false, b: false, c: false, name: '' },
+    children: [
+      { type: 'p', props: { class: 'either' }, if: '$state.a || $state.b', text: 'either' },
+      { type: 'p', props: { class: 'mixed' }, if: '$state.a && $state.b || $state.c', text: 'mixed' },
+      { type: 'p', props: { class: 'named' }, if: '$state.name == \'ada\' || $state.name == \'grace\'', text: 'named' },
+    ],
+  }
+  const render = (state: Record<string, unknown>) =>
+    mount(SpecRenderer, { props: { spec: { ...spec, state: { ...spec.state, ...state } }, navigate: () => {}, query: {} } })
+
+  it('is true when any side is', () => {
+    expect(render({}).find('.either').exists()).toBe(false)
+    expect(render({ a: true }).find('.either').exists()).toBe(true)
+    expect(render({ b: true }).find('.either').exists()).toBe(true)
+  })
+
+  it('binds looser than &&, so "a && b || c" is "(a && b) || c"', () => {
+    expect(render({ a: true }).find('.mixed').exists()).toBe(false)
+    expect(render({ a: true, b: true }).find('.mixed').exists()).toBe(true)
+    expect(render({ c: true }).find('.mixed').exists()).toBe(true)
+  })
+
+  it('works with comparisons on both sides', () => {
+    expect(render({ name: 'ada' }).find('.named').exists()).toBe(true)
+    expect(render({ name: 'grace' }).find('.named').exists()).toBe(true)
+    expect(render({ name: 'alan' }).find('.named').exists()).toBe(false)
+  })
+})
+
+describe('comparing two expressions', () => {
+  const spec = {
+    version: 1 as const,
+    state: { me: 'uid-1', rows: [{ uid: 'uid-1' }, { uid: 'uid-2' }] },
+    children: [{
+      type: 'List',
+      bind: { items: '$state.rows' },
+      item: {
+        type: 'p',
+        props: { class: 'row' },
+        children: [
+          { type: 'span', props: { class: 'mine' }, if: '$item.uid == $state.me', text: 'me' },
+          { type: 'span', props: { class: 'theirs' }, if: '$item.uid != $state.me', text: 'them' },
+        ],
+      },
+    }],
+  }
+
+  it('reads the right-hand side instead of matching its text', async () => {
+    // "$item.uid == $state.me" used to compare a uid against the literal
+    // string "$state.me", which is false for everyone.
+    const wrapper = mount(SpecRenderer, { props: { spec, navigate: () => {}, query: {} } })
+    await flushPromises()
+    expect(wrapper.findAll('.mine')).toHaveLength(1)
+    expect(wrapper.findAll('.theirs')).toHaveLength(1)
+  })
+})

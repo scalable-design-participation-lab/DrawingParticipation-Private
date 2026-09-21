@@ -38,9 +38,22 @@ function literal(raw: string): unknown {
   return Number.isNaN(Number(s)) ? s : Number(s)
 }
 
-/** The expressions of a condition, one per `&&` part (for the verifier). */
+const isExpr = (value: unknown): value is string => typeof value === 'string' && value.startsWith('$')
+
+/** Every expression in a condition, both sides of each part (for the verifier). */
 export function conditionExprs(expr: string): string[] {
-  return expr.split(/\s*&&\s*/).map(part => parseCondition(part)?.expr ?? part)
+  return expr
+    .split(/\s*\|\|\s*/)
+    .flatMap(or => or.split(/\s*&&\s*/))
+    .flatMap((part) => {
+      const cond = parseCondition(part)
+      if (!cond) {
+        return [part]
+      }
+      // The right-hand side counts too when it is one, so a typo there is
+      // caught like any other.
+      return isExpr(cond.value) ? [cond.expr, cond.value] : [cond.expr]
+    })
 }
 
 /** Splits a condition into its expression and the rest; null when it is a plain expression. */
@@ -60,6 +73,10 @@ export function evaluate(expr: unknown, ctx: SpecContext, item?: unknown, payloa
   if (typeof expr !== 'string') {
     return expr
   }
+  // `||` binds loosest, so it splits first: "a && b || c" is "(a && b) || c".
+  if (expr.includes('||')) {
+    return expr.split(/\s*\|\|\s*/).some(part => Boolean(evaluate(part, ctx, item, payload)))
+  }
   if (expr.includes('&&')) {
     return expr.split(/\s*&&\s*/).every(part => Boolean(evaluate(part, ctx, item, payload)))
   }
@@ -68,7 +85,10 @@ export function evaluate(expr: unknown, ctx: SpecContext, item?: unknown, payloa
     return resolveExpr(expr, ctx, item, payload)
   }
   const left = resolveExpr(cond.expr, ctx, item, payload)
-  const result = cond.op ? (cond.op === '==' ? left === cond.value : left !== cond.value) : Boolean(left)
+  // A right-hand side that is itself an expression is read, not compared as
+  // text: "$item.uid == $state.auth.uid" asks whether this row is me.
+  const right = isExpr(cond.value) ? resolveExpr(cond.value, ctx, item, payload) : cond.value
+  const result = cond.op ? (cond.op === '==' ? left === right : left !== right) : Boolean(left)
   return cond.negate ? !result : result
 }
 

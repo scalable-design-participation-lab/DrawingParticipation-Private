@@ -38,3 +38,4 @@ declareHandler('selectItem', 'Put the row whose `key` equals the payload into st
 declareHandler('watchViewport', 'Keep state.isMobile in step with the viewport; the payload is the breakpoint in px (default 768). Call it from the spec root `init`.')
 declareHandler('watchLocation', 'Ask once where the reader is and put [lon, lat] into the state key named by the payload (default "location"). Bind that state to a List `near` for nearest-first.')
 declareHandler('download', 'Save a data source to a file the reader keeps: args { from, format?: "json" | "csv", filename? }.')
+declareHandler('copy', 'Copy the payload to the clipboard; args { into, seconds? } flashes a state flag so the page can say it worked.')

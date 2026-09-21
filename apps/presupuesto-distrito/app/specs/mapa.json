@@ -902,21 +902,15 @@
               "children": [
                 {
                   "type": "li",
-                  "bind": {
-                    "text": "$t.acerca.paso1"
-                  }
+                  "text": "$t.acerca.paso1"
                 },
                 {
                   "type": "li",
-                  "bind": {
-                    "text": "$t.acerca.paso2"
-                  }
+                  "text": "$t.acerca.paso2"
                 },
                 {
                   "type": "li",
-                  "bind": {
-                    "text": "$t.acerca.paso3"
-                  }
+                  "text": "$t.acerca.paso3"
                 }
               ]
             }

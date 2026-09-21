@@ -31,13 +31,6 @@ registerContract({
   emits: ['close', 'showTag', 'contribute', 'approve', 'delete'],
 })
 
-registerContract({
-  name: 'AdminAccounts',
-  description: 'Account management page body: sign in / register, then (super admin) promote registrations and manage moderators. Bind `errors` to `$errors` for outcomes.',
-  props: z.strictObject({ auth: Row.optional(), accounts: Rows.optional(), registrations: Rows.optional(), loading: z.boolean().optional(), errors: Row.optional() }),
-  emits: ['signIn', 'register', 'resetPassword', 'claimAdmin', 'signOut', 'refresh', 'promote', 'removeRegistration', 'setRole', 'revoke', 'sendReset', 'create'],
-})
-
 declareHandler('watchAuth', 'Keep state.auth in sync with Firebase Auth; admins also get the review queues.')
 declareHandler('signIn', 'Sign in with { email, password }.')
 declareHandler('signInModerator', 'Sign in with { email, password } and require moderator rights.')

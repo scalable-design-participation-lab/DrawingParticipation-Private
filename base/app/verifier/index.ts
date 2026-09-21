@@ -289,6 +289,12 @@ export function verifySpec(spec: unknown, options: VerifySpecOptions = {}): Veri
       errors.push({ path: `${path}.type`, rule: 'component.unknown', message: `"${node.type}" is not a registered component or a native tag` })
     }
 
+    // A native tag has no props: `bind` lands on it as an attribute, so
+    // `bind.text` silently writes text="..." instead of the element's content.
+    if (!contract && NATIVE_TAG.test(node.type) && node.bind && 'text' in node.bind) {
+      errors.push({ path: `${path}.bind.text`, rule: 'bind.text-on-tag', message: `"${node.type}" is a tag, not a component: put the expression in the node's own \`text\` instead` })
+    }
+
     if (options.strict && node.props && 'class' in node.props) {
       errors.push({ path: `${path}.props.class`, rule: 'style.raw-class', message: 'strict mode: use component props or a registered `style` preset instead of raw classes' })
     }

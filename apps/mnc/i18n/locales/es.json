@@ -156,7 +156,7 @@
     "errRegisterIncomplete": "Tu cuenta fue creada, pero aún no pudo listarse para revisión. Inicia sesión más tarde o contacta a un administrador.",
     "errEmailInUseRegister": "Este correo ya tiene una cuenta — cambia a “Iniciar sesión”. Tu registro se completa automáticamente al iniciar sesión.",
     "pendingTitle": "Tu cuenta está registrada",
-    "pendingBody": "Sesión iniciada como {email}. Un administrador debe concederte acceso de moderación antes de que puedas revisar envíos.",
+    "pendingBody": "Un administrador debe concederte acceso de moderación antes de que puedas revisar envíos.",
     "yourUid": "Tu ID de cuenta (UID)",
     "copyUid": "Copiar ID de cuenta",
     "bootstrapToggle": "¿Configurando el primer administrador?",
@@ -195,10 +195,11 @@
     "sendReset": "Enviar correo de restablecimiento de contraseña",
     "resetSent": "Correo de restablecimiento enviado a {email}.",
     "revoke": "Revocar acceso",
-    "revokeConfirm": "¿Quitar el acceso de moderación a {email}? Ya no podrá revisar envíos ni iniciar sesión como moderador.",
+    "revokeConfirm": "¿Quitar el acceso de moderación a esta cuenta? Ya no podrá revisar envíos ni iniciar sesión como moderador.",
     "revoked": "Acceso revocado para {email}.",
     "revokeNote": "Los administradores pueden revisar envíos y gestionar cuentas; los moderadores solo pueden revisar. Revocar elimina todos los permisos de moderación de inmediato.",
-    "errAction": "Esa acción falló. Inténtalo de nuevo."
+    "errAction": "Esa acción falló. Inténtalo de nuevo.",
+    "signedInAs": "Sesión iniciada como"
   },
   "contribute": {
     "title": "Únete a nuestra investigación",

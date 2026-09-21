@@ -219,3 +219,14 @@ describe('verifyRows', () => {
     expect(verifyRows({ not: 'array' }, schema).errors[0].rule).toBe('rows.not-array')
   })
 })
+
+describe('verifySpec > a tag is not a component', () => {
+  it('refuses bind.text on a native tag, which would write an attribute', () => {
+    const spec = { children: [{ type: 'li', bind: { text: '$t.a.b' } }] }
+    expect(verifySpec(spec).errors.map(e => `${e.rule}@${e.path}`)).toEqual(['bind.text-on-tag@children[0].bind.text'])
+    // The node's own `text` is the way to say it.
+    expect(verifySpec({ children: [{ type: 'li', text: '$t.a.b' }] })).toEqual({ pass: true, errors: [] })
+    // A component whose contract has a `text` prop is unaffected.
+    expect(verifySpec({ children: [{ type: 'Text', bind: { text: '$t.a.b' } }] })).toEqual({ pass: true, errors: [] })
+  })
+})

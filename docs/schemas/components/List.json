@@ -106,6 +106,22 @@
           }
         ]
       },
+      "exclude": {
+        "description": "Rows to subtract: keep only those whose excludeBy field appears in none of them, e.g. the registrations that are not already accounts.",
+        "anyOf": [
+          {
+            "type": "array",
+            "items": {}
+          },
+          {
+            "type": "null"
+          }
+        ]
+      },
+      "excludeBy": {
+        "description": "Field compared on both sides of exclude; dotted paths allowed.",
+        "type": "string"
+      },
       "search": {
         "description": "Case-insensitive text search (bind to state)",
         "type": "string"

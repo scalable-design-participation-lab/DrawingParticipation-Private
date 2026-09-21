@@ -42,3 +42,39 @@ describe('list over an object', () => {
     expect(rows(undefined)).toEqual([])
   })
 })
+
+describe('list subtracting another list', () => {
+  function kept(items: unknown[], exclude: unknown[], excludeBy = 'uid') {
+    const wrapper = mount(List, {
+      props: { items, exclude, excludeBy },
+      slots: { item: ({ item }: { item: Record<string, unknown> }) => h('li', String(item.uid ?? item.id)) },
+    })
+    return wrapper.findAll('li').map(li => li.text())
+  }
+
+  it('drops rows already present in the other list', () => {
+    const registrations = [{ uid: 'a' }, { uid: 'b' }, { uid: 'c' }]
+    expect(kept(registrations, [{ uid: 'b' }])).toEqual(['a', 'c'])
+  })
+
+  it('keeps everything when there is nothing to subtract', () => {
+    expect(kept([{ uid: 'a' }], [])).toEqual(['a'])
+    expect(kept([{ uid: 'a' }], null as unknown as unknown[])).toEqual(['a'])
+  })
+
+  it('does nothing without a field to compare', () => {
+    expect(kept([{ uid: 'a' }], [{ uid: 'a' }], '')).toEqual(['a'])
+  })
+
+  it('reads a dotted field on both sides', () => {
+    const wrapper = mount(List, {
+      props: {
+        items: [{ id: 1, who: { uid: 'a' } }, { id: 2, who: { uid: 'b' } }],
+        exclude: [{ who: { uid: 'a' } }],
+        excludeBy: 'who.uid',
+      },
+      slots: { item: ({ item }: { item: Record<string, unknown> }) => h('li', String(item.id)) },
+    })
+    expect(wrapper.findAll('li').map(li => li.text())).toEqual(['2'])
+  })
+})
