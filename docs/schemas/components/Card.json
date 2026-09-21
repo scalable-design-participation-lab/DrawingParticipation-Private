@@ -1,6 +1,6 @@
 {
   "name": "Card",
-  "description": "Nuxt UI card.",
+  "description": "Nuxt UI card. Use a `Panel` variant for anything beyond the default look.",
   "stateful": false,
   "emits": [],
   "slots": [

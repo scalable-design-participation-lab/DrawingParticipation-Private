@@ -12,3 +12,8 @@ registerStyle('placeholder', 'flex h-full items-center justify-center', 'Centere
 registerStyle('app-frame', 'h-dvh', 'Full viewport height frame')
 registerStyle('page-main', 'relative h-full pt-24', 'Page area under the floating header')
 registerStyle('wordmark', 'whitespace-pre-line text-[11px] font-bold leading-tight', 'Three-line text logo')
+
+// FormFields controls: presets instead of raw classes on a field.
+registerStyle('input-plain', 'normal-case !border-0', 'Borderless control that opts out of the page uppercase')
+registerStyle('field-date', 'w-36', 'Date control, sized to sit next to the time one')
+registerStyle('field-time', 'w-28', 'Time control next to a date one')

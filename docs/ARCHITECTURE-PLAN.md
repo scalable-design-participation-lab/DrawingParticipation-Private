@@ -97,6 +97,13 @@ item rendered twice in the text variant. `GeneralizedHeader.test.ts` went green 
 it could not even load (it imported a component deleted with the dashboard), and behind that were two
 assertions counting a rendering the component stopped doing in August.
 
+The same pass closed every other way a spec could paint its own pixels: no contract is `looseProps` any more
+(`Button` / `Card` / `Divider` forwarded anything to the Nuxt UI primitive, `ui` included, which can restyle
+any part of it), `Button`'s `color` / `variant` / `size` are the Nuxt UI token sets instead of free strings,
+a `FormFields` field takes a `style` preset instead of a raw `class` (the last raw-class hole in strict mode),
+and spacing around a `Divider` is a preset -- which is how one app already did it while another reached for
+`ui: { wrapper: … }`. A verifier test pins all of it.
+
 ## Next
 
 1. ~~Delete the dashboard leftovers~~ done.

@@ -356,11 +356,7 @@
         },
         {
           "type": "Divider",
-          "props": {
-            "ui": {
-              "wrapper": "mt-24 mb-8"
-            }
-          }
+          "style": "divider-wide"
         },
         {
           "type": "Stack",
@@ -503,11 +499,7 @@
         },
         {
           "type": "Divider",
-          "props": {
-            "ui": {
-              "wrapper": "mt-24 mb-8"
-            }
-          }
+          "style": "divider-wide"
         },
         {
           "type": "Panel",
@@ -583,11 +575,7 @@
         },
         {
           "type": "Divider",
-          "props": {
-            "ui": {
-              "wrapper": "mt-24 mb-8"
-            }
-          }
+          "style": "divider-wide"
         },
         {
           "type": "Panel",
@@ -643,11 +631,7 @@
         },
         {
           "type": "Divider",
-          "props": {
-            "ui": {
-              "wrapper": "mt-24 mb-8"
-            }
-          }
+          "style": "divider-wide"
         },
         {
           "type": "Stack",

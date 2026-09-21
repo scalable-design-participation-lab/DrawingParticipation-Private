@@ -26,6 +26,10 @@ export const LonLat = z.tuple([z.number().min(-180).max(180), z.number().min(-90
  * What goes in the header, never how it looks: base paints every item the same
  * way, and `primary` is the one emphasis a page can ask for.
  */
+const UI_COLOR = z.enum(['primary', 'black', 'white', 'gray', 'red', 'orange', 'amber', 'yellow', 'lime', 'green', 'emerald', 'teal', 'cyan', 'blue', 'indigo', 'violet', 'purple', 'fuchsia', 'pink', 'rose'])
+const UI_VARIANT = z.enum(['solid', 'outline', 'soft', 'subtle', 'ghost', 'link'])
+const UI_SIZE = z.enum(['xs', 'sm', 'md', 'lg', 'xl'])
+
 export const HeaderItem = z.strictObject({
   label: z.string().optional(),
   to: z.string().optional(),
@@ -174,7 +178,7 @@ export const FormFieldSchema = z.strictObject({
   rows: z.number().int().positive().optional(),
   options: z.array(z.strictObject({ label: z.string(), value: z.union([z.string(), z.number()]) })).optional(),
   required: z.boolean().optional(),
-  class: z.string().optional(),
+  style: z.union([z.string(), z.array(z.string())]).optional().describe('Registered style preset(s) for the control, e.g. a width. Raw classes are not accepted.'),
 })
 
 const DrawModeSchema = z.strictObject({
@@ -205,7 +209,7 @@ registerContract({
 
 const StepButtonSchema = z.strictObject({
   label: z.string(),
-  color: z.string().optional(),
+  color: UI_COLOR.optional(),
   variant: z.enum(['solid', 'outline']).optional(),
   tooltip: z.string().optional(),
   value: z.unknown().optional().describe('Emitted by `select` when chosen'),
@@ -327,18 +331,30 @@ registerContract({
   }),
 })
 
-// Nuxt UI primitives for content pages. Props are forwarded, so only the
-// common ones are declared and the rest is allowed through (`looseProps`).
+// Nuxt UI primitives for content pages. What a spec may set is declared, and
+// nothing else gets through: `ui` in particular would let a page restyle any
+// part of a primitive, which is base's call, not the page's.
 registerContract({
   name: 'Button',
   description: 'Nuxt UI button / link.',
-  props: z.strictObject({ label: z.string().optional(), to: z.string().optional(), color: z.string().optional(), variant: z.string().optional(), icon: z.string().optional(), size: z.string().optional() }),
-  looseProps: true,
+  props: z.strictObject({
+    label: z.string().optional(),
+    to: z.string().optional(),
+    target: z.string().optional(),
+    icon: z.string().optional(),
+    trailing: z.boolean().optional(),
+    block: z.boolean().optional().describe('Fill the width of its container'),
+    disabled: z.boolean().optional(),
+    loading: z.boolean().optional(),
+    color: UI_COLOR.optional(),
+    variant: UI_VARIANT.optional(),
+    size: UI_SIZE.optional(),
+  }),
   emits: ['click'],
   slots: ['default'],
 })
-registerContract({ name: 'Divider', description: 'Nuxt UI divider.', props: z.strictObject({ label: z.string().optional() }), looseProps: true })
-registerContract({ name: 'Card', description: 'Nuxt UI card.', props: z.strictObject({}), looseProps: true, slots: ['default', 'header', 'footer'] })
+registerContract({ name: 'Divider', description: 'Nuxt UI divider. Spacing around it is a `style` preset on the node.', props: z.strictObject({ label: z.string().optional(), orientation: z.enum(['horizontal', 'vertical']).optional(), type: z.enum(['solid', 'dashed', 'dotted']).optional() }) })
+registerContract({ name: 'Card', description: 'Nuxt UI card. Use a `Panel` variant for anything beyond the default look.', props: z.strictObject({}), slots: ['default', 'header', 'footer'] })
 registerContract({
   name: 'Icon',
   description: 'An icon with the same enumerated size / tone vocabulary as Text.',

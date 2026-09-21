@@ -41,7 +41,29 @@
                     "type": "string"
                   },
                   "color": {
-                    "type": "string"
+                    "type": "string",
+                    "enum": [
+                      "primary",
+                      "black",
+                      "white",
+                      "gray",
+                      "red",
+                      "orange",
+                      "amber",
+                      "yellow",
+                      "lime",
+                      "green",
+                      "emerald",
+                      "teal",
+                      "cyan",
+                      "blue",
+                      "indigo",
+                      "violet",
+                      "purple",
+                      "fuchsia",
+                      "pink",
+                      "rose"
+                    ]
                   },
                   "variant": {
                     "type": "string",

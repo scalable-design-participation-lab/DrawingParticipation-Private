@@ -149,6 +149,20 @@ ignores an item's `color`, and `z` was written three different ways for the same
 bar. Use the same rule for a new component: enumerate the looks, and keep what
 belongs to the whole app in the manifest.
 
+The same pass closed the other three ways a spec could paint its own pixels:
+
+- **No contract is `looseProps` any more.** `Button`, `Card` and `Divider`
+  forwarded anything to the Nuxt UI primitive, including `ui`, which can
+  restyle any part of it. Their props are declared now, and `Button`'s
+  `color` / `variant` / `size` are the Nuxt UI token sets rather than free
+  strings, so an invented value is an error instead of a silent no-op.
+- **A `FormFields` field takes `style`, not `class`.** It names presets from
+  the same list a node's `style` names, and the verifier checks them
+  (`style.unknown`), so the one remaining raw-class hole in strict mode is
+  gone.
+- **Spacing around a `Divider` is a `style` preset**, which is how one app was
+  already doing it while another reached for `ui: { wrapper: … }`.
+
 A `call` action can build what the handler receives instead of passing the
 event through: `payload` is resolved at any depth, so a button can save a row
 made of page state.

@@ -1,6 +1,6 @@
 {
   "name": "Divider",
-  "description": "Nuxt UI divider.",
+  "description": "Nuxt UI divider. Spacing around it is a `style` preset on the node.",
   "stateful": false,
   "emits": [],
   "slots": [],
@@ -10,6 +10,21 @@
     "properties": {
       "label": {
         "type": "string"
+      },
+      "orientation": {
+        "type": "string",
+        "enum": [
+          "horizontal",
+          "vertical"
+        ]
+      },
+      "type": {
+        "type": "string",
+        "enum": [
+          "solid",
+          "dashed",
+          "dotted"
+        ]
       }
     },
     "additionalProperties": false

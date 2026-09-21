@@ -32,7 +32,7 @@ const valid = {
       children: [{ slot: 'right', type: 'MapTypeToggle', bind: { modelValue: '$state.mapType' }, on: { 'update:modelValue': { set: 'mapType' } } }],
     },
     { type: 'Modal', if: '$state.intro', bind: { modelValue: '$state.open' }, on: { 'update:modelValue': { set: 'open' } }, props: { text: 'hi' } },
-    { type: 'Button', props: { color: 'black', to: '/', size: 'xl', anything: 'goes' }, text: 'go' },
+    { type: 'Button', props: { color: 'black', to: '/', size: 'xl', block: true }, text: 'go' },
     { type: 'Text', if: '$sources.rows.loading', props: { text: 'loading…' } },
     { type: 'Panel', style: ['fill', 'overlay'], props: { variant: 'card', padding: 'lg' } },
   ],
@@ -42,6 +42,22 @@ describe('verifySpec', () => {
   it('accepts a well-formed spec, also in strict mode', () => {
     expect(verifySpec(valid)).toEqual({ pass: true, errors: [] })
     expect(verifySpec(valid, { strict: true })).toEqual({ pass: true, errors: [] })
+  })
+
+  it('rejects styling a Nuxt UI primitive beyond its declared props', () => {
+    // No contract is `looseProps` any more: how a primitive looks is base's
+    // call, so `ui`, a raw class or an invented color has to be refused.
+    const result = verifySpec({
+      children: [
+        { type: 'Divider', props: { ui: { wrapper: 'mt-24' } } },
+        { type: 'Button', props: { color: 'hotpink' } },
+        { type: 'FormFields', props: { fields: [{ name: 'a', style: 'not-registered' }] } },
+      ],
+    })
+    expect(result.pass).toBe(false)
+    expect(result.errors.map(e => e.rule)).toEqual(
+      expect.arrayContaining(['props.invalid', 'style.unknown']),
+    )
   })
 
   it('rejects malformed JSON with schema paths', () => {

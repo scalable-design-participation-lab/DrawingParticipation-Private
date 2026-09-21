@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { ref, watch } from 'vue'
+import { styleClasses } from '../utils/styles'
 /**
  * A form described by data: one object in, one object out.
  * `fields` says what to render; `modelValue` holds the values keyed by field
@@ -14,8 +15,11 @@ export interface FormField {
   rows?: number
   options?: { label: string, value: string | number }[]
   required?: boolean
-  /** Extra classes on the control (e.g. a width). */
-  class?: string
+  /**
+   * Registered style preset(s) for the control, e.g. a width. Not raw classes:
+   * a field picks from the same list a node's `style` picks from.
+   */
+  style?: string | string[]
 }
 
 const props = withDefaults(defineProps<{
@@ -80,7 +84,7 @@ const underline = 'w-full !border-b border-current rounded-none px-0 py-1 bg-tra
         :required="field.required"
         :variant="variant === 'underline' ? 'none' : 'outline'"
         :padded="variant !== 'underline'"
-        :textarea-class="variant === 'underline' ? `${underline} ${field.class ?? ''}` : field.class"
+        :textarea-class="variant === 'underline' ? `${underline} ${styleClasses(field.style)}` : styleClasses(field.style)"
         class="w-full"
         @update:model-value="update(field.name, $event)"
       />
@@ -92,7 +96,7 @@ const underline = 'w-full !border-b border-current rounded-none px-0 py-1 bg-tra
         :required="field.required"
         :variant="variant === 'underline' ? 'none' : 'outline'"
         :padded="variant !== 'underline'"
-        :select-class="variant === 'underline' ? `${underline} ${field.class ?? ''}` : field.class"
+        :select-class="variant === 'underline' ? `${underline} ${styleClasses(field.style)}` : styleClasses(field.style)"
         class="w-full"
         @update:model-value="update(field.name, $event)"
       />
@@ -104,7 +108,7 @@ const underline = 'w-full !border-b border-current rounded-none px-0 py-1 bg-tra
         :required="field.required"
         :variant="variant === 'underline' ? 'none' : 'outline'"
         :padded="variant !== 'underline'"
-        :input-class="variant === 'underline' ? `${underline} ${field.class ?? ''}` : field.class"
+        :input-class="variant === 'underline' ? `${underline} ${styleClasses(field.style)}` : styleClasses(field.style)"
         class="w-full"
         @update:model-value="update(field.name, $event)"
       />

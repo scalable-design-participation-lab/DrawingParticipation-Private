@@ -68,8 +68,19 @@
             "required": {
               "type": "boolean"
             },
-            "class": {
-              "type": "string"
+            "style": {
+              "description": "Registered style preset(s) for the control, e.g. a width. Raw classes are not accepted.",
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                }
+              ]
             }
           },
           "required": [

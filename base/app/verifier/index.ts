@@ -268,10 +268,24 @@ export function verifySpec(spec: unknown, options: VerifySpecOptions = {}): Veri
     if (options.strict && node.props && 'class' in node.props) {
       errors.push({ path: `${path}.props.class`, rule: 'style.raw-class', message: 'strict mode: use component props or a registered `style` preset instead of raw classes' })
     }
-    const styles = Array.isArray(node.style) ? node.style : node.style ? [node.style] : []
-    for (const [i, name] of styles.entries()) {
-      if (!getStyle(name)) {
-        errors.push({ path: Array.isArray(node.style) ? `${path}.style[${i}]` : `${path}.style`, rule: 'style.unknown', message: `style preset "${name}" is not registered` })
+    const checkStyles = (style: unknown, at: string) => {
+      const names = Array.isArray(style) ? style : style ? [style] : []
+      for (const [i, name] of names.entries()) {
+        if (!getStyle(String(name))) {
+          errors.push({ path: Array.isArray(style) ? `${at}[${i}]` : at, rule: 'style.unknown', message: `style preset "${String(name)}" is not registered` })
+        }
+      }
+    }
+    checkStyles(node.style, `${path}.style`)
+    // A FormFields field carries its own preset, so it is held to the same list.
+    if (node.type === 'FormFields') {
+      const fields = (node.props as { fields?: unknown } | undefined)?.fields
+      if (Array.isArray(fields)) {
+        fields.forEach((field, i) => {
+          if (field && typeof field === 'object') {
+            checkStyles((field as { style?: unknown }).style, `${path}.props.fields[${i}].style`)
+          }
+        })
       }
     }
 

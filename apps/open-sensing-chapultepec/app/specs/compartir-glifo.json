@@ -33,7 +33,7 @@
                               "type": "FormFields",
                               "props": {
                                 "variant": "underline",
-                                "fields": [{ "name": "descripcion", "label": "Descripción", "type": "textarea", "rows": 4, "class": "normal-case !border-0" }]
+                                "fields": [{ "name": "descripcion", "label": "Descripción", "type": "textarea", "rows": 4, "style": "input-plain" }]
                               },
                               "bind": { "modelValue": "$state.entry" },
                               "on": { "update:modelValue": { "set": "entry" } }
@@ -46,8 +46,8 @@
                                 "direction": "row",
                                 "gap": "gap-12",
                                 "fields": [
-                                  { "name": "fecha", "label": "Fecha", "type": "date", "class": "w-36" },
-                                  { "name": "hora", "label": "Hora", "type": "time", "class": "w-28" }
+                                  { "name": "fecha", "label": "Fecha", "type": "date", "style": "field-date" },
+                                  { "name": "hora", "label": "Hora", "type": "time", "style": "field-time" }
                                 ]
                               },
                               "bind": { "modelValue": "$state.entry" },
