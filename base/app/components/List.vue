@@ -28,6 +28,14 @@ const props = withDefaults(defineProps<{
   sortBy?: string
   sortDesc?: boolean
   /**
+   * Group rows by this key. The item template then repeats per group and
+   * receives `{ value, count, rows }`, so a nested List over `$item.rows`
+   * renders what is inside one.
+   */
+  groupBy?: string
+  /** Groups that come first, in this order; the rest follow as they appear. */
+  groupOrder?: string[]
+  /**
    * Sort by how far each row is from this point, nearest first, and give the
    * item template a `distanceKm`. Bind it to the state `watchLocation` fills,
    * and it falls back to `sortBy` while the reader has not shared a location.
@@ -50,6 +58,8 @@ const props = withDefaults(defineProps<{
   searchKeys: () => [],
   sortBy: '',
   sortDesc: false,
+  groupBy: '',
+  groupOrder: () => [],
   near: null,
   coordinatesKey: 'coordinates',
   coordinates: 'lonlat',
@@ -130,6 +140,22 @@ const rows = computed(() => {
       const y = field(b, key) as string | number
       return (x < y ? -1 : x > y ? 1 : 0) * (props.sortDesc ? -1 : 1)
     })
+  }
+  if (props.groupBy) {
+    const groups = new Map<string, unknown[]>()
+    for (const value of props.groupOrder) {
+      groups.set(value, [])
+    }
+    for (const row of out) {
+      const key = String(field(row, props.groupBy) ?? '')
+      if (!groups.has(key)) {
+        groups.set(key, [])
+      }
+      groups.get(key)!.push(row)
+    }
+    out = [...groups]
+      .filter(([, rows]) => rows.length)
+      .map(([value, rows]) => ({ value, count: rows.length, rows }))
   }
   return props.limit > 0 ? out.slice(0, props.limit) : out
 })

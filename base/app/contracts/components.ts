@@ -267,6 +267,8 @@ registerContract({
     empty: z.string().optional().describe('Text shown when there are no items'),
     filterKey: z.string().optional().describe('Keep rows whose field equals filterValue (bind filterValue to state; empty = all)'),
     filterValue: z.unknown().optional(),
+    groupBy: z.string().optional().describe('Group rows by this key: the item template then repeats per group and gets { value, count, rows }, so a nested List over `$item.rows` renders one group.'),
+    groupOrder: z.array(z.string()).optional().describe('Groups that come first, in this order.'),
     filterIn: z.union([z.array(z.string()), z.record(z.string(), z.boolean()), z.null()]).optional().describe('Keep rows whose filterKey is in this set: a list, or the { value: boolean } map a checkbox group or an IconBar emits. An empty selection keeps all.'),
     search: z.string().optional().describe('Case-insensitive text search (bind to state)'),
     searchKeys: z.array(z.string()).optional(),

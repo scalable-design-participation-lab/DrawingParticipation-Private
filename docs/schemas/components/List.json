@@ -60,6 +60,17 @@
         "type": "string"
       },
       "filterValue": {},
+      "groupBy": {
+        "description": "Group rows by this key: the item template then repeats per group and gets { value, count, rows }, so a nested List over `$item.rows` renders one group.",
+        "type": "string"
+      },
+      "groupOrder": {
+        "description": "Groups that come first, in this order.",
+        "type": "array",
+        "items": {
+          "type": "string"
+        }
+      },
       "filterIn": {
         "description": "Keep rows whose filterKey is in this set: a list, or the { value: boolean } map a checkbox group or an IconBar emits. An empty selection keeps all.",
         "anyOf": [

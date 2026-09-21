@@ -27,13 +27,6 @@ registerContract({
 })
 
 registerContract({
-  name: 'FilteredSelectionSidebar',
-  description: 'Category accordion with counts and per-theme visibility; `select` emits an entry.',
-  props: z.strictObject({ features: Rows.optional(), visibleTags: z.array(z.string()).optional(), title: z.string().optional(), empty: z.string().optional() }),
-  emits: ['select', 'toggleTag'],
-})
-
-registerContract({
   name: 'MobileContributeFlow',
   description: '"Join Our Research" wizard. `pick-location` asks the page to let the user tap the map; `pickedCoordinate` feeds the tap back; `submit` emits the whole payload (title, theme, coordinate, answers, files).',
   props: z.strictObject({ pickedCoordinate: Coordinate.nullable().optional() }),

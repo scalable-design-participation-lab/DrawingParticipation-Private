@@ -366,27 +366,199 @@
               "if": "$state.contribute && !$state.picking"
             },
             {
-              "type": "FilteredSelectionSidebar",
+              "type": "div",
               "if": "$state.panelOpen",
-              "bind": {
-                "features": "$state.features",
-                "visibleTags": "$state.visibleTags"
-              },
-              "on": {
-                "select": [
-                  {
-                    "set": "selected"
+              "style": "sidebar",
+              "children": [
+                {
+                  "type": "Text",
+                  "props": {
+                    "as": "h3",
+                    "text": "$t.list.title"
                   },
-                  {
-                    "call": "loadContributions",
-                    "args": "$state.selected.properties.string_id"
+                  "style": "sidebar-title"
+                },
+                {
+                  "type": "List",
+                  "props": {
+                    "gap": "sm",
+                    "groupBy": "properties.primaryTag",
+                    "groupOrder": [
+                      "Health & Crisis Response",
+                      "Transportation & Mobility",
+                      "Digital Access & Connectivity",
+                      "Community Mapping & Visibility",
+                      "Art & Cultural Expression"
+                    ],
+                    "empty": "$t.list.emptyList"
+                  },
+                  "bind": {
+                    "items": "$state.features"
+                  },
+                  "item": {
+                    "type": "Stack",
+                    "props": {
+                      "gap": "xs"
+                    },
+                    "children": [
+                      {
+                        "type": "Stack",
+                        "props": {
+                          "direction": "row",
+                          "gap": "sm",
+                          "align": "center"
+                        },
+                        "style": "sidebar-group",
+                        "children": [
+                          {
+                            "type": "Icon",
+                            "props": {
+                              "icons": {
+                                "Health & Crisis Response": "i-heroicons-heart",
+                                "Transportation & Mobility": "i-ph-bus",
+                                "Digital Access & Connectivity": "i-heroicons-wifi",
+                                "Community Mapping & Visibility": "i-heroicons-user-group",
+                                "Art & Cultural Expression": "i-heroicons-light-bulb"
+                              },
+                              "colors": {
+                                "Health & Crisis Response": "#F26D6D",
+                                "Transportation & Mobility": "#4C9BEA",
+                                "Digital Access & Connectivity": "#57C9C0",
+                                "Community Mapping & Visibility": "#6FCF97",
+                                "Art & Cultural Expression": "#EBC24A"
+                              }
+                            },
+                            "bind": {
+                              "name": "$item.value"
+                            }
+                          },
+                          {
+                            "type": "Text",
+                            "props": {
+                              "size": "sm",
+                              "weight": "semibold"
+                            },
+                            "style": "sidebar-group-name",
+                            "bind": {
+                              "text": "$item.value"
+                            }
+                          },
+                          {
+                            "type": "Text",
+                            "props": {
+                              "size": "xs",
+                              "tone": "muted"
+                            },
+                            "bind": {
+                              "text": "$item.count"
+                            }
+                          },
+                          {
+                            "type": "Button",
+                            "props": {
+                              "icon": "i-heroicons-eye",
+                              "color": "gray",
+                              "variant": "ghost",
+                              "size": "xs"
+                            },
+                            "on": {
+                              "click": {
+                                "call": "toggleItem",
+                                "args": "visibleTags",
+                                "payload": "$item.value"
+                              }
+                            }
+                          }
+                        ]
+                      },
+                      {
+                        "type": "List",
+                        "props": {
+                          "gap": "none"
+                        },
+                        "bind": {
+                          "items": "$item.rows"
+                        },
+                        "item": {
+                          "type": "Stack",
+                          "props": {
+                            "direction": "row",
+                            "gap": "sm",
+                            "align": "center"
+                          },
+                          "style": "sidebar-entry",
+                          "on": {
+                            "click": [
+                              {
+                                "set": "selected"
+                              },
+                              {
+                                "call": "loadContributions",
+                                "args": "$state.selected.properties.string_id"
+                              }
+                            ]
+                          },
+                          "children": [
+                            {
+                              "type": "Icon",
+                              "props": {
+                                "icons": {
+                                  "Health & Crisis Response": "i-heroicons-heart",
+                                  "Transportation & Mobility": "i-ph-bus",
+                                  "Digital Access & Connectivity": "i-heroicons-wifi",
+                                  "Community Mapping & Visibility": "i-heroicons-user-group",
+                                  "Art & Cultural Expression": "i-heroicons-light-bulb"
+                                },
+                                "colors": {
+                                  "Health & Crisis Response": "#F26D6D",
+                                  "Transportation & Mobility": "#4C9BEA",
+                                  "Digital Access & Connectivity": "#57C9C0",
+                                  "Community Mapping & Visibility": "#6FCF97",
+                                  "Art & Cultural Expression": "#EBC24A"
+                                },
+                                "size": "sm"
+                              },
+                              "bind": {
+                                "name": "$item.properties.primaryTag"
+                              }
+                            },
+                            {
+                              "type": "Stack",
+                              "props": {
+                                "gap": "none"
+                              },
+                              "style": "sidebar-entry-text",
+                              "children": [
+                                {
+                                  "type": "Text",
+                                  "props": {
+                                    "size": "sm",
+                                    "weight": "medium"
+                                  },
+                                  "bind": {
+                                    "text": "$item.properties.i18n.$locale.title",
+                                    "fallback": "$item.comment"
+                                  }
+                                },
+                                {
+                                  "type": "Text",
+                                  "props": {
+                                    "size": "xs",
+                                    "tone": "muted"
+                                  },
+                                  "bind": {
+                                    "text": "$item.properties.location"
+                                  }
+                                }
+                              ]
+                            }
+                          ]
+                        }
+                      }
+                    ]
                   }
-                ],
-                "toggleTag": {
-                  "call": "toggleItem",
-                  "args": "visibleTags"
                 }
-              }
+              ]
             },
             {
               "type": "Modal",
