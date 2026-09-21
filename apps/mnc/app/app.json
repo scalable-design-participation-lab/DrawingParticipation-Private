@@ -44,7 +44,11 @@
     "bottom-sheet-body": "max-h-[calc(60dvh-140px)] overflow-y-auto",
     "list-row": "w-full cursor-pointer border-b border-gray-100 px-5 py-4 text-left hover:bg-gray-50 dark:border-zinc-800 dark:hover:bg-zinc-800/50",
     "list-disc": "flex h-11 w-11 flex-shrink-0 items-center justify-center rounded-full bg-black/5 dark:bg-white/5",
-    "list-text": "min-w-0 flex-1"
+    "list-text": "min-w-0 flex-1",
+    "entry-card": "group flex cursor-pointer flex-col overflow-hidden rounded-2xl border border-gray-200 text-left transition hover:-translate-y-0.5 hover:shadow-lg dark:border-zinc-700",
+    "entry-cover": "relative flex h-36 items-center justify-center overflow-hidden bg-teal-50 dark:bg-teal-950/30",
+    "entry-body": "flex-1 p-4",
+    "entry-chip": "w-fit rounded-full bg-black/5 px-2.5 py-0.5 dark:bg-white/10"
   },
   "routes": {
     "/": "index.json",

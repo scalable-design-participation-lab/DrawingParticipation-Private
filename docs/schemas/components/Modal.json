@@ -41,8 +41,14 @@
           "sm",
           "md",
           "lg",
-          "xl"
+          "xl",
+          "2xl",
+          "3xl"
         ]
+      },
+      "scroll": {
+        "description": "Cap the height and scroll the body, keeping the title and the button in place.",
+        "type": "boolean"
       },
       "closable": {
         "description": "Show a × in the header",

@@ -16,6 +16,12 @@ const props = withDefaults(defineProps<{
   /** Keep rows whose `filterKey` equals `filterValue` (empty value = keep all). */
   filterKey?: string
   filterValue?: unknown
+  /**
+   * Keep rows whose `filterKey` is in this set: a list of values, or the
+   * `{ value: boolean }` map a checkbox group or an IconBar emits. Omit it to
+   * keep all, which is what an empty selection means everywhere else.
+   */
+  filterIn?: string[] | Record<string, boolean> | null
   /** Case-insensitive text search over `searchKeys` (all string fields when omitted). */
   search?: string
   searchKeys?: string[]
@@ -39,6 +45,7 @@ const props = withDefaults(defineProps<{
   empty: '',
   filterKey: '',
   filterValue: '',
+  filterIn: null,
   search: '',
   searchKeys: () => [],
   sortBy: '',
@@ -92,6 +99,14 @@ const rows = computed(() => {
   let out = props.items
   if (props.filterKey && props.filterValue !== '' && props.filterValue != null) {
     out = out.filter(row => field(row, props.filterKey) === props.filterValue)
+  }
+  if (props.filterKey && props.filterIn) {
+    const allowed = Array.isArray(props.filterIn)
+      ? new Set(props.filterIn)
+      : new Set(Object.entries(props.filterIn).filter(([, on]) => on).map(([value]) => value))
+    if (allowed.size) {
+      out = out.filter(row => allowed.has(String(field(row, props.filterKey))))
+    }
   }
   const q = props.search.trim().toLowerCase()
   if (q) {

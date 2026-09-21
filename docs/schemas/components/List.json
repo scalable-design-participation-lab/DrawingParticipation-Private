@@ -60,6 +60,29 @@
         "type": "string"
       },
       "filterValue": {},
+      "filterIn": {
+        "description": "Keep rows whose filterKey is in this set: a list, or the { value: boolean } map a checkbox group or an IconBar emits. An empty selection keeps all.",
+        "anyOf": [
+          {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          {
+            "type": "object",
+            "propertyNames": {
+              "type": "string"
+            },
+            "additionalProperties": {
+              "type": "boolean"
+            }
+          },
+          {
+            "type": "null"
+          }
+        ]
+      },
       "search": {
         "description": "Case-insensitive text search (bind to state)",
         "type": "string"

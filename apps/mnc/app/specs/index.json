@@ -389,31 +389,207 @@
               }
             },
             {
-              "type": "ProjectListPanel",
+              "type": "Modal",
               "if": "$state.listOpen",
+              "props": {
+                "title": "$t.list.title",
+                "size": "3xl",
+                "scroll": true,
+                "closable": true
+              },
               "bind": {
-                "features": "$state.features",
-                "visibleTags": "$state.visibleTags"
+                "modelValue": "$state.listOpen"
               },
               "on": {
-                "select": [
-                  {
-                    "set": "selected"
-                  },
-                  {
-                    "set": "listOpen",
-                    "value": false
-                  },
-                  {
-                    "call": "loadContributions",
-                    "args": "$state.selected.properties.string_id"
-                  }
-                ],
                 "close": {
                   "set": "listOpen",
                   "value": false
+                },
+                "update:modelValue": {
+                  "set": "listOpen"
                 }
-              }
+              },
+              "children": [
+                {
+                  "type": "FormFields",
+                  "props": {
+                    "fields": [
+                      {
+                        "name": "q",
+                        "type": "text",
+                        "placeholder": "$t.list.search"
+                      }
+                    ],
+                    "gap": "gap-0"
+                  },
+                  "bind": {
+                    "modelValue": "$state.listSearch"
+                  },
+                  "on": {
+                    "update:modelValue": {
+                      "set": "listSearch"
+                    }
+                  }
+                },
+                {
+                  "type": "List",
+                  "props": {
+                    "layout": "grid",
+                    "cols": 3,
+                    "gap": "md",
+                    "filterKey": "properties.primaryTag",
+                    "searchKeys": [
+                      "comment",
+                      "properties.location",
+                      "properties.primaryTag"
+                    ],
+                    "sortBy": "comment",
+                    "empty": "$t.list.emptyList"
+                  },
+                  "bind": {
+                    "items": "$state.features",
+                    "filterIn": "$state.visibleTags",
+                    "search": "$state.listSearch.q"
+                  },
+                  "item": {
+                    "type": "div",
+                    "style": "entry-card",
+                    "on": {
+                      "click": [
+                        {
+                          "set": "selected"
+                        },
+                        {
+                          "set": "listOpen",
+                          "value": false
+                        },
+                        {
+                          "call": "loadContributions",
+                          "args": "$state.selected.properties.string_id"
+                        }
+                      ]
+                    },
+                    "children": [
+                      {
+                        "type": "div",
+                        "style": "entry-cover",
+                        "children": [
+                          {
+                            "type": "Image",
+                            "props": {
+                              "width": "full",
+                              "alt": ""
+                            },
+                            "bind": {
+                              "src": "$item.properties.photos.0"
+                            },
+                            "if": "$item.properties.photos.0"
+                          },
+                          {
+                            "type": "Icon",
+                            "props": {
+                              "icons": {
+                                "Health & Crisis Response": "i-heroicons-heart",
+                                "Transportation & Mobility": "i-ph-bus",
+                                "Digital Access & Connectivity": "i-heroicons-wifi",
+                                "Community Mapping & Visibility": "i-heroicons-user-group",
+                                "Art & Cultural Expression": "i-heroicons-light-bulb"
+                              },
+                              "colors": {
+                                "Health & Crisis Response": "#F26D6D",
+                                "Transportation & Mobility": "#4C9BEA",
+                                "Digital Access & Connectivity": "#57C9C0",
+                                "Community Mapping & Visibility": "#6FCF97",
+                                "Art & Cultural Expression": "#EBC24A"
+                              },
+                              "size": "xl"
+                            },
+                            "bind": {
+                              "name": "$item.properties.primaryTag"
+                            },
+                            "if": "!$item.properties.photos.0"
+                          }
+                        ]
+                      },
+                      {
+                        "type": "Stack",
+                        "props": {
+                          "gap": "xs"
+                        },
+                        "style": "entry-body",
+                        "children": [
+                          {
+                            "type": "Stack",
+                            "props": {
+                              "direction": "row",
+                              "gap": "xs",
+                              "align": "center"
+                            },
+                            "style": "entry-chip",
+                            "if": "$item.properties.primaryTag",
+                            "children": [
+                              {
+                                "type": "Icon",
+                                "props": {
+                                  "icons": {
+                                    "Health & Crisis Response": "i-heroicons-heart",
+                                    "Transportation & Mobility": "i-ph-bus",
+                                    "Digital Access & Connectivity": "i-heroicons-wifi",
+                                    "Community Mapping & Visibility": "i-heroicons-user-group",
+                                    "Art & Cultural Expression": "i-heroicons-light-bulb"
+                                  },
+                                  "colors": {
+                                    "Health & Crisis Response": "#F26D6D",
+                                    "Transportation & Mobility": "#4C9BEA",
+                                    "Digital Access & Connectivity": "#57C9C0",
+                                    "Community Mapping & Visibility": "#6FCF97",
+                                    "Art & Cultural Expression": "#EBC24A"
+                                  },
+                                  "size": "xs"
+                                },
+                                "bind": {
+                                  "name": "$item.properties.primaryTag"
+                                }
+                              },
+                              {
+                                "type": "Text",
+                                "props": {
+                                  "size": "xs",
+                                  "weight": "medium"
+                                },
+                                "bind": {
+                                  "text": "$item.properties.primaryTag"
+                                }
+                              }
+                            ]
+                          },
+                          {
+                            "type": "Text",
+                            "props": {
+                              "size": "sm",
+                              "weight": "semibold"
+                            },
+                            "bind": {
+                              "text": "$item.properties.i18n.$locale.title",
+                              "fallback": "$item.comment"
+                            }
+                          },
+                          {
+                            "type": "Text",
+                            "props": {
+                              "size": "xs",
+                              "tone": "muted"
+                            },
+                            "bind": {
+                              "text": "$item.properties.location"
+                            }
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                }
+              ]
             },
             {
               "type": "EntryDetail",

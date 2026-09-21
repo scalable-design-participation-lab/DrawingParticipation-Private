@@ -34,13 +34,6 @@ registerContract({
 })
 
 registerContract({
-  name: 'ProjectListPanel',
-  description: 'Searchable card grid of the visible entries (a modal); `select` emits an entry.',
-  props: z.strictObject({ features: Rows.optional(), visibleTags: z.array(z.string()).optional() }),
-  emits: ['select', 'close'],
-})
-
-registerContract({
   name: 'MobileContributeFlow',
   description: '"Join Our Research" wizard. `pick-location` asks the page to let the user tap the map; `pickedCoordinate` feeds the tap back; `submit` emits the whole payload (title, theme, coordinate, answers, files).',
   props: z.strictObject({ pickedCoordinate: Coordinate.nullable().optional() }),

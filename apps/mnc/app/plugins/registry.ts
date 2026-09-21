@@ -6,7 +6,6 @@ import MncMap from '../components/MncMap.vue'
 import MobileContributeFlow from '../components/Mobile/MobileContributeFlow.vue'
 import MobileInfoPopup from '../components/Mobile/MobileInfoPopup.vue'
 import ModerationPanel from '../components/ModerationPanel.vue'
-import ProjectListPanel from '../components/ProjectListPanel.vue'
 import { registerHandlers } from '../handlers'
 import { defineNuxtPlugin } from '#app'
 import '../contracts'
@@ -16,7 +15,6 @@ export default defineNuxtPlugin(() => {
   for (const [name, component] of Object.entries({
     MncMap,
     FilteredSelectionSidebar,
-    ProjectListPanel,
     MobileContributeFlow,
     MobileInfoPopup,
     EntryDetail,
