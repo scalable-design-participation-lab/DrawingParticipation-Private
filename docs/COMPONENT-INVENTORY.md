@@ -35,7 +35,7 @@ page's back, with two exceptions that say so in their contract
 `SpecErrorBoundary` live in base without contracts on purpose: they are parts
 other components assemble, not things a spec names.
 
-## The backend, which is written and unproven
+## The backend, and how far it has actually been taken
 
 `base/app/data/firestore.ts` and `base/app/data/auth.ts` let an app set
 `data.backend: "firestore"` in `app.json` and keep the same data sources,
@@ -43,5 +43,17 @@ the same `saveTo` / `updateIn` / `deleteFrom` actions and the same `where`
 clauses -- which may name page state, so a source can ask for "the rows
 belonging to whoever is signed in" and re-read itself when that changes.
 
-No app has switched. There are no Firebase credentials on this machine, so
-none of it has been run against a real project.
+`base/app/data/__test__/` covers the part base is responsible for, against a
+stubbed SDK: a data source becomes the query you would expect, a write lands
+on the document it names, every way of signing in leaves the same
+`state.auth`, a bad call throws instead of half-signing someone in, and a
+`where` that names state re-reads when that state moves (and only then).
+
+What no test here can tell you is whether a real project's rules let you read
+it. **No app has switched**, and there are no Firebase credentials on this
+machine, so none of it has run against a live Firestore. Switching mnc or
+restart-ukraine is the next step, and it needs somewhere it can be tried.
+
+One thing to fix when it is: `watchAuth` drops the unsubscribe that
+`onAuthStateChanged` returns. One page per app today, so nothing stacks up,
+but a second spec page calling it would add a second listener.
