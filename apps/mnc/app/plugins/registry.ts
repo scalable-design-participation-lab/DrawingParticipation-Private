@@ -3,7 +3,6 @@ import AdminAccounts from '../components/AdminAccounts.vue'
 import EntryDetail from '../components/EntryDetail.vue'
 import MobileContributeFlow from '../components/Mobile/MobileContributeFlow.vue'
 import MobileInfoPopup from '../components/Mobile/MobileInfoPopup.vue'
-import ModerationPanel from '../components/ModerationPanel.vue'
 import { registerHandlers } from '../handlers'
 import { defineNuxtPlugin } from '#app'
 import '../contracts'
@@ -14,7 +13,6 @@ export default defineNuxtPlugin(() => {
     MobileContributeFlow,
     MobileInfoPopup,
     EntryDetail,
-    ModerationPanel,
     AdminAccounts,
   })) {
     registerComponent(name, component)

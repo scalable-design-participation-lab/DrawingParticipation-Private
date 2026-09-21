@@ -7,7 +7,12 @@ import { computed } from 'vue'
  * sort and a limit are props so a page can bind them to its state.
  */
 const props = withDefaults(defineProps<{
-  items?: unknown[]
+  /**
+   * Rows to repeat over. A plain object is repeated over its entries
+   * instead, each one arriving as { key, value } -- how a spec walks a map
+   * (locale -> translation, label -> count) without an array to hand.
+   */
+  items?: unknown[] | Record<string, unknown>
   layout?: 'stack' | 'grid'
   cols?: 1 | 2 | 3 | 4
   gap?: 'none' | 'xs' | 'sm' | 'md' | 'lg'
@@ -105,8 +110,17 @@ function distanceFrom(origin: [number, number], row: unknown) {
   return haversineKm(origin, lonLat(point as number[]))
 }
 
+// An object arrives as its entries: a value that is itself a row is spread so
+// the template reads it normally, anything else lands in `value`. Both keep
+// `key`, which is what the template usually wants to show.
+const entries = computed<unknown[]>(() => (Array.isArray(props.items)
+  ? props.items
+  : Object.entries(props.items ?? {}).map(([key, value]) => (value && typeof value === 'object' && !Array.isArray(value)
+      ? { key, ...(value as Record<string, unknown>) }
+      : { key, value }))))
+
 const rows = computed(() => {
-  let out = props.items
+  let out = entries.value
   if (props.filterKey && props.filterValue !== '' && props.filterValue != null) {
     out = out.filter(row => field(row, props.filterKey) === props.filterValue)
   }

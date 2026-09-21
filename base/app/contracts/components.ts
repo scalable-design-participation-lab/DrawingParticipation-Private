@@ -268,7 +268,7 @@ registerContract({
   name: 'List',
   description: 'Repeat the `item` template for every row of `items` (bind to `$data.<source>` or a state list), as a stack or a grid. Inside the template use `$item.<field>`.',
   props: z.strictObject({
-    items: z.array(z.unknown()).optional(),
+    items: z.union([z.array(z.unknown()), z.record(z.string(), z.unknown())]).optional().describe('Rows to repeat over. A plain object is repeated over its entries instead, each arriving as { key, value } (a row-shaped value is spread, keeping its key).'),
     layout: z.enum(['stack', 'grid']).optional(),
     cols: z.union([z.literal(1), z.literal(2), z.literal(3), z.literal(4)]).optional(),
     gap: z.enum(['none', 'xs', 'sm', 'md', 'lg']).optional(),

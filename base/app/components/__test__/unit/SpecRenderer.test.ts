@@ -108,3 +108,31 @@ describe('specRenderer', () => {
     expect(await verifyRender(spec)).toEqual({ pass: true, errors: [] })
   })
 })
+
+describe('specNode event modifiers', () => {
+  it('lets a button inside a clickable row stop the row from firing', async () => {
+    const spec = {
+      version: 1 as const,
+      state: { picked: '', acted: '' },
+      children: [{
+        type: 'div',
+        props: { class: 'row' },
+        on: { click: { set: 'picked', value: 'row' } },
+        children: [
+          { type: 'button', props: { class: 'inner' }, on: { 'click.stop': { set: 'acted', value: 'button' } } },
+          { type: 'button', props: { class: 'through' }, on: { click: { set: 'acted', value: 'bubbled' } } },
+        ],
+      }],
+    }
+    const wrapper = mount(SpecRenderer, { props: { spec, navigate: () => {}, query: {} } })
+    await flushPromises()
+
+    await wrapper.find('.inner').trigger('click')
+    expect(wrapper.vm.state).toMatchObject({ acted: 'button', picked: '' })
+
+    // Without the modifier the row still hears it, which is why the row's own
+    // buttons need one.
+    await wrapper.find('.through').trigger('click')
+    expect(wrapper.vm.state).toMatchObject({ acted: 'bubbled', picked: 'row' })
+  })
+})

@@ -32,13 +32,6 @@ registerContract({
 })
 
 registerContract({
-  name: 'ModerationPanel',
-  description: 'Moderator review queue (pending entries + contributions). `fly-to` emits a string_id.',
-  props: z.strictObject({ moderation: Rows.optional(), pending: Rows.optional(), features: Rows.optional(), isSuperAdmin: z.boolean().optional() }),
-  emits: ['approveEntry', 'deleteEntry', 'approveContribution', 'deleteContribution', 'flyTo', 'signOut', 'close'],
-})
-
-registerContract({
   name: 'AdminAccounts',
   description: 'Account management page body: sign in / register, then (super admin) promote registrations and manage moderators. Bind `errors` to `$errors` for outcomes.',
   props: z.strictObject({ auth: Row.optional(), accounts: Rows.optional(), registrations: Rows.optional(), loading: z.boolean().optional(), errors: Row.optional() }),
@@ -59,7 +52,7 @@ declareHandler('approveEntry', 'Moderator: approve a user entry (payload from st
 declareHandler('deleteEntry', 'Moderator: delete a user entry (payload from state.moderation).')
 declareHandler('loadContributions', 'Load a project\'s contributions into state.contributions; payload is the string_id.')
 declareHandler('addContribution', 'Save an uploaded contribution { projectId, comment, media }.')
-declareHandler('loadPending', 'Moderator: unapproved contributions into state.pendingContributions.')
+declareHandler('loadPending', 'Moderator: unapproved contributions into state.pendingContributions, each carrying the projectTitle it belongs to.')
 declareHandler('approveContribution', 'Moderator: approve a contribution (payload).')
 declareHandler('deleteContribution', 'Moderator: delete a contribution (payload).')
 declareHandler('loadAccounts', 'Super admin: state.accounts and state.registrations.')

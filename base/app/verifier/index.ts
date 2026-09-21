@@ -70,6 +70,20 @@ function issuesToErrors(issues: z.core.$ZodIssue[], prefix: string, rule: string
   })
 }
 
+/**
+ * Whether a listener lands on a DOM element rather than on a component's emit.
+ * Vue only calls it an emit when the component declares it -- everything else
+ * falls through to the root element. `click` is a DOM event either way: Button
+ * lists it so a spec knows it may listen, but the component behind it is Nuxt
+ * UI's, which does not declare the emit, so what arrives is still the
+ * MouseEvent and `.stop` still has something to stop.
+ *
+ * Two rules depend on this, and they must not drift apart.
+ */
+function isDomEvent(name: string, contract?: { emits?: string[] }) {
+  return name === 'click' || !contract?.emits?.includes(name)
+}
+
 function isPlainObject(value: unknown): value is Record<string, unknown> {
   return typeof value === 'object' && value !== null && !Array.isArray(value)
 }
@@ -334,8 +348,14 @@ export function verifySpec(spec: unknown, options: VerifySpecOptions = {}): Veri
       }
       if (contract.emits) {
         for (const event of Object.keys(node.on ?? {})) {
-          if (!contract.emits.includes(event)) {
-            errors.push({ path: `${path}.on.${event}`, rule: 'event.unknown', message: `"${node.type}" does not emit "${event}"` })
+          const [name, ...modifiers] = event.split('.')
+          if (!contract.emits.includes(name)) {
+            errors.push({ path: `${path}.on.${event}`, rule: 'event.unknown', message: `"${node.type}" does not emit "${name}"` })
+          }
+          else if (modifiers.length && !isDomEvent(name, contract)) {
+            // A modifier acts on a DOM event; a real emit never bubbles and has
+            // nothing to prevent.
+            errors.push({ path: `${path}.on.${event}`, rule: 'event.modifier-on-emit', message: `"${name}" is an emit of "${node.type}", so "${modifiers.join('.')}" has nothing to act on` })
           }
         }
       }
@@ -351,11 +371,7 @@ export function verifySpec(spec: unknown, options: VerifySpecOptions = {}): Veri
       checkExpr(node.text, `${path}.text`, inItem)
     }
     for (const [event, actions] of Object.entries(node.on ?? {})) {
-      // Vue only calls it an emit when the component declares it; everything
-      // else falls through to the root element as a plain DOM listener. A
-      // `click` is a DOM event either way -- Button lists it so a spec knows
-      // it may listen, but what arrives is still the MouseEvent.
-      checkActions(actions, `${path}.on.${event}`, inItem, event === 'click' || !contract?.emits?.includes(event))
+      checkActions(actions, `${path}.on.${event}`, inItem, isDomEvent(event.split('.')[0], contract))
     }
 
     for (const [i, child] of (node.children ?? []).entries()) {

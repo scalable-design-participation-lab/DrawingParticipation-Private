@@ -387,12 +387,16 @@ export function registerHandlers() {
 
   registerHandler('loadPending', async (_p, ctx) => {
     try {
-      ctx.state.pendingContributions = await fetchPendingContributions()
+      const rows = await fetchPendingContributions()
+      // The queue shows which project a contribution belongs to, and resolving
+      // an id against the catalogue is shaping data, not drawing it.
+      const titles = new Map(features(ctx).map(f => [f.properties?.string_id, f.comment]))
+      ctx.state.pendingContributions = rows.map(c => ({ ...c, projectTitle: titles.get(c.projectId) || c.projectId }))
     }
     catch (e) {
       console.warn('Could not load pending contributions:', e)
     }
-  }, 'Moderator: every unapproved contribution into state.pendingContributions.')
+  }, 'Moderator: every unapproved contribution into state.pendingContributions, each carrying the title of the project it belongs to.')
 
   const without = (list: unknown, id: string | undefined) => ((list ?? []) as Contribution[]).filter(c => c.id !== id)
   registerHandler('approveContribution', async (payload, ctx) => {

@@ -1,6 +1,6 @@
 <script lang="ts">
 import type { PropType, VNodeChild } from 'vue'
-import { defineComponent, h, inject } from 'vue'
+import { defineComponent, h, inject, withModifiers } from 'vue'
 import type { SpecNode as Node } from '../contracts/spec'
 import { getComponent } from '../utils/registry'
 import { SPEC_CONTEXT, evaluate, materializeProps, resolveExpr, runAction } from '../utils/spec-context'
@@ -49,7 +49,11 @@ function renderNode(node: Node, item: unknown, ctx: SpecContext): VNodeChild {
     attrs[prop] = resolveExpr(expr, ctx, item)
   }
   for (const [event, actions] of Object.entries(node.on ?? {})) {
-    attrs[`on${event.charAt(0).toUpperCase()}${event.slice(1)}`] = (payload: unknown) => runAction(actions, payload, ctx, item)
+    // "click.stop": a row that is itself clickable needs its buttons to stop
+    // the click reaching it, which is a DOM concern with no other expression.
+    const [name, ...modifiers] = event.split('.')
+    const run = (payload: unknown) => runAction(actions, payload, ctx, item)
+    attrs[`on${name.charAt(0).toUpperCase()}${name.slice(1)}`] = modifiers.length ? withModifiers(run, modifiers) : run
   }
 
   const slots: Record<string, (scope?: Record<string, unknown>) => VNodeChild[]> = {}

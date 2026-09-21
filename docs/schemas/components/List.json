@@ -11,8 +11,20 @@
     "type": "object",
     "properties": {
       "items": {
-        "type": "array",
-        "items": {}
+        "description": "Rows to repeat over. A plain object is repeated over its entries instead, each arriving as { key, value } (a row-shaped value is spread, keeping its key).",
+        "anyOf": [
+          {
+            "type": "array",
+            "items": {}
+          },
+          {
+            "type": "object",
+            "propertyNames": {
+              "type": "string"
+            },
+            "additionalProperties": {}
+          }
+        ]
       },
       "layout": {
         "type": "string",
