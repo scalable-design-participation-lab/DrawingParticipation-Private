@@ -116,15 +116,6 @@ export function registerHandlers() {
     await handlers.getHandler('loadPending')?.(undefined, ctx, undefined)
   }
 
-  // ---------------------------------------------------------------- viewport / locale
-  registerHandler('watchViewport', (_p, ctx) => {
-    const update = () => {
-      ctx.state.isMobile = window.innerWidth < 768
-    }
-    update()
-    window.addEventListener('resize', update)
-  }, 'state.isMobile follows the viewport (< 768px).')
-
   // ---------------------------------------------------------------- auth
   registerHandler('watchAuth', (_p, ctx) => {
     onAuthStateChanged(getAuth(), async (u) => {
@@ -160,18 +151,6 @@ export function registerHandlers() {
     }
     await loadQueues(ctx)
   }, 'Sign in with { email, password } and require moderator rights; loads the review queues.')
-
-  registerHandler('selectEntry', (payload, ctx) => {
-    ctx.state.selected = features(ctx).find(f => f.properties.string_id === String(payload)) ?? null
-  }, 'Select the entry with the given string_id (payload) into state.selected, e.g. from the moderation queue.')
-
-  registerHandler('showOnlyTag', (payload, ctx) => {
-    ctx.state.visibleTags = [String(payload)]
-    ctx.state.listOpen = true
-    ctx.state.panelOpen = false
-    ctx.state.detail = false
-    ctx.state.selected = null
-  }, 'Narrow the map to one theme (payload) and open the list: state.visibleTags, listOpen, panelOpen, detail, selected.')
 
   registerHandler('register', async (payload, ctx) => {
     const { email = '', password = '' } = (payload ?? {}) as { email?: string, password?: string }

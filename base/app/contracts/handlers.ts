@@ -26,3 +26,6 @@ declareHandler('toggleItem', 'Add the payload to the state list named in args, o
 declareHandler('refreshItem', 'Re-read the row a detail view holds from a data source after a write: args { from: "<data source>", into: "<state key>", key? }.')
 declareHandler('removeItem', 'Remove the item whose id is the payload from the state list named in args.')
 declareHandler('deleteFrom', 'Delete the row whose id is the payload from the collection named in args, then reload data sources.')
+declareHandler('selectItem', 'Put the row whose `key` equals the payload into state: args { from, into, key? }. `from` is a data source or a state list; `key` may be a dotted path.')
+declareHandler('watchViewport', 'Keep state.isMobile in step with the viewport; the payload is the breakpoint in px (default 768). Call it from the spec root `init`.')
+declareHandler('download', 'Save a data source to a file the reader keeps: args { from, format?: "json" | "csv", filename? }.')

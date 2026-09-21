@@ -18,6 +18,9 @@ import { defineNuxtPlugin, updateAppConfig } from '#app'
 export default defineNuxtPlugin((nuxtApp) => {
   registerComponent('Outlet', Outlet)
 
+  const readPath = (row: unknown, key: string) =>
+    key.split('.').reduce<unknown>((value, part) => (value && typeof value === 'object' ? (value as Record<string, unknown>)[part] : undefined), row)
+
   // List helpers on page state: `{ "call": "updateItem", "args": "<state key>" }` with { id, …patch } as payload.
   const list = (ctx: { state: Record<string, unknown> }, key: unknown) => {
     const rows = ctx.state[String(key)]
@@ -52,6 +55,52 @@ export default defineNuxtPlugin((nuxtApp) => {
   registerHandler('removeItem', (payload, ctx, args) => {
     ctx.state[String(args)] = list(ctx, args).filter(row => row.id !== payload)
   }, 'Remove the item whose id is the payload from the state list named in args.')
+
+  // Pick one row out of a list by a field, e.g. opening a detail view from a
+  // queue that only knows the id. Sibling of refreshItem, same args.
+  registerHandler('selectItem', (payload, ctx, args) => {
+    const { from, into, key = 'id' } = (args ?? {}) as { from?: string, into?: string, key?: string }
+    if (!from || !into) {
+      throw new Error('selectItem needs args { from: "<data source or state list>", into: "<state key>" }')
+    }
+    const rows = (ctx.data[from] ?? ctx.state[from] ?? []) as Record<string, unknown>[]
+    ctx.state[into] = rows.find(row => String(readPath(row, key)) === String(payload)) ?? null
+  }, 'Put the row whose `key` equals the payload into state: args { from, into, key? }. `from` is a data source or a state list.')
+
+  // The page tells the reader what fits on their screen; every app that has a
+  // phone layout was writing this listener itself.
+  registerHandler('watchViewport', (payload, ctx) => {
+    const at = Number(payload) || 768
+    const update = () => {
+      ctx.state.isMobile = window.innerWidth < at
+    }
+    update()
+    window.addEventListener('resize', update)
+  }, 'Keep state.isMobile in step with the viewport; the payload is the breakpoint in px (default 768).')
+
+  registerHandler('download', (_payload, ctx, args) => {
+    const { from, format = 'json', filename } = (args ?? {}) as { from?: string, format?: string, filename?: string }
+    const rows = ((from ? ctx.data[from] ?? ctx.state[from] : []) ?? []) as Record<string, unknown>[]
+    const csv = () => {
+      const columns = [...new Set(rows.flatMap(row => Object.keys(row)))]
+      const cell = (value: unknown) => {
+        const text = value === null || value === undefined ? '' : typeof value === 'object' ? JSON.stringify(value) : String(value)
+        return /[",\n]/.test(text) ? `"${text.replace(/"/g, '""')}"` : text
+      }
+      return [columns.join(','), ...rows.map(row => columns.map(c => cell(row[c])).join(','))].join('\n')
+    }
+    const blob = new Blob([format === 'csv' ? csv() : JSON.stringify(rows, null, 2)], {
+      type: format === 'csv' ? 'text/csv' : 'application/json',
+    })
+    const url = URL.createObjectURL(blob)
+    const link = document.createElement('a')
+    link.href = url
+    link.download = `${filename || from || 'data'}.${format}`
+    document.body.appendChild(link)
+    link.click()
+    link.remove()
+    URL.revokeObjectURL(url)
+  }, 'Save a data source to a file: args { from, format?: "json" | "csv", filename? }.')
 
   const { manifest, messages } = useAppManifest()
   if (!manifest) {

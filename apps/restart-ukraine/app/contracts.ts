@@ -33,7 +33,6 @@ registerContract({
   stateful: true,
 })
 
-declareHandler('downloadData', 'Download the collected data as JSON or CSV. Payload: { format }')
 declareHandler('checkUser', 'Sign in anonymously; a returning participant lands in state.user and state.returning becomes true.')
 declareHandler('register', 'Validate the registration form (payload), sign in, save the participant into state.user; field errors go to state.formErrors.')
 declareHandler('saveProject', 'Save the features given as args (e.g. "$state.features") as one project document.')

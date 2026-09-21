@@ -428,9 +428,30 @@
                     "value": null
                   }
                 ],
-                "showTag": {
-                  "call": "showOnlyTag"
-                },
+                "showTag": [
+                  {
+                    "set": "visibleTags",
+                    "value": [
+                      "$payload"
+                    ]
+                  },
+                  {
+                    "set": "listOpen",
+                    "value": true
+                  },
+                  {
+                    "set": "panelOpen",
+                    "value": false
+                  },
+                  {
+                    "set": "detail",
+                    "value": false
+                  },
+                  {
+                    "set": "selected",
+                    "value": null
+                  }
+                ],
                 "contribute": {
                   "call": "addContribution"
                 },
@@ -945,7 +966,12 @@
             },
             "flyTo": [
               {
-                "call": "selectEntry"
+                "call": "selectItem",
+                "args": {
+                  "from": "features",
+                  "into": "selected",
+                  "key": "properties.string_id"
+                }
               },
               {
                 "call": "loadContributions",

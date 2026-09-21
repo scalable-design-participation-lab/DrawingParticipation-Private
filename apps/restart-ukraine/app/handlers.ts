@@ -29,29 +29,7 @@ const BELONGING: Record<string, string> = { dislike: 'negative', heart: 'love', 
 const SAFETY: Record<string, string> = { broken: 'unsafe', calm: 'safe', lock: 'great' }
 const ENVIRONMENT: Record<string, string> = { pollution: 'pollution', trash: 'trash', leaf: 'flora-fauna' }
 
-function convertToCSV(_data: unknown) {
-  // ponytail: real CSV conversion once the export data exists.
-  return 'data,in,csv,format'
-}
-
 export function registerHandlers() {
-  registerHandler('downloadData', (payload) => {
-    const { format = 'json' } = (payload ?? {}) as { format?: string }
-    const data = {}
-    const blob = new Blob(
-      [format === 'json' ? JSON.stringify(data) : convertToCSV(data)],
-      { type: format === 'json' ? 'application/json' : 'text/csv' },
-    )
-    const url = URL.createObjectURL(blob)
-    const link = document.createElement('a')
-    link.href = url
-    link.setAttribute('download', `ukraine-data.${format}`)
-    document.body.appendChild(link)
-    link.click()
-    link.remove()
-    URL.revokeObjectURL(url)
-  }, 'Download the collected data as JSON or CSV. Payload: { format }')
-
   // Anonymous Firebase sign-in; a returning participant is recognised by uid.
   registerHandler('checkUser', async (_payload, ctx) => {
     const { user } = await signInAnonymously(getAuth())

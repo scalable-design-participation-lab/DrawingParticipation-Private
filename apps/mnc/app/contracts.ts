@@ -89,7 +89,6 @@ registerContract({
   emits: ['signIn', 'register', 'resetPassword', 'claimAdmin', 'signOut', 'refresh', 'promote', 'removeRegistration', 'setRole', 'revoke', 'sendReset', 'create'],
 })
 
-declareHandler('watchViewport', 'state.isMobile follows the viewport (< 768px).')
 declareHandler('watchAuth', 'Keep state.auth in sync with Firebase Auth; admins also get the review queues.')
 declareHandler('signIn', 'Sign in with { email, password }.')
 declareHandler('signInModerator', 'Sign in with { email, password } and require moderator rights.')
@@ -107,8 +106,6 @@ declareHandler('addContribution', 'Save an uploaded contribution { projectId, co
 declareHandler('loadPending', 'Moderator: unapproved contributions into state.pendingContributions.')
 declareHandler('approveContribution', 'Moderator: approve a contribution (payload).')
 declareHandler('deleteContribution', 'Moderator: delete a contribution (payload).')
-declareHandler('selectEntry', 'Select the entry with the given string_id into state.selected.')
-declareHandler('showOnlyTag', 'Narrow the map to one theme and open the list.')
 declareHandler('loadAccounts', 'Super admin: state.accounts and state.registrations.')
 declareHandler('promote', 'Super admin: grant a registration rights; payload { uid, email, role }.')
 declareHandler('removeRegistration', 'Super admin: drop a registration (payload: uid).')
