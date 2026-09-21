@@ -12,6 +12,7 @@
     "type": "object",
     "properties": {
       "items": {
+        "description": "The buttons, listed. Leave it out and bind `rows` instead to derive them from data.",
         "type": "array",
         "items": {
           "type": "object",
@@ -35,10 +36,67 @@
             }
           },
           "required": [
-            "value",
-            "icon"
+            "value"
           ],
           "additionalProperties": false
+        }
+      },
+      "rows": {
+        "description": "Rows to read values off: each distinct `field` becomes a button, so a filter bar shows the categories actually present.",
+        "type": "array",
+        "items": {
+          "type": "object",
+          "propertyNames": {
+            "type": "string"
+          },
+          "additionalProperties": {}
+        }
+      },
+      "field": {
+        "description": "Which key of a row holds the value.",
+        "type": "string"
+      },
+      "first": {
+        "description": "Values that always appear, in this order, ahead of anything found in `rows`.",
+        "type": "array",
+        "items": {
+          "type": "string"
+        }
+      },
+      "exclude": {
+        "type": "array",
+        "items": {
+          "type": "string"
+        }
+      },
+      "icons": {
+        "description": "value -> icon, for buttons derived from `rows`.",
+        "type": "object",
+        "propertyNames": {
+          "type": "string"
+        },
+        "additionalProperties": {
+          "type": "string"
+        }
+      },
+      "colors": {
+        "description": "value -> colour when active.",
+        "type": "object",
+        "propertyNames": {
+          "type": "string"
+        },
+        "additionalProperties": {
+          "type": "string"
+        }
+      },
+      "labels": {
+        "description": "value -> tooltip; the value itself otherwise.",
+        "type": "object",
+        "propertyNames": {
+          "type": "string"
+        },
+        "additionalProperties": {
+          "type": "string"
         }
       },
       "modelValue": {

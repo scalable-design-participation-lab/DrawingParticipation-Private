@@ -28,13 +28,6 @@ registerContract({
 })
 
 registerContract({
-  name: 'ThemeFilterBar',
-  description: 'Theme chips at the top of the map; `toggle-tag` emits the tag to show/hide.',
-  props: z.strictObject({ features: Rows.optional(), visibleTags: z.array(z.string()).optional() }),
-  emits: ['toggleTag'],
-})
-
-registerContract({
   name: 'FilteredSelectionSidebar',
   description: 'Category accordion with counts and per-theme visibility; `select` emits an entry.',
   props: z.strictObject({ features: Rows.optional(), visibleTags: z.array(z.string()).optional(), title: z.string().optional(), empty: z.string().optional() }),

@@ -22,6 +22,21 @@ export interface BarItem {
 
 const props = withDefaults(defineProps<{
   items?: BarItem[]
+  /**
+   * Rows to read the values off instead of listing them: each distinct
+   * `field` becomes a button. A filter bar over a map then shows exactly the
+   * categories that are on it, including ones added after the app shipped.
+   */
+  rows?: Record<string, unknown>[]
+  field?: string
+  /** Values that always appear, in this order, before anything found in `rows`. */
+  first?: string[]
+  /** Values to leave out of what `rows` yields. */
+  exclude?: string[]
+  /** value -> icon / colour / label, for values that come from `rows`. */
+  icons?: Record<string, string>
+  colors?: Record<string, string>
+  labels?: Record<string, string>
   /** Active value, or the list of them when `multiple`. */
   modelValue?: string | string[]
   multiple?: boolean
@@ -29,6 +44,13 @@ const props = withDefaults(defineProps<{
   size?: 'sm' | 'md' | 'lg'
 }>(), {
   items: () => [],
+  rows: () => [],
+  field: '',
+  first: () => [],
+  exclude: () => [],
+  icons: () => ({}),
+  colors: () => ({}),
+  labels: () => ({}),
   modelValue: '',
   multiple: false,
   position: 'bottom',
@@ -48,6 +70,36 @@ const PLACE = {
   bottom: 'fixed inset-x-0 bottom-6 z-40 flex justify-center safe-bottom',
   static: '',
 }
+
+/**
+ * The buttons: either the listed `items`, or one per distinct value in `rows`.
+ * Either way an item may name its own icon / colour / label, and falls back to
+ * the maps for whatever it does not name.
+ */
+const buttons = computed<BarItem[]>(() => {
+  const listed = props.items.length
+    ? props.items
+    : (() => {
+        const seen = new Set(props.first)
+        for (const row of props.rows) {
+          const value = row[props.field]
+          if (typeof value === 'string' && value && !props.exclude.includes(value)) {
+            seen.add(value)
+          }
+        }
+        for (const value of props.exclude) {
+          seen.delete(value)
+        }
+        return [...seen].map(value => ({ value, icon: '' }))
+      })()
+
+  return listed.map(item => ({
+    ...item,
+    icon: item.icon || props.icons[item.value] || 'i-heroicons-map-pin',
+    color: item.color ?? props.colors[item.value],
+    label: item.label ?? props.labels[item.value] ?? item.value,
+  }))
+})
 
 const active = computed(() => {
   const value = props.modelValue
@@ -80,7 +132,7 @@ function press(item: BarItem) {
       @pointerdown.stop
       @touchstart.stop
     >
-      <UTooltip v-for="item in items" :key="item.value" :text="item.label ?? ''" :prevent="!item.label">
+      <UTooltip v-for="item in buttons" :key="item.value" :text="item.label ?? ''" :prevent="!item.label">
         <button
           type="button"
           class="flex items-center justify-center rounded-full transition"

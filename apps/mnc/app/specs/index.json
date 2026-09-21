@@ -197,16 +197,44 @@
               ]
             },
             {
-              "type": "ThemeFilterBar",
+              "type": "IconBar",
               "if": "!$state.contribute",
+              "props": {
+                "position": "top",
+                "multiple": true,
+                "field": "primaryTag",
+                "first": [
+                  "Health & Crisis Response",
+                  "Transportation & Mobility",
+                  "Digital Access & Connectivity",
+                  "Community Mapping & Visibility",
+                  "Art & Cultural Expression"
+                ],
+                "exclude": [
+                  "Uncategorized"
+                ],
+                "icons": {
+                  "Health & Crisis Response": "i-heroicons-heart",
+                  "Transportation & Mobility": "i-ph-bus",
+                  "Digital Access & Connectivity": "i-heroicons-wifi",
+                  "Community Mapping & Visibility": "i-heroicons-user-group",
+                  "Art & Cultural Expression": "i-heroicons-light-bulb"
+                },
+                "colors": {
+                  "Health & Crisis Response": "#F26D6D",
+                  "Transportation & Mobility": "#4C9BEA",
+                  "Digital Access & Connectivity": "#57C9C0",
+                  "Community Mapping & Visibility": "#6FCF97",
+                  "Art & Cultural Expression": "#EBC24A"
+                }
+              },
               "bind": {
-                "features": "$state.features",
-                "visibleTags": "$state.visibleTags"
+                "rows": "$state.features",
+                "modelValue": "$state.visibleTags"
               },
               "on": {
-                "toggleTag": {
-                  "call": "toggleItem",
-                  "args": "visibleTags"
+                "update:modelValue": {
+                  "set": "visibleTags"
                 }
               }
             },

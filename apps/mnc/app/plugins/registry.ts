@@ -9,7 +9,6 @@ import MobileInfoPopup from '../components/Mobile/MobileInfoPopup.vue'
 import MobileProximityList from '../components/Mobile/MobileProximityList.vue'
 import ModerationPanel from '../components/ModerationPanel.vue'
 import ProjectListPanel from '../components/ProjectListPanel.vue'
-import ThemeFilterBar from '../components/ThemeFilterBar.vue'
 import { registerHandlers } from '../handlers'
 import { defineNuxtPlugin } from '#app'
 import '../contracts'
@@ -18,7 +17,6 @@ import '../contracts'
 export default defineNuxtPlugin(() => {
   for (const [name, component] of Object.entries({
     MncMap,
-    ThemeFilterBar,
     FilteredSelectionSidebar,
     ProjectListPanel,
     MobileProximityList,
