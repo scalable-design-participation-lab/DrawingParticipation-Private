@@ -4,7 +4,6 @@ import { toLonLat } from 'ol/proj'
 import { PRIMARY_TAGS } from '../../composables/catalog'
 import { useLocalizedEntry } from '../../composables/useLocalizedEntry'
 import { useIsMobile } from '../../composables/useIsMobile'
-import ContributeFileUpload from './ContributeFileUpload.vue'
 
 /**
  * Mobile "Join Our Research" flow — a 7-step wizard plus a thank-you screen,
@@ -407,7 +406,7 @@ function prettyCoord(coord: [number, number]): string {
               class="contribute-textarea"
             />
             <VoiceRecorder v-model="files.voiceExample" :record-label="$t('voice.record')" :stop-label="$t('voice.stop')" :remove-label="$t('fileUpload.removeFile')" :denied-label="$t('voice.micDenied')" />
-            <ContributeFileUpload v-model="files.example" />
+            <FileDropZone v-model="files.example" accept="image/*,audio/*" multiple :max-size-mb="10" :lines="[$t('fileUpload.prompt'), $t('fileUpload.hint')]" :remove-label="$t('fileUpload.removeFile')" :too-large-label="$t('fileUpload.tooLarge', { name: '{name}', max: '{max}' })" :unsupported-label="$t('fileUpload.unsupported', { name: '{name}' })" />
           </div>
 
           <!-- Step 3: Why is this a good example -->
@@ -423,7 +422,7 @@ function prettyCoord(coord: [number, number]): string {
               class="contribute-textarea"
             />
             <VoiceRecorder v-model="files.voiceWhy" :record-label="$t('voice.record')" :stop-label="$t('voice.stop')" :remove-label="$t('fileUpload.removeFile')" :denied-label="$t('voice.micDenied')" />
-            <ContributeFileUpload v-model="files.why" />
+            <FileDropZone v-model="files.why" accept="image/*,audio/*" multiple :max-size-mb="10" :lines="[$t('fileUpload.prompt'), $t('fileUpload.hint')]" :remove-label="$t('fileUpload.removeFile')" :too-large-label="$t('fileUpload.tooLarge', { name: '{name}', max: '{max}' })" :unsupported-label="$t('fileUpload.unsupported', { name: '{name}' })" />
           </div>
 
           <!-- Step 4: Illustrative media -->
@@ -431,7 +430,7 @@ function prettyCoord(coord: [number, number]): string {
             <p class="text-sm font-semibold text-[#F26D6D]">
               {{ $t('contribute.step4.prompt') }}
             </p>
-            <ContributeFileUpload v-model="files.media" />
+            <FileDropZone v-model="files.media" accept="image/*,audio/*" multiple :max-size-mb="10" :lines="[$t('fileUpload.prompt'), $t('fileUpload.hint')]" :remove-label="$t('fileUpload.removeFile')" :too-large-label="$t('fileUpload.tooLarge', { name: '{name}', max: '{max}' })" :unsupported-label="$t('fileUpload.unsupported', { name: '{name}' })" />
           </div>
 
           <!-- Step 5: Date -->
@@ -458,7 +457,7 @@ function prettyCoord(coord: [number, number]): string {
               :ui="{ rounded: 'rounded-2xl' }"
               class="contribute-textarea"
             />
-            <ContributeFileUpload v-model="files.additional" />
+            <FileDropZone v-model="files.additional" accept="image/*,audio/*" multiple :max-size-mb="10" :lines="[$t('fileUpload.prompt'), $t('fileUpload.hint')]" :remove-label="$t('fileUpload.removeFile')" :too-large-label="$t('fileUpload.tooLarge', { name: '{name}', max: '{max}' })" :unsupported-label="$t('fileUpload.unsupported', { name: '{name}' })" />
           </div>
 
           <!-- Step 7: Personal information -->

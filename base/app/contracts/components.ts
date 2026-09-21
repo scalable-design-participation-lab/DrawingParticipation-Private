@@ -142,8 +142,13 @@ registerContract({
     multiple: z.boolean().optional(),
     capture: z.enum(['user', 'environment']).optional(),
     lines: z.array(z.string()).optional().describe('Lines drawn inside a dashed box when no children are given'),
+    modelValue: z.array(z.unknown()).nullable().optional().describe('Bound mode: the component keeps the picked files and draws them as removable rows.'),
+    maxSizeMb: z.number().positive().optional().describe('Largest file accepted; anything bigger is refused with a message.'),
+    removeLabel: z.string().optional(),
+    tooLargeLabel: z.string().optional().describe('Message for an oversized file, with {name} and {max} placeholders.'),
+    unsupportedLabel: z.string().optional().describe('Message for a file outside `accept`, with a {name} placeholder.'),
   }),
-  emits: ['files'],
+  emits: ['update:modelValue', 'files'],
   slots: ['default'],
 })
 

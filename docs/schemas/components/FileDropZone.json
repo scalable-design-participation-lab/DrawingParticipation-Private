@@ -3,6 +3,7 @@
   "description": "Headless drag-and-drop / click-to-browse file picker.",
   "stateful": false,
   "emits": [
+    "update:modelValue",
     "files"
   ],
   "slots": [
@@ -31,6 +32,34 @@
         "items": {
           "type": "string"
         }
+      },
+      "modelValue": {
+        "description": "Bound mode: the component keeps the picked files and draws them as removable rows.",
+        "anyOf": [
+          {
+            "type": "array",
+            "items": {}
+          },
+          {
+            "type": "null"
+          }
+        ]
+      },
+      "maxSizeMb": {
+        "description": "Largest file accepted; anything bigger is refused with a message.",
+        "type": "number",
+        "exclusiveMinimum": 0
+      },
+      "removeLabel": {
+        "type": "string"
+      },
+      "tooLargeLabel": {
+        "description": "Message for an oversized file, with {name} and {max} placeholders.",
+        "type": "string"
+      },
+      "unsupportedLabel": {
+        "description": "Message for a file outside `accept`, with a {name} placeholder.",
+        "type": "string"
       }
     },
     "additionalProperties": false
