@@ -5,13 +5,38 @@
   "description": "An interactive map of real-world examples of how communities around the world creatively adapt mobile and networked technology to meet local needs.",
   "lang": "en",
   "theme": {
-    "accent": "#4FA19D"
+    "accent": "#4FA19D",
+    "primary": "teal",
+    "gray": "slate"
   },
   "brand": {
     "logo": "/mnc-logo.svg",
     "logoAlt": "Mobile Networked Creativity",
     "logoLink": "https://mobilecreativity.net",
     "iconLink": "https://scalabledesignparticipation.org/"
+  },
+  "styles": {
+    "map-blur": "blur-md",
+    "dimmer": "absolute inset-0 z-40 bg-black bg-opacity-50",
+    "page-shell": "relative",
+    "admin-page": "min-h-dvh bg-gray-50 dark:bg-zinc-950",
+    "admin-container": "mx-auto max-w-3xl px-4 py-8 sm:py-12",
+    "about-page": "mb-24 leading-relaxed",
+    "about-block": "mx-auto mt-40 w-full max-w-[1100px] px-7",
+    "about-section": "mx-auto w-full max-w-[1100px] px-7",
+    "about-split": "mx-auto w-full max-w-[1100px] px-7 md:flex md:gap-12",
+    "about-heading": "mb-4 shrink-0 md:w-64",
+    "eyebrow": "text-sm font-medium uppercase tracking-widest text-teal-600",
+    "theme-card": "rounded-2xl border border-zinc-200 p-6 dark:border-zinc-700",
+    "theme-icon": "mb-3 h-7 w-7 text-teal-600",
+    "pill-button": "rounded-full px-6 py-3 hover:bg-gray-300 hover:text-black dark:hover:bg-zinc-700 dark:hover:text-white",
+    "divider-wide": "mb-12 mt-20",
+    "moderate-trigger": "fixed bottom-28 left-4 z-40 sm:bottom-6 sm:left-6 safe-bottom",
+    "upload-float": "fixed right-5 top-5 z-[60]",
+    "upload-float-mobile": "pointer-events-auto fixed left-1/2 top-20 z-[60] -translate-x-1/2",
+    "pick-banner": "fixed left-1/2 top-24 z-[60] flex -translate-x-1/2 items-center gap-3 rounded-full border-2 border-[#FB6D6D] bg-white px-5 py-2.5 shadow-lg dark:bg-black",
+    "pick-icon": "h-5 w-5 text-[#FB6D6D]",
+    "round-shadow": "rounded-full shadow-lg"
   },
   "routes": {
     "/": "index.json",

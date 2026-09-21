@@ -1,5 +1,4 @@
 import { z } from 'zod'
-import './utils/styles'
 import { LonLat, registerCollection, registerContract } from '../../../base/app/contracts'
 
 /**

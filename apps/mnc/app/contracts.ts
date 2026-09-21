@@ -1,5 +1,4 @@
 import { z } from 'zod'
-import './utils/styles'
 import { declareHandler, registerContract } from '../../../base/app/contracts'
 
 /**
