@@ -44,6 +44,11 @@ defineProps({
     type: Array as PropType<Array<{ name: string }>>,
     default: () => [],
   },
+  // Read aloud by a screen reader, so it is a prop like any other string.
+  supportLabel: {
+    type: String,
+    default: 'Help',
+  },
 })
 
 // `support` is the "?" button; `buttonClick` carries the pressed `buttons` entry
@@ -91,7 +96,7 @@ function openSupport() {
         </div>
         <button
           class="w-12 h-12 rounded-full bg-white dark:bg-black flex items-center justify-center font-semibold text-lg md:text-xl cursor-pointer shadow-md hover:bg-black hover:text-white dark:text-white dark:hover:bg-slate-800"
-          aria-label="Help"
+          :aria-label="supportLabel"
           @click="openSupport"
         >
           ?

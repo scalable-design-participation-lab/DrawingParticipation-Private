@@ -1,7 +1,8 @@
 import { useFirestore } from 'vuefire'
 import { collection, getDocs } from 'firebase/firestore'
-type Category = string
 import type { DrawType, Feature, FrequencyType } from './types/store'
+
+type Category = string
 
 export const useAllFeatureStore = defineStore('all-features', () => {
   /**

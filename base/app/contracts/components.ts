@@ -61,7 +61,10 @@ registerContract({
     mapboxStyleDark: z.string().optional(),
     mapboxToken: z.string().optional().describe('Falls back to runtimeConfig.public.mapboxToken.'),
   }),
-  emits: ['map-click'],
+  // `featureClick` fires when the click landed on an existing feature and
+  // carries `{ feature, markerPosition }`; `mapClick` fires for bare map.
+
+  emits: ['mapClick', 'featureClick'],
   slots: ['layers', 'overlays'],
 })
 
@@ -88,6 +91,7 @@ registerContract({
     links: z.array(z.strictObject({ to: z.string(), label: z.string() })).optional(),
     buttons: z.array(z.object({ label: z.string(), to: z.string().optional() }).passthrough()).optional().describe('Pressing one emits `buttonClick` with the entry'),
     icons: z.array(z.strictObject({ name: z.string() })).optional(),
+    supportLabel: z.string().optional().describe('Accessible name of the "?" button; pass a "$t." key to translate it.'),
   }),
   emits: ['support', 'buttonClick'],
   slots: ['support'],
@@ -140,10 +144,12 @@ registerContract({
 
 registerContract({
   name: 'FilterSidebar',
-  description: 'Panel of collapsible filter sections. A section is `{ label, name, component, props }`: `label` heads the accordion, `component` is "GenericCheckboxGroup" (props `{ items: [{ label, value }] }`) or "GenericDateRangePicker", `name` identifies it. `filter-change` emits `{ name, value }`; a checkbox group value is a map of item value to boolean, which binds straight to `FeatureLayer.visibleTags`.',
+  description: 'Panel of collapsible filter sections. A section is `{ label, name, component, props }`: `label` heads the accordion, `component` is "GenericCheckboxGroup" (props `{ items: [{ label, value }], selectAllLabel?, deselectAllLabel? }`) or "GenericDateRangePicker", `name` identifies it. `filterChange` emits `{ name, value }`; a checkbox group value is a map of item value to boolean, which binds straight to `FeatureLayer.visibleTags`.',
   props: z.strictObject({
     isVisible: z.boolean().optional(),
     title: z.string().optional(),
+    resetLabel: z.string().optional().describe('Wording of the reset button; pass a "$t." key to translate it.'),
+    values: z.record(z.string(), z.unknown()).optional().describe('Current value of each section keyed by its `name`. Bind the same page state you set from `filterChange`, or the panel forgets what is selected when it is closed.'),
     filterSections: z.array(z.object({
       label: z.string(),
       name: z.string(),
@@ -151,7 +157,8 @@ registerContract({
       props: z.record(z.string(), z.unknown()).optional(),
     }).passthrough()),
   }),
-  emits: ['close', 'reset', 'filter-change', 'download'],
+  emits: ['close', 'reset', 'filterChange'],
+  slots: ['before-filters', 'footer-buttons'],
 })
 
 registerContract({
@@ -324,9 +331,7 @@ registerContract({
   description: 'Hover/click tooltips for vector features on the map. Put it in the BackgroundMap "overlays" slot. It shows every property a feature carries, so say which ones to leave out rather than which to show.',
   props: z.strictObject({
     hideKeys: z.array(z.string()).optional().describe('Feature properties NOT to show, e.g. internal ids and render fields. Everything else is shown.'),
-    clickTolerance: z.number().optional(),
-    dataProjection: z.string().optional(),
-    featuresProjection: z.string().optional(),
+    clickTolerance: z.number().optional().describe('How many pixels away from a feature still counts as being on it.'),
     itemsPerPage: z.number().int().positive().optional(),
   }),
 })

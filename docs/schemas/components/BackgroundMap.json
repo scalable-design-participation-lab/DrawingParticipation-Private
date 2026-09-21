@@ -3,7 +3,8 @@
   "description": "Full-size OpenLayers map with a Mapbox raster basemap. Layers and overlays go in slots.",
   "stateful": false,
   "emits": [
-    "map-click"
+    "mapClick",
+    "featureClick"
   ],
   "slots": [
     "layers",

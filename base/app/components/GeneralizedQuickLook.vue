@@ -6,8 +6,7 @@
  -->
 
 <script setup lang="ts">
-import { computed, ref } from 'vue'
-import type Feature from 'ol/Feature'
+import { computed } from 'vue'
 
 interface MarkerPosition {
   x: number
@@ -37,7 +36,7 @@ const props = defineProps({
   },
 })
 
-const emit = defineEmits(['click-previous', 'click-next', 'click-close', 'click-expand'])
+defineEmits(['clickPrevious', 'clickNext', 'clickClose', 'clickExpand'])
 
 const positionStyle = computed(() => {
   const { x, y } = props.markerPosition
@@ -87,7 +86,7 @@ const cardStyle = {
             color="gray"
             variant="ghost"
             icon="i-heroicons-arrow-left"
-            @click="$emit('click-previous')"
+            @click="$emit('clickPrevious')"
           />
           <UButton
             v-if="showNextArrow"
@@ -95,7 +94,7 @@ const cardStyle = {
             color="gray"
             variant="ghost"
             icon="i-heroicons-arrow-right"
-            @click="$emit('click-next')"
+            @click="$emit('clickNext')"
           />
         </div>
         <div class="flex gap-2">
@@ -105,14 +104,14 @@ const cardStyle = {
             color="gray"
             variant="ghost"
             icon="i-heroicons-arrow-top-right-on-square"
-            @click="$emit('click-expand')"
+            @click="$emit('clickExpand')"
           />
           <UButton
             data-testid="close-info"
             color="gray"
             variant="ghost"
             icon="i-heroicons-x-mark"
-            @click="$emit('click-close')"
+            @click="$emit('clickClose')"
           />
         </div>
       </div>

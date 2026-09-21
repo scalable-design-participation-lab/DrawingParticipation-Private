@@ -106,7 +106,7 @@ const mapboxStyleDark = 'restartukraine/cm3p4jqnj009y01s79ngdah4r'
     :mapbox-style-light="mapboxStyleLight"
     :mapbox-style-dark="mapboxStyleDark"
     :map-type="mapType"
-    @toggle-icon-details="onPin"
+    @feature-click="onPin"
     @map-click="handleMapClick"
   >
     <template #overlays>

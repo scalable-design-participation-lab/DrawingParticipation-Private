@@ -68,6 +68,10 @@
           ],
           "additionalProperties": false
         }
+      },
+      "supportLabel": {
+        "description": "Accessible name of the \"?\" button; pass a \"$t.\" key to translate it.",
+        "type": "string"
       }
     },
     "additionalProperties": false

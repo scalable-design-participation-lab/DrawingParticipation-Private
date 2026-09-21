@@ -16,13 +16,8 @@
         }
       },
       "clickTolerance": {
+        "description": "How many pixels away from a feature still counts as being on it.",
         "type": "number"
-      },
-      "dataProjection": {
-        "type": "string"
-      },
-      "featuresProjection": {
-        "type": "string"
       },
       "itemsPerPage": {
         "type": "integer",

@@ -25,7 +25,11 @@
     "sinCoste": "Sin presupuesto todavía",
     "filtros": "Filtrar por categoría",
     "ayuda": "Cómo funciona",
-    "total": "Propuestas en el mapa:"
+    "total": "Propuestas en el mapa:",
+    "confirmarBorrado": "Quieres borrar esta propuesta del mapa?",
+    "limpiarFiltros": "Limpiar filtros",
+    "todas": "Seleccionar todas",
+    "ninguna": "Quitar todas"
   },
   "form": {
     "nueva": "Nueva propuesta",

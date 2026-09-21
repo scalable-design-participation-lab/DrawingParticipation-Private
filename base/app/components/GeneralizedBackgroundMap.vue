@@ -85,7 +85,7 @@ const props = defineProps({
   },
 })
 
-const emit = defineEmits(['map-click', 'toggle-icon-details'])
+const emit = defineEmits(['mapClick', 'featureClick'])
 
 const config = useRuntimeConfig()
 const mapInstance = ref(null)
@@ -120,9 +120,7 @@ function handleMapClick(event: any) {
   ) as Feature | undefined
 
   if (olFeature) {
-    const iconName = olFeature.get('iconName')
-    const sourceFeature = olFeature.get('sourceFeature') // your original store feature
-    console.log('clicked icon name:', iconName)
+    const sourceFeature = olFeature.get('sourceFeature')
 
     const coordinate = olFeature.getGeometry().getCoordinates()
 
@@ -155,15 +153,14 @@ function handleMapClick(event: any) {
       markerPosition = { x: event.pixel[0], y: event.pixel[1] }
     }
 
-    emit('toggle-icon-details', {
+    emit('featureClick', {
       feature: sourceFeature,
       markerPosition,
     })
-    console.log(coordinate)
     return
   }
 
-  emit('map-click', event)
+  emit('mapClick', event)
 }
 
 // Expose map instance to parent components
@@ -187,12 +184,14 @@ function scheduleUpdateSize() {
   })
 }
 
+let sizeTimer: ReturnType<typeof setTimeout> | undefined
+
 onMounted(() => {
   nextTick(() => {
     if (mapRef.value) {
       mapInstance.value = mapRef.value.map
       // Force map to update its size after mounting
-      setTimeout(() => {
+      sizeTimer = setTimeout(() => {
         if (mapInstance.value) {
           mapInstance.value.updateSize()
         }
@@ -206,6 +205,8 @@ onMounted(() => {
 })
 
 onBeforeUnmount(() => {
+  if (sizeTimer)
+    clearTimeout(sizeTimer)
   if (resizeFrame)
     cancelAnimationFrame(resizeFrame)
   window.removeEventListener('resize', scheduleUpdateSize)
@@ -233,7 +234,6 @@ onBeforeUnmount(() => {
       />
 
       <ol-view
-        ref="view"
         :center="viewCenter"
         :zoom="zoom"
         :projection="projection"

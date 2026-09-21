@@ -315,7 +315,6 @@ const accentTextStyle = computed(() => {
               : '!bg-gray-50 hover:!bg-black hover:!text-white dark:!bg-black dark:hover:!bg-slate-800 text-black dark:text-white',
           ]"
           :style="accentTextStyle"
-          @click="isDark = !isDark"
         />
         <!-- Menu -->
         <UButton

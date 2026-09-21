@@ -47,9 +47,24 @@ defineProps({
     type: Array,
     required: true,
   },
+  // Every string a reader sees is a prop, so a spec can pass a "$t." key for
+  // it. A hard-coded word here shows up in English in a Spanish app.
+  resetLabel: {
+    type: String,
+    default: 'Reset',
+  },
+  /**
+   * Current value of each section, keyed by its `name`. Without it a section
+   * would have to keep its own copy, which drifts from the page's state the
+   * moment the panel is closed and reopened.
+   */
+  values: {
+    type: Object,
+    default: () => ({}),
+  },
 })
 
-const emit = defineEmits(['close', 'reset', 'filter-change', 'download'])
+const emit = defineEmits(['close', 'reset', 'filterChange'])
 
 /**
  * Handles the closing of the sidebar
@@ -62,7 +77,6 @@ function onClose() {
  * Handles the reset of all filters
  */
 function onReset() {
-  console.log('Reset button clicked')
   emit('reset')
 }
 
@@ -72,7 +86,7 @@ function onReset() {
  * @param {any} value - The new value of the filter
  */
 function handleFilterChange(name, value) {
-  emit('filter-change', { name, value })
+  emit('filterChange', { name, value })
 }
 
 /**
@@ -142,6 +156,7 @@ function resolveComponent(componentName) {
             <component
               :is="resolveComponent(item.component)"
               v-bind="item.props"
+              :model-value="values[item.name] ?? item.props?.modelValue"
               @update:model-value="
                 (value) => handleFilterChange(item.name, value)
               "
@@ -162,7 +177,7 @@ function resolveComponent(componentName) {
               <template #leading>
                 <UIcon name="i-heroicons-arrow-path" />
               </template>
-              Reset
+              {{ resetLabel }}
             </UButton>
           </slot>
         </div>

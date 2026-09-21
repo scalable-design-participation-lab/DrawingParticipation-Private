@@ -3,7 +3,6 @@ import { computed } from 'vue'
 import * as turf from '@turf/turf'
 import GeoJSON from 'ol/format/GeoJSON'
 import type { FeatureCollection, Geometry } from 'geojson'
-import { toLonLat } from 'ol/proj'
 
 /**
  * Props for configuring interpolation.

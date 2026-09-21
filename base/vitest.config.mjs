@@ -17,6 +17,10 @@ export default defineConfig({
       // point it at base/app: the globs find nothing and components fall back
       // to their prop defaults.
       '~': path.resolve(__dirname, './app'),
+      // Nuxt's own runtime imports, stubbed so a component can mount without a
+      // Nuxt app around it.
+      '#app': path.resolve(__dirname, './app/__test__/nuxt-stubs.ts'),
+      '#imports': path.resolve(__dirname, './app/__test__/nuxt-stubs.ts'),
       '#ui': path.resolve(
         __dirname,
         './node_modules/@nuxt/ui/dist/runtime/ui.mjs',

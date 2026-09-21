@@ -264,7 +264,8 @@
                   {
                     "label": "$t.footer.ayuda"
                   }
-                ]
+                ],
+                "supportLabel": "$t.footer.ayuda"
               },
               "on": {
                 "support": {

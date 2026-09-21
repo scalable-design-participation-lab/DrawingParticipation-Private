@@ -7,16 +7,18 @@
     "nuevas": [],
     "borrador": null,
     "paso": 1,
-    "visibles": {
-      "movilidad": true,
-      "verde": true,
-      "cultura": true,
-      "accesibilidad": true,
-      "limpieza": true
-    },
     "herramienta": null,
     "enviado": false,
-    "seleccionada": null
+    "seleccionada": null,
+    "filtros": {
+      "categorias": {
+        "movilidad": true,
+        "verde": true,
+        "cultura": true,
+        "accesibilidad": true,
+        "limpieza": true
+      }
+    }
   },
   "dataSources": {
     "propuestas": {
@@ -66,7 +68,7 @@
               },
               "bind": {
                 "features": "$data.propuestas",
-                "visibleTags": "$state.visibles"
+                "visibleTags": "$state.filtros.categorias"
               },
               "on": {
                 "inspect": {
@@ -93,7 +95,8 @@
                   "limpieza": "$t.cat.limpieza"
                 },
                 "editable": true,
-                "deletable": true
+                "deletable": true,
+                "confirmDelete": "$t.mapa.confirmarBorrado"
               },
               "bind": {
                 "features": "$state.nuevas",
@@ -449,20 +452,36 @@
                           "label": "$t.cat.limpieza",
                           "value": "limpieza"
                         }
-                      ]
+                      ],
+                      "selectAllLabel": "$t.mapa.todas",
+                      "deselectAllLabel": "$t.mapa.ninguna"
                     }
                   }
-                ]
+                ],
+                "resetLabel": "$t.mapa.limpiarFiltros"
               },
               "on": {
                 "close": {
                   "set": "herramienta",
                   "value": null
                 },
-                "filter-change": {
-                  "set": "visibles",
+                "filterChange": {
+                  "set": "filtros.categorias",
                   "value": "$payload.value"
+                },
+                "reset": {
+                  "set": "filtros.categorias",
+                  "value": {
+                    "movilidad": true,
+                    "verde": true,
+                    "cultura": true,
+                    "accesibilidad": true,
+                    "limpieza": true
+                  }
                 }
+              },
+              "bind": {
+                "values": "$state.filtros"
               }
             }
           ]

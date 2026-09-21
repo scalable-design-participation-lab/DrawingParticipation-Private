@@ -25,7 +25,11 @@
     "sinCoste": "No budget yet",
     "filtros": "Filter by category",
     "ayuda": "How it works",
-    "total": "Proposals on the map:"
+    "total": "Proposals on the map:",
+    "confirmarBorrado": "Remove this proposal from the map?",
+    "limpiarFiltros": "Clear filters",
+    "todas": "Select all",
+    "ninguna": "Clear all"
   },
   "form": {
     "nueva": "New proposal",

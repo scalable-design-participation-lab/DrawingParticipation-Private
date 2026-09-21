@@ -1,14 +1,16 @@
 {
   "name": "FilterSidebar",
-  "description": "Panel of collapsible filter sections. A section is `{ label, name, component, props }`: `label` heads the accordion, `component` is \"GenericCheckboxGroup\" (props `{ items: [{ label, value }] }`) or \"GenericDateRangePicker\", `name` identifies it. `filter-change` emits `{ name, value }`; a checkbox group value is a map of item value to boolean, which binds straight to `FeatureLayer.visibleTags`.",
+  "description": "Panel of collapsible filter sections. A section is `{ label, name, component, props }`: `label` heads the accordion, `component` is \"GenericCheckboxGroup\" (props `{ items: [{ label, value }], selectAllLabel?, deselectAllLabel? }`) or \"GenericDateRangePicker\", `name` identifies it. `filterChange` emits `{ name, value }`; a checkbox group value is a map of item value to boolean, which binds straight to `FeatureLayer.visibleTags`.",
   "stateful": false,
   "emits": [
     "close",
     "reset",
-    "filter-change",
-    "download"
+    "filterChange"
   ],
-  "slots": [],
+  "slots": [
+    "before-filters",
+    "footer-buttons"
+  ],
   "props": {
     "$schema": "https://json-schema.org/draft/2020-12/schema",
     "type": "object",
@@ -18,6 +20,18 @@
       },
       "title": {
         "type": "string"
+      },
+      "resetLabel": {
+        "description": "Wording of the reset button; pass a \"$t.\" key to translate it.",
+        "type": "string"
+      },
+      "values": {
+        "description": "Current value of each section keyed by its `name`. Bind the same page state you set from `filterChange`, or the panel forgets what is selected when it is closed.",
+        "type": "object",
+        "propertyNames": {
+          "type": "string"
+        },
+        "additionalProperties": {}
       },
       "filterSections": {
         "type": "array",

@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import { computed, inject, nextTick, onUnmounted, reactive, ref, watch } from 'vue'
 import type { Ref } from 'vue'
-import { click } from 'ol/events/condition'
 import type { Feature, Map } from 'ol'
 import * as turf from '@turf/turf'
 
@@ -14,21 +13,9 @@ interface PopupState {
   position: { x: number, y: number }
 }
 
-interface StyleOptions {
-  radius: number
-  fill: string
-  stroke: {
-    color: string
-    width: number
-  }
-}
-
 interface ToolTipsProps {
   mapInstance?: Map | null
-  pointStyle?: StyleOptions
   clickTolerance?: number
-  dataProjection?: string
-  featuresProjection?: string
   hideKeys?: string[]
   itemsPerPage?: number
 }
@@ -36,20 +23,9 @@ interface ToolTipsProps {
 // Props with defaults
 const props = withDefaults(defineProps<ToolTipsProps>(), {
   mapInstance: null,
-  pointStyle: () => ({
-    radius: 6,
-    fill: 'rgba(0, 100, 255, 0.8)',
-    stroke: {
-      color: 'white',
-      width: 2,
-    },
-  }),
   hideKeys: () => [],
   clickTolerance: 10,
-  dataProjection: 'EPSG:4326',
-  featuresProjection: 'EPSG:3857',
   itemsPerPage: 5,
-
 })
 
 // Setup state management using composable pattern
@@ -149,8 +125,6 @@ const total = computed(() => {
 // Store map instance and setup features
 const mapInstance = ref<Map | null>(null)
 // Helper functions
-const isInteractive = (feature: Feature) => Boolean(feature)
-
 function getFeatureCentroid(feature: Feature): number[] | null {
   if (!feature)
     return null
@@ -183,9 +157,7 @@ function getFeatureCentroid(feature: Feature): number[] | null {
       const centroid = turf.centroid(multiLine)
       return centroid.geometry.coordinates
     }
-    else {
-      console.log(geomType)
-    }
+    // Anything else (a Point) is already a single coordinate.
     return coordinates
   }
   catch (error) {
@@ -210,22 +182,24 @@ function updatePopupPosition(coordinate: number[]) {
 }
 
 // Event handlers
-function handleClick(event: { selected: Feature[] }) {
-  // Clear any existing hover popup
+function handleClick(event: { pixel: number[] }) {
   hoverPopup.reset()
   page.value = 1
 
-  if (event.selected.length > 0) {
-    const feature = event.selected[0]
-    const coordinates = getFeatureCentroid(feature)
+  const feature = mapInstance.value?.forEachFeatureAtPixel(
+    event.pixel,
+    f => f as Feature,
+    { hitTolerance: props.clickTolerance },
+  ) ?? null
 
-    if (coordinates) {
-      pinnedPopup.update(feature, coordinates)
-      updatePopupPosition(coordinates)
-    }
-  }
-  else {
+  if (!feature) {
     pinnedPopup.reset()
+    return
+  }
+  const coordinates = getFeatureCentroid(feature)
+  if (coordinates) {
+    pinnedPopup.update(feature, coordinates)
+    updatePopupPosition(coordinates)
   }
 }
 
@@ -270,44 +244,28 @@ function postRenderHandler() {
 // Setup map instance and listeners
 // Without an explicit prop, use the map provided by GeneralizedBackgroundMap.
 const injectedMap = inject<Ref<Map | null> | null>('olMap', null)
-watch(() => props.mapInstance ?? injectedMap?.value ?? null, (newInstance) => {
-  if (newInstance) {
-    mapInstance.value = newInstance
-
-    // Add postrender event to update popup positions
-    mapInstance.value.on('postrender', postRenderHandler)
-    mapInstance.value.on('pointermove', handlePointerMove)
+function listen(map: Map | null, on: boolean) {
+  if (!map) {
+    return
   }
+  const bind = on ? map.on.bind(map) : map.un.bind(map)
+  bind('postrender', postRenderHandler)
+  bind('pointermove', handlePointerMove)
+  bind('click', handleClick)
+}
+
+// Detach from the old map before attaching to the new one, so a replaced map
+// cannot keep calling into a popup that has moved on.
+watch(() => props.mapInstance ?? injectedMap?.value ?? null, (newInstance, previous) => {
+  listen(previous ?? null, false)
+  mapInstance.value = newInstance
+  listen(newInstance, true)
 }, { immediate: true })
 
-onUnmounted(() => {
-  if (mapInstance.value) {
-    mapInstance.value.un('postrender', postRenderHandler)
-    mapInstance.value.un('pointermove', handlePointerMove)
-  }
-})
+onUnmounted(() => listen(mapInstance.value, false))
 </script>
 
 <template>
-  <!-- Click Interaction (hover is a pointermove listener: it must not redraw) -->
-  <ol-interaction-select
-    :condition="click"
-    :filter="isInteractive"
-    @select="handleClick"
-  >
-    <ol-style>
-      <ol-style-fill color="rgba(0, 0, 0, 0)" />
-      <ol-style-stroke color="green" :width="10" />
-      <ol-style-circle :radius="pointStyle.radius">
-        <ol-style-fill :color="pointStyle.fill" />
-        <ol-style-stroke
-          :color="pointStyle.stroke.color"
-          :width="pointStyle.stroke.width"
-        />
-      </ol-style-circle>
-    </ol-style>
-  </ol-interaction-select>
-
   <!-- Unified Popup Component -->
   <Teleport to="#map-overlays">
     <div

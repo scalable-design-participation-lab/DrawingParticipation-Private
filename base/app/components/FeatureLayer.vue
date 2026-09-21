@@ -104,13 +104,37 @@ function anchor(f: MapFeature): number[] {
 const payload = (f: MapFeature) => ({ ...f, position: anchor(f), title: titleFor(f) })
 
 /**
- * What a ToolTips popup can read off the feature. The geometry keys are left
- * out (OpenLayers holds the geometry itself); everything else is the row, so a
- * tooltip can show it without the layer knowing which fields matter.
+ * What a ToolTips popup can read off the feature: everything but the geometry
+ * keys, which OpenLayers holds itself.
+ *
+ * Both of these are cached per feature object, and that is not an optimisation.
+ * vue3-openlayers watches `ol-feature`'s `properties` prop and answers a change
+ * with `setGeometry(undefined)`, so handing it a fresh object on every render
+ * silently erases the geometry of every feature still on the map: filter one
+ * category out of a legend and the whole layer goes blank while its overlays
+ * stay. A stable object per row means that watch never fires; a genuinely new
+ * row gets a new key instead, so the feature is rebuilt with its geometry.
  */
+const featureProps = new WeakMap<object, Record<string, unknown>>()
 function properties(f: MapFeature) {
-  const { coordinates, type, ...rest } = f
-  return rest
+  let cached = featureProps.get(f)
+  if (!cached) {
+    const { coordinates, type, ...rest } = f
+    cached = rest
+    featureProps.set(f, cached)
+  }
+  return cached
+}
+
+const featureKeys = new WeakMap<object, number>()
+let nextFeatureKey = 0
+function featureKey(f: MapFeature) {
+  let key = featureKeys.get(f)
+  if (key === undefined) {
+    key = ++nextFeatureKey
+    featureKeys.set(f, key)
+  }
+  return key
 }
 
 const drawColor = computed(() => props.draw?.color ?? (props.draw?.type === 'LineString' ? 'red' : 'black'))
@@ -154,7 +178,7 @@ function remove(f: MapFeature) {
         </ol-style>
       </ol-interaction-draw>
 
-      <ol-feature v-for="f in points" :key="f.id" :properties="properties(f)">
+      <ol-feature v-for="f in points" :key="featureKey(f)" :properties="properties(f)">
         <ol-geom-point :coordinates="f.coordinates" />
         <ol-style>
           <ol-style-icon v-if="iconFor(f)" :src="iconFor(f)" :scale="1" :anchor="[0.5, 0.5]" />
@@ -163,14 +187,14 @@ function remove(f: MapFeature) {
           </ol-style-circle>
         </ol-style>
       </ol-feature>
-      <ol-feature v-for="f in polygons" :key="f.id" :properties="properties(f)">
+      <ol-feature v-for="f in polygons" :key="featureKey(f)" :properties="properties(f)">
         <ol-geom-polygon :coordinates="f.coordinates" />
         <ol-style>
           <ol-style-stroke color="black" :width="2" :line-dash="[10, 10]" />
           <ol-style-fill :color="[0, 0, 0, 0]" />
         </ol-style>
       </ol-feature>
-      <ol-feature v-for="f in lines" :key="f.id" :properties="properties(f)">
+      <ol-feature v-for="f in lines" :key="featureKey(f)" :properties="properties(f)">
         <ol-geom-line-string :coordinates="f.coordinates" />
         <ol-style>
           <ol-style-stroke color="red" :width="2" :line-dash="[6, 6]" />

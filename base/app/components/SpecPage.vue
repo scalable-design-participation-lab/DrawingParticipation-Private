@@ -23,10 +23,24 @@ const shell = computed(() => (manifest?.shell ? specs[manifest.shell] : undefine
 // The shell's <Outlet> reads this.
 provide(OUTLET_SPEC, page)
 
-// Theme color mode from the manifest (client only; the store exists by now).
+/**
+ * The manifest's colorMode is the app's default, not a standing order: a
+ * reader who pressed the header's light/dark button has a stored preference,
+ * and forcing the manifest value on every page mount would undo it on the next
+ * navigation, making the button look broken.
+ */
 onMounted(() => {
-  if (manifest?.theme?.colorMode) {
-    useColorMode().preference = manifest.theme.colorMode
+  const wanted = manifest?.theme?.colorMode
+  if (!wanted) {
+    return
+  }
+  let chosen = false
+  try {
+    chosen = localStorage.getItem('nuxt-color-mode') !== null
+  }
+  catch { /* private mode: treat as no stored preference */ }
+  if (!chosen) {
+    useColorMode().preference = wanted
   }
 })
 
