@@ -3,10 +3,10 @@ import { reactive, toRefs } from 'vue'
 import { layerDefinitions } from './layerRegistry'
 
 // Define a type for the reactive props of each layer
-export type LayerProps = Record<string, Ref<any>>
+type LayerProps = Record<string, Ref<any>>
 
 // State for a single layer
-export interface LayerState {
+interface LayerState {
   id: number
   type: keyof typeof layerDefinitions
   visible: boolean

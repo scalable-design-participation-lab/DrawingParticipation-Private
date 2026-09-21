@@ -7,7 +7,7 @@ import { LonLat, registerCollection, registerContract } from '../../../base/app/
  * CLI can load it: `yarn workspace @mono/base verify <spec> --contracts apps/open-sensing-chapultepec/app/contracts.ts`.
  */
 
-export const ReadingSchema = z.strictObject({
+const ReadingSchema = z.strictObject({
   humedad: z.number().min(0).max(100).describe('Relative humidity, %'),
   temperatura: z.number().min(-30).max(60).describe('°C'),
   nubes: z.enum(['stratus', 'cirrus', 'cumulus', 'cirrocumulus']),
@@ -17,7 +17,7 @@ export const ReadingSchema = z.strictObject({
 })
 
 /** One observation on the map: where + what. */
-export const ReadingRowSchema = registerCollection('reading', z.strictObject({
+registerCollection('reading', z.strictObject({
   id: z.string().optional(),
   position: LonLat,
   reading: ReadingSchema,
@@ -38,7 +38,7 @@ registerContract({ name: 'GlyphLegend', description: 'EJEMPLO glyph plus the six
 registerContract({ name: 'GlyphCanvas', description: 'Axes where a visitor composes their glyph (static for now).', props: z.strictObject({}) })
 
 /** One answer to "¿Cómo está el clima hoy?" (stored by base's collections API). */
-export const ObservacionSchema = registerCollection('observacion', z.strictObject({
+registerCollection('observacion', z.strictObject({
   id: z.string().optional(),
   createdAt: z.string().optional(),
   escuchan: z.string().min(1),

@@ -9,7 +9,7 @@ import { z } from 'zod'
  * registered handlers.
  */
 
-export const ActionSchema = z.union([
+const ActionSchema = z.union([
   z.strictObject({
     set: z.string().describe('State path to write, e.g. "welcome" or "filters.year".'),
     value: z.unknown().optional().describe('Value to write; a "$..." string is resolved (e.g. "$item.id"). Omitted = the event payload.'),
@@ -33,7 +33,7 @@ export type ActionList = z.infer<typeof ActionListSchema>
  * of `from` whose `on` field equals this row's `key` (default "id") are
  * counted into `count`, or their `sum` field is added up into `as`.
  */
-export const JoinSchema = z.strictObject({
+const JoinSchema = z.strictObject({
   from: z.string().describe('Another data source declared on the same page'),
   on: z.string().describe('Field of the other source holding this row\'s id'),
   key: z.string().optional().describe('Field of this row the other source points at (default "id")'),
@@ -44,7 +44,7 @@ export const JoinSchema = z.strictObject({
 
 const joinable = { join: z.array(JoinSchema).optional() }
 
-export const DataSourceSchema = z.discriminatedUnion('kind', [
+const DataSourceSchema = z.discriminatedUnion('kind', [
   z.strictObject({
     kind: z.literal('static'),
     contract: z.string().optional().describe('Collection contract the rows must satisfy.'),
@@ -94,7 +94,7 @@ export interface SpecNode {
   text?: string
 }
 
-export const SpecNodeSchema: z.ZodType<SpecNode> = z.lazy(() => z.strictObject({
+const SpecNodeSchema: z.ZodType<SpecNode> = z.lazy(() => z.strictObject({
   type: z.string().min(1),
   props: z.record(z.string(), z.unknown()).optional(),
   bind: z.record(z.string(), z.string()).optional(),

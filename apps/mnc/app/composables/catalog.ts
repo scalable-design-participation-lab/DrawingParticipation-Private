@@ -61,7 +61,7 @@ export function dedupe(features: Entry[]): Entry[] {
   return out
 }
 
-export function groupByTag(features: Entry[]): Record<string, Entry[]> {
+function groupByTag(features: Entry[]): Record<string, Entry[]> {
   const out: Record<string, Entry[]> = {}
   for (const f of dedupe(features)) {
     const tag = f.properties?.primaryTag ?? 'Uncategorized'
@@ -70,9 +70,9 @@ export function groupByTag(features: Entry[]): Record<string, Entry[]> {
   return out
 }
 
-export const isTagVisible = (visibleTags: string[], tag: string | undefined) => !tag || visibleTags.includes(tag)
+const isTagVisible = (visibleTags: string[], tag: string | undefined) => !tag || visibleTags.includes(tag)
 
-export function visibleEntries(features: Entry[], visibleTags: string[]): Entry[] {
+function visibleEntries(features: Entry[], visibleTags: string[]): Entry[] {
   return dedupe(features).filter(f => isTagVisible(visibleTags, f.properties?.primaryTag))
 }
 

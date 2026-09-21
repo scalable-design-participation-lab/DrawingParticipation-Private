@@ -44,7 +44,7 @@ export function conditionExprs(expr: string): string[] {
 }
 
 /** Splits a condition into its expression and the rest; null when it is a plain expression. */
-export function parseCondition(expr: string): { negate: boolean, expr: string, op?: '==' | '!=', value?: unknown } | null {
+function parseCondition(expr: string): { negate: boolean, expr: string, op?: '==' | '!=', value?: unknown } | null {
   const match = CONDITION_RE.exec(expr)
   if (match) {
     return { negate: match[1] === '!', expr: match[2], op: match[3] as '==' | '!=', value: literal(match[4]) }
@@ -74,11 +74,11 @@ export function evaluate(expr: unknown, ctx: SpecContext, item?: unknown, payloa
 
 export const SPEC_CONTEXT: InjectionKey<SpecContext> = Symbol('spec-context')
 
-export function getPath(root: unknown, path: string[]): unknown {
+function getPath(root: unknown, path: string[]): unknown {
   return path.reduce<unknown>((acc, key) => (acc == null ? undefined : (acc as Record<string, unknown>)[key]), root)
 }
 
-export function setPath(root: Record<string, unknown>, path: string, value: unknown) {
+function setPath(root: Record<string, unknown>, path: string, value: unknown) {
   const keys = path.split('.')
   const last = keys.pop()!
   const target = keys.reduce<Record<string, unknown>>((acc, key) => {

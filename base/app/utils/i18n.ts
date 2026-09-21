@@ -21,13 +21,6 @@ export function lookup(messages: Messages | undefined, key: string): string | un
   return typeof value === 'string' ? value : undefined
 }
 
-/** Every dotted key that leads to a string. */
-export function messageKeys(messages: Messages | undefined, prefix = ''): string[] {
-  return Object.entries(messages ?? {}).flatMap(([k, v]) => (
-    typeof v === 'string' ? [prefix + k] : v && typeof v === 'object' ? messageKeys(v as Messages, `${prefix}${k}.`) : []
-  ))
-}
-
 /** Current locale first, then the default locale, then the key itself. */
 export function createTranslator(all: Record<string, Messages>, locale: Ref<string>, fallback: string) {
   return (key: string) => lookup(all[locale.value], key) ?? lookup(all[fallback], key) ?? key

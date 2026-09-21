@@ -10,7 +10,7 @@ import { z } from 'zod'
  * at runtime (plugins/manifest.ts).
  */
 /** One field of a collection declared in app.json (validated on every write). */
-export const CollectionField = z.strictObject({
+const CollectionField = z.strictObject({
   name: z.string().regex(/^[\w-]+$/),
   type: z.enum(['string', 'number', 'boolean', 'json']),
   required: z.boolean().optional(),

@@ -26,7 +26,7 @@ export interface Contribution {
   approved?: boolean
 }
 
-export const CONTRIBUTIONS = 'contributions'
+const CONTRIBUTIONS = 'contributions'
 
 export const currentUid = () => getAuth().currentUser?.uid || 'anonymous'
 

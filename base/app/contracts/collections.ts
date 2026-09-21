@@ -21,7 +21,7 @@ export function listCollections() {
 }
 
 /** Minimal GeoJSON feature, the lingua franca of every map app here. */
-export const FeatureSchema = registerCollection('feature', z.object({
+registerCollection('feature', z.object({
   type: z.literal('Feature'),
   id: z.union([z.string(), z.number()]).optional(),
   geometry: z.object({

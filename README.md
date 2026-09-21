@@ -1,5 +1,17 @@
 # DrawingParticipation-Private
 
+A monorepo of participation apps built from one component library. A page is a
+JSON spec rather than a Vue file, and a whole app is `app.json` plus those
+specs.
+
+- [docs/ARCHITECTURE-PLAN.md](docs/ARCHITECTURE-PLAN.md) - what the direction is and where it stands
+- [docs/SPEC-FORMAT.md](docs/SPEC-FORMAT.md) - how to write a spec and an app manifest
+- [docs/COMPONENT-INVENTORY.md](docs/COMPONENT-INVENTORY.md) - every component and its contract
+- `docs/schemas/` - the same contracts as JSON Schema, exported by `yarn workspace @mono/base schemas`
+
+The rest of this file is the testing setup.
+
+
 ## Using Base components
 
 In your `nuxt.config.ts`, add this
@@ -153,8 +165,3 @@ Testing packages should be installed in `package.json` for each applications
 | `@vue/test-utils`     | Core testing utilities for Vue components.                                        | **Keep**, it's essential for testing Vue components.                          | [Vue Test Utils Docs](https://test-utils.vuejs.org/)                  |
 | `jsdom`               | Provides a virtual DOM environment for Node.js, used in testing DOM-related code. | **Keep**, essential for testing DOM-related code.                             | [JSDOM Docs](https://github.com/jsdom/jsdom#readme)                   |
 | `@vitest/coverage-v8` | Adds V8-based code coverage to Vitest.                                            | **Optional**, but useful if you want detailed code coverage reports.          | [Vitest Coverage V8 Docs](https://vitest.dev/guide/coverage.html#v8)  |
-| `happy-dom`           | A DOM environment alternative to JSDOM for faster tests.                          | **Optional**, keep if you face performance issues with JSDOM.                 | [Happy DOM Docs](https://github.com/capricorn86/happy-dom#readme)     |
-
-```
-
-```

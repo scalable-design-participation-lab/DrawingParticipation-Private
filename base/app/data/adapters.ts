@@ -42,28 +42,6 @@ export const restAdapter: DataAdapter = {
   },
 }
 
-/**
- * `{ kind: "collection", name, where, limit }` -> Firestore query.
- * `db` is whatever the app already has (nuxt-vuefire's useFirestore(), the
- * firebase layer's getFirestore(), or the emulator).
- */
-export function createFirestoreAdapter(db: unknown): DataAdapter {
-  return {
-    async load(spec) {
-      if (spec.kind !== 'collection') {
-        unsupported(spec)
-      }
-      const { collection, getDocs, limit, query, where } = await import('firebase/firestore')
-      const clauses = (spec.where ?? []).map(([field, op, value]) => where(field, op as never, value))
-      if (spec.limit) {
-        clauses.push(limit(spec.limit) as never)
-      }
-      const snapshot = await getDocs(query(collection(db as never, spec.name), ...clauses))
-      return snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }))
-    },
-  }
-}
-
 /** Route each `kind` to an adapter. */
 export function composeAdapters(byKind: Partial<Record<DataSourceSpec['kind'], DataAdapter>>): DataAdapter {
   return {

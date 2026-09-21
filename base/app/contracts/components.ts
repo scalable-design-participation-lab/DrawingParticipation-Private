@@ -30,7 +30,7 @@ const UI_COLOR = z.enum(['primary', 'black', 'white', 'gray', 'red', 'orange', '
 const UI_VARIANT = z.enum(['solid', 'outline', 'soft', 'subtle', 'ghost', 'link'])
 const UI_SIZE = z.enum(['xs', 'sm', 'md', 'lg', 'xl'])
 
-export const HeaderItem = z.strictObject({
+const HeaderItem = z.strictObject({
   label: z.string().optional(),
   to: z.string().optional(),
   icon: z.string().optional(),
@@ -177,7 +177,7 @@ registerContract({
   emits: ['update:modelValue'],
 })
 
-export const FormFieldSchema = z.strictObject({
+const FormFieldSchema = z.strictObject({
   name: z.string(),
   label: z.string().optional(),
   type: z.enum(['text', 'email', 'password', 'textarea', 'number', 'date', 'time', 'select']).optional(),

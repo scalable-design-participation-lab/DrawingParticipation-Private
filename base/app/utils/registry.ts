@@ -22,7 +22,3 @@ export function registerComponent(name: string, component: Component, contract?:
 export function getComponent(name: string) {
   return components.get(name)
 }
-
-export function listComponents() {
-  return [...components.keys()]
-}
