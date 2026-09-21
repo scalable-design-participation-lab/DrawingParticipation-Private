@@ -62,6 +62,13 @@ export const AppManifestSchema = z.strictObject({
   routes: z.record(z.string().regex(/^\/\S*$/), z.string().regex(/\.json$/)),
   data: z.strictObject({
     /**
+     * Where the app's collections live. "collections" is base's own storage
+     * (Nitro + files under .data); "firestore" is the app's Firebase project,
+     * which its own Nuxt config already set up. Either way a spec reads with a
+     * `collection` source and writes with `saveTo` / `deleteFrom`.
+     */
+    backend: z.enum(['collections', 'firestore']).optional(),
+    /**
      * Collections the app owns. base serves them at /api/collections/<name>
      * (list / create / delete), validates every write against `contract`, and
      * `kind: "collection"` data sources read from there.

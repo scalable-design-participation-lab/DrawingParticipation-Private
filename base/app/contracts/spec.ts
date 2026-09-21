@@ -56,6 +56,8 @@ const DataSourceSchema = z.discriminatedUnion('kind', [
     name: z.string().describe('Backend collection name (Firestore collection, table, ...).'),
     contract: z.string().optional(),
     where: z.array(z.tuple([z.string(), z.string(), z.unknown()])).optional(),
+    orderBy: z.string().optional().describe('Field to sort on in the backend, before the rows reach the page.'),
+    orderDesc: z.boolean().optional(),
     limit: z.number().int().positive().optional(),
     ...joinable,
   }),

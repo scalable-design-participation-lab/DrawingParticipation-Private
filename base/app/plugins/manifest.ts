@@ -3,6 +3,9 @@ import type { Ref } from 'vue'
 import { useAppManifest } from '../composables/useAppManifest'
 import { SPEC_I18N, createTranslator } from '../utils/i18n'
 import { DATA_ADAPTER, composeAdapters, restAdapter, staticAdapter } from '../data/adapters'
+import type { DataSourceSpec } from '../contracts/spec'
+import { registerAuthHandlers } from '../data/auth'
+import { firestoreAdapter, firestoreCreate, firestoreDelete, firestoreUpdate } from '../data/firestore'
 import { registerHandler } from '../utils/handlers'
 import { registerComponent } from '../utils/registry'
 import { registerStyle } from '../utils/styles'
@@ -167,13 +170,22 @@ export default defineNuxtPlugin((nuxtApp) => {
   }
 
   // Owned collections are served by base's Nitro routes; others by restBase.
+  // An app that declared `data.backend: "firestore"` talks to its own Firebase
+  // project instead, through the same source kind and the same handlers.
   const owned = manifest.data?.collections ?? {}
+  const onFirestore = manifest.data?.backend === 'firestore'
+  if (onFirestore) {
+    registerAuthHandlers()
+  }
   const urlFor = (name: string) => (name in owned ? `/api/collections/${name}` : manifest.data?.restBase ? `${manifest.data.restBase}/${name}` : null)
 
   const collection = {
-    load: (spec: { kind: string, name?: string }) => {
-      const url = spec.name ? urlFor(spec.name) : null
-      return url ? restAdapter.load({ kind: 'rest', url }) : Promise.reject(new Error(`collection "${spec.name}" is not declared in app.json`))
+    load: (spec: DataSourceSpec) => {
+      if (onFirestore) {
+        return firestoreAdapter.load(spec)
+      }
+      const url = spec.kind === 'collection' && spec.name ? urlFor(spec.name) : null
+      return url ? restAdapter.load({ kind: 'rest', url }) : Promise.reject(new Error(`collection "${spec.kind === 'collection' ? spec.name : spec.kind}" is not declared in app.json`))
     },
   }
   nuxtApp.vueApp.provide(DATA_ADAPTER, composeAdapters({ static: staticAdapter, rest: restAdapter, collection }))
@@ -221,6 +233,11 @@ export default defineNuxtPlugin((nuxtApp) => {
   // `{ "call": "saveTo", "args": "<collection>" }` with the row as payload (e.g. FormFields `submit`).
   registerHandler('saveTo', async (payload, ctx, args) => {
     const name = String(args)
+    if (onFirestore) {
+      await firestoreCreate(name, (payload ?? {}) as Record<string, unknown>)
+      await ctx.reload()
+      return
+    }
     const url = urlFor(name)
     if (!url) {
       throw new Error(`collection "${name}" is not declared in app.json`)
@@ -229,9 +246,34 @@ export default defineNuxtPlugin((nuxtApp) => {
     await ctx.reload()
   }, 'Save the payload as a new row of the collection named in args, then reload data sources.')
 
+  // `{ "call": "updateIn", "args": "<collection>" }` with `{ id, …patch }`.
+  registerHandler('updateIn', async (payload, ctx, args) => {
+    const name = String(args)
+    const { id, ...patch } = (payload ?? {}) as { id?: string }
+    if (!id) {
+      throw new Error('updateIn needs a payload with an `id`')
+    }
+    if (onFirestore) {
+      await firestoreUpdate(name, String(id), patch)
+      await ctx.reload()
+      return
+    }
+    const url = urlFor(name)
+    if (!url) {
+      throw new Error(`collection "${name}" is not declared in app.json`)
+    }
+    await request('POST', `${url}/${encodeURIComponent(String(id))}`, patch)
+    await ctx.reload()
+  }, 'Merge `{ id, …patch }` into that row of the collection named in args, then reload data sources.')
+
   // `{ "call": "deleteFrom", "args": "<collection>" }` with the row id as payload (e.g. "$item.id").
   registerHandler('deleteFrom', async (payload, ctx, args) => {
     const name = String(args)
+    if (onFirestore) {
+      await firestoreDelete(name, String(payload))
+      await ctx.reload()
+      return
+    }
     const url = urlFor(name)
     if (!url) {
       throw new Error(`collection "${name}" is not declared in app.json`)

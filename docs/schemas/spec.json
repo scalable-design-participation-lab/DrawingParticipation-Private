@@ -111,6 +111,13 @@
                   "maxItems": 3
                 }
               },
+              "orderBy": {
+                "description": "Field to sort on in the backend, before the rows reach the page.",
+                "type": "string"
+              },
+              "orderDesc": {
+                "type": "boolean"
+              },
               "limit": {
                 "type": "integer",
                 "exclusiveMinimum": 0,

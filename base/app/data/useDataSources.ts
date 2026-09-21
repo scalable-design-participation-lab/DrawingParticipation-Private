@@ -1,4 +1,4 @@
-import { reactive } from 'vue'
+import { reactive, watch } from 'vue'
 import { getCollection } from '../contracts/collections'
 import type { DataSourceSpec } from '../contracts/spec'
 import { verifyRows } from '../verifier'
@@ -22,8 +22,35 @@ export interface DataSourceState {
  * rejected wholesale on failure (fail closed: bad data never reaches the UI).
  * `reload(name)` re-runs one source (all when omitted), e.g. after a write.
  */
-export function useDataSources(specs: Record<string, DataSourceSpec>, adapter: DataAdapter) {
+export function useDataSources(
+  specs: Record<string, DataSourceSpec>,
+  adapter: DataAdapter,
+  /**
+   * Resolves `$state.x` inside a `where` value, so a source can ask for "the
+   * rows belonging to whoever is signed in". Sources re-read themselves when
+   * what they resolve to changes.
+   */
+  resolve: (value: unknown) => unknown = value => value,
+) {
   const sources = reactive<Record<string, DataSourceState>>({})
+
+  /** The spec as the adapter should see it right now. */
+  function current(spec: DataSourceSpec): DataSourceSpec {
+    if (spec.kind !== 'collection' || !spec.where?.length) {
+      return spec
+    }
+    return { ...spec, where: spec.where.map(([field, op, value]) => [field, op, resolve(value)] as [string, string, unknown]) }
+  }
+
+  /** What every source's `where` resolves to, as one comparable string. */
+  function bindings() {
+    return Object.fromEntries(
+      Object.entries(specs).map(([name, spec]) => [
+        name,
+        spec.kind === 'collection' && spec.where?.length ? JSON.stringify(spec.where.map(([, , value]) => resolve(value))) : '',
+      ]),
+    )
+  }
 
   // `join` folds another source's aggregates into these rows, so it re-runs
   // whenever either side is (re)loaded.
@@ -45,7 +72,7 @@ export function useDataSources(specs: Record<string, DataSourceSpec>, adapter: D
     const source = sources[name]
     source.loading = true
     try {
-      const rows = await adapter.load(spec)
+      const rows = await adapter.load(current(spec))
       if (spec.contract) {
         const schema = getCollection(spec.contract)
         if (!schema) {
@@ -72,12 +99,28 @@ export function useDataSources(specs: Record<string, DataSourceSpec>, adapter: D
 
   for (const name of Object.keys(specs)) {
     sources[name] = { items: [], raw: [], loading: true, error: null }
-    load(name)
   }
 
   async function reload(name?: string) {
     await Promise.all((name ? [name] : Object.keys(specs)).filter(n => n in specs).map(load))
   }
 
-  return { sources, reload }
+  /**
+   * First read. It is a separate call because a `where` may refer to page
+   * state, which the caller only finishes assembling after this returns.
+   */
+  function start() {
+    for (const name of Object.keys(specs)) {
+      load(name)
+    }
+    watch(bindings, (next, previous) => {
+      for (const [name, value] of Object.entries(next)) {
+        if (value !== previous?.[name]) {
+          load(name)
+        }
+      }
+    })
+  }
+
+  return { sources, reload, start }
 }

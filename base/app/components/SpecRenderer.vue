@@ -7,6 +7,7 @@ import { SPEC_I18N } from '../utils/i18n'
 import type { DataAdapter } from '../data/adapters'
 import { useDataSources } from '../data/useDataSources'
 import { SPEC_CONTEXT, resolveExpr, runAction } from '../utils/spec-context'
+import type { SpecContext } from '../utils/spec-context'
 import SpecNode from './SpecNode.vue'
 
 /**
@@ -43,7 +44,14 @@ const i18n = inject(SPEC_I18N, null)
 const translate = props.translate ?? (globals?.$t ? (key: string) => globals.$t!(key) : i18n?.translate)
 
 const adapter = props.adapter ?? inject(DATA_ADAPTER, defaultAdapter)
-const { sources, reload } = useDataSources(props.spec.dataSources ?? {}, adapter)
+// A `where` may name page state, which is built below, so the sources resolve
+// through a context that is filled in before `start()` reads anything.
+let context: SpecContext | null = null
+const { sources, reload, start } = useDataSources(
+  props.spec.dataSources ?? {},
+  adapter,
+  value => (context ? resolveExpr(value, context) : value),
+)
 const errors = reactive<Record<string, string | undefined>>({})
 
 const seed = { state: {}, data: {}, sources, errors, query, navigate, reload, translate }
@@ -76,7 +84,9 @@ const ctx = {
     return i18n?.locale.value ?? (globals as { $i18n?: { locale?: { value?: string } | string } } | undefined)?.$i18n?.locale as string | undefined
   },
 }
+context = ctx
 provide(SPEC_CONTEXT, ctx)
+start()
 
 onMounted(() => {
   if (props.spec.init) {
