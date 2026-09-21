@@ -32,9 +32,22 @@
     "Panel",
     "Text",
     "Image",
-    "Outlet"
+    "Outlet",
+    "AnalysisPanel",
+    "AnalysisLayers",
+    "MobileContributeFlow",
+    "MobileInfoPopup",
+    "EntryDetail",
+    "ModerationPanel",
+    "AdminAccounts",
+    "WeatherGlyph",
+    "GlyphLegend",
+    "GlyphCanvas"
   ],
   "collections": [
-    "feature"
+    "feature",
+    "reading",
+    "observacion",
+    "user"
   ]
 }

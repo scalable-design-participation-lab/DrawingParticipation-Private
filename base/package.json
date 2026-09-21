@@ -11,7 +11,7 @@
     "lint": "eslint .",
     "typecheck": "nuxt typecheck",
     "verify": "npx vite-node scripts/verify.ts",
-    "schemas": "npx vite-node scripts/export-schemas.ts",
+    "schemas": "vite-node scripts/export-schemas.ts -- --contracts ../apps/mnc/app/contracts.ts,../apps/open-sensing-chapultepec/app/contracts.ts,../apps/restart-ukraine/app/contracts.ts",
     "gen-spec": "npx vite-node scripts/generate.ts",
     "visual-check": "npx vite-node scripts/visual-check.ts",
     "test": "vitest",

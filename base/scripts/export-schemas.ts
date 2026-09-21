@@ -5,7 +5,7 @@
  *
  *   yarn workspace @mono/base schemas [--contracts <app/contracts.ts>[,<other/contracts.ts>]]
  */
-import { existsSync, mkdirSync, writeFileSync } from 'node:fs'
+import { existsSync, mkdirSync, readdirSync, rmSync, writeFileSync } from 'node:fs'
 import { resolve } from 'node:path'
 import process from 'node:process'
 import { z } from 'zod'
@@ -52,4 +52,14 @@ const index = {
   collections: listCollections().map(([name]) => name),
 }
 writeFileSync(resolve(out, 'index.json'), `${JSON.stringify(index, null, 2)}\n`)
+
+// A contract that was deleted leaves a file behind, and a stale schema is worse
+// than no schema: prune anything this run did not write.
+for (const [folder, kept] of [['components', index.components], ['collections', index.collections]] as const) {
+  for (const file of readdirSync(resolve(out, folder))) {
+    if (!kept.includes(file.replace(/\.json$/, ''))) {
+      rmSync(resolve(out, folder, file))
+    }
+  }
+}
 console.log(`wrote ${index.components.length} component + ${index.collections.length} collection schemas to ${out}`)

@@ -1,6 +1,6 @@
 {
   "name": "AnalysisLayers",
-  "description": "The active analysis layers; goes in the BackgroundMap \"layers\" slot.",
+  "description": "Draws the layers AnalysisPanel turned on. Goes in the BackgroundMap \"layers\" slot.",
   "stateful": true,
   "emits": [],
   "slots": [],

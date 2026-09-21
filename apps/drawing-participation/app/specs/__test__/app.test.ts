@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import { verifyApp } from '../../../../../base/app/verifier/manifest'
-import '../../contracts'
+import '../../../../../base/app/contracts/components'
 import manifest from '../../app.json'
 
 // Every spec the manifest routes to, plus the shell, in strict mode.

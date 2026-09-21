@@ -109,7 +109,7 @@ function onUploaded(payload: { comment: string, media: unknown[] }) {
           </p>
         </div>
         <div v-if="photos.length" class="overflow-hidden rounded-2xl border-2 border-white">
-          <Carousel :images="photos" :alt="entry.comment"  height="lg" :empty-title="$t('photo.noPhoto')" :empty-text="$t('photo.beFirst')" :prev-label="$t('photo.prevPhoto')" :next-label="$t('photo.nextPhoto')" />
+          <Carousel :images="photos" :alt="entry.comment" height="lg" :empty-title="$t('photo.noPhoto')" :empty-text="$t('photo.beFirst')" :prev-label="$t('photo.prevPhoto')" :next-label="$t('photo.nextPhoto')" />
         </div>
         <div v-if="voiceNotes.length" class="space-y-2">
           <p class="text-sm font-bold text-white">

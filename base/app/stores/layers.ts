@@ -1,6 +1,6 @@
 import { defineStore } from 'pinia'
 import { reactive, toRefs } from 'vue'
-import { layerDefinitions } from './layerRegistry'
+import { layerDefinitions } from '../data/layerRegistry'
 
 // Define a type for the reactive props of each layer
 type LayerProps = Record<string, Ref<any>>

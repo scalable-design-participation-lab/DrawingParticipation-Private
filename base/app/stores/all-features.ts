@@ -1,3 +1,4 @@
+import { defineStore } from 'pinia'
 import { useFirestore } from 'vuefire'
 import { collection, getDocs } from 'firebase/firestore'
 import type { DrawType, Feature, FrequencyType } from './types/store'

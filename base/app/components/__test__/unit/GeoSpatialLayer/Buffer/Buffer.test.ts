@@ -78,7 +78,7 @@ describe('buffer.vue', () => {
   })
 
   it('renders with provided props', () => {
-    expect(wrapper.props().coordinates).toEqual({
+    expect(wrapper.props().features).toEqual({
       type: 'FeatureCollection',
       features: [
         {

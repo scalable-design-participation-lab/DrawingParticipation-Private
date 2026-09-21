@@ -29,6 +29,10 @@
       },
       "href": {
         "type": "string"
+      },
+      "variant": {
+        "description": "Ask for a derivative a build step wrote beside the original: \"thumb\" turns /photos/a.webp into /photos/a-thumb.webp. Same-origin paths only.",
+        "type": "string"
       }
     },
     "required": [

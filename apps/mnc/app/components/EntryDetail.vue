@@ -127,7 +127,7 @@ function onUploaded(payload: { comment: string, media: unknown[] }) {
         <div class="space-y-7">
           <div class="grid gap-6 lg:grid-cols-2">
             <section class="space-y-5">
-              <Carousel :images="photos" :caption="caption" :alt="title"  height="lg" :empty-title="$t('photo.noPhoto')" :empty-text="$t('photo.beFirst')" :prev-label="$t('photo.prevPhoto')" :next-label="$t('photo.nextPhoto')" />
+              <Carousel :images="photos" :caption="caption" :alt="title" height="lg" :empty-title="$t('photo.noPhoto')" :empty-text="$t('photo.beFirst')" :prev-label="$t('photo.prevPhoto')" :next-label="$t('photo.nextPhoto')" />
               <div v-if="audio.length" class="space-y-2 rounded-2xl bg-teal-50/70 p-4 dark:bg-teal-950/30">
                 <p class="text-xs font-semibold uppercase tracking-wide text-teal-700 dark:text-teal-400">
                   {{ $t('detail.voiceNotes') }}

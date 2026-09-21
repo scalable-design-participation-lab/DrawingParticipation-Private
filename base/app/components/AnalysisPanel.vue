@@ -1,15 +1,38 @@
 <script setup lang="ts">
 import { reactive } from 'vue'
-import NumberCounter from '@base/components/NumberCounter.vue'
-import HeatMapController from '@base/components/GeoSpatialLayer/HeatMap/HeatMapController.vue'
-import { layerDefinitions } from '../stores/layerRegistry'
+import { layerDefinitions } from '../data/layerRegistry'
 import { useAnalysis } from '../composables/useAnalysis'
+import NumberCounter from './NumberCounter.vue'
+import HeatMapController from './GeoSpatialLayer/HeatMap/HeatMapController.vue'
 
 /**
- * The analysis dashboard (metadata tiles + layer cards) and, once layers are
- * active, the layer-controls accordion. `modelValue` = dashboard open.
+ * The analysis dashboard: a header with counted metadata tiles, a card per
+ * available map layer, and — once layers are active — the accordion of layer
+ * controls. Which layers exist comes from the layer registry, and the counts
+ * from whatever is in the feature store, so the only app-specific part is the
+ * heading copy.
+ *
+ * `modelValue` = dashboard open. Closing it leaves the controls behind.
  */
-const props = withDefaults(defineProps<{ modelValue?: boolean }>(), { modelValue: true })
+const props = withDefaults(defineProps<{
+  modelValue?: boolean
+  /** Heading, e.g. the place being analysed. */
+  title?: string
+  /** Smaller line beside the heading. */
+  subtitle?: string
+  /** A paragraph under the heading. */
+  text?: string
+  /** Art behind each layer card, as a URL a served folder can resolve. */
+  cardImage?: string
+  controlsTitle?: string
+}>(), {
+  modelValue: true,
+  title: '',
+  subtitle: '',
+  text: '',
+  cardImage: '',
+  controlsTitle: 'Layer Controls',
+})
 const emit = defineEmits<{ 'update:modelValue': [open: boolean] }>()
 
 const { layers, filters, layerSettings, filterTime, ranges, metaData, categories, layerCards, toggleLayer } = useAnalysis()
@@ -48,16 +71,15 @@ function handlersFor(layer: { props: Record<string, unknown> }) {
         <div class="flex flex-col md:flex-row justify-between gap-6 md:gap-10 p-7">
           <div class="flex flex-col justify-start items-start w-full md:w-2/4">
             <div class="h-4 flex justify-start items-end gap-1.5">
-              <div class="text-black dark:text-white text-base font-medium">
-                Khayelitsha
+              <div v-if="title" class="text-black dark:text-white text-base font-medium">
+                {{ title }}
               </div>
-              <div class="text-neutral-400 dark:text-neutral-300 text-xs font-medium">
-                Urban Analysis
+              <div v-if="subtitle" class="text-neutral-400 dark:text-neutral-300 text-xs font-medium">
+                {{ subtitle }}
               </div>
             </div>
-            <div class="w-full text-black dark:text-white text-xs font-medium">
-              Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut
-              labore et dolore magna aliqua.
+            <div v-if="text" class="w-full text-black dark:text-white text-xs font-medium">
+              {{ text }}
             </div>
           </div>
           <div class="w-full">
@@ -100,7 +122,10 @@ function handlersFor(layer: { props: Record<string, unknown> }) {
               @click="onToggleLayer(card.type)"
             />
           </div>
-          <div class="w-full h-40 rounded-[5px] flex justify-center items-center bg-[url(/assets/images/street.png)] bg-cover bg-center dark:invert">
+          <div
+            class="w-full h-40 rounded-[5px] flex justify-center items-center bg-cover bg-center dark:invert"
+            :style="cardImage ? { backgroundImage: `url(${cardImage})` } : undefined"
+          >
             <component :is="card.iconName" />
           </div>
         </div>
@@ -114,21 +139,16 @@ function handlersFor(layer: { props: Record<string, unknown> }) {
     class="fixed right-7 top-20 z-30 bg-white dark:bg-neutral-900 rounded-lg shadow-lg p-4 max-h-[calc(100vh-5rem)] overflow-y-auto overflow-x-hidden"
   >
     <h2 class="text-lg font-semibold mb-3 text-black dark:text-white">
-      Layer Controls
+      {{ controlsTitle }}
     </h2>
     <div v-for="layer in layers" :key="layer.id" class="mb-4 overflow-scroll">
       <div class="w-[340px] flex justify-between items-center cursor-pointer" @click="toggleController(layer.id)">
         <span class="capitalize text-gray-800 dark:text-gray-200">{{ layer.type }}</span>
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
+        <UIcon
+          name="i-heroicons-chevron-down"
           class="w-4 h-4 transition-transform duration-200 ease-in-out"
           :class="{ 'rotate-180': openControllers[layer.id] }"
-        >
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
-        </svg>
+        />
       </div>
       <Transition
         enter-active-class="transition-all duration-200 ease-in-out"

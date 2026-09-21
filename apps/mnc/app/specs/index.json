@@ -679,7 +679,8 @@
                             "type": "Image",
                             "props": {
                               "width": "full",
-                              "alt": ""
+                              "alt": "",
+                              "variant": "thumb"
                             },
                             "bind": {
                               "src": "$item.properties.photos.0"

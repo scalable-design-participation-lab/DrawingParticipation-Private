@@ -1,5 +1,5 @@
 import { z } from 'zod'
-import { declareHandler, registerCollection, registerContract } from '../../../base/app/contracts'
+import { declareHandler, registerCollection } from '../../../base/app/contracts'
 
 /**
  * Contracts for restart-ukraine's own components and handlers, so the pages
@@ -17,21 +17,6 @@ export const UserSchema = registerCollection('user', z.strictObject({
   residentSince: z.enum(['less_than_1_year', '1_5_years', '5_10_years', 'more_than_10_years'], { error: 'Оберіть коректний варіант' }),
   residentNearRiverSince: z.enum(['yes', 'no', 'unfamiliar'], { error: 'Оберіть коректний варіант' }),
 }))
-
-registerContract({
-  name: 'AnalysisPanel',
-  description: 'Analysis dashboard (metadata, layer cards) and layer controls. `modelValue` = dashboard open.',
-  props: z.strictObject({ modelValue: z.boolean().optional() }),
-  emits: ['update:modelValue'],
-  stateful: true,
-})
-
-registerContract({
-  name: 'AnalysisLayers',
-  description: 'The active analysis layers; goes in the BackgroundMap "layers" slot.',
-  props: z.strictObject({}),
-  stateful: true,
-})
 
 declareHandler('checkUser', 'Sign in anonymously; a returning participant lands in state.user and state.returning becomes true.')
 declareHandler('register', 'Validate the registration form (payload), sign in, save the participant into state.user; field errors go to state.formErrors.')

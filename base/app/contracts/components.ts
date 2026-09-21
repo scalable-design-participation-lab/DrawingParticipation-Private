@@ -549,6 +549,7 @@ registerContract({
     width: z.enum(['auto', 'full', 'half', 'third', 'two-thirds']).optional(),
     rounded: z.boolean().optional(),
     href: z.string().optional(),
+    variant: z.string().optional().describe('Ask for a derivative a build step wrote beside the original: "thumb" turns /photos/a.webp into /photos/a-thumb.webp. Same-origin paths only.'),
   }),
 })
 
@@ -556,4 +557,26 @@ registerContract({
   name: 'Outlet',
   description: 'Where the current page renders inside a shell spec (app.json `shell`). Exactly one per shell.',
   props: z.strictObject({}),
+})
+
+registerContract({
+  name: 'AnalysisPanel',
+  description: 'Map analysis dashboard: counted metadata tiles, a card per layer in the layer registry, and the controls accordion for whatever the reader turned on. `modelValue` = dashboard open; the heading copy is the only app-specific part.',
+  props: z.strictObject({
+    modelValue: z.boolean().optional(),
+    title: z.string().optional(),
+    subtitle: z.string().optional(),
+    text: z.string().optional(),
+    cardImage: z.string().optional().describe('Art behind each layer card, as a URL a served folder can resolve.'),
+    controlsTitle: z.string().optional(),
+  }),
+  emits: ['update:modelValue'],
+  stateful: true,
+})
+
+registerContract({
+  name: 'AnalysisLayers',
+  description: 'Draws the layers AnalysisPanel turned on. Goes in the BackgroundMap "layers" slot.',
+  props: z.strictObject({}),
+  stateful: true,
 })

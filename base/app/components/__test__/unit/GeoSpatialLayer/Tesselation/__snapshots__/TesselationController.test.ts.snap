@@ -2,8 +2,13 @@
 
 exports[`tesselationController.vue > renders correctly 1`] = `
 <ucard
-  class="fixed right-6 top-24 w-96 md:w-80 max-h-[calc(100vh-11rem)] z-40 shadow-xl dark:bg-black flex flex-col overflow-scroll"
+  class="w-80 z-40 shadow-xl dark:bg-black flex flex-col overflow-scroll"
 >
+  <div
+    class="text-lg font-semibold mb-4"
+  >
+     Tesselation Settings 
+  </div>
   <!-- Visible -->
   <div
     class="flex justify-between my-2"

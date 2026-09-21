@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import HeatMap from '@base/components/GeoSpatialLayer/HeatMap/HeatMap.vue'
-import { layerDefinitions } from '../stores/layerRegistry'
+import { layerDefinitions } from '../data/layerRegistry'
 import { useAnalysis } from '../composables/useAnalysis'
+import HeatMap from './GeoSpatialLayer/HeatMap/HeatMap.vue'
 
 /** The active analysis layers. Goes in the BackgroundMap "layers" slot. */
 const { layers, features, heatmapFeatures, layerSettings } = useAnalysis()

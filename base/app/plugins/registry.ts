@@ -27,6 +27,8 @@ import VoiceRecorder from '../components/VoiceRecorder.vue'
 import Dropdown from '../components/Dropdown.vue'
 import IconBar from '../components/IconBar.vue'
 import LoadingScreen from '../components/LoadingScreen.vue'
+import AnalysisPanel from '../components/AnalysisPanel.vue'
+import AnalysisLayers from '../components/AnalysisLayers.vue'
 import { registerComponent } from '../utils/registry'
 import { defineNuxtPlugin } from '#app'
 import { UButton, UCard, UDivider } from '#components'
@@ -57,6 +59,8 @@ export default defineNuxtPlugin(() => {
   registerComponent('FilterSidebar', GenericFilterSidebar)
   registerComponent('Toolbar', GenericToolbar)
   registerComponent('ToolTips', ToolTips)
+  registerComponent('AnalysisPanel', AnalysisPanel)
+  registerComponent('AnalysisLayers', AnalysisLayers)
   registerComponent('Stack', Stack)
   registerComponent('Grid', Grid)
   registerComponent('Panel', Panel)

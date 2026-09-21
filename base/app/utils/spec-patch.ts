@@ -40,6 +40,8 @@ export function applyPatches(spec: unknown, patches: SpecPatch[]): unknown {
         cursor.splice(last, 1)
       }
       else {
+        // A remove patch means the key is gone, not set to undefined.
+        // eslint-disable-next-line @typescript-eslint/no-dynamic-delete
         delete cursor[last]
       }
     }

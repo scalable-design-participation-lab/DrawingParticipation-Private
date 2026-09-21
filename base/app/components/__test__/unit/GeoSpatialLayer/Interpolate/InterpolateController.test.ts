@@ -1,6 +1,6 @@
 import InterpolateController from '@components/GeoSpatialLayer/Interpolate/InterpolateController.vue'
-import Nop from '@components/Nop.vue'
 import { type VueWrapper, mount } from '@vue/test-utils'
+import Nop from '../../../../../__test__/Nop.vue'
 
 describe('interpolateController.vue', () => {
   let wrapper: VueWrapper<any>

@@ -50,7 +50,7 @@ function onError(url: string) {
   }
 }
 
-const step = (by: number) => {
+function step(by: number) {
   current.value = (current.value + by + slides.value.length) % slides.value.length
 }
 </script>

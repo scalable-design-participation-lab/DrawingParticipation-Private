@@ -2,9 +2,9 @@ import { computed } from 'vue'
 import { storeToRefs } from 'pinia'
 import * as turf from '@turf/turf'
 import { toLonLat } from 'ol/proj'
-import { useAllFeatureStore } from '@base/stores/all-features'
-import type { HeatMapLayerSettings } from '@base/components/GeoSpatialLayer/HeatMap/HeatMap.vue'
-import { layerDefinitions } from '../stores/layerRegistry'
+import { useAllFeatureStore } from '../stores/all-features'
+import type { HeatMapLayerSettings } from '../components/GeoSpatialLayer/HeatMap/HeatMap.vue'
+import { layerDefinitions } from '../data/layerRegistry'
 import { useLayersStore } from '../stores/layers'
 import { useState } from '#app'
 
@@ -107,9 +107,7 @@ export function useAnalysis() {
     const start = new Date()
     start.setFullYear(end.getFullYear() - 1)
     filterTime.value = { start, end }
-    for (const key in layerSettings.value) {
-      delete layerSettings.value[key]
-    }
+    layerSettings.value = {}
   }
 
   /** Add or remove a layer type. Returns true when a layer was added. */
