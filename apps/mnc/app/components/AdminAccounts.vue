@@ -306,18 +306,20 @@ const date = (iso?: string) => (iso ? new Date(iso).toLocaleDateString() : '')
       </p>
     </template>
 
-    <AppModal v-if="confirmRevoke" :title="$t('admin.revoke')" max-width="max-w-sm" @close="confirmRevoke = null">
+    <Modal v-if="confirmRevoke" :title="$t('admin.revoke')" size="sm" closable @close="confirmRevoke = null">
       <p class="text-sm text-gray-700 dark:text-gray-200">
         {{ $t('admin.revokeConfirm', { email: confirmRevoke.email || confirmRevoke.uid }) }}
       </p>
-      <div class="mt-4 flex justify-end gap-2">
-        <UButton size="sm" color="gray" variant="ghost" @click="confirmRevoke = null">
-          {{ $t('mod.close') }}
-        </UButton>
-        <UButton size="sm" color="red" @click="revoke">
-          {{ $t('admin.revoke') }}
-        </UButton>
-      </div>
-    </AppModal>
+      <template #footer>
+        <div class="mt-4 flex justify-end gap-2">
+          <UButton size="sm" color="gray" variant="ghost" @click="confirmRevoke = null">
+            {{ $t('mod.close') }}
+          </UButton>
+          <UButton size="sm" color="red" @click="revoke">
+            {{ $t('admin.revoke') }}
+          </UButton>
+        </div>
+      </template>
+    </Modal>
   </div>
 </template>

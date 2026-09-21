@@ -17,6 +17,8 @@
     "Tabs",
     "FormFields",
     "PhotoDropZone",
+    "VoiceRecorder",
+    "Carousel",
     "Dropdown",
     "IconBar",
     "LoadingScreen",

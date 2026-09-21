@@ -406,7 +406,7 @@ function prettyCoord(coord: [number, number]): string {
               :ui="{ rounded: 'rounded-2xl' }"
               class="contribute-textarea"
             />
-            <ContributeVoiceRecorder v-model="files.voiceExample" />
+            <VoiceRecorder v-model="files.voiceExample" :record-label="$t('voice.record')" :stop-label="$t('voice.stop')" :remove-label="$t('fileUpload.removeFile')" :denied-label="$t('voice.micDenied')" />
             <ContributeFileUpload v-model="files.example" />
           </div>
 
@@ -422,7 +422,7 @@ function prettyCoord(coord: [number, number]): string {
               :ui="{ rounded: 'rounded-2xl' }"
               class="contribute-textarea"
             />
-            <ContributeVoiceRecorder v-model="files.voiceWhy" />
+            <VoiceRecorder v-model="files.voiceWhy" :record-label="$t('voice.record')" :stop-label="$t('voice.stop')" :remove-label="$t('fileUpload.removeFile')" :denied-label="$t('voice.micDenied')" />
             <ContributeFileUpload v-model="files.why" />
           </div>
 

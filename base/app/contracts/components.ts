@@ -338,6 +338,34 @@ registerContract({
 })
 
 registerContract({
+  name: 'VoiceRecorder',
+  description: 'Record a voice note in the browser. Recordings arrive in `modelValue` as File objects, the same way PhotoDropZone and FileDropZone hand over what was picked, so the same `saveTo` uploads them.',
+  props: z.strictObject({
+    modelValue: z.array(z.unknown()).optional(),
+    recordLabel: z.string().optional(),
+    stopLabel: z.string().optional(),
+    removeLabel: z.string().optional(),
+    deniedLabel: z.string().optional().describe('Shown when the reader refuses the microphone, or there is none.'),
+  }),
+  emits: ['update:modelValue'],
+})
+
+registerContract({
+  name: 'Carousel',
+  description: 'A strip of images with arrows, a counter and dots. A URL that fails to load is dropped, so the counter never promises a slide that is not there. Every label is a prop, so pass "$t." keys.',
+  props: z.strictObject({
+    images: z.array(z.string()).optional(),
+    caption: z.string().optional(),
+    alt: z.string().optional(),
+    height: z.enum(['sm', 'md', 'lg']).optional(),
+    emptyTitle: z.string().optional().describe('Shown in place of the strip when there are no images.'),
+    emptyText: z.string().optional(),
+    prevLabel: z.string().optional(),
+    nextLabel: z.string().optional(),
+  }),
+})
+
+registerContract({
   name: 'Dropdown',
   description: 'A one-of choice that costs one button of space: the trigger shows the current item, the list opens on press. Use `Tabs` where the options fit and this where they do not, e.g. a language switcher in a phone header.',
   props: z.strictObject({

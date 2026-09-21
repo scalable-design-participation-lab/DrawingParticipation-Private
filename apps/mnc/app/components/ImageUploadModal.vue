@@ -225,7 +225,7 @@ function closePopup() {
 
       <!-- Record a voice note right here. On a phone the file picker cannot
            record, so without this a voice comment means leaving the app. -->
-      <ContributeVoiceRecorder v-model="recordings" class="mb-3" />
+      <VoiceRecorder v-model="recordings" class="mb-3" :record-label="$t('voice.record')" :stop-label="$t('voice.stop')" :remove-label="$t('fileUpload.removeFile')" :denied-label="$t('voice.micDenied')" />
 
       <!-- Per-file upload status with real progress -->
       <div v-for="(item, index) in items" :key="`progress-${index}`" class="mb-2">
