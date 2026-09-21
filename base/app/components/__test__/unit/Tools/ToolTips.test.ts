@@ -57,10 +57,25 @@ describe('toolTips.vue', () => {
   })
 
   it('shows hover popup when feature is hovered', async () => {
-    await wrapper.vm.handleHoverSelect({ selected: [feature] })
+    // Hover reads the map through forEachFeatureAtPixel; it never selects.
+    vi.spyOn(mapInstance, 'forEachFeatureAtPixel').mockReturnValue(feature)
+    await wrapper.vm.handlePointerMove({ pixel: [10, 10], dragging: false })
 
     expect(wrapper.vm.hoverPopup.state.visible).toBe(true)
     expect(wrapper.vm.hoverPopup.state.feature).toStrictEqual(feature)
+  })
+
+  it('does not touch the style of the feature under the pointer', async () => {
+    // A category icon must survive being hovered: setting a style on the
+    // feature, then clearing it, used to leave a default circle for good.
+    vi.spyOn(mapInstance, 'forEachFeatureAtPixel').mockReturnValue(feature)
+    await wrapper.vm.handlePointerMove({ pixel: [10, 10], dragging: false })
+    expect(feature.getStyle()).toBeNull()
+
+    vi.spyOn(mapInstance, 'forEachFeatureAtPixel').mockReturnValue(undefined)
+    await wrapper.vm.handlePointerMove({ pixel: [999, 999], dragging: false })
+    expect(feature.getStyle()).toBeNull()
+    expect(wrapper.vm.hoverPopup.state.visible).toBe(false)
   })
 
   it('shows pinned popup when feature is clicked', async () => {
@@ -71,8 +86,9 @@ describe('toolTips.vue', () => {
   })
 
   it('hides hover popup when pinned popup is active', async () => {
+    vi.spyOn(mapInstance, 'forEachFeatureAtPixel').mockReturnValue(feature)
     await wrapper.vm.handleClick({ selected: [feature] })
-    await wrapper.vm.handleHoverSelect({ selected: [feature] })
+    await wrapper.vm.handlePointerMove({ pixel: [10, 10], dragging: false })
 
     expect(wrapper.vm.hoverPopup.state.visible).toBe(false)
   })

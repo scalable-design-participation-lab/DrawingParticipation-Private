@@ -125,10 +125,17 @@
               "slot": "overlays",
               "type": "ToolTips",
               "props": {
-                "filterKeys": [
-                  "titulo",
-                  "categoria",
-                  "coste"
+                "hideKeys": [
+                  "geometry",
+                  "id",
+                  "iconName",
+                  "createdAt",
+                  "timestamp",
+                  "position",
+                  "title",
+                  "comment",
+                  "fotos",
+                  "documento"
                 ]
               }
             },

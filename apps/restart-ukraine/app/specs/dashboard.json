@@ -300,7 +300,7 @@
           "slot": "overlays",
           "type": "ToolTips",
           "props": {
-            "filterKeys": [
+            "hideKeys": [
               "fillColor",
               "value"
             ]

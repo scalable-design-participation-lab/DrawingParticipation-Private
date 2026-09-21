@@ -321,9 +321,9 @@ registerContract({
 
 registerContract({
   name: 'ToolTips',
-  description: 'Hover/click tooltips for vector features on the map. Put it in the BackgroundMap "overlays" slot.',
+  description: 'Hover/click tooltips for vector features on the map. Put it in the BackgroundMap "overlays" slot. It shows every property a feature carries, so say which ones to leave out rather than which to show.',
   props: z.strictObject({
-    filterKeys: z.array(z.string()).optional(),
+    hideKeys: z.array(z.string()).optional().describe('Feature properties NOT to show, e.g. internal ids and render fields. Everything else is shown.'),
     clickTolerance: z.number().optional(),
     dataProjection: z.string().optional(),
     featuresProjection: z.string().optional(),

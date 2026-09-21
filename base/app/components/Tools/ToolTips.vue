@@ -1,8 +1,7 @@
 <script setup lang="ts">
-import { computed, inject, onUnmounted, reactive, ref, watch } from 'vue'
+import { computed, inject, nextTick, onUnmounted, reactive, ref, watch } from 'vue'
 import type { Ref } from 'vue'
-import { click, pointerMove } from 'ol/events/condition'
-import { Circle as CircleStyle, Fill, Stroke, Style } from 'ol/style'
+import { click } from 'ol/events/condition'
 import type { Feature, Map } from 'ol'
 import * as turf from '@turf/turf'
 
@@ -30,7 +29,7 @@ interface ToolTipsProps {
   clickTolerance?: number
   dataProjection?: string
   featuresProjection?: string
-  filterKeys?: string[]
+  hideKeys?: string[]
   itemsPerPage?: number
 }
 
@@ -45,7 +44,7 @@ const props = withDefaults(defineProps<ToolTipsProps>(), {
       width: 2,
     },
   }),
-  filterKeys: () => [],
+  hideKeys: () => [],
   clickTolerance: 10,
   dataProjection: 'EPSG:4326',
   featuresProjection: 'EPSG:3857',
@@ -82,7 +81,7 @@ function usePopupState() {
 
     // Extract properties
     const properties = feature.getProperties()
-    const excludedKeys = ['geometry', ...props.filterKeys]
+    const excludedKeys = ['geometry', ...props.hideKeys]
     state.content = Object.fromEntries(
       Object.entries(properties).filter(([key]) => !excludedKeys.includes(key)),
     )
@@ -108,8 +107,30 @@ const activePopup = computed(() => {
 })
 
 const isPopupVisible = computed(() => {
-  return (pinnedPopup.state.visible || hoverPopup.state.visible) && (hoverPopup.state.content.length !== 0 || pinnedPopup.state.content.length !== 0)
+  const popup = pinnedPopup.state.visible ? pinnedPopup.state : hoverPopup.state
+  return popup.visible && Object.keys(popup.content).length > 0
 })
+/**
+ * Sits above the feature, and below it when there is no room above: a popup on
+ * a feature near the top of the map used to open off-screen, behind the header.
+ * The height is measured rather than assumed, because it depends on how many
+ * properties the feature carries.
+ */
+const popupEl = ref<HTMLElement | null>(null)
+const flipBelow = ref(false)
+const HEADER_BOTTOM = 88
+
+watch(() => [activePopup.value.position.y, activePopup.value.content] as const, async () => {
+  flipBelow.value = false
+  await nextTick()
+  const height = popupEl.value?.offsetHeight ?? 0
+  flipBelow.value = activePopup.value.position.y - height - 16 < HEADER_BOTTOM
+})
+
+const popupTransform = computed(() =>
+  (flipBelow.value ? 'translate(-50%, 1rem)' : 'translate(-50%, -120%)'),
+)
+
 // State for pagination
 const itemsPerPage = props.itemsPerPage
 
@@ -127,72 +148,6 @@ const total = computed(() => {
 
 // Store map instance and setup features
 const mapInstance = ref<Map | null>(null)
-function createHighlightStyle(feature: Feature) {
-  const geomType = feature.getGeometry()?.getType()
-  const styles = []
-
-  if (geomType === 'Polygon') {
-    styles.push(
-      new Style({
-        stroke: new Stroke({
-          color: 'yellow',
-          width: 3,
-        }),
-        fill: new Fill({
-          color: 'rgba(255, 255, 0, 0.3)',
-        }),
-      }),
-    )
-  }
-  if (geomType === 'MultiPolygon') {
-    styles.push(
-      new Style({
-        stroke: new Stroke({
-          color: 'yellow',
-          width: 3,
-        }),
-        fill: new Fill({
-          color: 'rgba(255, 255, 0, 0.3)',
-        }),
-      }),
-    )
-  }
-  if (geomType === 'LineString') {
-    styles.push(
-      new Style({
-        stroke: new Stroke({
-          color: 'yellow',
-          width: 3,
-        }),
-      }),
-    )
-  }
-
-  if (geomType === 'Point') {
-    styles.push(
-      new Style({
-        image: new CircleStyle({
-          radius: 8,
-          fill: new Fill({ color: 'rgba(255, 0, 0, 0.8)' }),
-          stroke: new Stroke({ color: 'yellow', width: 3 }),
-        }),
-      }),
-    )
-  }
-  if (geomType === 'MultiLineString') {
-    styles.push(
-      new Style({
-        stroke: new Stroke({
-          color: 'yellow',
-          width: 3,
-        }),
-      }),
-    )
-  }
-
-  return styles
-}
-
 // Helper functions
 const isInteractive = (feature: Feature) => Boolean(feature)
 
@@ -274,29 +229,32 @@ function handleClick(event: { selected: Feature[] }) {
   }
 }
 
-function handleHoverSelect(event: { selected: Feature[] }) {
-  // Don't process hover when pinned popup is visible
-  if (pinnedPopup.state.visible)
+/**
+ * Hovering reads the map, it does not change it. A select interaction would
+ * redraw whatever is under the pointer in its own style, which means a
+ * category icon turns into a plain circle while you read its tooltip.
+ */
+function handlePointerMove(event: { pixel: number[], dragging: boolean }) {
+  if (pinnedPopup.state.visible || event.dragging || !mapInstance.value) {
     return
-
-  const feature = event.selected.length > 0 ? event.selected[0] : null
-
-  if (feature) {
-    // Apply highlight styling
-    feature.setStyle(createHighlightStyle(feature))
-
-    const coordinates = getFeatureCentroid(feature)
-    if (coordinates) {
-      hoverPopup.update(feature, coordinates)
-      updatePopupPosition(coordinates)
-    }
   }
-  else {
-    // Reset hover state
-    if (hoverPopup.state.feature) {
-      hoverPopup.state.feature.setStyle(null)
-    }
+  const feature = mapInstance.value.forEachFeatureAtPixel(
+    event.pixel,
+    f => f as Feature,
+    { hitTolerance: props.clickTolerance },
+  ) ?? null
+
+  if (!feature) {
     hoverPopup.reset()
+    return
+  }
+  if (feature === hoverPopup.state.feature) {
+    return
+  }
+  const coordinates = getFeatureCentroid(feature)
+  if (coordinates) {
+    hoverPopup.update(feature, coordinates)
+    updatePopupPosition(coordinates)
   }
 }
 
@@ -318,38 +276,20 @@ watch(() => props.mapInstance ?? injectedMap?.value ?? null, (newInstance) => {
 
     // Add postrender event to update popup positions
     mapInstance.value.on('postrender', postRenderHandler)
+    mapInstance.value.on('pointermove', handlePointerMove)
   }
 }, { immediate: true })
 
 onUnmounted(() => {
   if (mapInstance.value) {
     mapInstance.value.un('postrender', postRenderHandler)
+    mapInstance.value.un('pointermove', handlePointerMove)
   }
 })
 </script>
 
 <template>
-  <!-- Hover Interaction -->
-  <ol-interaction-select
-    v-if="!pinnedPopup.state.visible"
-    :condition="pointerMove"
-    :filter="isInteractive"
-    @select="handleHoverSelect"
-  >
-    <ol-style>
-      <ol-style-fill color="rgba(0, 0, 0, 0)" />
-      <ol-style-stroke color="green" :width="10" />
-      <ol-style-circle :radius="pointStyle.radius">
-        <ol-style-fill :color="pointStyle.fill" />
-        <ol-style-stroke
-          :color="pointStyle.stroke.color"
-          :width="pointStyle.stroke.width"
-        />
-      </ol-style-circle>
-    </ol-style>
-  </ol-interaction-select>
-
-  <!-- Click Interaction -->
+  <!-- Click Interaction (hover is a pointermove listener: it must not redraw) -->
   <ol-interaction-select
     :condition="click"
     :filter="isInteractive"
@@ -372,15 +312,18 @@ onUnmounted(() => {
   <Teleport to="#map-overlays">
     <div
       v-if="isPopupVisible"
-      class="absolute bg-white p-3 rounded-xl border border-black dark:bg-black dark:text-white dark:border-white"
+      ref="popupEl"
+      class="absolute max-w-xs bg-white p-3 rounded-xl border border-black dark:bg-black dark:text-white dark:border-white"
       :style="{
         left: `${activePopup.position.x}px`,
         top: `${activePopup.position.y}px`,
-        transform: 'translate(-50%, -120%)',
+        transform: popupTransform,
         pointerEvents: 'auto',
       }"
     >
-      <div class="underline">
+      <!-- The geometry type is for whoever is debugging a layer, so it follows
+           the same list: name "geometry" in hideKeys and the line goes away. -->
+      <div v-if="!hideKeys.includes('geometry')" class="underline">
         <strong class="capitalize">Geometry: </strong> {{ activePopup.feature?.getGeometry()?.getType() }}
       </div>
       <!-- Display paginated keys -->

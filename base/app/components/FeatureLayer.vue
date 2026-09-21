@@ -103,6 +103,16 @@ function anchor(f: MapFeature): number[] {
 
 const payload = (f: MapFeature) => ({ ...f, position: anchor(f), title: titleFor(f) })
 
+/**
+ * What a ToolTips popup can read off the feature. The geometry keys are left
+ * out (OpenLayers holds the geometry itself); everything else is the row, so a
+ * tooltip can show it without the layer knowing which fields matter.
+ */
+function properties(f: MapFeature) {
+  const { coordinates, type, ...rest } = f
+  return rest
+}
+
 const drawColor = computed(() => props.draw?.color ?? (props.draw?.type === 'LineString' ? 'red' : 'black'))
 
 function onDrawEnd(event: { feature: { getGeometry: () => { getType: () => string, getCoordinates: () => unknown } } }) {
@@ -144,7 +154,7 @@ function remove(f: MapFeature) {
         </ol-style>
       </ol-interaction-draw>
 
-      <ol-feature v-for="f in points" :key="f.id" :properties="{ id: f.id }">
+      <ol-feature v-for="f in points" :key="f.id" :properties="properties(f)">
         <ol-geom-point :coordinates="f.coordinates" />
         <ol-style>
           <ol-style-icon v-if="iconFor(f)" :src="iconFor(f)" :scale="1" :anchor="[0.5, 0.5]" />
@@ -153,14 +163,14 @@ function remove(f: MapFeature) {
           </ol-style-circle>
         </ol-style>
       </ol-feature>
-      <ol-feature v-for="f in polygons" :key="f.id" :properties="{ id: f.id }">
+      <ol-feature v-for="f in polygons" :key="f.id" :properties="properties(f)">
         <ol-geom-polygon :coordinates="f.coordinates" />
         <ol-style>
           <ol-style-stroke color="black" :width="2" :line-dash="[10, 10]" />
           <ol-style-fill :color="[0, 0, 0, 0]" />
         </ol-style>
       </ol-feature>
-      <ol-feature v-for="f in lines" :key="f.id" :properties="{ id: f.id }">
+      <ol-feature v-for="f in lines" :key="f.id" :properties="properties(f)">
         <ol-geom-line-string :coordinates="f.coordinates" />
         <ol-style>
           <ol-style-stroke color="red" :width="2" :line-dash="[6, 6]" />
