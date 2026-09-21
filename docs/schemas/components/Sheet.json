@@ -1,0 +1,70 @@
+{
+  "name": "Sheet",
+  "description": "A phone bottom sheet in two states: a compact card peeking over the bottom bar, and the same sheet pulled up. The grip and the peek card switch between them, the x closes it. The `accent` tone paints the full sheet in the app own accent (theme.accent).",
+  "stateful": false,
+  "emits": [
+    "update:modelValue",
+    "update:state",
+    "close"
+  ],
+  "slots": [
+    "default",
+    "peek"
+  ],
+  "props": {
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "type": "object",
+    "properties": {
+      "modelValue": {
+        "description": "Whether the sheet is there at all; bind it to whatever is selected.",
+        "type": "boolean"
+      },
+      "state": {
+        "type": "string",
+        "enum": [
+          "peek",
+          "full"
+        ]
+      },
+      "tone": {
+        "type": "string",
+        "enum": [
+          "surface",
+          "accent"
+        ]
+      },
+      "closeLabel": {
+        "type": "string"
+      },
+      "expandLabel": {
+        "description": "Button under the peek content; omit for no button.",
+        "type": "string"
+      },
+      "peekHeight": {
+        "type": "string",
+        "enum": [
+          "35dvh",
+          "45dvh",
+          "60dvh"
+        ]
+      },
+      "fullHeight": {
+        "type": "string",
+        "enum": [
+          "60dvh",
+          "75dvh",
+          "85dvh"
+        ]
+      },
+      "offset": {
+        "description": "bar leaves room for a bottom bar underneath.",
+        "type": "string",
+        "enum": [
+          "none",
+          "bar"
+        ]
+      }
+    },
+    "additionalProperties": false
+  }
+}

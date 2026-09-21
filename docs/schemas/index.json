@@ -32,6 +32,8 @@
     "Panel",
     "Text",
     "Image",
+    "Sheet",
+    "Audio",
     "Outlet",
     "AnalysisPanel",
     "AnalysisLayers",

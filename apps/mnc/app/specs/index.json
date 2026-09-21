@@ -18,7 +18,7 @@
     "listOpen": false,
     "onboarding": true,
     "mobileView": "map",
-    "cardState": "expanded",
+    "cardState": "peek",
     "contribute": false,
     "picking": false,
     "pin": null,
@@ -136,7 +136,7 @@
                       },
                       {
                         "set": "cardState",
-                        "value": "expanded"
+                        "value": "peek"
                       },
                       {
                         "call": "loadContributions",
@@ -1012,7 +1012,7 @@
                                 },
                                 {
                                   "set": "cardState",
-                                  "value": "expanded"
+                                  "value": "peek"
                                 },
                                 {
                                   "call": "loadContributions",

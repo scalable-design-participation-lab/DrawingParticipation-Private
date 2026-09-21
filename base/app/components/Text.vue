@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { computed } from 'vue'
+import { useSpecLocale } from '../utils/i18n'
 
 /**
  * Typography as data: element, size, weight, tone, alignment. `text` may
@@ -15,8 +16,12 @@ const props = withDefaults(defineProps<{
   text?: string | number
   /** Render an ISO date / a number in the reader's locale. */
   format?: 'date' | 'datetime' | 'number'
-  /** value -> label, for stored codes ("bici" -> "Bicicleta"); unknown values show as-is. */
-  labels?: Record<string, string>
+  /**
+   * value -> label, for stored codes ("bici" -> "Bicicleta"); unknown values
+   * show as-is. Nest it by language ({ pt: { bici: "Bicicleta" } }) when the
+   * label differs per locale and the stored code does not.
+   */
+  labels?: Record<string, string | Record<string, string>>
   /** Shown when `text` is empty, e.g. a row's untranslated original. */
   fallback?: string | number
   /** Wrapped around the value once it is formatted, e.g. a unit or a currency. */
@@ -48,11 +53,20 @@ const DEFAULT_WEIGHT = { h1: 'normal', h2: 'semibold', h3: 'semibold', p: 'norma
 
 const wrap = (value: string) => (value === '' ? '' : `${props.prefix}${value}${props.suffix}`)
 
+const locale = useSpecLocale()
+// A table nested under the current language wins; anything else is flat, and
+// a language with no table of its own falls through to the stored code.
+const table = computed(() => {
+  const nested = props.labels?.[locale.value]
+  return (typeof nested === 'object' ? nested : props.labels) as Record<string, string> | undefined
+})
+
 const content = computed(() => {
   const given = props.text ?? ''
   const raw = given === '' || given === null ? props.fallback ?? '' : given
-  if (props.labels && String(raw) in props.labels) {
-    return wrap(props.labels[String(raw)])
+  const labelled = table.value?.[String(raw)]
+  if (typeof labelled === 'string') {
+    return wrap(labelled)
   }
   if (raw === '') {
     return ''

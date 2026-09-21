@@ -19,8 +19,8 @@ registerContract({
 
 registerContract({
   name: 'MobileInfoPopup',
-  description: 'Mobile bottom sheet for one entry (compact or full). Contributions come from the page; `contribute` / `approve` / `delete` go back to it.',
-  props: z.strictObject({ entry: Row, state: z.enum(['expanded', 'full']).optional(), contributions: Rows.optional(), isAdmin: z.boolean().optional() }),
+  description: 'How mnc reads one entry inside base Sheet (peek or full). Contributions come from the page; `contribute` / `approve` / `delete` go back to it.',
+  props: z.strictObject({ entry: Row, state: z.enum(['peek', 'full']).optional(), contributions: Rows.optional(), isAdmin: z.boolean().optional() }),
   emits: ['close', 'update:state', 'contribute', 'approve', 'delete'],
 })
 

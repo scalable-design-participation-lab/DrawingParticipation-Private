@@ -75,13 +75,26 @@
         ]
       },
       "labels": {
-        "description": "value -> label for stored codes; unknown values show as-is",
+        "description": "value -> label for stored codes; unknown values show as-is. Nest it by language ({ pt: { bici: \"Bicicleta\" } }) when the label differs per locale and the stored code does not.",
         "type": "object",
         "propertyNames": {
           "type": "string"
         },
         "additionalProperties": {
-          "type": "string"
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "object",
+              "propertyNames": {
+                "type": "string"
+              },
+              "additionalProperties": {
+                "type": "string"
+              }
+            }
+          ]
         }
       },
       "fallback": {

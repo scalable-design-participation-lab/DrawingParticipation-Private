@@ -1,6 +1,6 @@
 {
   "name": "MobileInfoPopup",
-  "description": "Mobile bottom sheet for one entry (compact or full). Contributions come from the page; `contribute` / `approve` / `delete` go back to it.",
+  "description": "How mnc reads one entry inside base Sheet (peek or full). Contributions come from the page; `contribute` / `approve` / `delete` go back to it.",
   "stateful": false,
   "emits": [
     "close",
@@ -24,7 +24,7 @@
       "state": {
         "type": "string",
         "enum": [
-          "expanded",
+          "peek",
           "full"
         ]
       },

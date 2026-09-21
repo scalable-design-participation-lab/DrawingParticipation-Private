@@ -1,3 +1,4 @@
+import { computed, getCurrentInstance, inject } from 'vue'
 import type { InjectionKey, Ref } from 'vue'
 
 /**
@@ -24,4 +25,19 @@ export function lookup(messages: Messages | undefined, key: string): string | un
 /** Current locale first, then the default locale, then the key itself. */
 export function createTranslator(all: Record<string, Messages>, locale: Ref<string>, fallback: string) {
   return (key: string) => lookup(all[locale.value], key) ?? lookup(all[fallback], key) ?? key
+}
+
+/**
+ * The language the page is in, from base's own i18n or from vue-i18n when the
+ * app installed it. Components that hold per-language data (a value -> label
+ * table, say) read it here rather than each finding their own way to it.
+ */
+export function useSpecLocale() {
+  const injected = inject(SPEC_I18N, null)
+  const globals = getCurrentInstance()?.appContext.config.globalProperties as { $i18n?: { locale?: string | { value?: string } } } | undefined
+  return computed(() => {
+    const vueI18n = globals?.$i18n?.locale
+    const fromVueI18n = typeof vueI18n === 'object' ? vueI18n?.value : vueI18n
+    return String(injected?.locale.value ?? fromVueI18n ?? '')
+  })
 }

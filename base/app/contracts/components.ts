@@ -531,7 +531,7 @@ registerContract({
     align: z.enum(['left', 'center', 'right']).optional(),
     text: z.union([z.string(), z.number()]).optional(),
     format: z.enum(['date', 'datetime', 'number']).optional().describe('Render an ISO date / a number in the reader\'s locale'),
-    labels: z.record(z.string(), z.string()).optional().describe('value -> label for stored codes; unknown values show as-is'),
+    labels: z.record(z.string(), z.union([z.string(), z.record(z.string(), z.string())])).optional().describe('value -> label for stored codes; unknown values show as-is. Nest it by language ({ pt: { bici: "Bicicleta" } }) when the label differs per locale and the stored code does not.'),
     fallback: z.union([z.string(), z.number()]).optional().describe('Shown when the bound text is empty, e.g. a row untranslated original.'),
     prefix: z.string().optional().describe('Put in front of the formatted value, e.g. a currency symbol.'),
     suffix: z.string().optional().describe('Put after it, e.g. a unit. Pass a "$t." key to translate it.'),
@@ -550,6 +550,33 @@ registerContract({
     rounded: z.boolean().optional(),
     href: z.string().optional(),
     variant: z.string().optional().describe('Ask for a derivative a build step wrote beside the original: "thumb" turns /photos/a.webp into /photos/a-thumb.webp. Same-origin paths only.'),
+  }),
+})
+
+registerContract({
+  name: 'Sheet',
+  description: 'A phone bottom sheet in two states: a compact card peeking over the bottom bar, and the same sheet pulled up. The grip and the peek card switch between them, the x closes it. The `accent` tone paints the full sheet in the app own accent (theme.accent).',
+  props: z.strictObject({
+    modelValue: z.boolean().optional().describe('Whether the sheet is there at all; bind it to whatever is selected.'),
+    state: z.enum(['peek', 'full']).optional(),
+    tone: z.enum(['surface', 'accent']).optional(),
+    closeLabel: z.string().optional(),
+    expandLabel: z.string().optional().describe('Button under the peek content; omit for no button.'),
+    peekHeight: z.enum(['35dvh', '45dvh', '60dvh']).optional(),
+    fullHeight: z.enum(['60dvh', '75dvh', '85dvh']).optional(),
+    offset: z.enum(['none', 'bar']).optional().describe('bar leaves room for a bottom bar underneath.'),
+  }),
+  emits: ['update:modelValue', 'update:state', 'close'],
+  slots: ['default', 'peek'],
+})
+
+registerContract({
+  name: 'Audio',
+  description: 'Plays a recording, or a list of them: the read side of VoiceRecorder. Nothing renders when there is nothing to play.',
+  props: z.strictObject({
+    src: z.union([z.string(), z.array(z.string())]).optional().describe('One URL or several.'),
+    label: z.string().optional().describe('Heading above the players; pass a "$t." key to translate it.'),
+    tone: z.enum(['default', 'inverse']).optional().describe('inverse for a coloured panel.'),
   }),
 })
 

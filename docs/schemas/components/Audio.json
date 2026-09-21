@@ -1,0 +1,40 @@
+{
+  "name": "Audio",
+  "description": "Plays a recording, or a list of them: the read side of VoiceRecorder. Nothing renders when there is nothing to play.",
+  "stateful": false,
+  "emits": [],
+  "slots": [],
+  "props": {
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "type": "object",
+    "properties": {
+      "src": {
+        "description": "One URL or several.",
+        "anyOf": [
+          {
+            "type": "string"
+          },
+          {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        ]
+      },
+      "label": {
+        "description": "Heading above the players; pass a \"$t.\" key to translate it.",
+        "type": "string"
+      },
+      "tone": {
+        "description": "inverse for a coloured panel.",
+        "type": "string",
+        "enum": [
+          "default",
+          "inverse"
+        ]
+      }
+    },
+    "additionalProperties": false
+  }
+}
