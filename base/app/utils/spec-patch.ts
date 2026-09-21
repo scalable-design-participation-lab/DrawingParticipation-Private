@@ -41,8 +41,9 @@ export function applyPatches(spec: unknown, patches: SpecPatch[]): unknown {
       }
       else {
         // A remove patch means the key is gone, not set to undefined.
-        // eslint-disable-next-line @typescript-eslint/no-dynamic-delete
-        delete cursor[last]
+        // Reflect rather than `delete`, which the lint rules forbid on a
+        // computed key (and the two configs spell that rule differently).
+        Reflect.deleteProperty(cursor, last)
       }
     }
     else {

@@ -177,9 +177,35 @@ describe('verifySpec', () => {
   })
 
   it('lets host pages declare extra data names and handlers', () => {
-    const spec = { children: [{ type: 'MarkerOverlay', bind: { items: '$data.fromPage' }, on: { click: { call: 'fromPage' } } }] }
+    const spec = { children: [{ type: 'MarkerOverlay', bind: { items: '$data.fromPage' }, on: { click: { call: 'fromPage', payload: null } } }] }
     expect(verifySpec(spec).errors.map(e => e.rule)).toEqual(['bind.unknown-data', 'action.unknown-handler'])
     expect(verifySpec(spec, { extraData: ['fromPage'], handlers: ['fromPage'] }).pass).toBe(true)
+  })
+
+  it('refuses to put a DOM event where a value belongs', () => {
+    // A click on an element (or on a component that does not declare `click`)
+    // hands the action a MouseEvent, so state would hold an Event and a
+    // handler would be called with one. Both are silent at runtime.
+    const spec = {
+      state: { picked: null },
+      children: [{
+        type: 'List',
+        bind: { items: '$data.rows' },
+        item: {
+          type: 'Stack',
+          on: { click: [{ set: 'picked' }, { call: 'download' }] },
+        },
+      }],
+      dataSources: { rows: { kind: 'static', items: [] } },
+    }
+    expect(verifySpec(spec).errors.map(e => `${e.rule}@${e.path}`)).toEqual([
+      'action.dom-event-payload@children[0].item.on.click[0].set',
+      'action.dom-event-payload@children[0].item.on.click[1].call',
+    ])
+    // Saying what it should carry is the fix; a component's own emit is fine.
+    const fixed = structuredClone(spec)
+    fixed.children[0].item.on.click = [{ set: 'picked', value: '$item' }, { call: 'download', payload: '$item.id' }]
+    expect(verifySpec(fixed)).toEqual({ pass: true, errors: [] })
   })
 })
 

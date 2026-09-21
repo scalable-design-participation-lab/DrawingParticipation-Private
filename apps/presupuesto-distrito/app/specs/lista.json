@@ -500,6 +500,7 @@
                               },
                               {
                                 "call": "refreshItem",
+                                "payload": null,
                                 "args": {
                                   "from": "propuestas",
                                   "into": "abierta"

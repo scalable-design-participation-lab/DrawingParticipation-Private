@@ -185,9 +185,19 @@ export function verifySpec(spec: unknown, options: VerifySpecOptions = {}): Veri
     }
   }
 
-  const checkActions = (actions: ActionList, at: string, inItem: boolean) => {
+  /**
+   * `native` means the listener sits on a DOM element rather than on a
+   * component's emit, so the payload an action would take is a DOM Event.
+   */
+  const checkActions = (actions: ActionList, at: string, inItem: boolean, native = false) => {
     for (const [i, action] of (Array.isArray(actions) ? actions : [actions]).entries()) {
       const p = Array.isArray(actions) ? `${at}[${i}]` : at
+      if (native && 'set' in action && !('value' in action)) {
+        errors.push({ path: `${p}.set`, rule: 'action.dom-event-payload', message: `a DOM event carries an Event object, not a value: give this a \`value\` (inside an item template, usually "$item")` })
+      }
+      if (native && 'call' in action && !('payload' in action)) {
+        errors.push({ path: `${p}.call`, rule: 'action.dom-event-payload', message: `a DOM event carries an Event object, not a value: give "${action.call}" an explicit \`payload\` (inside an item template, usually "$item")` })
+      }
       const statePath = 'set' in action ? action.set : 'toggle' in action ? action.toggle : null
       if (statePath !== null) {
         const first = statePath.split('.')[0]
@@ -341,7 +351,11 @@ export function verifySpec(spec: unknown, options: VerifySpecOptions = {}): Veri
       checkExpr(node.text, `${path}.text`, inItem)
     }
     for (const [event, actions] of Object.entries(node.on ?? {})) {
-      checkActions(actions, `${path}.on.${event}`, inItem)
+      // Vue only calls it an emit when the component declares it; everything
+      // else falls through to the root element as a plain DOM listener. A
+      // `click` is a DOM event either way -- Button lists it so a spec knows
+      // it may listen, but what arrives is still the MouseEvent.
+      checkActions(actions, `${path}.on.${event}`, inItem, event === 'click' || !contract?.emits?.includes(event))
     }
 
     for (const [i, child] of (node.children ?? []).entries()) {

@@ -211,6 +211,25 @@ threw, cleared when it next succeeds), writing rows (`call: "saveTo"` /
 `"deleteFrom"` with the collection name as `args`, see the manifest below).
 Animations, drag, map gestures stay inside components (an enumerated prop at most).
 
+**`value` / `payload` / `args`, and why a click needs one.** An action with no
+`value` (for `set`) or no `payload` (for `call`) takes whatever the event
+carried. That is right for a component's own emit -- `update:modelValue` carries
+the new value -- and wrong for anything that lands on a DOM element, where the
+event is a MouseEvent. So a row click says what it means:
+
+```json
+{ "type": "Stack", "on": { "click": [
+  { "set": "selected", "value": "$item" },
+  { "call": "loadContributions", "payload": "$item.properties.string_id" }
+] } }
+```
+
+`args` is the other half: `payload` is *what was clicked*, `args` is *how the
+handler should behave* -- a state key, a collection name, a `{ from, into }`
+pair. A handler that only reads `args` still says `"payload": null`, so that
+it takes nothing from the event is written down rather than assumed. The
+verifier refuses the implicit form (`action.dom-event-payload`).
+
 ## Runtime safety
 
 A generated page must degrade, never disappear:
@@ -361,7 +380,11 @@ Three levels, cheapest first. All of them return the same shape:
    same state, i.e. an input that never saves), `link.unknown-route`
    (`navigate`, `to`, `href` pointing at a path the manifest does not route;
    needs `routes`, which `verify --app` passes), `state.unused` (state that
-   nothing reads or writes).
+   nothing reads or writes), `action.dom-event-payload` (a `set` with no
+   `value`, or a `call` with no `payload`, on a click or any other listener
+   that lands on a DOM element: what arrives is a MouseEvent, so state would
+   hold an Event and a handler would be called with one -- both silent at
+   runtime, see **Interaction**).
 2. **Render** (`verifyRender`, seconds, in vitest): mounts the spec headlessly and
    collects every Vue warning/error (`render.warn`, `render.error`) plus any
    error-boundary alert box left in the DOM.
@@ -377,8 +400,10 @@ Three levels, cheapest first. All of them return the same shape:
    ```
    Same result shape and exit code as the other levels.
 
-Each app has a vitest file under `app/specs/__test__/` that runs the strict
-static verifier over all of its specs.
+Each app has one vitest file under `app/specs/__test__/` that calls `verifyApp`
+on `app.json`. That is the entry point, not `verifySpec` per file: only
+`verifyApp` registers the app's own `styles`, so a per-spec test would reject
+every preset the manifest defines.
 
 ## App manifest: the whole app as data
 

@@ -1,46 +1,47 @@
 # Component inventory
 
-Status of every base component against the three decoupling rules
-(no direct store access, no direct `runtimeConfig`, data in via props / actions out via emits).
-"Contract" means the component has a zod contract in `base/app/contracts/components.ts`
-and is registered for JSON specs in `base/app/plugins/registry.ts`.
+**What exists is in [`schemas/index.json`](schemas/index.json), and one file per
+component under [`schemas/components/`](schemas/components).** Those are written
+by `yarn workspace @mono/base schemas` straight from the zod contracts, so they
+cannot drift; a contract that goes away takes its schema with it. Read them, not
+a table someone forgot to update.
 
-| Registry name                          | File                                                        | Status                 | Hidden dependencies (before → after)                                                                              | Contract               |
-| -------------------------------------- | ----------------------------------------------------------- | ---------------------- | ----------------------------------------------------------------------------------------------------------------- | ---------------------- |
-| `BackgroundMap`                        | `GeneralizedBackgroundMap.vue`                              | pure props             | `useMapStore().mapType` → `mapType` prop; `runtimeConfig.mapboxToken` → `mapboxToken` prop (config fallback kept) | yes                    |
-| `Header`                               | `GeneralizedHeader.vue`                                     | reads app.json         | rendered the app-local `MenuModal` → `#menu` slot + `menu` event; logo / accent / layer are base's, from `brand` + `theme.accent` | yes                    |
-| `Footer`                               | `GeneralizedFooter.vue`                                     | pure props             | rendered the app-local `SupportModal` → `support` event + slot                                                    | yes                    |
-| `Modal`                                | `Modal.vue` (new)                                           | pure props             | the one modal; replaced six restart-ukraine dialogs and the chapultepec welcome modal                              | yes                    |
-| `FeatureLayer`                         | `FeatureLayer.vue` (new)                                    | pure props             | props-in / emits-out replacement for `DrawingLayer` + its three sub-layers and four stores                         | yes                    |
-| `StepCard`                             | `StepCard.vue` (new)                                        | pure props             | generalized restart-ukraine `SubWindow`; steps, buttons and icon grids are data                                    | yes                    |
-| `Accordion`                            | `Accordion.vue` (new)                                       | pure props             | Nuxt UI accordion with slot-per-item                                                                              | yes                    |
-| `List`                                 | `List.vue` (new)                                            | pure props             | repeats the `item` template (stack / grid) with filter / search / sort / limit: the spec's loop                   | yes                    |
-| `Tally`                                | `Tally.vue` (new)                                           | pure props             | bars per group: count / sum / avg — the spec's aggregation                                                        | yes                    |
-| `Tabs`                                 | `Tabs.vue` (new)                                            | pure props             | one-of pills; pairs with `List.filterValue`                                                                       | yes                    |
-| `Icon`                                 | `SpecIcon.vue` (new)                                        | pure props             | enumerated size / tone, like `Text` (the file is not `Icon.vue`: Nuxt's global `<Icon>` would recurse)             | yes                    |
-| `MarkerOverlay`                        | `MarkerOverlay.vue` (new)                                   | pure props             | —                                                                                                                 | yes                    |
-| `FileDropZone`                         | `FileDropZone.vue` (new)                                    | pure props (headless)  | —                                                    | yes                    |
-| `MapTypeToggle`                        | `MapTypeToggle.vue` (new)                                   | pure props             | — (replaces the computed-icon header item in restart-ukraine pages)                                               | yes                    |
-| `FormFields`                           | `FormFields.vue` (new)                                      | pure props             | — (box / underline; stacked / inline; row / column)                                                               | yes                    |
-| `PhotoDropZone`                        | `PhotoDropZone.vue` (new)                                   | pure props             | —                                                                                                                 | yes                    |
-| `ToolTips`                             | `Tools/ToolTips.vue`                                        | pure props             | needed a template ref to the map → injects `olMap` from `BackgroundMap`                                           | yes                    |
-| `Button` / `Divider` / `Card` / `Icon` | Nuxt UI                                                     | pure props (loose)     | —                                                                                                                 | yes                    |
-| `Stack` / `Grid` / `Panel` / `Text` / `Image` | `Stack.vue` ... (new)                                | pure props             | layout primitives with enumerated props (no raw classes)                                                          | yes                    |
-| `Outlet`                               | `Outlet.vue` (new)                                          | pure props             | placeholder for the routed page inside the shell spec                                                             | yes                    |
-| —                                      | `SpecErrorBoundary.vue` (new)                               | internal               | wraps every spec node; not a spec component                                                                       | no                     |
-| `FilterSidebar`                        | `FilterSidebar/GenericFilterSidebar.vue`                    | pure props             | —                                                                                                                 | yes                    |
-| `Toolbar`                              | `toolbar/GenericToolbar.vue`                                | pure props             | —                                                                                                                 | yes                    |
-| —                                      | `GeoSpatialLayer/*` + controllers                           | props (not registered) | read `features` via props; controllers own local settings                                                         | no                     |
-| —                                      | `DatePicker*`, `NumberCounter`, `Tools/ToolTips`, `Icons/*` | props                  | —                                                                                                                 | no                     |
+This file is only for what a schema cannot say: which components an app still
+owns, and why.
 
-App-local components that should move up once a second app needs them:
+## Base owns 35
 
-| App                      | Component(s)                                                                                                                                                                                            | Note                                                                                                                          |
-| ------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------- |
-| restart-ukraine          | `LoadingScreen`, `AnalysisPanel`, `AnalysisLayers`                                                                                                                                                      | everything else became JSON + base components; the analysis pair still reads the `layers` store                              |
-| open-sensing-chapultepec | `WeatherGlyph`, `GlyphLegend`, `GlyphCanvas` (+ `GlyphPart` inside)                                                                                                                                     | project-specific visual language; registered via app contract                                                                 |
-| mnc                      | `MncMap` (+ `MncMapLayer`, `QuickLook`), `ThemeFilterBar`, `BottomBar`, `FilteredSelectionSidebar`, `ProjectListPanel`, `EntryDetail`, `ModerationPanel`, `AdminAccounts`, `OnboardingModal`, `LoadingScreen`, `LocaleSwitcher`, `Mobile/*` | all props-in / events-out; catalogue derivations in `composables/catalog.ts`; Firebase only in `handlers.ts` + `api/firebase.ts` (upload progress) |
+Every one of them is registered in `base/app/plugins/registry.ts` and reachable
+from any spec by name. They take data in through props and send everything back
+out as events -- none reads a store, a manifest or `runtimeConfig` behind the
+page's back, with two exceptions that say so in their contract
+(`stateful: true`):
 
-The Nuxt UI Pro dashboard-template leftovers (inbox / users / settings pages, `useDashboard`, mock `server/api`)
-have been removed from base; the default layout is a plain shell. `base/app/stores/*`, `DrawingLayer/*` and
-`GeoSpatialLayer` controllers' store reads are gone too: no component in the repo reads a pinia store.
+- `AnalysisPanel` / `AnalysisLayers` share the map-analysis state (which layers
+  the reader turned on, and their settings) through `stores/layers` and
+  `composables/useAnalysis`. Two components either side of the map have to agree
+  on one list of layers, and a spec has nowhere to keep it.
+- `Header` reads `app.json` for the logo, the accent and the brand: those belong
+  to the app as a whole, not to whichever page is rendering.
+
+## Apps own 8
+
+| App | Components | Why they are still here |
+| --- | --- | --- |
+| open-sensing-chapultepec | `WeatherGlyph`, `GlyphLegend`, `GlyphCanvas` (`GlyphPart` inside them) | The glyph is this project's own drawn language -- SVG paths for cloud, rain, wind, smell and temperature. A fifth app would not want them, and base would gain four components with one user each. |
+| mnc | `EntryDetail`, `MobileInfoPopup`, `MobileContributeFlow`, `ModerationPanel`, `AdminAccounts` (`ImageUploadModal` inside the first two) | Each is a view of mnc's own data model (an entry, its contributions, its moderation state). Turning them into specs waits on the Firestore backend below: they read and write through `apps/mnc/app/handlers.ts`, and rewriting a live contribution flow that cannot be run is how you break one quietly. |
+
+`GeoSpatialLayer/*`, `Icons/*`, `NumberCounter`, `DatePicker` and
+`SpecErrorBoundary` live in base without contracts on purpose: they are parts
+other components assemble, not things a spec names.
+
+## The backend, which is written and unproven
+
+`base/app/data/firestore.ts` and `base/app/data/auth.ts` let an app set
+`data.backend: "firestore"` in `app.json` and keep the same data sources,
+the same `saveTo` / `updateIn` / `deleteFrom` actions and the same `where`
+clauses -- which may name page state, so a source can ask for "the rows
+belonging to whoever is signed in" and re-read itself when that changes.
+
+No app has switched. There are no Firebase credentials on this machine, so
+none of it has been run against a real project.

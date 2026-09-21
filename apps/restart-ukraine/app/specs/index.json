@@ -388,6 +388,7 @@
                     "click": [
                       {
                         "call": "saveProject",
+                        "payload": null,
                         "args": "$state.features"
                       },
                       {

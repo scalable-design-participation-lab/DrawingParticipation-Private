@@ -131,7 +131,8 @@
                   "on": {
                     "click": [
                       {
-                        "set": "selected"
+                        "set": "selected",
+                        "value": "$item"
                       },
                       {
                         "set": "cardState",
@@ -139,7 +140,7 @@
                       },
                       {
                         "call": "loadContributions",
-                        "args": "$state.selected.properties.string_id"
+                        "payload": "$item.properties.string_id"
                       }
                     ]
                   },
@@ -519,11 +520,12 @@
                           "on": {
                             "click": [
                               {
-                                "set": "selected"
+                                "set": "selected",
+                                "value": "$item"
                               },
                               {
                                 "call": "loadContributions",
-                                "args": "$state.selected.properties.string_id"
+                                "payload": "$item.properties.string_id"
                               }
                             ]
                           },
@@ -658,7 +660,8 @@
                     "on": {
                       "click": [
                         {
-                          "set": "selected"
+                          "set": "selected",
+                          "value": "$item"
                         },
                         {
                           "set": "listOpen",
@@ -666,7 +669,7 @@
                         },
                         {
                           "call": "loadContributions",
-                          "args": "$state.selected.properties.string_id"
+                          "payload": "$item.properties.string_id"
                         }
                       ]
                     },
@@ -1000,7 +1003,8 @@
                             "on": {
                               "click": [
                                 {
-                                  "set": "selected"
+                                  "set": "selected",
+                                  "value": "$item"
                                 },
                                 {
                                   "set": "mobileView",
@@ -1012,7 +1016,7 @@
                                 },
                                 {
                                   "call": "loadContributions",
-                                  "args": "$state.selected.properties.string_id"
+                                  "payload": "$item.properties.string_id"
                                 }
                               ]
                             },
@@ -1525,7 +1529,7 @@
                   "on": {
                     "click": {
                       "call": "resetPassword",
-                      "args": "$state.login.email"
+                      "payload": "$state.login.email"
                     }
                   }
                 }
@@ -1566,7 +1570,7 @@
               },
               {
                 "call": "loadContributions",
-                "args": "$state.selected.properties.string_id"
+                "payload": "$state.selected.properties.string_id"
               }
             ],
             "signOut": [
