@@ -11,6 +11,26 @@
       "name": {
         "type": "string"
       },
+      "icons": {
+        "description": "value -> icon name, for when a row decides its own icon.",
+        "type": "object",
+        "propertyNames": {
+          "type": "string"
+        },
+        "additionalProperties": {
+          "type": "string"
+        }
+      },
+      "colors": {
+        "description": "value -> colour, for the same lookup.",
+        "type": "object",
+        "propertyNames": {
+          "type": "string"
+        },
+        "additionalProperties": {
+          "type": "string"
+        }
+      },
       "size": {
         "type": "string",
         "enum": [

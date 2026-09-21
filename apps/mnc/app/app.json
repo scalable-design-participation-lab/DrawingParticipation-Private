@@ -37,7 +37,14 @@
     "pick-banner": "fixed left-1/2 top-24 z-[60] flex -translate-x-1/2 items-center gap-3 rounded-full border-2 border-[#FB6D6D] bg-white px-5 py-2.5 shadow-lg dark:bg-black",
     "pick-icon": "h-5 w-5 text-[#FB6D6D]",
     "round-shadow": "rounded-full shadow-lg",
-    "wordmark": "bg-gradient-to-r from-[#e8998d] via-[#5fc3b5] to-[#c7e896] bg-clip-text text-[1.4rem] font-black uppercase leading-none tracking-tighter text-transparent"
+    "wordmark": "bg-gradient-to-r from-[#e8998d] via-[#5fc3b5] to-[#c7e896] bg-clip-text text-[1.4rem] font-black uppercase leading-none tracking-tighter text-transparent",
+    "bottom-sheet": "pointer-events-none fixed inset-x-0 bottom-24 z-40 flex justify-center safe-bottom",
+    "bottom-sheet-card": "pointer-events-auto w-full max-w-sm touch-manipulation overflow-hidden rounded-t-3xl bg-white shadow-xl dark:bg-zinc-900",
+    "bottom-sheet-head": "px-4 pb-2 pt-3",
+    "bottom-sheet-body": "max-h-[calc(60dvh-140px)] overflow-y-auto",
+    "list-row": "w-full cursor-pointer border-b border-gray-100 px-5 py-4 text-left hover:bg-gray-50 dark:border-zinc-800 dark:hover:bg-zinc-800/50",
+    "list-disc": "flex h-11 w-11 flex-shrink-0 items-center justify-center rounded-full bg-black/5 dark:bg-white/5",
+    "list-text": "min-w-0 flex-1"
   },
   "routes": {
     "/": "index.json",

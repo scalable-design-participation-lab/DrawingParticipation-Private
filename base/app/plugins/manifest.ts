@@ -78,6 +78,22 @@ export default defineNuxtPlugin((nuxtApp) => {
     window.addEventListener('resize', update)
   }, 'Keep state.isMobile in step with the viewport; the payload is the breakpoint in px (default 768).')
 
+  // "Nearest to me" needs a me. The reader is asked once; a refusal or a
+  // timeout simply leaves the state null and the list keeps its own order.
+  registerHandler('watchLocation', (payload, ctx) => {
+    const into = String(payload || 'location')
+    if (!import.meta.client || !navigator.geolocation) {
+      return
+    }
+    navigator.geolocation.getCurrentPosition(
+      (position) => {
+        ctx.state[into] = [position.coords.longitude, position.coords.latitude]
+      },
+      () => {},
+      { enableHighAccuracy: false, timeout: 8000, maximumAge: 600000 },
+    )
+  }, 'Ask once where the reader is and put [lon, lat] into the state key named by the payload (default "location").')
+
   registerHandler('download', (_payload, ctx, args) => {
     const { from, format = 'json', filename } = (args ?? {}) as { from?: string, format?: string, filename?: string }
     const rows = ((from ? ctx.data[from] ?? ctx.state[from] : []) ?? []) as Record<string, unknown>[]

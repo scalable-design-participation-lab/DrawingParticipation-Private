@@ -17,6 +17,13 @@ const props = withDefaults(defineProps<{
   format?: 'date' | 'datetime' | 'number'
   /** value -> label, for stored codes ("bici" -> "Bicicleta"); unknown values show as-is. */
   labels?: Record<string, string>
+  /** Shown when `text` is empty, e.g. a row's untranslated original. */
+  fallback?: string | number
+  /** Wrapped around the value once it is formatted, e.g. a unit or a currency. */
+  prefix?: string
+  suffix?: string
+  /** Round a number to this many decimals before showing it. */
+  decimals?: number
 }>(), {
   as: 'p',
   size: undefined,
@@ -26,6 +33,10 @@ const props = withDefaults(defineProps<{
   text: '',
   format: undefined,
   labels: undefined,
+  fallback: '',
+  prefix: '',
+  suffix: '',
+  decimals: undefined,
 })
 
 const SIZE = { 'xs': 'text-xs', 'sm': 'text-sm', 'md': 'text-base', 'lg': 'text-lg', 'xl': 'text-xl', '2xl': 'text-2xl', '3xl': 'text-3xl' }
@@ -35,23 +46,32 @@ const ALIGN = { left: 'text-left', center: 'text-center', right: 'text-right' }
 const DEFAULT_SIZE = { h1: '3xl', h2: 'xl', h3: 'lg', p: 'md', span: 'md', label: 'xs' } as const
 const DEFAULT_WEIGHT = { h1: 'normal', h2: 'semibold', h3: 'semibold', p: 'normal', span: 'normal', label: 'normal' } as const
 
+const wrap = (value: string) => (value === '' ? '' : `${props.prefix}${value}${props.suffix}`)
+
 const content = computed(() => {
-  const raw = props.text ?? ''
+  const given = props.text ?? ''
+  const raw = given === '' || given === null ? props.fallback ?? '' : given
   if (props.labels && String(raw) in props.labels) {
-    return props.labels[String(raw)]
+    return wrap(props.labels[String(raw)])
   }
-  if (raw === '' || !props.format) {
-    return String(raw)
+  if (raw === '') {
+    return ''
+  }
+  if (props.decimals !== undefined && raw !== '' && !Number.isNaN(Number(raw))) {
+    return wrap(Number(raw).toLocaleString(undefined, { maximumFractionDigits: props.decimals }))
+  }
+  if (!props.format) {
+    return wrap(String(raw))
   }
   if (props.format === 'number') {
-    return Number(raw).toLocaleString()
+    return wrap(Number(raw).toLocaleString())
   }
   // A bare "YYYY-MM-DD" is a calendar day, not UTC midnight (which would show the day before in the Americas).
   const date = typeof raw === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(raw) ? new Date(`${raw}T00:00:00`) : new Date(raw)
   if (Number.isNaN(date.getTime())) {
-    return String(raw)
+    return wrap(String(raw))
   }
-  return props.format === 'date' ? date.toLocaleDateString() : date.toLocaleString()
+  return wrap(props.format === 'date' ? date.toLocaleDateString() : date.toLocaleString())
 })
 
 const classes = computed(() => [

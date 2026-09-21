@@ -69,6 +69,10 @@ exports[`generalizedHeader > renders correctly 1`] = `
       
       
     </div>
+    <!-- A wordmark or title centred across the bar, independent of how wide
+           the two sides are. Pointer events only on the content itself, so it
+           never swallows a click meant for the map behind it. -->
+    <!--v-if-->
     <!-- items right -->
     <div
       class="h-full flex items-center relative z-10 space-x-2 sm:space-x-3"

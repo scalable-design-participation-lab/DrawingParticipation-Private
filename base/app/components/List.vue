@@ -21,6 +21,15 @@ const props = withDefaults(defineProps<{
   searchKeys?: string[]
   sortBy?: string
   sortDesc?: boolean
+  /**
+   * Sort by how far each row is from this point, nearest first, and give the
+   * item template a `distanceKm`. Bind it to the state `watchLocation` fills,
+   * and it falls back to `sortBy` while the reader has not shared a location.
+   */
+  near?: [number, number] | null
+  /** Where a row keeps its position, as [lon, lat] unless `coordinates` says otherwise. */
+  coordinatesKey?: string
+  coordinates?: 'lonlat' | 'webmercator'
   limit?: number
 }>(), {
   items: () => [],
@@ -34,13 +43,50 @@ const props = withDefaults(defineProps<{
   searchKeys: () => [],
   sortBy: '',
   sortDesc: false,
+  near: null,
+  coordinatesKey: 'coordinates',
+  coordinates: 'lonlat',
   limit: 0,
 })
 
 const GAP = { none: 'gap-0', xs: 'gap-1', sm: 'gap-2', md: 'gap-4', lg: 'gap-8' }
 const COLS = { 1: 'grid-cols-1', 2: 'grid-cols-1 sm:grid-cols-2', 3: 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-3', 4: 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-4' }
 
-const field = (row: unknown, key: string) => (row as Record<string, unknown>)?.[key]
+/** A dotted key reads into nested rows, e.g. "properties.title". */
+function field(row: unknown, key: string) {
+  return key.split('.').reduce<unknown>((value, part) => (value && typeof value === 'object' ? (value as Record<string, unknown>)[part] : undefined), row)
+}
+
+const HALF_WORLD = 20037508.34
+
+/** Web Mercator metres -> [lon, lat], so a map's own coordinates work as they are. */
+function lonLat(point: number[]): [number, number] {
+  if (props.coordinates === 'lonlat') {
+    return [point[0], point[1]]
+  }
+  const lon = (point[0] / HALF_WORLD) * 180
+  const lat = (Math.atan(Math.exp(((point[1] / HALF_WORLD) * 180 * Math.PI) / 180)) * 360) / Math.PI - 90
+  return [lon, lat]
+}
+
+/** Great-circle distance in km. */
+function haversineKm(a: [number, number], b: [number, number]) {
+  const R = 6371
+  const dLat = ((b[1] - a[1]) * Math.PI) / 180
+  const dLon = ((b[0] - a[0]) * Math.PI) / 180
+  const la1 = (a[1] * Math.PI) / 180
+  const la2 = (b[1] * Math.PI) / 180
+  const h = Math.sin(dLat / 2) ** 2 + Math.cos(la1) * Math.cos(la2) * Math.sin(dLon / 2) ** 2
+  return 2 * R * Math.asin(Math.sqrt(h))
+}
+
+function distanceFrom(origin: [number, number], row: unknown) {
+  const point = field(row, props.coordinatesKey)
+  if (!Array.isArray(point) || point.length < 2) {
+    return null
+  }
+  return haversineKm(origin, lonLat(point as number[]))
+}
 
 const rows = computed(() => {
   let out = props.items
@@ -54,7 +100,15 @@ const rows = computed(() => {
       return values.some(v => typeof v === 'string' && v.toLowerCase().includes(q))
     })
   }
-  if (props.sortBy) {
+  // Nearest first wins over `sortBy`, but only once there is a location.
+  if (props.near) {
+    const origin = props.near
+    out = [...out]
+      .map(row => ({ row, km: distanceFrom(origin, row) }))
+      .sort((a, b) => (a.km ?? Infinity) - (b.km ?? Infinity))
+      .map(({ row, km }) => (km == null ? row : { ...(row as Record<string, unknown>), distanceKm: km }))
+  }
+  else if (props.sortBy) {
     const key = props.sortBy
     out = [...out].sort((a, b) => {
       const x = field(a, key) as string | number

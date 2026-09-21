@@ -83,6 +83,27 @@
         "additionalProperties": {
           "type": "string"
         }
+      },
+      "fallback": {
+        "description": "Shown when the bound text is empty, e.g. a row untranslated original.",
+        "type": [
+          "string",
+          "number"
+        ]
+      },
+      "prefix": {
+        "description": "Put in front of the formatted value, e.g. a currency symbol.",
+        "type": "string"
+      },
+      "suffix": {
+        "description": "Put after it, e.g. a unit. Pass a \"$t.\" key to translate it.",
+        "type": "string"
+      },
+      "decimals": {
+        "description": "Round a number to this many decimals.",
+        "type": "integer",
+        "minimum": 0,
+        "maximum": 9007199254740991
       }
     },
     "additionalProperties": false

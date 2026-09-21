@@ -41,13 +41,6 @@ registerContract({
 })
 
 registerContract({
-  name: 'MobileProximityList',
-  description: 'Mobile list sorted by distance (with location permission) or date; `select` emits an entry.',
-  props: z.strictObject({ features: Rows.optional() }),
-  emits: ['select'],
-})
-
-registerContract({
   name: 'MobileContributeFlow',
   description: '"Join Our Research" wizard. `pick-location` asks the page to let the user tap the map; `pickedCoordinate` feeds the tap back; `submit` emits the whole payload (title, theme, coordinate, answers, files).',
   props: z.strictObject({ pickedCoordinate: Coordinate.nullable().optional() }),

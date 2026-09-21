@@ -120,4 +120,6 @@ export const RootSpecSchema = z.strictObject({
 export type RootSpec = z.infer<typeof RootSpecSchema>
 
 /** Bind expressions: "$data.x", "$state.a.b", "$query.q", "$item", "$item.reading.humedad". */
-export const BIND_RE = /^\$(data|state|sources|errors|item|query|t|locale|payload)((?:\.[\w-]+)*)$/
+// A path segment may be `$locale`, which stands for the current language:
+// `$item.properties.i18n.$locale.title` reads a row that keeps text per language.
+export const BIND_RE = /^\$(data|state|sources|errors|item|query|t|locale|payload)((?:\.(?:\$locale|[\w-]+))*)$/

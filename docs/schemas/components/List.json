@@ -76,6 +76,40 @@
       "sortDesc": {
         "type": "boolean"
       },
+      "near": {
+        "description": "Sort nearest-first from this [lon, lat] and give the item template a `distanceKm`. Bind the state `watchLocation` fills.",
+        "anyOf": [
+          {
+            "type": "array",
+            "prefixItems": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "number"
+              }
+            ],
+            "items": false,
+            "minItems": 2,
+            "maxItems": 2
+          },
+          {
+            "type": "null"
+          }
+        ]
+      },
+      "coordinatesKey": {
+        "description": "Where a row keeps its position (default \"coordinates\"); a dotted path works.",
+        "type": "string"
+      },
+      "coordinates": {
+        "description": "What those numbers are (default \"lonlat\"); map features are usually \"webmercator\".",
+        "type": "string",
+        "enum": [
+          "lonlat",
+          "webmercator"
+        ]
+      },
       "limit": {
         "type": "integer",
         "exclusiveMinimum": 0,

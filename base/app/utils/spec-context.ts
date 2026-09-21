@@ -100,7 +100,9 @@ export function resolveExpr(expr: unknown, ctx: SpecContext, item?: unknown, pay
     return expr
   }
   const [, root, rest] = match
-  const path = rest ? rest.slice(1).split('.') : []
+  // A "$locale" segment stands for the current language, so a row that keeps
+  // its text per language reads as `$item.properties.i18n.$locale.title`.
+  const path = rest ? rest.slice(1).split('.').map(part => (part === '$locale' ? String(ctx.locale ?? '') : part)) : []
   switch (root) {
     case 'item': return getPath(item, path)
     case 'payload': return path.length ? getPath(payload, path) : payload

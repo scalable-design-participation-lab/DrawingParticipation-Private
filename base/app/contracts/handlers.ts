@@ -28,4 +28,5 @@ declareHandler('removeItem', 'Remove the item whose id is the payload from the s
 declareHandler('deleteFrom', 'Delete the row whose id is the payload from the collection named in args, then reload data sources.')
 declareHandler('selectItem', 'Put the row whose `key` equals the payload into state: args { from, into, key? }. `from` is a data source or a state list; `key` may be a dotted path.')
 declareHandler('watchViewport', 'Keep state.isMobile in step with the viewport; the payload is the breakpoint in px (default 768). Call it from the spec root `init`.')
+declareHandler('watchLocation', 'Ask once where the reader is and put [lon, lat] into the state key named by the payload (default "location"). Bind that state to a List `near` for nearest-first.')
 declareHandler('download', 'Save a data source to a file the reader keeps: args { from, format?: "json" | "csv", filename? }.')
