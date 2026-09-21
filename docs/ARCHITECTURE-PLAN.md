@@ -126,6 +126,21 @@ What base gained, each one shaped like something already there:
 catalogue the app uses. Dead things found on the way: a `download` handler writing an empty object, an events
 list no component emitted, a category panel nothing opens.
 
+**Continued (same round).** base has 32 components; mnc is down to 7 from 24. Added since: `Carousel` (a
+strip of images that drops a URL which fails to load, so the counter never promises a missing slide),
+`VoiceRecorder` (records a note and hands it over as a `File`, the way the drop zones hand over a pick), and
+`FileDropZone` grew the other half it was missing — bind `modelValue` and it keeps the list, shows each file
+with its size, removes one, and refuses anything over `maxSizeMb` or outside `accept`, with the refusal
+wording as props.
+
+**The backend is in place but unproven.** `app.json` takes `data.backend: "firestore"`, which routes the same
+`{ kind: "collection" }` source and the same `saveTo` / `updateIn` / `deleteFrom` handlers at the app's own
+Firebase project; auth is handlers (`watchAuth`, `signIn`, `signInAnonymous`, `register`, `signOut`,
+`resetPassword`) registered only for such an app; and a `where` value may name page state
+(`["uid", "==", "$state.auth.uid"]`), the source re-reading itself when that changes. No app has switched to
+it: there are no Firebase credentials on this machine, and rewriting a live registration flow that cannot be
+tried is how you break one silently.
+
 Left in the apps, and why: chapultepec's four SVG glyph components (its own visual language, and a fifth app
 would not want them), restart-ukraine's analysis panel over base's GeoSpatialLayer, and both apps' Firebase
 layers. The last is the real remaining block — making it data means a declarative backend in `app.json`, which
