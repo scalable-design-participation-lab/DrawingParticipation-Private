@@ -108,7 +108,7 @@ function authError(ctx: SpecContext, e: unknown, fallback: string) {
   return new Error(code && AUTH_ERRORS[code] ? t(ctx, AUTH_ERRORS[code]) : `${t(ctx, fallback)}${code ? ` [${code}]` : ''}`)
 }
 
-export function registerHandlers(setLocale: (code: string) => void) {
+export function registerHandlers() {
   // Moderator queues, loaded on sign-in and when a returning admin is recognised.
   const loadQueues = async (ctx: SpecContext) => {
     const handlers = await import('../../../base/app/utils/handlers')
@@ -124,10 +124,6 @@ export function registerHandlers(setLocale: (code: string) => void) {
     update()
     window.addEventListener('resize', update)
   }, 'state.isMobile follows the viewport (< 768px).')
-
-  registerHandler('setLocale', (payload) => {
-    setLocale(String(payload))
-  }, 'Switch the UI language; payload is the locale code (en | pt | es).')
 
   // ---------------------------------------------------------------- auth
   registerHandler('watchAuth', (_p, ctx) => {

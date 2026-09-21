@@ -1,0 +1,79 @@
+{
+  "name": "IconBar",
+  "description": "Floating pill of icon buttons: the bottom toolbar of a map app, a row of category chips, a view switcher. `modelValue` is the active value (or the list of them with `multiple`), so the page owns it. An item may carry its own `onClick` action when pressing it does more than change which one is lit.",
+  "stateful": false,
+  "emits": [
+    "update:modelValue",
+    "select"
+  ],
+  "slots": [],
+  "props": {
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "type": "object",
+    "properties": {
+      "items": {
+        "type": "array",
+        "items": {
+          "type": "object",
+          "properties": {
+            "value": {
+              "type": "string"
+            },
+            "icon": {
+              "type": "string"
+            },
+            "label": {
+              "description": "Tooltip and accessible name.",
+              "type": "string"
+            },
+            "color": {
+              "description": "Colour when active; the theme primary otherwise.",
+              "type": "string"
+            },
+            "onClick": {
+              "description": "`{ \"$action\": … }` run when pressed."
+            }
+          },
+          "required": [
+            "value",
+            "icon"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "modelValue": {
+        "anyOf": [
+          {
+            "type": "string"
+          },
+          {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        ]
+      },
+      "multiple": {
+        "type": "boolean"
+      },
+      "position": {
+        "type": "string",
+        "enum": [
+          "top",
+          "bottom",
+          "static"
+        ]
+      },
+      "size": {
+        "type": "string",
+        "enum": [
+          "sm",
+          "md",
+          "lg"
+        ]
+      }
+    },
+    "additionalProperties": false
+  }
+}

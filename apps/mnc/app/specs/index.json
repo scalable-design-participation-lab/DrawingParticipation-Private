@@ -37,7 +37,8 @@
     "pendingContributions": [],
     "loginOpen": false,
     "reviewOpen": false,
-    "login": {}
+    "login": {},
+    "mode": "map"
   },
   "init": [
     {
@@ -155,7 +156,31 @@
               "children": [
                 {
                   "slot": "right",
-                  "type": "LocaleSwitcher"
+                  "type": "Tabs",
+                  "props": {
+                    "options": [
+                      {
+                        "label": "EN",
+                        "value": "en"
+                      },
+                      {
+                        "label": "PT",
+                        "value": "pt"
+                      },
+                      {
+                        "label": "ES",
+                        "value": "es"
+                      }
+                    ]
+                  },
+                  "bind": {
+                    "modelValue": "$locale"
+                  },
+                  "on": {
+                    "update:modelValue": {
+                      "call": "setLocale"
+                    }
+                  }
                 },
                 {
                   "slot": "right",
@@ -186,50 +211,93 @@
               }
             },
             {
-              "type": "BottomBar",
+              "type": "IconBar",
               "if": "!$state.onboarding && !$state.contribute && !$state.detail && !$state.selected",
-              "bind": {
-                "contributeOpen": "$state.contribute",
-                "listOpen": "$state.listOpen",
-                "infoOpen": "$state.onboarding"
-              },
-              "on": {
-                "add": [
+              "props": {
+                "position": "bottom",
+                "size": "lg",
+                "items": [
                   {
-                    "toggle": "contribute"
+                    "value": "map",
+                    "icon": "i-heroicons-map",
+                    "label": "$t.nav.map",
+                    "color": "#57C9C0",
+                    "onClick": {
+                      "$action": [
+                        {
+                          "set": "panelOpen",
+                          "value": false
+                        },
+                        {
+                          "set": "listOpen",
+                          "value": false
+                        }
+                      ]
+                    }
                   },
                   {
-                    "set": "picking",
-                    "value": false
+                    "value": "list",
+                    "icon": "i-heroicons-square-3-stack-3d",
+                    "label": "$t.nav.list",
+                    "color": "#57C9C0",
+                    "onClick": {
+                      "$action": [
+                        {
+                          "set": "listOpen",
+                          "value": true
+                        },
+                        {
+                          "set": "panelOpen",
+                          "value": false
+                        }
+                      ]
+                    }
                   },
                   {
-                    "set": "pin",
-                    "value": null
-                  }
-                ],
-                "list": [
-                  {
-                    "toggle": "listOpen"
+                    "value": "info",
+                    "icon": "i-heroicons-information-circle",
+                    "label": "$t.nav.info",
+                    "color": "#57C9C0",
+                    "onClick": {
+                      "$action": [
+                        {
+                          "set": "onboarding",
+                          "value": true
+                        }
+                      ]
+                    }
                   },
                   {
-                    "set": "panelOpen",
-                    "value": false
-                  }
-                ],
-                "info": {
-                  "set": "onboarding",
-                  "value": true
-                },
-                "map": [
-                  {
-                    "set": "panelOpen",
-                    "value": false
-                  },
-                  {
-                    "set": "listOpen",
-                    "value": false
+                    "value": "add",
+                    "icon": "i-heroicons-plus",
+                    "label": "$t.nav.addEntry",
+                    "color": "#57C9C0",
+                    "onClick": {
+                      "$action": [
+                        {
+                          "set": "contribute",
+                          "value": true
+                        },
+                        {
+                          "set": "picking",
+                          "value": false
+                        },
+                        {
+                          "set": "pin",
+                          "value": null
+                        }
+                      ]
+                    }
                   }
                 ]
+              },
+              "bind": {
+                "modelValue": "$state.mode"
+              },
+              "on": {
+                "update:modelValue": {
+                  "set": "mode"
+                }
               }
             },
             {

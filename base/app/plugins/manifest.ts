@@ -1,4 +1,5 @@
 import { ref } from 'vue'
+import type { Ref } from 'vue'
 import { useAppManifest } from '../composables/useAppManifest'
 import { SPEC_I18N, createTranslator } from '../utils/i18n'
 import { DATA_ADAPTER, composeAdapters, restAdapter, staticAdapter } from '../data/adapters'
@@ -56,27 +57,40 @@ export default defineNuxtPlugin((nuxtApp) => {
     return
   }
 
-  // Translations as data: app/i18n/<locale>.json + "$t.key" in specs. The
-  // chosen locale survives reloads; apps with vue-i18n override setLocale.
-  const locales = Object.keys(messages)
+  // Translations as data: app/i18n/<locale>.json + "$t.key" in specs.
+  //
+  // An app that installed vue-i18n (mnc) keeps its own catalogue and its own
+  // locale ref, so `$locale` and `setLocale` follow that instead of a second,
+  // parallel one. Same precedence SpecRenderer uses for `$t`.
+  const vueI18n = (nuxtApp as { $i18n?: { locale: Ref<string>, locales?: Ref<{ code: string }[]>, setLocale: (code: string) => void } }).$i18n
+  const own = Object.keys(messages)
+  const locales = vueI18n?.locales?.value?.map(l => l.code) ?? own
   const fallback = manifest.i18n?.default ?? locales[0] ?? 'en'
+
   let remembered: string | null = null
   try {
     remembered = localStorage.getItem('spec-locale')
   }
   catch { /* private mode */ }
-  const locale = ref(remembered && locales.includes(remembered) ? remembered : fallback)
+
+  const locale = vueI18n?.locale ?? ref(remembered && own.includes(remembered) ? remembered : fallback)
   nuxtApp.vueApp.provide(SPEC_I18N, { locale, locales, translate: createTranslator(messages, locale, fallback) })
+
   registerHandler('setLocale', (payload) => {
     const next = String(payload)
-    if (locales.includes(next)) {
-      locale.value = next
-      try {
-        localStorage.setItem('spec-locale', next)
-      }
-      catch { /* private mode */ }
+    if (!locales.includes(next)) {
+      return
     }
-  }, 'Switch the UI language; payload is a locale that has an app/i18n/<locale>.json.')
+    if (vueI18n) {
+      vueI18n.setLocale(next)
+      return
+    }
+    locale.value = next
+    try {
+      localStorage.setItem('spec-locale', next)
+    }
+    catch { /* private mode */ }
+  }, 'Switch the UI language; payload is a locale the app has (an app/i18n/<locale>.json, or one vue-i18n knows).')
 
   if (manifest.theme?.primary || manifest.theme?.gray) {
     updateAppConfig({ ui: { ...(manifest.theme.primary && { primary: manifest.theme.primary }), ...(manifest.theme.gray && { gray: manifest.theme.gray }) } })

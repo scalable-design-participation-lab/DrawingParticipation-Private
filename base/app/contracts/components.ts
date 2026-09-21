@@ -327,6 +327,25 @@ registerContract({
 })
 
 registerContract({
+  name: 'IconBar',
+  description: 'Floating pill of icon buttons: the bottom toolbar of a map app, a row of category chips, a view switcher. `modelValue` is the active value (or the list of them with `multiple`), so the page owns it. An item may carry its own `onClick` action when pressing it does more than change which one is lit.',
+  props: z.strictObject({
+    items: z.array(z.strictObject({
+      value: z.string(),
+      icon: z.string(),
+      label: z.string().optional().describe('Tooltip and accessible name.'),
+      color: z.string().optional().describe('Colour when active; the theme primary otherwise.'),
+      onClick: z.unknown().optional().describe('`{ "$action": … }` run when pressed.'),
+    })).optional(),
+    modelValue: z.union([z.string(), z.array(z.string())]).optional(),
+    multiple: z.boolean().optional(),
+    position: z.enum(['top', 'bottom', 'static']).optional(),
+    size: z.enum(['sm', 'md', 'lg']).optional(),
+  }),
+  emits: ['update:modelValue', 'select'],
+})
+
+registerContract({
   name: 'LoadingScreen',
   description: 'Full-screen splash whose bar fills over `duration`, cycling through `steps`, then emits `done`. The progress is reassurance, not measurement: bind `$sources.<name>.loading` to an `if` when the page can tell.',
   props: z.strictObject({

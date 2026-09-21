@@ -35,13 +35,6 @@ registerContract({
 })
 
 registerContract({
-  name: 'BottomBar',
-  description: 'Desktop toolbar (map / list / info / add); the highlighted mode follows the open flags.',
-  props: z.strictObject({ contributeOpen: z.boolean().optional(), listOpen: z.boolean().optional(), infoOpen: z.boolean().optional() }),
-  emits: ['map', 'list', 'info', 'add'],
-})
-
-registerContract({
   name: 'FilteredSelectionSidebar',
   description: 'Category accordion with counts and per-theme visibility; `select` emits an entry.',
   props: z.strictObject({ features: Rows.optional(), visibleTags: z.array(z.string()).optional(), title: z.string().optional(), empty: z.string().optional() }),
@@ -118,10 +111,7 @@ registerContract({
   emits: ['close'],
 })
 
-registerContract({ name: 'LocaleSwitcher', description: 'Header pill showing the current language with a dropdown of all locales.', props: z.strictObject({}) })
-
 declareHandler('watchViewport', 'state.isMobile follows the viewport (< 768px).')
-declareHandler('setLocale', 'Switch the UI language; payload is the locale code.')
 declareHandler('watchAuth', 'Keep state.auth in sync with Firebase Auth; admins also get the review queues.')
 declareHandler('signIn', 'Sign in with { email, password }.')
 declareHandler('signInModerator', 'Sign in with { email, password } and require moderator rights.')
