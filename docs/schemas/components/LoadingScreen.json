@@ -1,13 +1,38 @@
 {
   "name": "LoadingScreen",
-  "description": "Full-screen splash with a fake progress bar.",
+  "description": "Full-screen splash whose bar fills over `duration`, cycling through `steps`, then emits `done`. The progress is reassurance, not measurement: bind `$sources.<name>.loading` to an `if` when the page can tell.",
   "stateful": false,
-  "emits": [],
+  "emits": [
+    "done"
+  ],
   "slots": [],
   "props": {
     "$schema": "https://json-schema.org/draft/2020-12/schema",
     "type": "object",
-    "properties": {},
+    "properties": {
+      "title": {
+        "type": "string"
+      },
+      "message": {
+        "type": "string"
+      },
+      "steps": {
+        "description": "Shown in turn under the bar, one per equal slice of the duration.",
+        "type": "array",
+        "items": {
+          "type": "string"
+        }
+      },
+      "duration": {
+        "description": "Milliseconds for the bar to fill (default 2500).",
+        "type": "integer",
+        "exclusiveMinimum": 0,
+        "maximum": 9007199254740991
+      },
+      "icon": {
+        "type": "string"
+      }
+    },
     "additionalProperties": false
   }
 }

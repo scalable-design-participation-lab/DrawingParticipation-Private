@@ -297,5 +297,15 @@
         "description": "Práticas criativas e culturais transmitidas pelas redes móveis."
       }
     }
+  },
+  "loading": {
+    "title": "A carregar o mapa",
+    "message": "Um momento...",
+    "steps": [
+      "A iniciar...",
+      "A carregar o mapa...",
+      "A preparar os dados...",
+      "Quase pronto..."
+    ]
   }
 }

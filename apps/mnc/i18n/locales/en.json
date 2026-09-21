@@ -297,5 +297,15 @@
         "description": "Creative and cultural practices carried through mobile networks."
       }
     }
+  },
+  "loading": {
+    "title": "Loading Map",
+    "message": "Please wait...",
+    "steps": [
+      "Initializing...",
+      "Loading map...",
+      "Preparing data...",
+      "Almost ready..."
+    ]
   }
 }

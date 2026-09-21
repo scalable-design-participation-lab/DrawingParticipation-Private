@@ -22,6 +22,7 @@ import Grid from '../components/Grid.vue'
 import Panel from '../components/Panel.vue'
 import Text from '../components/Text.vue'
 import Image from '../components/Image.vue'
+import LoadingScreen from '../components/LoadingScreen.vue'
 import { registerComponent } from '../utils/registry'
 import { defineNuxtPlugin } from '#app'
 import { UButton, UCard, UDivider } from '#components'
@@ -57,6 +58,7 @@ export default defineNuxtPlugin(() => {
   registerComponent('Panel', Panel)
   registerComponent('Text', Text)
   registerComponent('Image', Image)
+  registerComponent('LoadingScreen', LoadingScreen)
 
   // Nuxt UI primitives content pages need. They are lazy global components,
   // so they come from Nuxt's `#components` map rather than `vueApp.component()`.

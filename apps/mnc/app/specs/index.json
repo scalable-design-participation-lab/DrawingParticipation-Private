@@ -60,7 +60,17 @@
   "children": [
     {
       "type": "LoadingScreen",
-      "if": "$state.loading"
+      "if": "$state.loading",
+      "props": {
+        "title": "$t.loading.title",
+        "message": "$t.loading.message",
+        "steps": [
+          "$t.loading.steps.0",
+          "$t.loading.steps.1",
+          "$t.loading.steps.2",
+          "$t.loading.steps.3"
+        ]
+      }
     },
     {
       "type": "div",

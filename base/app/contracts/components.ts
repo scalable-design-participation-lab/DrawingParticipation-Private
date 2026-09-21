@@ -327,6 +327,19 @@ registerContract({
 })
 
 registerContract({
+  name: 'LoadingScreen',
+  description: 'Full-screen splash whose bar fills over `duration`, cycling through `steps`, then emits `done`. The progress is reassurance, not measurement: bind `$sources.<name>.loading` to an `if` when the page can tell.',
+  props: z.strictObject({
+    title: z.string().optional(),
+    message: z.string().optional(),
+    steps: z.array(z.string()).optional().describe('Shown in turn under the bar, one per equal slice of the duration.'),
+    duration: z.number().int().positive().optional().describe('Milliseconds for the bar to fill (default 2500).'),
+    icon: z.string().optional(),
+  }),
+  emits: ['done'],
+})
+
+registerContract({
   name: 'ToolTips',
   description: 'Hover/click tooltips for vector features on the map. Put it in the BackgroundMap "overlays" slot. It shows every property a feature carries, so say which ones to leave out rather than which to show.',
   props: z.strictObject({

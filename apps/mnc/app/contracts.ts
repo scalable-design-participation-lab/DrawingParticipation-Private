@@ -118,7 +118,6 @@ registerContract({
   emits: ['close'],
 })
 
-registerContract({ name: 'LoadingScreen', description: 'Full-screen splash with a fake progress bar.', props: z.strictObject({}) })
 registerContract({ name: 'LocaleSwitcher', description: 'Header pill showing the current language with a dropdown of all locales.', props: z.strictObject({}) })
 
 declareHandler('watchViewport', 'state.isMobile follows the viewport (< 768px).')

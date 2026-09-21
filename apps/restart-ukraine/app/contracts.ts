@@ -20,13 +20,6 @@ export const UserSchema = registerCollection('user', z.strictObject({
 }))
 
 registerContract({
-  name: 'LoadingScreen',
-  description: 'Full-screen loading splash with a fake progress bar; emits `done` when it reaches 100 %.',
-  props: z.strictObject({}),
-  emits: ['done'],
-})
-
-registerContract({
   name: 'AnalysisPanel',
   description: 'Analysis dashboard (metadata, layer cards) and layer controls. `modelValue` = dashboard open.',
   props: z.strictObject({ modelValue: z.boolean().optional() }),

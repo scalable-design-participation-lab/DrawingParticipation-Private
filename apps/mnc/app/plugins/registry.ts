@@ -3,7 +3,6 @@ import AdminAccounts from '../components/AdminAccounts.vue'
 import BottomBar from '../components/BottomBar.vue'
 import EntryDetail from '../components/EntryDetail.vue'
 import FilteredSelectionSidebar from '../components/FilteredSelectionSidebar.vue'
-import LoadingScreen from '../components/LoadingScreen.vue'
 import LocaleSwitcher from '../components/LocaleSwitcher.vue'
 import MncMap from '../components/MncMap.vue'
 import MobileBottomNav from '../components/Mobile/MobileBottomNav.vue'
@@ -36,7 +35,6 @@ export default defineNuxtPlugin((nuxtApp) => {
     ModerationPanel,
     AdminAccounts,
     OnboardingModal,
-    LoadingScreen,
     LocaleSwitcher,
   })) {
     registerComponent(name, component)
