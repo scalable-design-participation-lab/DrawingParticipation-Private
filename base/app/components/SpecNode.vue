@@ -46,7 +46,9 @@ function renderNode(node: Node, item: unknown, ctx: SpecContext): VNodeChild {
     attrs.class = [styleClasses(node.style), attrs.class].filter(Boolean).join(' ')
   }
   for (const [prop, expr] of Object.entries(node.bind ?? {})) {
-    attrs[prop] = resolveExpr(expr, ctx, item)
+    // `evaluate` handles a plain path exactly like `resolveExpr` and also the
+    // condition forms, so `disabled` can say what `if` says.
+    attrs[prop] = evaluate(expr, ctx, item)
   }
   for (const [event, actions] of Object.entries(node.on ?? {})) {
     // "click.stop": a row that is itself clickable needs its buttons to stop

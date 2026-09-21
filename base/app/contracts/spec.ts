@@ -9,17 +9,26 @@ import { z } from 'zod'
  * registered handlers.
  */
 
+/**
+ * `if` on an action is the node's `if` one level down: one event, different
+ * answers depending on where the page is. A map click captures a coordinate
+ * while the reader is placing a pin, and clears one otherwise.
+ */
+const When = { if: z.string().optional().describe('Run this action only while the condition holds; same form as a node `if`.') }
+
 const ActionSchema = z.union([
   z.strictObject({
     set: z.string().describe('State path to write, e.g. "welcome" or "filters.year".'),
     value: z.unknown().optional().describe('Value to write; a "$..." string is resolved (e.g. "$item.id"). Omitted = the event payload.'),
+    ...When,
   }),
-  z.strictObject({ navigate: z.string().describe('Route to push.') }),
-  z.strictObject({ toggle: z.string().describe('Boolean state path to flip.') }),
+  z.strictObject({ navigate: z.string().describe('Route to push.'), ...When }),
+  z.strictObject({ toggle: z.string().describe('Boolean state path to flip.'), ...When }),
   z.strictObject({
     call: z.string().describe('Name of a handler registered by the app (registerHandler).'),
     args: z.unknown().optional().describe('Arguments passed to the handler after the payload; a "$..." string is resolved.'),
     payload: z.unknown().optional().describe('What the handler receives instead of the event; every "$..." string inside is resolved (e.g. { "propuestaId": "$state.open.id" }).'),
+    ...When,
   }),
 ])
 export type Action = z.infer<typeof ActionSchema>

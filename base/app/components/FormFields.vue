@@ -14,6 +14,12 @@ export interface FormField {
   placeholder?: string
   rows?: number
   options?: { label: string, value: string | number }[]
+  /**
+   * Let someone answer with something that is not on the list. What they type
+   * becomes the stored value as well as the label, so a page asking for a
+   * theme can accept one nobody thought of.
+   */
+  creatable?: boolean
   required?: boolean
   /**
    * Registered style preset(s) for the control, e.g. a width. Not raw classes:
@@ -63,6 +69,24 @@ function update(name: string, value: unknown) {
   emit('update:modelValue', values.value)
 }
 
+/**
+ * An answer that was typed rather than chosen is not in `options`, so the
+ * control would render it blank. Keep an option for it.
+ */
+function optionsFor(field: FormField) {
+  const options = field.options ?? []
+  const value = values.value[field.name]
+  return value && !options.some(o => o.value === value)
+    ? [...options, { label: String(value), value: value as string }]
+    : options
+}
+
+/** USelectMenu hands back a string for a plain list, an object once it is keyed. */
+function created(option: unknown) {
+  const raw = typeof option === 'string' ? option : (option as { value?: string, label?: string })?.value ?? (option as { label?: string })?.label ?? ''
+  return raw.trim()
+}
+
 const underline = 'w-full !border-b border-current rounded-none px-0 py-1 bg-transparent placeholder:!text-current'
 </script>
 
@@ -87,6 +111,21 @@ const underline = 'w-full !border-b border-current rounded-none px-0 py-1 bg-tra
         :textarea-class="variant === 'underline' ? `${underline} ${styleClasses(field.style)}` : styleClasses(field.style)"
         class="w-full"
         @update:model-value="update(field.name, $event)"
+      />
+      <!-- Searchable, and it takes an answer that is not on the list: what was
+           typed becomes both the value and its label. -->
+      <USelectMenu
+        v-else-if="field.type === 'select' && field.creatable"
+        :model-value="(values[field.name] as string) ?? ''"
+        :options="optionsFor(field)"
+        value-attribute="value"
+        option-attribute="label"
+        searchable
+        creatable
+        :placeholder="field.placeholder"
+        class="w-full"
+        @update:model-value="update(field.name, $event)"
+        @create="(option: unknown) => update(field.name, created(option))"
       />
       <USelect
         v-else-if="field.type === 'select'"

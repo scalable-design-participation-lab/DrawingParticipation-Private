@@ -197,6 +197,7 @@ const FormFieldSchema = z.strictObject({
   placeholder: z.string().optional(),
   rows: z.number().int().positive().optional(),
   options: z.array(z.strictObject({ label: z.string(), value: z.union([z.string(), z.number()]) })).optional(),
+  creatable: z.boolean().optional().describe('Let someone answer with something not on the list; what they type becomes the stored value and its label.'),
   required: z.boolean().optional(),
   style: z.union([z.string(), z.array(z.string())]).optional().describe('Registered style preset(s) for the control, e.g. a width. Raw classes are not accepted.'),
 })

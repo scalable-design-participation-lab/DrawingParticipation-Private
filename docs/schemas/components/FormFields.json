@@ -65,6 +65,10 @@
                 "additionalProperties": false
               }
             },
+            "creatable": {
+              "description": "Let someone answer with something not on the list; what they type becomes the stored value and its label.",
+              "type": "boolean"
+            },
             "required": {
               "type": "boolean"
             },

@@ -196,3 +196,126 @@ describe('comparing two expressions', () => {
     expect(wrapper.findAll('.theirs')).toHaveLength(1)
   })
 })
+
+describe('a binding may be a condition', () => {
+  it('binds the answer to "&&", not the text of it', async () => {
+    const spec = {
+      version: 1 as const,
+      state: { title: '', theme: '', pin: null },
+      children: [{
+        type: 'button',
+        props: { class: 'next' },
+        bind: { disabled: '!$state.title || !$state.theme || !$state.pin' },
+      }],
+    }
+    const render = (state: Record<string, unknown>) =>
+      mount(SpecRenderer, { props: { spec: { ...spec, state: { ...spec.state, ...state } }, navigate: () => {}, query: {} } })
+
+    expect(render({}).find('.next').attributes('disabled')).toBeDefined()
+    expect(render({ title: 'A map', theme: 'health' }).find('.next').attributes('disabled')).toBeDefined()
+    expect(render({ title: 'A map', theme: 'health', pin: [1, 2] }).find('.next').attributes('disabled')).toBeUndefined()
+  })
+
+  it('still reads a plain path as a value', async () => {
+    const spec = {
+      version: 1 as const,
+      state: { label: 'Go' },
+      children: [{ type: 'button', props: { class: 'go' }, bind: { title: '$state.label' } }],
+    }
+    const w = mount(SpecRenderer, { props: { spec, navigate: () => {}, query: {} } })
+    expect(w.find('.go').attributes('title')).toBe('Go')
+  })
+})
+
+describe('ordering comparisons', () => {
+  const spec = {
+    version: 1 as const,
+    state: { step: 3, total: 7 },
+    dataSources: { dots: { kind: 'static' as const, items: [{ n: 1 }, { n: 3 }, { n: 5 }] } },
+    children: [{
+      type: 'List',
+      bind: { items: '$data.dots' },
+      item: {
+        type: 'span',
+        children: [
+          { type: 'i', props: { class: 'done' }, if: '$item.n <= $state.step', text: 'done' },
+          { type: 'i', props: { class: 'todo' }, if: '$item.n > $state.step', text: 'todo' },
+        ],
+      },
+    }],
+  }
+
+  it('orders numbers, so a progress bar can say how far along it is', async () => {
+    const w = mount(SpecRenderer, { props: { spec, navigate: () => {}, query: {} } })
+    await flushPromises()
+    // 1 and 3 are done, 5 is not.
+    expect(w.findAll('.done')).toHaveLength(2)
+    expect(w.findAll('.todo')).toHaveLength(1)
+  })
+
+  it('reads < and >= too', async () => {
+    const one = { ...spec, children: [
+      { type: 'p', props: { class: 'early' }, if: '$state.step < 4', text: 'early' },
+      { type: 'p', props: { class: 'late' }, if: '$state.step >= $state.total', text: 'late' },
+    ] }
+    const w = mount(SpecRenderer, { props: { spec: one, navigate: () => {}, query: {} } })
+    await flushPromises()
+    expect(w.find('.early').exists()).toBe(true)
+    expect(w.find('.late').exists()).toBe(false)
+  })
+})
+
+describe('an action may carry its own condition', () => {
+  it('runs one branch or the other from the same event', async () => {
+    const spec = {
+      version: 1 as const,
+      state: { picking: false, pin: null as unknown },
+      children: [{
+        type: 'button',
+        props: { class: 'map' },
+        on: {
+          click: [
+            { set: 'pin', value: 'dropped', if: '$state.picking' },
+            { set: 'picking', value: false, if: '$state.picking' },
+            { set: 'pin', value: null, if: '!$state.picking' },
+          ],
+        },
+      }],
+    }
+    const w = mount(SpecRenderer, { props: { spec, navigate: () => {}, query: {} } })
+
+    // Not placing a pin: a click clears whatever was there.
+    w.vm.state.pin = 'old'
+    await w.find('.map').trigger('click')
+    expect(w.vm.state.pin).toBe(null)
+
+    // Placing one: the same click captures it and stops placing.
+    w.vm.state.picking = true
+    await w.find('.map').trigger('click')
+    expect(w.vm.state).toMatchObject({ pin: 'dropped', picking: false })
+  })
+})
+
+describe('conditions are answered before the list runs', () => {
+  it('does not let an earlier action flip a later one', async () => {
+    const spec = {
+      version: 1 as const,
+      state: { picking: true, pin: null as unknown },
+      children: [{
+        type: 'button',
+        props: { class: 'map' },
+        on: {
+          click: [
+            { set: 'pin', value: 'dropped', if: '$state.picking' },
+            { set: 'picking', value: false, if: '$state.picking' },
+            // Answered against `picking` as it was: true, so this is skipped.
+            { set: 'pin', value: null, if: '!$state.picking' },
+          ],
+        },
+      }],
+    }
+    const w = mount(SpecRenderer, { props: { spec, navigate: () => {}, query: {} } })
+    await w.find('.map').trigger('click')
+    expect(w.vm.state).toMatchObject({ pin: 'dropped', picking: false })
+  })
+})

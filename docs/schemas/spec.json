@@ -240,6 +240,10 @@
                 },
                 "value": {
                   "description": "Value to write; a \"$...\" string is resolved (e.g. \"$item.id\"). Omitted = the event payload."
+                },
+                "if": {
+                  "description": "Run this action only while the condition holds; same form as a node `if`.",
+                  "type": "string"
                 }
               },
               "required": [
@@ -253,6 +257,10 @@
                 "navigate": {
                   "type": "string",
                   "description": "Route to push."
+                },
+                "if": {
+                  "description": "Run this action only while the condition holds; same form as a node `if`.",
+                  "type": "string"
                 }
               },
               "required": [
@@ -266,6 +274,10 @@
                 "toggle": {
                   "type": "string",
                   "description": "Boolean state path to flip."
+                },
+                "if": {
+                  "description": "Run this action only while the condition holds; same form as a node `if`.",
+                  "type": "string"
                 }
               },
               "required": [
@@ -285,6 +297,10 @@
                 },
                 "payload": {
                   "description": "What the handler receives instead of the event; every \"$...\" string inside is resolved (e.g. { \"propuestaId\": \"$state.open.id\" })."
+                },
+                "if": {
+                  "description": "Run this action only while the condition holds; same form as a node `if`.",
+                  "type": "string"
                 }
               },
               "required": [
@@ -307,6 +323,10 @@
                   },
                   "value": {
                     "description": "Value to write; a \"$...\" string is resolved (e.g. \"$item.id\"). Omitted = the event payload."
+                  },
+                  "if": {
+                    "description": "Run this action only while the condition holds; same form as a node `if`.",
+                    "type": "string"
                   }
                 },
                 "required": [
@@ -320,6 +340,10 @@
                   "navigate": {
                     "type": "string",
                     "description": "Route to push."
+                  },
+                  "if": {
+                    "description": "Run this action only while the condition holds; same form as a node `if`.",
+                    "type": "string"
                   }
                 },
                 "required": [
@@ -333,6 +357,10 @@
                   "toggle": {
                     "type": "string",
                     "description": "Boolean state path to flip."
+                  },
+                  "if": {
+                    "description": "Run this action only while the condition holds; same form as a node `if`.",
+                    "type": "string"
                   }
                 },
                 "required": [
@@ -352,6 +380,10 @@
                   },
                   "payload": {
                     "description": "What the handler receives instead of the event; every \"$...\" string inside is resolved (e.g. { \"propuestaId\": \"$state.open.id\" })."
+                  },
+                  "if": {
+                    "description": "Run this action only while the condition holds; same form as a node `if`.",
+                    "type": "string"
                   }
                 },
                 "required": [
@@ -417,6 +449,10 @@
                       },
                       "value": {
                         "description": "Value to write; a \"$...\" string is resolved (e.g. \"$item.id\"). Omitted = the event payload."
+                      },
+                      "if": {
+                        "description": "Run this action only while the condition holds; same form as a node `if`.",
+                        "type": "string"
                       }
                     },
                     "required": [
@@ -430,6 +466,10 @@
                       "navigate": {
                         "type": "string",
                         "description": "Route to push."
+                      },
+                      "if": {
+                        "description": "Run this action only while the condition holds; same form as a node `if`.",
+                        "type": "string"
                       }
                     },
                     "required": [
@@ -443,6 +483,10 @@
                       "toggle": {
                         "type": "string",
                         "description": "Boolean state path to flip."
+                      },
+                      "if": {
+                        "description": "Run this action only while the condition holds; same form as a node `if`.",
+                        "type": "string"
                       }
                     },
                     "required": [
@@ -462,6 +506,10 @@
                       },
                       "payload": {
                         "description": "What the handler receives instead of the event; every \"$...\" string inside is resolved (e.g. { \"propuestaId\": \"$state.open.id\" })."
+                      },
+                      "if": {
+                        "description": "Run this action only while the condition holds; same form as a node `if`.",
+                        "type": "string"
                       }
                     },
                     "required": [
@@ -484,6 +532,10 @@
                         },
                         "value": {
                           "description": "Value to write; a \"$...\" string is resolved (e.g. \"$item.id\"). Omitted = the event payload."
+                        },
+                        "if": {
+                          "description": "Run this action only while the condition holds; same form as a node `if`.",
+                          "type": "string"
                         }
                       },
                       "required": [
@@ -497,6 +549,10 @@
                         "navigate": {
                           "type": "string",
                           "description": "Route to push."
+                        },
+                        "if": {
+                          "description": "Run this action only while the condition holds; same form as a node `if`.",
+                          "type": "string"
                         }
                       },
                       "required": [
@@ -510,6 +566,10 @@
                         "toggle": {
                           "type": "string",
                           "description": "Boolean state path to flip."
+                        },
+                        "if": {
+                          "description": "Run this action only while the condition holds; same form as a node `if`.",
+                          "type": "string"
                         }
                       },
                       "required": [
@@ -529,6 +589,10 @@
                         },
                         "payload": {
                           "description": "What the handler receives instead of the event; every \"$...\" string inside is resolved (e.g. { \"propuestaId\": \"$state.open.id\" })."
+                        },
+                        "if": {
+                          "description": "Run this action only while the condition holds; same form as a node `if`.",
+                          "type": "string"
                         }
                       },
                       "required": [

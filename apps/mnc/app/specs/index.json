@@ -19,7 +19,6 @@
     "onboarding": true,
     "mobileView": "map",
     "cardState": "peek",
-    "contribute": false,
     "picking": false,
     "pin": null,
     "contributions": [],
@@ -50,7 +49,44 @@
     },
     "uploadBusy": false,
     "tagLabels": {},
-    "linkLabels": {}
+    "linkLabels": {},
+    "wizardOpen": false,
+    "wizardStep": 1,
+    "wizardSteps": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7
+    ],
+    "wizardSubmitted": false,
+    "wizardConfirmPin": false,
+    "entry": {
+      "title": "",
+      "primaryTag": "",
+      "location": "",
+      "coordinate": null,
+      "example": "",
+      "why": "",
+      "date": "",
+      "additionalInfo": "",
+      "connectInfo": null,
+      "fullName": "",
+      "email": "",
+      "country": "",
+      "city": ""
+    },
+    "entryFiles": {
+      "example": [],
+      "why": [],
+      "media": [],
+      "additional": [],
+      "voiceExample": [],
+      "voiceWhy": []
+    },
+    "placeName": ""
   },
   "init": [
     {
@@ -107,10 +143,42 @@
             "mapType": "$state.mapType"
           },
           "on": {
-            "mapClick": {
-              "set": "pin",
-              "value": null
-            }
+            "mapClick": [
+              {
+                "set": "pin",
+                "value": "$payload.coordinate",
+                "if": "$state.picking"
+              },
+              {
+                "set": "entry.coordinate",
+                "value": "$payload.coordinate",
+                "if": "$state.picking"
+              },
+              {
+                "set": "wizardConfirmPin",
+                "value": true,
+                "if": "$state.picking"
+              },
+              {
+                "call": "placeName",
+                "payload": "$payload.coordinate",
+                "args": {
+                  "into": "placeName",
+                  "coordinates": "webmercator"
+                },
+                "if": "$state.picking"
+              },
+              {
+                "set": "picking",
+                "value": false,
+                "if": "$state.picking"
+              },
+              {
+                "set": "pin",
+                "value": null,
+                "if": "!$state.picking"
+              }
+            ]
           },
           "children": [
             {
@@ -247,7 +315,7 @@
             },
             {
               "type": "IconBar",
-              "if": "!$state.contribute",
+              "if": "!$state.wizardOpen",
               "props": {
                 "position": "top",
                 "multiple": true,
@@ -289,7 +357,7 @@
             },
             {
               "type": "IconBar",
-              "if": "!$state.onboarding && !$state.contribute && !$state.detail && !$state.selected",
+              "if": "!$state.onboarding && !$state.wizardOpen && !$state.detail && !$state.selected",
               "props": {
                 "position": "bottom",
                 "size": "lg",
@@ -352,7 +420,7 @@
                     "onClick": {
                       "$action": [
                         {
-                          "set": "contribute",
+                          "set": "wizardOpen",
                           "value": true
                         },
                         {
@@ -376,36 +444,6 @@
                   "set": "mode"
                 }
               }
-            },
-            {
-              "type": "MobileContributeFlow",
-              "bind": {
-                "pickedCoordinate": "$state.pin"
-              },
-              "on": {
-                "pickLocation": {
-                  "set": "picking",
-                  "value": true
-                },
-                "close": [
-                  {
-                    "set": "contribute",
-                    "value": false
-                  },
-                  {
-                    "set": "picking",
-                    "value": false
-                  },
-                  {
-                    "set": "pin",
-                    "value": null
-                  }
-                ],
-                "submit": {
-                  "call": "submitEntry"
-                }
-              },
-              "if": "$state.contribute && !$state.picking"
             },
             {
               "type": "div",
@@ -2395,36 +2433,6 @@
               }
             },
             {
-              "type": "MobileContributeFlow",
-              "bind": {
-                "pickedCoordinate": "$state.pin"
-              },
-              "on": {
-                "pickLocation": {
-                  "set": "picking",
-                  "value": true
-                },
-                "close": [
-                  {
-                    "set": "mobileView",
-                    "value": "map"
-                  },
-                  {
-                    "set": "picking",
-                    "value": false
-                  },
-                  {
-                    "set": "pin",
-                    "value": null
-                  }
-                ],
-                "submit": {
-                  "call": "submitEntry"
-                }
-              },
-              "if": "$state.mobileView == 'more' && !$state.picking"
-            },
-            {
               "type": "Modal",
               "if": "$state.mobileView == 'info'",
               "props": {
@@ -3640,6 +3648,1023 @@
                             "value": {
                               "comment": ""
                             }
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "div",
+          "if": "$state.wizardOpen && !$state.picking || $state.mobileView == 'more' && !$state.picking",
+          "style": "wizard-shell",
+          "children": [
+            {
+              "type": "div",
+              "style": "wizard-panel",
+              "children": [
+                {
+                  "type": "span",
+                  "if": "$state.isMobile",
+                  "style": "wizard-wordmark",
+                  "text": "MNC"
+                },
+                {
+                  "type": "Button",
+                  "style": "wizard-close",
+                  "props": {
+                    "size": "sm",
+                    "color": "gray",
+                    "variant": "solid",
+                    "icon": "i-heroicons-x-mark",
+                    "label": "$t.contribute.close"
+                  },
+                  "on": {
+                    "click": [
+                      {
+                        "set": "entry",
+                        "value": {
+                          "title": "",
+                          "primaryTag": "",
+                          "location": "",
+                          "coordinate": null,
+                          "example": "",
+                          "why": "",
+                          "date": "",
+                          "additionalInfo": "",
+                          "connectInfo": null,
+                          "fullName": "",
+                          "email": "",
+                          "country": "",
+                          "city": ""
+                        }
+                      },
+                      {
+                        "set": "entryFiles",
+                        "value": {
+                          "example": [],
+                          "why": [],
+                          "media": [],
+                          "additional": [],
+                          "voiceExample": [],
+                          "voiceWhy": []
+                        }
+                      },
+                      {
+                        "set": "wizardStep",
+                        "value": 1
+                      },
+                      {
+                        "set": "wizardSubmitted",
+                        "value": false
+                      },
+                      {
+                        "set": "wizardConfirmPin",
+                        "value": false
+                      },
+                      {
+                        "set": "placeName",
+                        "value": ""
+                      },
+                      {
+                        "set": "wizardOpen",
+                        "value": false
+                      },
+                      {
+                        "set": "picking",
+                        "value": false
+                      },
+                      {
+                        "set": "pin",
+                        "value": null
+                      },
+                      {
+                        "set": "mobileView",
+                        "value": "map"
+                      }
+                    ]
+                  }
+                },
+                {
+                  "type": "Stack",
+                  "if": "$state.wizardSubmitted",
+                  "style": "wizard-thanks",
+                  "props": {
+                    "align": "center",
+                    "gap": "md"
+                  },
+                  "children": [
+                    {
+                      "type": "Text",
+                      "style": "wizard-heading",
+                      "props": {
+                        "as": "h2",
+                        "size": "3xl",
+                        "weight": "bold",
+                        "align": "center",
+                        "text": "$t.contribute.title"
+                      }
+                    },
+                    {
+                      "type": "Text",
+                      "style": "wizard-subheading",
+                      "props": {
+                        "as": "h3",
+                        "size": "xl",
+                        "weight": "bold",
+                        "align": "center",
+                        "text": "$t.contribute.thankYou"
+                      }
+                    },
+                    {
+                      "type": "Text",
+                      "style": "wizard-thanks-body",
+                      "props": {
+                        "size": "sm",
+                        "align": "center",
+                        "text": "$t.contribute.received"
+                      }
+                    },
+                    {
+                      "type": "Text",
+                      "style": "wizard-thanks-body",
+                      "props": {
+                        "size": "sm",
+                        "align": "center",
+                        "text": "$t.contribute.inTouch"
+                      }
+                    },
+                    {
+                      "type": "Button",
+                      "style": "wizard-again",
+                      "props": {
+                        "color": "red",
+                        "label": "$t.contribute.anotherStory"
+                      },
+                      "on": {
+                        "click": [
+                          {
+                            "set": "entry",
+                            "value": {
+                              "title": "",
+                              "primaryTag": "",
+                              "location": "",
+                              "coordinate": null,
+                              "example": "",
+                              "why": "",
+                              "date": "",
+                              "additionalInfo": "",
+                              "connectInfo": null,
+                              "fullName": "",
+                              "email": "",
+                              "country": "",
+                              "city": ""
+                            }
+                          },
+                          {
+                            "set": "entryFiles",
+                            "value": {
+                              "example": [],
+                              "why": [],
+                              "media": [],
+                              "additional": [],
+                              "voiceExample": [],
+                              "voiceWhy": []
+                            }
+                          },
+                          {
+                            "set": "wizardStep",
+                            "value": 1
+                          },
+                          {
+                            "set": "wizardSubmitted",
+                            "value": false
+                          },
+                          {
+                            "set": "wizardConfirmPin",
+                            "value": false
+                          },
+                          {
+                            "set": "placeName",
+                            "value": ""
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                },
+                {
+                  "type": "div",
+                  "if": "!$state.wizardSubmitted",
+                  "style": "wizard-progress-box",
+                  "children": [
+                    {
+                      "type": "List",
+                      "style": "wizard-dots",
+                      "props": {
+                        "layout": "stack",
+                        "gap": "xs"
+                      },
+                      "bind": {
+                        "items": "$state.wizardSteps"
+                      },
+                      "item": {
+                        "type": "span",
+                        "children": [
+                          {
+                            "type": "i",
+                            "style": "dot-done",
+                            "if": "$item <= $state.wizardStep"
+                          },
+                          {
+                            "type": "i",
+                            "style": "dot-todo",
+                            "if": "$item > $state.wizardStep"
+                          }
+                        ]
+                      }
+                    },
+                    {
+                      "type": "Text",
+                      "style": "wizard-heading",
+                      "props": {
+                        "as": "h2",
+                        "size": "2xl",
+                        "weight": "bold",
+                        "align": "center",
+                        "text": "$t.contribute.title"
+                      }
+                    }
+                  ]
+                },
+                {
+                  "type": "div",
+                  "if": "!$state.wizardSubmitted",
+                  "style": "wizard-body",
+                  "children": [
+                    {
+                      "type": "Stack",
+                      "if": "$state.wizardStep == 1 && $state.wizardConfirmPin",
+                      "style": "wizard-step-card",
+                      "props": {
+                        "gap": "md"
+                      },
+                      "children": [
+                        {
+                          "type": "Text",
+                          "style": "wizard-prompt",
+                          "props": {
+                            "size": "sm",
+                            "weight": "semibold",
+                            "text": "$t.contribute.step1.confirmPinPrompt"
+                          }
+                        },
+                        {
+                          "type": "Stack",
+                          "if": "$state.entry.coordinate",
+                          "style": "pin-dropped",
+                          "props": {
+                            "direction": "row",
+                            "align": "center",
+                            "gap": "xs"
+                          },
+                          "children": [
+                            {
+                              "type": "Icon",
+                              "props": {
+                                "name": "i-heroicons-map-pin",
+                                "size": "xs"
+                              }
+                            },
+                            {
+                              "type": "Text",
+                              "props": {
+                                "as": "span",
+                                "size": "xs",
+                                "text": "$t.contribute.step1.pinDropped"
+                              }
+                            },
+                            {
+                              "type": "Text",
+                              "props": {
+                                "as": "span",
+                                "size": "xs",
+                                "weight": "medium"
+                              },
+                              "bind": {
+                                "text": "$state.placeName",
+                                "fallback": "$state.entry.location"
+                              }
+                            }
+                          ]
+                        },
+                        {
+                          "type": "Button",
+                          "style": "wizard-link",
+                          "props": {
+                            "size": "sm",
+                            "color": "red",
+                            "variant": "link",
+                            "label": "$t.contribute.step1.movePin"
+                          },
+                          "on": {
+                            "click": {
+                              "set": "picking",
+                              "value": true
+                            }
+                          }
+                        }
+                      ]
+                    },
+                    {
+                      "type": "Stack",
+                      "if": "$state.wizardStep == 1 && !$state.wizardConfirmPin",
+                      "style": "wizard-step-card",
+                      "props": {
+                        "gap": "md"
+                      },
+                      "children": [
+                        {
+                          "type": "Text",
+                          "style": "wizard-prompt",
+                          "props": {
+                            "size": "sm",
+                            "weight": "semibold",
+                            "text": "$t.contribute.step1.prompt"
+                          }
+                        },
+                        {
+                          "type": "FormFields",
+                          "props": {
+                            "fields": [
+                              {
+                                "name": "title",
+                                "placeholder": "$t.add.titlePlaceholder",
+                                "style": "pill-input"
+                              },
+                              {
+                                "name": "primaryTag",
+                                "type": "select",
+                                "creatable": true,
+                                "placeholder": "$t.add.themePlaceholder"
+                              },
+                              {
+                                "name": "location",
+                                "placeholder": "$t.contribute.step1.placeholder",
+                                "style": "pill-input"
+                              }
+                            ]
+                          },
+                          "bind": {
+                            "modelValue": "$state.entry"
+                          },
+                          "on": {
+                            "update:modelValue": {
+                              "set": "entry"
+                            }
+                          }
+                        },
+                        {
+                          "type": "Button",
+                          "style": "wizard-link",
+                          "props": {
+                            "size": "sm",
+                            "color": "red",
+                            "variant": "link",
+                            "label": "$t.contribute.step1.dropPin"
+                          },
+                          "on": {
+                            "click": {
+                              "set": "picking",
+                              "value": true
+                            }
+                          }
+                        },
+                        {
+                          "type": "Stack",
+                          "if": "$state.entry.coordinate",
+                          "style": "pin-dropped",
+                          "props": {
+                            "direction": "row",
+                            "align": "center",
+                            "gap": "xs"
+                          },
+                          "children": [
+                            {
+                              "type": "Icon",
+                              "props": {
+                                "name": "i-heroicons-map-pin",
+                                "size": "xs"
+                              }
+                            },
+                            {
+                              "type": "Text",
+                              "props": {
+                                "as": "span",
+                                "size": "xs",
+                                "text": "$t.contribute.step1.pinDropped"
+                              }
+                            },
+                            {
+                              "type": "Text",
+                              "props": {
+                                "as": "span",
+                                "size": "xs",
+                                "weight": "medium"
+                              },
+                              "bind": {
+                                "text": "$state.placeName",
+                                "fallback": "$state.entry.location"
+                              }
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "Stack",
+                      "if": "$state.wizardStep == 2",
+                      "props": {
+                        "gap": "md"
+                      },
+                      "children": [
+                        {
+                          "type": "Text",
+                          "style": "wizard-prompt",
+                          "props": {
+                            "size": "sm",
+                            "weight": "semibold",
+                            "text": "$t.contribute.step2.prompt"
+                          }
+                        },
+                        {
+                          "type": "FormFields",
+                          "props": {
+                            "fields": [
+                              {
+                                "name": "example",
+                                "type": "textarea",
+                                "rows": 5,
+                                "placeholder": "$t.contribute.descPlaceholder"
+                              }
+                            ]
+                          },
+                          "bind": {
+                            "modelValue": "$state.entry"
+                          },
+                          "on": {
+                            "update:modelValue": {
+                              "set": "entry"
+                            }
+                          }
+                        },
+                        {
+                          "type": "VoiceRecorder",
+                          "props": {
+                            "recordLabel": "$t.voice.record",
+                            "stopLabel": "$t.voice.stop",
+                            "removeLabel": "$t.fileUpload.removeFile",
+                            "deniedLabel": "$t.voice.micDenied"
+                          },
+                          "bind": {
+                            "modelValue": "$state.entryFiles.voiceExample"
+                          },
+                          "on": {
+                            "update:modelValue": {
+                              "set": "entryFiles.voiceExample"
+                            }
+                          }
+                        },
+                        {
+                          "type": "FileDropZone",
+                          "props": {
+                            "accept": "image/*,audio/*",
+                            "multiple": true,
+                            "maxSizeMb": 10,
+                            "lines": [
+                              "$t.fileUpload.prompt",
+                              "$t.fileUpload.hint"
+                            ],
+                            "removeLabel": "$t.fileUpload.removeFile",
+                            "tooLargeLabel": "$t.fileUpload.tooLarge",
+                            "unsupportedLabel": "$t.fileUpload.unsupported"
+                          },
+                          "bind": {
+                            "modelValue": "$state.entryFiles.example"
+                          },
+                          "on": {
+                            "update:modelValue": {
+                              "set": "entryFiles.example"
+                            }
+                          }
+                        }
+                      ]
+                    },
+                    {
+                      "type": "Stack",
+                      "if": "$state.wizardStep == 3",
+                      "props": {
+                        "gap": "md"
+                      },
+                      "children": [
+                        {
+                          "type": "Text",
+                          "style": "wizard-prompt",
+                          "props": {
+                            "size": "sm",
+                            "weight": "semibold",
+                            "text": "$t.contribute.step3.prompt"
+                          }
+                        },
+                        {
+                          "type": "FormFields",
+                          "props": {
+                            "fields": [
+                              {
+                                "name": "why",
+                                "type": "textarea",
+                                "rows": 5,
+                                "placeholder": "$t.contribute.descPlaceholder"
+                              }
+                            ]
+                          },
+                          "bind": {
+                            "modelValue": "$state.entry"
+                          },
+                          "on": {
+                            "update:modelValue": {
+                              "set": "entry"
+                            }
+                          }
+                        },
+                        {
+                          "type": "VoiceRecorder",
+                          "props": {
+                            "recordLabel": "$t.voice.record",
+                            "stopLabel": "$t.voice.stop",
+                            "removeLabel": "$t.fileUpload.removeFile",
+                            "deniedLabel": "$t.voice.micDenied"
+                          },
+                          "bind": {
+                            "modelValue": "$state.entryFiles.voiceWhy"
+                          },
+                          "on": {
+                            "update:modelValue": {
+                              "set": "entryFiles.voiceWhy"
+                            }
+                          }
+                        },
+                        {
+                          "type": "FileDropZone",
+                          "props": {
+                            "accept": "image/*,audio/*",
+                            "multiple": true,
+                            "maxSizeMb": 10,
+                            "lines": [
+                              "$t.fileUpload.prompt",
+                              "$t.fileUpload.hint"
+                            ],
+                            "removeLabel": "$t.fileUpload.removeFile",
+                            "tooLargeLabel": "$t.fileUpload.tooLarge",
+                            "unsupportedLabel": "$t.fileUpload.unsupported"
+                          },
+                          "bind": {
+                            "modelValue": "$state.entryFiles.why"
+                          },
+                          "on": {
+                            "update:modelValue": {
+                              "set": "entryFiles.why"
+                            }
+                          }
+                        }
+                      ]
+                    },
+                    {
+                      "type": "Stack",
+                      "if": "$state.wizardStep == 4",
+                      "props": {
+                        "gap": "md"
+                      },
+                      "children": [
+                        {
+                          "type": "Text",
+                          "style": "wizard-prompt",
+                          "props": {
+                            "size": "sm",
+                            "weight": "semibold",
+                            "text": "$t.contribute.step4.prompt"
+                          }
+                        },
+                        {
+                          "type": "FileDropZone",
+                          "props": {
+                            "accept": "image/*,audio/*",
+                            "multiple": true,
+                            "maxSizeMb": 10,
+                            "lines": [
+                              "$t.fileUpload.prompt",
+                              "$t.fileUpload.hint"
+                            ],
+                            "removeLabel": "$t.fileUpload.removeFile",
+                            "tooLargeLabel": "$t.fileUpload.tooLarge",
+                            "unsupportedLabel": "$t.fileUpload.unsupported"
+                          },
+                          "bind": {
+                            "modelValue": "$state.entryFiles.media"
+                          },
+                          "on": {
+                            "update:modelValue": {
+                              "set": "entryFiles.media"
+                            }
+                          }
+                        }
+                      ]
+                    },
+                    {
+                      "type": "Stack",
+                      "if": "$state.wizardStep == 5",
+                      "props": {
+                        "gap": "md"
+                      },
+                      "children": [
+                        {
+                          "type": "Text",
+                          "style": "wizard-prompt",
+                          "props": {
+                            "size": "sm",
+                            "weight": "semibold",
+                            "text": "$t.contribute.step5.prompt"
+                          }
+                        },
+                        {
+                          "type": "FormFields",
+                          "props": {
+                            "fields": [
+                              {
+                                "name": "date",
+                                "type": "date",
+                                "style": "pill-input"
+                              }
+                            ]
+                          },
+                          "bind": {
+                            "modelValue": "$state.entry"
+                          },
+                          "on": {
+                            "update:modelValue": {
+                              "set": "entry"
+                            }
+                          }
+                        }
+                      ]
+                    },
+                    {
+                      "type": "Stack",
+                      "if": "$state.wizardStep == 6",
+                      "props": {
+                        "gap": "md"
+                      },
+                      "children": [
+                        {
+                          "type": "Text",
+                          "style": "wizard-prompt",
+                          "props": {
+                            "size": "sm",
+                            "weight": "semibold",
+                            "text": "$t.contribute.step6.prompt"
+                          }
+                        },
+                        {
+                          "type": "FormFields",
+                          "props": {
+                            "fields": [
+                              {
+                                "name": "additionalInfo",
+                                "type": "textarea",
+                                "rows": 5,
+                                "placeholder": "$t.contribute.descPlaceholder"
+                              }
+                            ]
+                          },
+                          "bind": {
+                            "modelValue": "$state.entry"
+                          },
+                          "on": {
+                            "update:modelValue": {
+                              "set": "entry"
+                            }
+                          }
+                        },
+                        {
+                          "type": "FileDropZone",
+                          "props": {
+                            "accept": "image/*,audio/*",
+                            "multiple": true,
+                            "maxSizeMb": 10,
+                            "lines": [
+                              "$t.fileUpload.prompt",
+                              "$t.fileUpload.hint"
+                            ],
+                            "removeLabel": "$t.fileUpload.removeFile",
+                            "tooLargeLabel": "$t.fileUpload.tooLarge",
+                            "unsupportedLabel": "$t.fileUpload.unsupported"
+                          },
+                          "bind": {
+                            "modelValue": "$state.entryFiles.additional"
+                          },
+                          "on": {
+                            "update:modelValue": {
+                              "set": "entryFiles.additional"
+                            }
+                          }
+                        }
+                      ]
+                    },
+                    {
+                      "type": "Stack",
+                      "if": "$state.wizardStep == 7",
+                      "props": {
+                        "gap": "md"
+                      },
+                      "children": [
+                        {
+                          "type": "Text",
+                          "style": "wizard-prompt",
+                          "props": {
+                            "size": "sm",
+                            "weight": "semibold",
+                            "text": "$t.contribute.step7.prompt"
+                          }
+                        },
+                        {
+                          "type": "Stack",
+                          "props": {
+                            "gap": "sm"
+                          },
+                          "children": [
+                            {
+                              "type": "Stack",
+                              "style": "consent-row",
+                              "props": {
+                                "direction": "row",
+                                "align": "center",
+                                "gap": "sm"
+                              },
+                              "on": {
+                                "click": {
+                                  "set": "entry.connectInfo",
+                                  "value": true
+                                }
+                              },
+                              "children": [
+                                {
+                                  "type": "Icon",
+                                  "style": "consent-mark",
+                                  "if": "$state.entry.connectInfo == true",
+                                  "props": {
+                                    "name": "i-heroicons-check-circle-solid",
+                                    "size": "sm"
+                                  }
+                                },
+                                {
+                                  "type": "Icon",
+                                  "style": "consent-mark-off",
+                                  "if": "$state.entry.connectInfo != true",
+                                  "props": {
+                                    "name": "i-heroicons-stop",
+                                    "size": "sm"
+                                  }
+                                },
+                                {
+                                  "type": "Text",
+                                  "props": {
+                                    "as": "span",
+                                    "size": "sm",
+                                    "text": "$t.contribute.step7.yes"
+                                  }
+                                }
+                              ]
+                            },
+                            {
+                              "type": "Stack",
+                              "style": "consent-row",
+                              "props": {
+                                "direction": "row",
+                                "align": "center",
+                                "gap": "sm"
+                              },
+                              "on": {
+                                "click": {
+                                  "set": "entry.connectInfo",
+                                  "value": false
+                                }
+                              },
+                              "children": [
+                                {
+                                  "type": "Icon",
+                                  "style": "consent-mark",
+                                  "if": "$state.entry.connectInfo == false",
+                                  "props": {
+                                    "name": "i-heroicons-check-circle-solid",
+                                    "size": "sm"
+                                  }
+                                },
+                                {
+                                  "type": "Icon",
+                                  "style": "consent-mark-off",
+                                  "if": "$state.entry.connectInfo != false",
+                                  "props": {
+                                    "name": "i-heroicons-stop",
+                                    "size": "sm"
+                                  }
+                                },
+                                {
+                                  "type": "Text",
+                                  "props": {
+                                    "as": "span",
+                                    "size": "sm",
+                                    "text": "$t.contribute.step7.no"
+                                  }
+                                }
+                              ]
+                            }
+                          ]
+                        },
+                        {
+                          "type": "Text",
+                          "if": "$state.entry.connectInfo == true",
+                          "style": "wizard-prompt",
+                          "props": {
+                            "size": "sm",
+                            "text": "$t.contribute.step7.ifYes"
+                          }
+                        },
+                        {
+                          "type": "FormFields",
+                          "if": "$state.entry.connectInfo == true",
+                          "props": {
+                            "layout": "inline",
+                            "labelClass": "w-28 shrink-0 text-sm",
+                            "fields": [
+                              {
+                                "name": "fullName",
+                                "label": "$t.contribute.step7.fullName",
+                                "style": "pill-input"
+                              },
+                              {
+                                "name": "email",
+                                "label": "$t.contribute.step7.email",
+                                "type": "email",
+                                "style": "pill-input"
+                              },
+                              {
+                                "name": "country",
+                                "label": "$t.contribute.step7.country",
+                                "style": "pill-input"
+                              },
+                              {
+                                "name": "city",
+                                "label": "$t.contribute.step7.city",
+                                "style": "pill-input"
+                              }
+                            ]
+                          },
+                          "bind": {
+                            "modelValue": "$state.entry"
+                          },
+                          "on": {
+                            "update:modelValue": {
+                              "set": "entry"
+                            }
+                          }
+                        },
+                        {
+                          "type": "Text",
+                          "style": "wizard-privacy",
+                          "props": {
+                            "size": "xs",
+                            "tone": "muted",
+                            "text": "$t.contribute.step7.privacy"
+                          }
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "type": "Stack",
+                  "if": "!$state.wizardSubmitted",
+                  "style": "wizard-nav",
+                  "props": {
+                    "direction": "row",
+                    "justify": "between",
+                    "gap": "sm"
+                  },
+                  "children": [
+                    {
+                      "type": "Button",
+                      "style": "wizard-nav-button",
+                      "props": {
+                        "color": "gray",
+                        "variant": "soft",
+                        "label": "$t.contribute.back"
+                      },
+                      "bind": {
+                        "disabled": "$state.wizardStep == 1"
+                      },
+                      "on": {
+                        "click": {
+                          "call": "step",
+                          "payload": null,
+                          "args": {
+                            "of": "wizardStep",
+                            "by": -1,
+                            "min": 1
+                          }
+                        }
+                      }
+                    },
+                    {
+                      "type": "Button",
+                      "if": "$state.wizardStep == 1 && $state.wizardConfirmPin",
+                      "style": "wizard-nav-button",
+                      "props": {
+                        "color": "red",
+                        "label": "$t.contribute.next"
+                      },
+                      "on": {
+                        "click": {
+                          "set": "wizardConfirmPin",
+                          "value": false
+                        }
+                      }
+                    },
+                    {
+                      "type": "Button",
+                      "if": "$state.wizardStep < 7 && !$state.wizardConfirmPin",
+                      "style": "wizard-nav-button",
+                      "props": {
+                        "color": "red",
+                        "label": "$t.contribute.next"
+                      },
+                      "bind": {
+                        "disabled": "$state.wizardStep == 1 && !$state.wizardConfirmPin && !$state.entry.title || $state.wizardStep == 1 && !$state.wizardConfirmPin && !$state.entry.primaryTag || $state.wizardStep == 1 && !$state.wizardConfirmPin && !$state.entry.coordinate"
+                      },
+                      "on": {
+                        "click": {
+                          "call": "step",
+                          "payload": null,
+                          "args": {
+                            "of": "wizardStep",
+                            "by": 1,
+                            "max": 7
+                          }
+                        }
+                      }
+                    },
+                    {
+                      "type": "Button",
+                      "if": "$state.wizardStep == 7",
+                      "style": "wizard-nav-button",
+                      "props": {
+                        "color": "red",
+                        "label": "$t.contribute.submit"
+                      },
+                      "on": {
+                        "click": [
+                          {
+                            "call": "submitEntry",
+                            "payload": {
+                              "title": "$state.entry.title",
+                              "primaryTag": "$state.entry.primaryTag",
+                              "location": "$state.entry.location",
+                              "coordinate": "$state.entry.coordinate",
+                              "example": "$state.entry.example",
+                              "why": "$state.entry.why",
+                              "date": "$state.entry.date",
+                              "additionalInfo": "$state.entry.additionalInfo",
+                              "connectInfo": "$state.entry.connectInfo",
+                              "fullName": "$state.entry.fullName",
+                              "email": "$state.entry.email",
+                              "country": "$state.entry.country",
+                              "city": "$state.entry.city",
+                              "files": {
+                                "example": "$state.entryFiles.example",
+                                "why": "$state.entryFiles.why",
+                                "media": "$state.entryFiles.media",
+                                "additional": "$state.entryFiles.additional",
+                                "voiceExample": "$state.entryFiles.voiceExample",
+                                "voiceWhy": "$state.entryFiles.voiceWhy"
+                              }
+                            }
+                          },
+                          {
+                            "set": "wizardSubmitted",
+                            "value": true
                           }
                         ]
                       }

@@ -206,6 +206,9 @@ export function verifySpec(spec: unknown, options: VerifySpecOptions = {}): Veri
   const checkActions = (actions: ActionList, at: string, inItem: boolean, native = false) => {
     for (const [i, action] of (Array.isArray(actions) ? actions : [actions]).entries()) {
       const p = Array.isArray(actions) ? `${at}[${i}]` : at
+      if (action.if !== undefined) {
+        conditionExprs(action.if).forEach(expr => checkExpr(expr, `${p}.if`, inItem, true))
+      }
       if (native && 'set' in action && !('value' in action)) {
         errors.push({ path: `${p}.set`, rule: 'action.dom-event-payload', message: `a DOM event carries an Event object, not a value: give this a \`value\` (inside an item template, usually "$item")` })
       }
@@ -368,7 +371,8 @@ export function verifySpec(spec: unknown, options: VerifySpecOptions = {}): Veri
     }
 
     for (const [prop, expr] of Object.entries(node.bind ?? {})) {
-      checkExpr(expr, `${path}.bind.${prop}`, inItem)
+      // A binding may be a condition, so it is read the same way `if` is.
+      conditionExprs(expr).forEach(part => checkExpr(part, `${path}.bind.${prop}`, inItem))
     }
     if (node.if !== undefined) {
       conditionExprs(node.if).forEach(expr => checkExpr(expr, `${path}.if`, inItem))

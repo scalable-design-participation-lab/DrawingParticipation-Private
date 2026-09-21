@@ -39,3 +39,5 @@ declareHandler('watchViewport', 'Keep state.isMobile in step with the viewport; 
 declareHandler('watchLocation', 'Ask once where the reader is and put [lon, lat] into the state key named by the payload (default "location"). Bind that state to a List `near` for nearest-first.')
 declareHandler('download', 'Save a data source to a file the reader keeps: args { from, format?: "json" | "csv", filename? }.')
 declareHandler('copy', 'Copy the payload to the clipboard; args { into, seconds? } flashes a state flag so the page can say it worked.')
+declareHandler('placeName', 'Name the place at the point in the payload ("City, Country") into the state key in args { into } (default "placeName"); args { coordinates: "webmercator" } for a map coordinate. Silent when it cannot: the reader can still type it.')
+declareHandler('step', 'Move a counter in state: args { of, by?, min?, max? }. A wizard asks for `by: 1` going forward and `-1` coming back, and it stops at the ends.')

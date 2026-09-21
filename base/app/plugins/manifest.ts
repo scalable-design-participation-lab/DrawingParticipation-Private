@@ -1,5 +1,6 @@
 import { ref } from 'vue'
 import type { Ref } from 'vue'
+import { toLonLat } from 'ol/proj'
 import { useAppManifest } from '../composables/useAppManifest'
 import { SPEC_I18N, createTranslator } from '../utils/i18n'
 import { DATA_ADAPTER, composeAdapters, restAdapter, staticAdapter } from '../data/adapters'
@@ -120,6 +121,42 @@ export default defineNuxtPlugin((nuxtApp) => {
     link.remove()
     URL.revokeObjectURL(url)
   }, 'Save a data source to a file: args { from, format?: "json" | "csv", filename? }.')
+
+  registerHandler('step', (_payload, ctx, args) => {
+    const { of: key, by = 1, min = 1, max } = (args ?? {}) as { of?: string, by?: number, min?: number, max?: number }
+    if (!key) {
+      throw new Error('step needs args { of: "<state key>" }')
+    }
+    const next = Number(ctx.state[key] ?? min) + by
+    ctx.state[key] = Math.max(min, max === undefined ? next : Math.min(max, next))
+  }, 'Move a counter in state: args { of, by?, min?, max? }. A wizard asks for `by: 1` going forward and `-1` coming back, and it stops at the ends.')
+
+  registerHandler('placeName', async (payload, ctx, args) => {
+    const point = payload as [number, number] | null
+    const { into = 'placeName', coordinates = 'lonlat' } = (args ?? {}) as { into?: string, coordinates?: 'lonlat' | 'webmercator' }
+    if (!Array.isArray(point)) {
+      return
+    }
+    // OpenStreetMap's own geocoder: no key, and a point on a map means
+    // nothing to a reader until it is "City, Country".
+    const [lon, lat] = coordinates === 'webmercator' ? toLonLat(point) : point
+    const url = `https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${lat}&lon=${lon}&zoom=10&addressdetails=1&accept-language=${ctx.locale || 'en'}`
+    try {
+      const response = await fetch(url)
+      if (!response.ok) {
+        return
+      }
+      const address = (await response.json())?.address ?? {}
+      const town = address.city || address.town || address.village || address.county || address.state || ''
+      const name = [town, address.country].filter(Boolean).join(', ')
+      if (name) {
+        ctx.state[into] = name
+      }
+    }
+    catch {
+      // Offline or rate-limited: the page keeps whatever the reader typed.
+    }
+  }, 'Name the place at the point in the payload ("City, Country") into the state key in args { into } (default "placeName"); args { coordinates: "webmercator" } for a map coordinate. Silent when it cannot: the reader can still type it.')
 
   registerHandler('copy', async (payload, ctx, args) => {
     const text = String(payload ?? '')

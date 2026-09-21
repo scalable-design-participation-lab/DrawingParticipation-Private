@@ -21,8 +21,19 @@ export interface SpecContext {
   locale?: string
 }
 
-/** `"$state.view == 'list'"`, `"$state.n != 0"`, with an optional leading `!`. */
-const CONDITION_RE = /^(!?)(\$[\w.-]+)\s*(==|!=)\s*(\S.*)$/
+/** `"$state.view == 'list'"`, `"$state.n >= 3"`, with an optional leading `!`. */
+const CONDITION_RE = /^(!?)(\$[\w.$-]+)\s*(==|!=|>=|<=|>|<)\s*(\S.*)$/
+type Op = '==' | '!=' | '>=' | '<=' | '>' | '<'
+
+const COMPARE: Record<Op, (left: unknown, right: unknown) => boolean> = {
+  '==': (l, r) => l === r,
+  '!=': (l, r) => l !== r,
+  // Ordering is numeric: a step counter, a score, a year.
+  '>=': (l, r) => Number(l) >= Number(r),
+  '<=': (l, r) => Number(l) <= Number(r),
+  '>': (l, r) => Number(l) > Number(r),
+  '<': (l, r) => Number(l) < Number(r),
+}
 
 function literal(raw: string): unknown {
   const s = raw.trim()
@@ -57,10 +68,10 @@ export function conditionExprs(expr: string): string[] {
 }
 
 /** Splits a condition into its expression and the rest; null when it is a plain expression. */
-function parseCondition(expr: string): { negate: boolean, expr: string, op?: '==' | '!=', value?: unknown } | null {
+function parseCondition(expr: string): { negate: boolean, expr: string, op?: Op, value?: unknown } | null {
   const match = CONDITION_RE.exec(expr)
   if (match) {
-    return { negate: match[1] === '!', expr: match[2], op: match[3] as '==' | '!=', value: literal(match[4]) }
+    return { negate: match[1] === '!', expr: match[2], op: match[3] as Op, value: literal(match[4]) }
   }
   if (expr.startsWith('!$')) {
     return { negate: true, expr: expr.slice(1) }
@@ -88,7 +99,7 @@ export function evaluate(expr: unknown, ctx: SpecContext, item?: unknown, payloa
   // A right-hand side that is itself an expression is read, not compared as
   // text: "$item.uid == $state.auth.uid" asks whether this row is me.
   const right = isExpr(cond.value) ? resolveExpr(cond.value, ctx, item, payload) : cond.value
-  const result = cond.op ? (cond.op === '==' ? left === right : left !== right) : Boolean(left)
+  const result = cond.op ? COMPARE[cond.op](left, right) : Boolean(left)
   return cond.negate ? !result : result
 }
 
@@ -160,7 +171,16 @@ function resolveValue(value: unknown, ctx: SpecContext, item: unknown, payload?:
  * it; it never takes the page down.
  */
 export async function runAction(actions: ActionList, payload: unknown, ctx: SpecContext, item?: unknown) {
-  for (const action of Array.isArray(actions) ? actions : [actions]) {
+  const list = Array.isArray(actions) ? actions : [actions]
+  // Every `if` is answered against the state as it was when the event fired.
+  // Otherwise an earlier action in the list could flip a later one's condition,
+  // and "clear the pin unless we were placing one" would clear the pin it had
+  // just placed.
+  const runs = list.map(action => action.if === undefined || Boolean(evaluate(action.if, ctx, item, payload)))
+  for (const [i, action] of list.entries()) {
+    if (!runs[i]) {
+      continue
+    }
     if ('navigate' in action) {
       ctx.navigate(action.navigate)
     }

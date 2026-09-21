@@ -1,20 +1,11 @@
-import { z } from 'zod'
-import { declareHandler, registerContract } from '../../../base/app/contracts'
+import { declareHandler } from '../../../base/app/contracts'
 
 /**
- * Contracts for MNC's own components and handlers, so the pages can be specs.
+ * Handler contracts for MNC. Every component is base's, so this only names
+ * what the specs may call and what each call means.
  * Plain module (no Nuxt auto-imports): the verifier CLI loads it with
  * `--contracts apps/mnc/app/contracts.ts`.
  */
-
-const Coordinate = z.tuple([z.number(), z.number()])
-
-registerContract({
-  name: 'MobileContributeFlow',
-  description: '"Join Our Research" wizard. `pick-location` asks the page to let the user tap the map; `pickedCoordinate` feeds the tap back; `submit` emits the whole payload (title, theme, coordinate, answers, files).',
-  props: z.strictObject({ pickedCoordinate: Coordinate.nullable().optional() }),
-  emits: ['close', 'pickLocation', 'submit'],
-})
 
 declareHandler('watchAuth', 'Keep state.auth in sync with Firebase Auth; admins also get the review queues.')
 declareHandler('signIn', 'Sign in with { email, password }.')
