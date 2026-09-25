@@ -329,7 +329,7 @@ function prettyCoord(coord: [number, number]): string {
              behind this card on mobile) before typing anything. -->
         <div
           v-if="step === 1 && confirmingPin"
-          class="pointer-events-auto space-y-4"
+          class="pointer-events-auto flex flex-col space-y-4"
           :class="mapCard ? 'rounded-2xl bg-white p-5 shadow-lg dark:bg-zinc-900' : ''"
         >
           <p class="text-sm font-semibold text-[#F26D6D]">
@@ -341,7 +341,7 @@ function prettyCoord(coord: [number, number]): string {
           </p>
           <button
             type="button"
-            class="text-sm font-medium text-[#FB6D6D] underline"
+            class="self-start text-sm font-medium text-gray-500 underline hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"
             @click="emit('pick-location')"
           >
             {{ $t('contribute.step1.movePin') }}
@@ -351,7 +351,7 @@ function prettyCoord(coord: [number, number]): string {
         <!-- Step 1b: the entry's required core — title, theme, location + pin -->
         <div
           v-else-if="step === 1"
-          class="pointer-events-auto space-y-4"
+          class="pointer-events-auto flex flex-col space-y-4"
           :class="mapCard ? 'rounded-2xl bg-white p-5 shadow-lg dark:bg-zinc-900' : ''"
         >
           <p class="text-sm font-semibold text-[#F26D6D]">
@@ -379,7 +379,7 @@ function prettyCoord(coord: [number, number]): string {
           />
           <button
             type="button"
-            class="text-sm font-medium text-[#FB6D6D] underline"
+            class="self-start text-sm font-medium text-gray-500 underline hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"
             @click="emit('pick-location')"
           >
             {{ $t('contribute.step1.dropPin') }}
