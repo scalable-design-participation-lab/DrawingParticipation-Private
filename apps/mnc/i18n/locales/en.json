@@ -201,7 +201,7 @@
     "errAction": "That action failed. Please try again."
   },
   "contribute": {
-    "title": "Join Our Research",
+    "title": "Share a Project",
     "thankYou": "Thank you",
     "received": "Your submission has been received and will be reviewed by our team.",
     "inTouch": "We will be in touch and contact you soon!",
@@ -210,32 +210,29 @@
     "back": "Back",
     "next": "Next",
     "submit": "Submit",
-    "descPlaceholder": "Type your description here",
+    "voiceHint": "(You can type or record a voice note)",
     "step1": {
-      "prompt": "Want to add a creation? Where did this event happen?",
+      "prompt": "What's the creation? Where does it happen?",
       "placeholder": "Enter location here or tap to drop pin in map",
       "dropPin": "Tap to drop a pin on the map",
       "pinDropped": "Pin dropped ({coord})",
       "confirmPinPrompt": "Here's your dropped pin — does the location look right?",
       "movePin": "Not quite right? Tap to choose a different spot",
+      "dateLabel": "When did this event happen?",
       "noResults": "No matching places found"
     },
     "step2": {
-      "prompt": "Briefly describe an example of Mobile Networked Creativity below:"
+      "prompt": "Briefly describe your example of Mobile Networked Creativity:",
+      "placeholder": "What it does…\nHow it works…\nWho uses it…\nWhen it works…"
     },
     "step3": {
-      "prompt": "Why do you think this is a good example of Mobile Networked Creativity?"
+      "prompt": "Why is this a good example of Mobile Networked Creativity?",
+      "placeholder": "Is this solving a problem? What problem…\nIs this a cheaper solution? Why is it cheaper…\nIs this something nobody else is doing?\nIs this bringing the community together?\nOther reasons…"
     },
     "step4": {
       "prompt": "Do you have any images or videos to illustrate your example above? If so, please upload it here:"
     },
     "step5": {
-      "prompt": "When did this event happen?"
-    },
-    "step6": {
-      "prompt": "Is there any additional information you'd like to share about your submission? Please enter it below."
-    },
-    "step7": {
       "prompt": "Do you want your personal information connected to your submission?",
       "yes": "Yes, I want my name identified in my submission",
       "no": "No, I want to submit anonymously",

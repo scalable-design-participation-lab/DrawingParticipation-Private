@@ -8,7 +8,7 @@ import { useLocalizedEntry } from '../../composables/useLocalizedEntry'
 import { useIsMobile } from '../../composables/useIsMobile'
 
 /**
- * Mobile "Join Our Research" flow — a 7-step wizard plus a thank-you screen,
+ * Mobile "Share a Project" flow — a 5-step wizard plus a thank-you screen,
  * launched from the bottom-nav "+" button.
  *
  * A submission IS a map entry: on submit the parent persists it as a pending
@@ -41,17 +41,15 @@ interface ContributePayload {
   example: string
   why: string
   date: string
-  additionalInfo: string
   connectInfo: boolean | null
   fullName: string
   email: string
   country: string
   city: string
   files: {
-    example: File[]
-    why: File[]
     media: File[]
-    additional: File[]
+    voiceExample: File[]
+    voiceWhy: File[]
   }
 }
 
@@ -59,7 +57,7 @@ const { isMobile } = useIsMobile()
 const { locale } = useI18n()
 const { tagLabel } = useLocalizedEntry()
 
-const TOTAL_STEPS = 7
+const TOTAL_STEPS = 5
 const step = ref(1)
 const submitted = ref(false)
 
@@ -75,7 +73,6 @@ const form = reactive({
   example: '',
   why: '',
   date: '',
-  additionalInfo: '',
   connectInfo: null as boolean | null,
   fullName: '',
   email: '',
@@ -112,10 +109,7 @@ const step1Valid = computed(() =>
 )
 
 const files = reactive({
-  example: [] as File[],
-  why: [] as File[],
   media: [] as File[],
-  additional: [] as File[],
   // Voice notes recorded in place of typing (steps 2 and 3).
   voiceExample: [] as File[],
   voiceWhy: [] as File[],
@@ -295,17 +289,13 @@ function submit() {
     example: form.example,
     why: form.why,
     date: form.date,
-    additionalInfo: form.additionalInfo,
     connectInfo: form.connectInfo,
     fullName: form.fullName,
     email: form.email,
     country: form.country,
     city: form.city,
     files: {
-      example: [...files.example],
-      why: [...files.why],
       media: [...files.media],
-      additional: [...files.additional],
       voiceExample: [...files.voiceExample],
       voiceWhy: [...files.voiceWhy],
     },
@@ -326,17 +316,13 @@ function reset() {
     example: '',
     why: '',
     date: '',
-    additionalInfo: '',
     connectInfo: null,
     fullName: '',
     email: '',
     country: '',
     city: '',
   })
-  files.example = []
-  files.why = []
   files.media = []
-  files.additional = []
   files.voiceExample = []
   files.voiceWhy = []
 }
@@ -522,38 +508,49 @@ function prettyCoord(coord: [number, number]): string {
             <UIcon name="i-heroicons-map-pin" class="h-4 w-4" />
             {{ $t('contribute.step1.pinDropped', { coord: pinPlace || form.location || prettyCoord(form.coordinate) }) }}
           </p>
+          <div class="space-y-1">
+            <label for="contribute-date" class="text-xs font-medium text-gray-500">
+              {{ $t('contribute.step1.dateLabel') }}
+            </label>
+            <UInput
+              id="contribute-date"
+              v-model="form.date"
+              type="date"
+              :ui="{ rounded: 'rounded-full' }"
+            />
+          </div>
         </div>
 
         <!-- Step 2: Describe an example -->
         <div v-else-if="step === 2" class="space-y-4">
           <p class="text-sm font-semibold text-[#F26D6D]">
             {{ $t('contribute.step2.prompt') }}
+            <span class="mt-0.5 block text-xs font-normal text-gray-500">{{ $t('contribute.voiceHint') }}</span>
           </p>
           <UTextarea
             v-model="form.example"
             :rows="5"
-            :placeholder="$t('contribute.descPlaceholder')"
+            :placeholder="$t('contribute.step2.placeholder')"
             :ui="{ rounded: 'rounded-2xl' }"
             class="contribute-textarea"
           />
           <ContributeVoiceRecorder v-model="files.voiceExample" />
-          <ContributeFileUpload v-model="files.example" />
         </div>
 
         <!-- Step 3: Why is this a good example -->
         <div v-else-if="step === 3" class="space-y-4">
           <p class="text-sm font-semibold text-[#F26D6D]">
             {{ $t('contribute.step3.prompt') }}
+            <span class="mt-0.5 block text-xs font-normal text-gray-500">{{ $t('contribute.voiceHint') }}</span>
           </p>
           <UTextarea
             v-model="form.why"
             :rows="5"
-            :placeholder="$t('contribute.descPlaceholder')"
+            :placeholder="$t('contribute.step3.placeholder')"
             :ui="{ rounded: 'rounded-2xl' }"
             class="contribute-textarea"
           />
           <ContributeVoiceRecorder v-model="files.voiceWhy" />
-          <ContributeFileUpload v-model="files.why" />
         </div>
 
         <!-- Step 4: Illustrative media -->
@@ -564,37 +561,10 @@ function prettyCoord(coord: [number, number]): string {
           <ContributeFileUpload v-model="files.media" />
         </div>
 
-        <!-- Step 5: Date -->
+        <!-- Step 5: Personal information -->
         <div v-else-if="step === 5" class="space-y-4">
           <p class="text-sm font-semibold text-[#F26D6D]">
             {{ $t('contribute.step5.prompt') }}
-          </p>
-          <UInput
-            v-model="form.date"
-            type="date"
-            :ui="{ rounded: 'rounded-full' }"
-          />
-        </div>
-
-        <!-- Step 6: Additional info -->
-        <div v-else-if="step === 6" class="space-y-4">
-          <p class="text-sm font-semibold text-[#F26D6D]">
-            {{ $t('contribute.step6.prompt') }}
-          </p>
-          <UTextarea
-            v-model="form.additionalInfo"
-            :rows="5"
-            :placeholder="$t('contribute.descPlaceholder')"
-            :ui="{ rounded: 'rounded-2xl' }"
-            class="contribute-textarea"
-          />
-          <ContributeFileUpload v-model="files.additional" />
-        </div>
-
-        <!-- Step 7: Personal information -->
-        <div v-else-if="step === 7" class="space-y-4">
-          <p class="text-sm font-semibold text-[#F26D6D]">
-            {{ $t('contribute.step7.prompt') }}
           </p>
           <div class="space-y-2">
             <label class="flex items-center gap-2 text-sm text-gray-700">
@@ -604,7 +574,7 @@ function prettyCoord(coord: [number, number]): string {
                 :value="true"
                 class="accent-[#FB6D6D]"
               >
-              {{ $t('contribute.step7.yes') }}
+              {{ $t('contribute.step5.yes') }}
             </label>
             <label class="flex items-center gap-2 text-sm text-gray-700">
               <input
@@ -613,34 +583,34 @@ function prettyCoord(coord: [number, number]): string {
                 :value="false"
                 class="accent-[#FB6D6D]"
               >
-              {{ $t('contribute.step7.no') }}
+              {{ $t('contribute.step5.no') }}
             </label>
           </div>
 
           <p class="pt-2 text-sm font-semibold text-[#F26D6D]">
-            {{ $t('contribute.step7.ifYes') }}
+            {{ $t('contribute.step5.ifYes') }}
           </p>
           <div class="space-y-3">
             <div class="flex items-center gap-3">
-              <label class="w-28 flex-shrink-0 text-sm text-[#F26D6D]">{{ $t('contribute.step7.fullName') }}</label>
+              <label class="w-28 flex-shrink-0 text-sm text-[#F26D6D]">{{ $t('contribute.step5.fullName') }}</label>
               <UInput v-model="form.fullName" class="flex-1" :ui="{ rounded: 'rounded-full' }" />
             </div>
             <div class="flex items-center gap-3">
-              <label class="w-28 flex-shrink-0 text-sm text-[#F26D6D]">{{ $t('contribute.step7.email') }}</label>
+              <label class="w-28 flex-shrink-0 text-sm text-[#F26D6D]">{{ $t('contribute.step5.email') }}</label>
               <UInput v-model="form.email" type="email" class="flex-1" :ui="{ rounded: 'rounded-full' }" />
             </div>
             <div class="flex items-center gap-3">
-              <label class="w-28 flex-shrink-0 text-sm text-[#F26D6D]">{{ $t('contribute.step7.country') }}</label>
+              <label class="w-28 flex-shrink-0 text-sm text-[#F26D6D]">{{ $t('contribute.step5.country') }}</label>
               <UInput v-model="form.country" class="flex-1" :ui="{ rounded: 'rounded-full' }" />
             </div>
             <div class="flex items-center gap-3">
-              <label class="w-28 flex-shrink-0 text-sm text-[#F26D6D]">{{ $t('contribute.step7.city') }}</label>
+              <label class="w-28 flex-shrink-0 text-sm text-[#F26D6D]">{{ $t('contribute.step5.city') }}</label>
               <UInput v-model="form.city" class="flex-1" :ui="{ rounded: 'rounded-full' }" />
             </div>
           </div>
 
           <p class="pt-1 text-xs leading-snug text-gray-500">
-            {{ $t('contribute.step7.privacy') }}
+            {{ $t('contribute.step5.privacy') }}
           </p>
         </div>
       </div>

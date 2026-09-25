@@ -201,7 +201,7 @@
     "errAction": "Esa acción falló. Inténtalo de nuevo."
   },
   "contribute": {
-    "title": "Únete a nuestra investigación",
+    "title": "Comparte un proyecto",
     "thankYou": "Gracias",
     "received": "Tu envío ha sido recibido y será revisado por nuestro equipo.",
     "inTouch": "¡Nos pondremos en contacto contigo pronto!",
@@ -210,32 +210,29 @@
     "back": "Atrás",
     "next": "Siguiente",
     "submit": "Enviar",
-    "descPlaceholder": "Escribe tu descripción aquí",
+    "voiceHint": "(Puedes escribir o grabar una nota de voz)",
     "step1": {
-      "prompt": "¿Quieres agregar una creación? ¿Dónde ocurrió este evento?",
+      "prompt": "¿Cuál es la creación? ¿Dónde ocurre?",
       "placeholder": "Ingresa la ubicación aquí o toca para soltar un pin en el mapa",
       "dropPin": "Toca para soltar un pin en el mapa",
       "pinDropped": "Pin colocado ({coord})",
       "confirmPinPrompt": "Aquí está tu pin — ¿la ubicación se ve correcta?",
       "movePin": "¿No es correcta? Toca para elegir otro lugar",
+      "dateLabel": "¿Cuándo ocurrió este evento?",
       "noResults": "No se encontraron lugares"
     },
     "step2": {
-      "prompt": "Describe brevemente un ejemplo de Creatividad Móvil en Red a continuación:"
+      "prompt": "Describe brevemente tu ejemplo de Creatividad Móvil en Red:",
+      "placeholder": "Qué hace…\nCómo funciona…\nQuién lo usa…\nCuándo funciona…"
     },
     "step3": {
-      "prompt": "¿Por qué crees que este es un buen ejemplo de Creatividad Móvil en Red?"
+      "prompt": "¿Por qué es este un buen ejemplo de Creatividad Móvil en Red?",
+      "placeholder": "¿Resuelve un problema? ¿Qué problema…\n¿Es una solución más barata? ¿Por qué es más barata…\n¿Es algo que nadie más está haciendo?\n¿Une a la comunidad?\nOtras razones…"
     },
     "step4": {
       "prompt": "¿Tienes imágenes o videos para ilustrar tu ejemplo? Si es así, súbelos aquí:"
     },
     "step5": {
-      "prompt": "¿Cuándo ocurrió este evento?"
-    },
-    "step6": {
-      "prompt": "¿Hay información adicional que quieras compartir sobre tu envío? Escríbela a continuación."
-    },
-    "step7": {
       "prompt": "¿Quieres que tu información personal quede vinculada a tu envío?",
       "yes": "Sí, quiero que mi nombre aparezca en mi envío",
       "no": "No, quiero enviarlo de forma anónima",

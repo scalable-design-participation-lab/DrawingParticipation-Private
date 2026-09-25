@@ -30,7 +30,7 @@ const mobileView = ref<MobileView>('map')
 const selectedMobileFeature = ref<Feature | null>(null)
 const projectCardState = ref<'expanded' | 'full'>('expanded')
 
-// "Join Our Research" contribute flow. On mobile it's the "More" nav view; on
+// "Share a Project" contribute flow. On mobile it's the "More" nav view; on
 // desktop it opens from the ➕ toolbar button (showContribute).
 const pickingContributeLocation = ref(false)
 const contributeCoordinate = ref<[number, number] | null>(null)
@@ -105,7 +105,7 @@ function onContributePicked(coordinate: [number, number]) {
   pickingContributeLocation.value = false
 }
 
-// The "Join Our Research" wizard submits a new map entry. Persist it exactly
+// The "Share a Project" wizard submits a new map entry. Persist it exactly
 // like a desktop add: a pending userSolutions pin + its media, plus the private
 // contact info. Best-effort — the wizard already shows its thank-you screen.
 async function onContributeSubmit(payload: any) {
@@ -117,16 +117,13 @@ async function onContributeSubmit(payload: any) {
     // the entry's own photo gallery — approved/deleted with the entry, not a
     // separate pending contribution.
     const f = payload.files || {}
-    // The wizard collects files across six separate questions. Attaching the
+    // The wizard collects files from more than one question. Attaching the
     // same photo to two of them used to upload it twice, so the gallery counter
     // said "2" while both slides showed the same picture (issue #42). Identity
     // is name + size + lastModified — what the browser gives us for free.
     const seenFiles = new Set<string>()
     const allFiles: File[] = [
-      ...(f.example || []),
-      ...(f.why || []),
       ...(f.media || []),
-      ...(f.additional || []),
       ...(f.voiceExample || []),
       ...(f.voiceWhy || []),
     ].filter((file: File) => {
@@ -315,7 +312,7 @@ onMounted(() => {
         @info="showOnboarding = true"
       />
 
-      <!-- "Join Our Research" wizard on desktop (same flow as mobile's "More"
+      <!-- "Share a Project" wizard on desktop (same flow as mobile's "More"
            tab), opened from the ➕ toolbar button. -->
       <MobileContributeFlow
         v-if="!isMobile && showContribute"
