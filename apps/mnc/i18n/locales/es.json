@@ -217,7 +217,8 @@
       "dropPin": "Toca para soltar un pin en el mapa",
       "pinDropped": "Pin colocado ({coord})",
       "confirmPinPrompt": "Aquí está tu pin — ¿la ubicación se ve correcta?",
-      "movePin": "¿No es correcta? Toca para elegir otro lugar"
+      "movePin": "¿No es correcta? Toca para elegir otro lugar",
+      "noResults": "No se encontraron lugares"
     },
     "step2": {
       "prompt": "Describe brevemente un ejemplo de Creatividad Móvil en Red a continuación:"

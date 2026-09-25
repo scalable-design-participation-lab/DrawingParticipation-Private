@@ -322,6 +322,7 @@ onMounted(() => {
         v-show="!pickingContributeLocation"
         :picked-coordinate="contributeCoordinate"
         @pick-location="startContributePick"
+        @set-location="contributeCoordinate = $event"
         @close="closeDesktopContribute"
         @submit="onContributeSubmit"
       />
@@ -354,6 +355,7 @@ onMounted(() => {
           v-show="!pickingContributeLocation"
           :picked-coordinate="contributeCoordinate"
           @pick-location="startContributePick"
+          @set-location="contributeCoordinate = $event"
           @close="closeContribute"
           @submit="onContributeSubmit"
         />

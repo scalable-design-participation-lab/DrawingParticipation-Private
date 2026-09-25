@@ -265,6 +265,36 @@ watch(
   },
 )
 
+// A contribute pin set from the location search can land anywhere in the
+// world — bring it into view. Map-tapped pins are already on screen, so this
+// leaves them (and the user's current zoom) alone.
+const SEARCHED_PLACE_ZOOM = 10
+// On mobile the step-1 form card covers the middle of the map, so land the pin
+// lower, in the open strip between the card and the buttons.
+const MOBILE_PIN_OFFSET = 0.3
+
+watch(
+  () => props.contributePin,
+  (pin) => {
+    const map = (baseMap.value as any)?.mapInstance
+    if (!pin || !map)
+      return
+    const view = map.getView()
+    const size = map.getSize()
+    const [minX, minY, maxX, maxY] = view.calculateExtent(size)
+    if (pin[0] >= minX && pin[0] <= maxX && pin[1] >= minY && pin[1] <= maxY)
+      return
+    const offsetY = isMobile.value
+      ? view.getResolutionForZoom(SEARCHED_PLACE_ZOOM) * size[1] * MOBILE_PIN_OFFSET
+      : 0
+    view.animate({
+      center: [pin[0], pin[1] + offsetY],
+      zoom: SEARCHED_PLACE_ZOOM,
+      duration: FLY_DURATION_MS,
+    })
+  },
+)
+
 // MNC features (case-study entries from mncData.json) are rendered by
 // MncMapLayer as clustered HTML overlays, so we exclude them from
 // DrawingLayer's IconLayer to avoid double-rendering. Any other point

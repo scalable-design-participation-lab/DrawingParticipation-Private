@@ -217,7 +217,8 @@
       "dropPin": "Tap to drop a pin on the map",
       "pinDropped": "Pin dropped ({coord})",
       "confirmPinPrompt": "Here's your dropped pin — does the location look right?",
-      "movePin": "Not quite right? Tap to choose a different spot"
+      "movePin": "Not quite right? Tap to choose a different spot",
+      "noResults": "No matching places found"
     },
     "step2": {
       "prompt": "Briefly describe an example of Mobile Networked Creativity below:"

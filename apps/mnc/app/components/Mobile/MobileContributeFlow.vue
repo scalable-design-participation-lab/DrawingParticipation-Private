@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { computed, reactive, ref, watch } from 'vue'
-import { toLonLat } from 'ol/proj'
+import { fromLonLat, toLonLat } from 'ol/proj'
 import MobileHeader from './MobileHeader.vue'
 import ContributeFileUpload from './ContributeFileUpload.vue'
 import { PRIMARY_TAGS } from '../../stores/filter'
@@ -15,7 +15,8 @@ import { useIsMobile } from '../../composables/useIsMobile'
  * `userSolutions` doc (title + theme + location + the research answers), drops
  * the author's pending pin, and it goes through the same moderator review queue
  * as a desktop-added entry. Personal contact info is stored separately, admin-
- * only. Step 1 (title + theme + a dropped pin) is required; the rest is optional.
+ * only. Step 1 (title + theme + a pin, from a map tap or a place search) is
+ * required; the rest is optional.
  */
 const props = defineProps<{
   // A coordinate (EPSG:3857) captured when the user taps the map to drop a pin.
@@ -27,6 +28,8 @@ const emit = defineEmits<{
   'close': []
   // Asks the parent to hide the flow and let the user tap the map.
   'pick-location': []
+  // A place picked from the location search — the parent shows it as the pin.
+  'set-location': [coordinate: [number, number]]
   'submit': [payload: ContributePayload]
 }>()
 
@@ -148,10 +151,108 @@ async function resolvePlace(coord: [number, number]) {
   }
 }
 
+// Place search for the location field (Mapbox geocoding — the same account
+// that serves the base map, and it allows search-as-you-type). Picking a result
+// sets the entry's pin, so typing a place works without dropping one on the map.
+interface PlaceResult { label: string, coordinate: [number, number] }
+const placeResults = ref<PlaceResult[]>([])
+const placeSearched = ref(false)
+const placeOpen = ref(false)
+const placeActive = ref(-1)
+// The location text came from a search pick (not typed) — a later map-dropped
+// pin should replace it rather than leave another place's name on the entry.
+let locationFromSearch = false
+let placeTimer: ReturnType<typeof setTimeout> | undefined
+let placeAbort: AbortController | undefined
+
+const { mapboxToken } = useRuntimeConfig().public
+
+async function searchPlaces(query: string) {
+  placeAbort?.abort()
+  placeAbort = new AbortController()
+  try {
+    const res = await fetch(
+      `https://api.mapbox.com/search/geocode/v6/forward?q=${encodeURIComponent(query)}&autocomplete=true&limit=5&language=${locale.value || 'en'}&access_token=${mapboxToken}`,
+      { signal: placeAbort.signal },
+    )
+    if (!res.ok)
+      return
+    const features = (await res.json())?.features || []
+    const seen = new Set<string>()
+    placeResults.value = features.flatMap((f: any) => {
+      const p = f.properties || {}
+      const label = p.full_address || [p.name, p.place_formatted].filter(Boolean).join(', ')
+      const [lon, lat] = f.geometry?.coordinates || []
+      if (!label || seen.has(label) || typeof lon !== 'number' || typeof lat !== 'number')
+        return []
+      seen.add(label)
+      return [{ label, coordinate: fromLonLat([lon, lat]) as [number, number] }]
+    })
+    placeSearched.value = true
+    placeActive.value = -1
+  }
+  catch {
+    // Aborted by a newer query, offline, or rate-limited — the pin drop still works.
+  }
+}
+
+// Only real typing searches (v-model writes from the reverse geocoder don't
+// fire this), debounced so each keystroke isn't a request.
+function onLocationInput(value: string) {
+  locationFromSearch = false
+  clearTimeout(placeTimer)
+  const query = value.trim()
+  if (query.length < 3) {
+    placeAbort?.abort()
+    placeResults.value = []
+    placeSearched.value = false
+    return
+  }
+  placeOpen.value = true
+  placeTimer = setTimeout(() => searchPlaces(query), 300)
+}
+
+function selectPlace(place: PlaceResult) {
+  form.location = place.label
+  locationFromSearch = true
+  pinPlace.value = place.label
+  form.coordinate = place.coordinate
+  placeOpen.value = false
+  placeResults.value = []
+  placeSearched.value = false
+  emit('set-location', place.coordinate)
+}
+
+function onLocationKeydown(e: KeyboardEvent) {
+  if (!placeOpen.value || !placeResults.value.length)
+    return
+  if (e.key === 'ArrowDown') {
+    e.preventDefault()
+    placeActive.value = (placeActive.value + 1) % placeResults.value.length
+  }
+  else if (e.key === 'ArrowUp') {
+    e.preventDefault()
+    placeActive.value = (placeActive.value - 1 + placeResults.value.length) % placeResults.value.length
+  }
+  else if (e.key === 'Enter' && placeActive.value >= 0) {
+    e.preventDefault()
+    selectPlace(placeResults.value[placeActive.value]!)
+  }
+  else if (e.key === 'Escape') {
+    placeOpen.value = false
+  }
+}
+
 // When the parent hands back a map-tapped coordinate, store it + resolve a place.
 // immediate: desktop opens the wizard already seeded with a tapped coordinate.
+// A place picked from the search comes back through here too — it's already
+// set and labeled, so it skips the reverse lookup and the confirm screen.
 watch(() => props.pickedCoordinate, (coord) => {
-  if (coord) {
+  if (coord && !(coord[0] === form.coordinate?.[0] && coord[1] === form.coordinate?.[1])) {
+    if (locationFromSearch) {
+      form.location = ''
+      locationFromSearch = false
+    }
     form.coordinate = coord
     resolvePlace(coord)
     confirmingPin.value = true
@@ -215,6 +316,7 @@ function submit() {
 function reset() {
   step.value = 1
   submitted.value = false
+  locationFromSearch = false
   confirmingPin.value = false
   Object.assign(form, {
     title: '',
@@ -372,11 +474,43 @@ function prettyCoord(coord: [number, number]): string {
             :placeholder="$t('add.themePlaceholder')"
             @create="onCreateTheme"
           />
-          <UInput
-            v-model="form.location"
-            :placeholder="$t('contribute.step1.placeholder')"
-            :ui="{ rounded: 'rounded-full' }"
-          />
+          <!-- Location: type to search for a place, or drop a pin below. -->
+          <div class="relative">
+            <UInput
+              v-model="form.location"
+              :placeholder="$t('contribute.step1.placeholder')"
+              :ui="{ rounded: 'rounded-full' }"
+              autocomplete="off"
+              role="combobox"
+              aria-autocomplete="list"
+              :aria-expanded="placeOpen && placeSearched"
+              @update:model-value="onLocationInput"
+              @keydown="onLocationKeydown"
+              @focus="placeOpen = true"
+              @blur="placeOpen = false"
+            />
+            <ul
+              v-if="placeOpen && placeSearched"
+              class="absolute inset-x-0 top-full z-20 mt-1 overflow-hidden rounded-2xl border border-gray-200 bg-white py-1 shadow-lg dark:border-zinc-700 dark:bg-zinc-800"
+              role="listbox"
+            >
+              <li
+                v-for="(place, i) in placeResults"
+                :key="place.label"
+                role="option"
+                :aria-selected="i === placeActive"
+                class="flex cursor-pointer items-center gap-2 px-4 py-2 text-sm text-gray-700 dark:text-gray-200"
+                :class="i === placeActive ? 'bg-gray-100 dark:bg-zinc-700' : 'hover:bg-gray-50 dark:hover:bg-zinc-700'"
+                @mousedown.prevent="selectPlace(place)"
+              >
+                <UIcon name="i-heroicons-map-pin" class="h-4 w-4 shrink-0 text-gray-400" />
+                <span class="truncate">{{ place.label }}</span>
+              </li>
+              <li v-if="!placeResults.length" class="px-4 py-2 text-sm text-gray-500">
+                {{ $t('contribute.step1.noResults') }}
+              </li>
+            </ul>
+          </div>
           <button
             type="button"
             class="self-start text-sm font-medium text-gray-500 underline hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"

@@ -217,7 +217,8 @@
       "dropPin": "Toque para marcar um ponto no mapa",
       "pinDropped": "Ponto marcado ({coord})",
       "confirmPinPrompt": "Aqui está o ponto marcado — o local está correto?",
-      "movePin": "Não está certo? Toque para escolher outro local"
+      "movePin": "Não está certo? Toque para escolher outro local",
+      "noResults": "Nenhum local encontrado"
     },
     "step2": {
       "prompt": "Descreva brevemente um exemplo de Criatividade Móvel em Rede abaixo:"
