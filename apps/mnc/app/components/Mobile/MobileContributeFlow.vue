@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { computed, reactive, ref, watch } from 'vue'
-import { toLonLat } from 'ol/proj'
+import { fromLonLat, toLonLat } from 'ol/proj'
 import MobileHeader from './MobileHeader.vue'
 import ContributeFileUpload from './ContributeFileUpload.vue'
 import { PRIMARY_TAGS } from '../../stores/filter'
@@ -8,14 +8,15 @@ import { useLocalizedEntry } from '../../composables/useLocalizedEntry'
 import { useIsMobile } from '../../composables/useIsMobile'
 
 /**
- * Mobile "Join Our Research" flow — a 7-step wizard plus a thank-you screen,
+ * Mobile "Share a Project" flow — a 5-step wizard plus a thank-you screen,
  * launched from the bottom-nav "+" button.
  *
  * A submission IS a map entry: on submit the parent persists it as a pending
  * `userSolutions` doc (title + theme + location + the research answers), drops
  * the author's pending pin, and it goes through the same moderator review queue
  * as a desktop-added entry. Personal contact info is stored separately, admin-
- * only. Step 1 (title + theme + a dropped pin) is required; the rest is optional.
+ * only. Step 1 (title + theme + a pin, from a map tap or a place search) is
+ * required; the rest is optional.
  */
 const props = defineProps<{
   // A coordinate (EPSG:3857) captured when the user taps the map to drop a pin.
@@ -27,6 +28,8 @@ const emit = defineEmits<{
   'close': []
   // Asks the parent to hide the flow and let the user tap the map.
   'pick-location': []
+  // A place picked from the location search — the parent shows it as the pin.
+  'set-location': [coordinate: [number, number]]
   'submit': [payload: ContributePayload]
 }>()
 
@@ -38,17 +41,15 @@ interface ContributePayload {
   example: string
   why: string
   date: string
-  additionalInfo: string
   connectInfo: boolean | null
   fullName: string
   email: string
   country: string
   city: string
   files: {
-    example: File[]
-    why: File[]
     media: File[]
-    additional: File[]
+    voiceExample: File[]
+    voiceWhy: File[]
   }
 }
 
@@ -56,7 +57,7 @@ const { isMobile } = useIsMobile()
 const { locale } = useI18n()
 const { tagLabel } = useLocalizedEntry()
 
-const TOTAL_STEPS = 7
+const TOTAL_STEPS = 5
 const step = ref(1)
 const submitted = ref(false)
 
@@ -72,7 +73,6 @@ const form = reactive({
   example: '',
   why: '',
   date: '',
-  additionalInfo: '',
   connectInfo: null as boolean | null,
   fullName: '',
   email: '',
@@ -109,10 +109,7 @@ const step1Valid = computed(() =>
 )
 
 const files = reactive({
-  example: [] as File[],
-  why: [] as File[],
   media: [] as File[],
-  additional: [] as File[],
   // Voice notes recorded in place of typing (steps 2 and 3).
   voiceExample: [] as File[],
   voiceWhy: [] as File[],
@@ -148,10 +145,108 @@ async function resolvePlace(coord: [number, number]) {
   }
 }
 
+// Place search for the location field (Mapbox geocoding — the same account
+// that serves the base map, and it allows search-as-you-type). Picking a result
+// sets the entry's pin, so typing a place works without dropping one on the map.
+interface PlaceResult { label: string, coordinate: [number, number] }
+const placeResults = ref<PlaceResult[]>([])
+const placeSearched = ref(false)
+const placeOpen = ref(false)
+const placeActive = ref(-1)
+// The location text came from a search pick (not typed) — a later map-dropped
+// pin should replace it rather than leave another place's name on the entry.
+let locationFromSearch = false
+let placeTimer: ReturnType<typeof setTimeout> | undefined
+let placeAbort: AbortController | undefined
+
+const { mapboxToken } = useRuntimeConfig().public
+
+async function searchPlaces(query: string) {
+  placeAbort?.abort()
+  placeAbort = new AbortController()
+  try {
+    const res = await fetch(
+      `https://api.mapbox.com/search/geocode/v6/forward?q=${encodeURIComponent(query)}&autocomplete=true&limit=5&language=${locale.value || 'en'}&access_token=${mapboxToken}`,
+      { signal: placeAbort.signal },
+    )
+    if (!res.ok)
+      return
+    const features = (await res.json())?.features || []
+    const seen = new Set<string>()
+    placeResults.value = features.flatMap((f: any) => {
+      const p = f.properties || {}
+      const label = p.full_address || [p.name, p.place_formatted].filter(Boolean).join(', ')
+      const [lon, lat] = f.geometry?.coordinates || []
+      if (!label || seen.has(label) || typeof lon !== 'number' || typeof lat !== 'number')
+        return []
+      seen.add(label)
+      return [{ label, coordinate: fromLonLat([lon, lat]) as [number, number] }]
+    })
+    placeSearched.value = true
+    placeActive.value = -1
+  }
+  catch {
+    // Aborted by a newer query, offline, or rate-limited — the pin drop still works.
+  }
+}
+
+// Only real typing searches (v-model writes from the reverse geocoder don't
+// fire this), debounced so each keystroke isn't a request.
+function onLocationInput(value: string) {
+  locationFromSearch = false
+  clearTimeout(placeTimer)
+  const query = value.trim()
+  if (query.length < 3) {
+    placeAbort?.abort()
+    placeResults.value = []
+    placeSearched.value = false
+    return
+  }
+  placeOpen.value = true
+  placeTimer = setTimeout(() => searchPlaces(query), 300)
+}
+
+function selectPlace(place: PlaceResult) {
+  form.location = place.label
+  locationFromSearch = true
+  pinPlace.value = place.label
+  form.coordinate = place.coordinate
+  placeOpen.value = false
+  placeResults.value = []
+  placeSearched.value = false
+  emit('set-location', place.coordinate)
+}
+
+function onLocationKeydown(e: KeyboardEvent) {
+  if (!placeOpen.value || !placeResults.value.length)
+    return
+  if (e.key === 'ArrowDown') {
+    e.preventDefault()
+    placeActive.value = (placeActive.value + 1) % placeResults.value.length
+  }
+  else if (e.key === 'ArrowUp') {
+    e.preventDefault()
+    placeActive.value = (placeActive.value - 1 + placeResults.value.length) % placeResults.value.length
+  }
+  else if (e.key === 'Enter' && placeActive.value >= 0) {
+    e.preventDefault()
+    selectPlace(placeResults.value[placeActive.value]!)
+  }
+  else if (e.key === 'Escape') {
+    placeOpen.value = false
+  }
+}
+
 // When the parent hands back a map-tapped coordinate, store it + resolve a place.
 // immediate: desktop opens the wizard already seeded with a tapped coordinate.
+// A place picked from the search comes back through here too — it's already
+// set and labeled, so it skips the reverse lookup and the confirm screen.
 watch(() => props.pickedCoordinate, (coord) => {
-  if (coord) {
+  if (coord && !(coord[0] === form.coordinate?.[0] && coord[1] === form.coordinate?.[1])) {
+    if (locationFromSearch) {
+      form.location = ''
+      locationFromSearch = false
+    }
     form.coordinate = coord
     resolvePlace(coord)
     confirmingPin.value = true
@@ -194,17 +289,13 @@ function submit() {
     example: form.example,
     why: form.why,
     date: form.date,
-    additionalInfo: form.additionalInfo,
     connectInfo: form.connectInfo,
     fullName: form.fullName,
     email: form.email,
     country: form.country,
     city: form.city,
     files: {
-      example: [...files.example],
-      why: [...files.why],
       media: [...files.media],
-      additional: [...files.additional],
       voiceExample: [...files.voiceExample],
       voiceWhy: [...files.voiceWhy],
     },
@@ -215,6 +306,7 @@ function submit() {
 function reset() {
   step.value = 1
   submitted.value = false
+  locationFromSearch = false
   confirmingPin.value = false
   Object.assign(form, {
     title: '',
@@ -224,17 +316,13 @@ function reset() {
     example: '',
     why: '',
     date: '',
-    additionalInfo: '',
     connectInfo: null,
     fullName: '',
     email: '',
     country: '',
     city: '',
   })
-  files.example = []
-  files.why = []
   files.media = []
-  files.additional = []
   files.voiceExample = []
   files.voiceWhy = []
 }
@@ -329,7 +417,7 @@ function prettyCoord(coord: [number, number]): string {
              behind this card on mobile) before typing anything. -->
         <div
           v-if="step === 1 && confirmingPin"
-          class="pointer-events-auto space-y-4"
+          class="pointer-events-auto flex flex-col space-y-4"
           :class="mapCard ? 'rounded-2xl bg-white p-5 shadow-lg dark:bg-zinc-900' : ''"
         >
           <p class="text-sm font-semibold text-[#F26D6D]">
@@ -341,7 +429,7 @@ function prettyCoord(coord: [number, number]): string {
           </p>
           <button
             type="button"
-            class="text-sm font-medium text-[#FB6D6D] underline"
+            class="self-start text-sm font-medium text-gray-500 underline hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"
             @click="emit('pick-location')"
           >
             {{ $t('contribute.step1.movePin') }}
@@ -351,7 +439,7 @@ function prettyCoord(coord: [number, number]): string {
         <!-- Step 1b: the entry's required core — title, theme, location + pin -->
         <div
           v-else-if="step === 1"
-          class="pointer-events-auto space-y-4"
+          class="pointer-events-auto flex flex-col space-y-4"
           :class="mapCard ? 'rounded-2xl bg-white p-5 shadow-lg dark:bg-zinc-900' : ''"
         >
           <p class="text-sm font-semibold text-[#F26D6D]">
@@ -372,14 +460,46 @@ function prettyCoord(coord: [number, number]): string {
             :placeholder="$t('add.themePlaceholder')"
             @create="onCreateTheme"
           />
-          <UInput
-            v-model="form.location"
-            :placeholder="$t('contribute.step1.placeholder')"
-            :ui="{ rounded: 'rounded-full' }"
-          />
+          <!-- Location: type to search for a place, or drop a pin below. -->
+          <div class="relative">
+            <UInput
+              v-model="form.location"
+              :placeholder="$t('contribute.step1.placeholder')"
+              :ui="{ rounded: 'rounded-full' }"
+              autocomplete="off"
+              role="combobox"
+              aria-autocomplete="list"
+              :aria-expanded="placeOpen && placeSearched"
+              @update:model-value="onLocationInput"
+              @keydown="onLocationKeydown"
+              @focus="placeOpen = true"
+              @blur="placeOpen = false"
+            />
+            <ul
+              v-if="placeOpen && placeSearched"
+              class="absolute inset-x-0 top-full z-20 mt-1 overflow-hidden rounded-2xl border border-gray-200 bg-white py-1 shadow-lg dark:border-zinc-700 dark:bg-zinc-800"
+              role="listbox"
+            >
+              <li
+                v-for="(place, i) in placeResults"
+                :key="place.label"
+                role="option"
+                :aria-selected="i === placeActive"
+                class="flex cursor-pointer items-center gap-2 px-4 py-2 text-sm text-gray-700 dark:text-gray-200"
+                :class="i === placeActive ? 'bg-gray-100 dark:bg-zinc-700' : 'hover:bg-gray-50 dark:hover:bg-zinc-700'"
+                @mousedown.prevent="selectPlace(place)"
+              >
+                <UIcon name="i-heroicons-map-pin" class="h-4 w-4 shrink-0 text-gray-400" />
+                <span class="truncate">{{ place.label }}</span>
+              </li>
+              <li v-if="!placeResults.length" class="px-4 py-2 text-sm text-gray-500">
+                {{ $t('contribute.step1.noResults') }}
+              </li>
+            </ul>
+          </div>
           <button
             type="button"
-            class="text-sm font-medium text-[#FB6D6D] underline"
+            class="self-start text-sm font-medium text-gray-500 underline hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"
             @click="emit('pick-location')"
           >
             {{ $t('contribute.step1.dropPin') }}
@@ -388,38 +508,49 @@ function prettyCoord(coord: [number, number]): string {
             <UIcon name="i-heroicons-map-pin" class="h-4 w-4" />
             {{ $t('contribute.step1.pinDropped', { coord: pinPlace || form.location || prettyCoord(form.coordinate) }) }}
           </p>
+          <div class="space-y-1">
+            <label for="contribute-date" class="text-xs font-medium text-gray-500">
+              {{ $t('contribute.step1.dateLabel') }}
+            </label>
+            <UInput
+              id="contribute-date"
+              v-model="form.date"
+              type="date"
+              :ui="{ rounded: 'rounded-full' }"
+            />
+          </div>
         </div>
 
         <!-- Step 2: Describe an example -->
         <div v-else-if="step === 2" class="space-y-4">
           <p class="text-sm font-semibold text-[#F26D6D]">
             {{ $t('contribute.step2.prompt') }}
+            <span class="mt-0.5 block text-xs font-normal text-gray-500">{{ $t('contribute.voiceHint') }}</span>
           </p>
           <UTextarea
             v-model="form.example"
             :rows="5"
-            :placeholder="$t('contribute.descPlaceholder')"
+            :placeholder="$t('contribute.step2.placeholder')"
             :ui="{ rounded: 'rounded-2xl' }"
             class="contribute-textarea"
           />
           <ContributeVoiceRecorder v-model="files.voiceExample" />
-          <ContributeFileUpload v-model="files.example" />
         </div>
 
         <!-- Step 3: Why is this a good example -->
         <div v-else-if="step === 3" class="space-y-4">
           <p class="text-sm font-semibold text-[#F26D6D]">
             {{ $t('contribute.step3.prompt') }}
+            <span class="mt-0.5 block text-xs font-normal text-gray-500">{{ $t('contribute.voiceHint') }}</span>
           </p>
           <UTextarea
             v-model="form.why"
             :rows="5"
-            :placeholder="$t('contribute.descPlaceholder')"
+            :placeholder="$t('contribute.step3.placeholder')"
             :ui="{ rounded: 'rounded-2xl' }"
             class="contribute-textarea"
           />
           <ContributeVoiceRecorder v-model="files.voiceWhy" />
-          <ContributeFileUpload v-model="files.why" />
         </div>
 
         <!-- Step 4: Illustrative media -->
@@ -430,37 +561,10 @@ function prettyCoord(coord: [number, number]): string {
           <ContributeFileUpload v-model="files.media" />
         </div>
 
-        <!-- Step 5: Date -->
+        <!-- Step 5: Personal information -->
         <div v-else-if="step === 5" class="space-y-4">
           <p class="text-sm font-semibold text-[#F26D6D]">
             {{ $t('contribute.step5.prompt') }}
-          </p>
-          <UInput
-            v-model="form.date"
-            type="date"
-            :ui="{ rounded: 'rounded-full' }"
-          />
-        </div>
-
-        <!-- Step 6: Additional info -->
-        <div v-else-if="step === 6" class="space-y-4">
-          <p class="text-sm font-semibold text-[#F26D6D]">
-            {{ $t('contribute.step6.prompt') }}
-          </p>
-          <UTextarea
-            v-model="form.additionalInfo"
-            :rows="5"
-            :placeholder="$t('contribute.descPlaceholder')"
-            :ui="{ rounded: 'rounded-2xl' }"
-            class="contribute-textarea"
-          />
-          <ContributeFileUpload v-model="files.additional" />
-        </div>
-
-        <!-- Step 7: Personal information -->
-        <div v-else-if="step === 7" class="space-y-4">
-          <p class="text-sm font-semibold text-[#F26D6D]">
-            {{ $t('contribute.step7.prompt') }}
           </p>
           <div class="space-y-2">
             <label class="flex items-center gap-2 text-sm text-gray-700">
@@ -470,7 +574,7 @@ function prettyCoord(coord: [number, number]): string {
                 :value="true"
                 class="accent-[#FB6D6D]"
               >
-              {{ $t('contribute.step7.yes') }}
+              {{ $t('contribute.step5.yes') }}
             </label>
             <label class="flex items-center gap-2 text-sm text-gray-700">
               <input
@@ -479,34 +583,34 @@ function prettyCoord(coord: [number, number]): string {
                 :value="false"
                 class="accent-[#FB6D6D]"
               >
-              {{ $t('contribute.step7.no') }}
+              {{ $t('contribute.step5.no') }}
             </label>
           </div>
 
           <p class="pt-2 text-sm font-semibold text-[#F26D6D]">
-            {{ $t('contribute.step7.ifYes') }}
+            {{ $t('contribute.step5.ifYes') }}
           </p>
           <div class="space-y-3">
             <div class="flex items-center gap-3">
-              <label class="w-28 flex-shrink-0 text-sm text-[#F26D6D]">{{ $t('contribute.step7.fullName') }}</label>
+              <label class="w-28 flex-shrink-0 text-sm text-[#F26D6D]">{{ $t('contribute.step5.fullName') }}</label>
               <UInput v-model="form.fullName" class="flex-1" :ui="{ rounded: 'rounded-full' }" />
             </div>
             <div class="flex items-center gap-3">
-              <label class="w-28 flex-shrink-0 text-sm text-[#F26D6D]">{{ $t('contribute.step7.email') }}</label>
+              <label class="w-28 flex-shrink-0 text-sm text-[#F26D6D]">{{ $t('contribute.step5.email') }}</label>
               <UInput v-model="form.email" type="email" class="flex-1" :ui="{ rounded: 'rounded-full' }" />
             </div>
             <div class="flex items-center gap-3">
-              <label class="w-28 flex-shrink-0 text-sm text-[#F26D6D]">{{ $t('contribute.step7.country') }}</label>
+              <label class="w-28 flex-shrink-0 text-sm text-[#F26D6D]">{{ $t('contribute.step5.country') }}</label>
               <UInput v-model="form.country" class="flex-1" :ui="{ rounded: 'rounded-full' }" />
             </div>
             <div class="flex items-center gap-3">
-              <label class="w-28 flex-shrink-0 text-sm text-[#F26D6D]">{{ $t('contribute.step7.city') }}</label>
+              <label class="w-28 flex-shrink-0 text-sm text-[#F26D6D]">{{ $t('contribute.step5.city') }}</label>
               <UInput v-model="form.city" class="flex-1" :ui="{ rounded: 'rounded-full' }" />
             </div>
           </div>
 
           <p class="pt-1 text-xs leading-snug text-gray-500">
-            {{ $t('contribute.step7.privacy') }}
+            {{ $t('contribute.step5.privacy') }}
           </p>
         </div>
       </div>

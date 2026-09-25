@@ -201,7 +201,7 @@
     "errAction": "A ação falhou. Tente novamente."
   },
   "contribute": {
-    "title": "Participe da Nossa Pesquisa",
+    "title": "Compartilhe um projeto",
     "thankYou": "Obrigado",
     "received": "Sua contribuição foi recebida e será analisada pela nossa equipe.",
     "inTouch": "Entraremos em contato com você em breve!",
@@ -210,31 +210,29 @@
     "back": "Voltar",
     "next": "Avançar",
     "submit": "Enviar",
-    "descPlaceholder": "Digite sua descrição aqui",
+    "voiceHint": "(Você pode digitar ou gravar uma nota de voz)",
     "step1": {
-      "prompt": "Quer adicionar uma criação? Onde esse evento aconteceu?",
+      "prompt": "Qual é a criação? Onde ela acontece?",
       "placeholder": "Digite o local aqui ou toque para marcar no mapa",
       "dropPin": "Toque para marcar um ponto no mapa",
       "pinDropped": "Ponto marcado ({coord})",
       "confirmPinPrompt": "Aqui está o ponto marcado — o local está correto?",
-      "movePin": "Não está certo? Toque para escolher outro local"
+      "movePin": "Não está certo? Toque para escolher outro local",
+      "dateLabel": "Quando esse evento aconteceu?",
+      "noResults": "Nenhum local encontrado"
     },
     "step2": {
-      "prompt": "Descreva brevemente um exemplo de Criatividade Móvel em Rede abaixo:"
+      "prompt": "Descreva brevemente o seu exemplo de Criatividade Móvel em Rede:",
+      "placeholder": "O que faz…\nComo funciona…\nQuem usa…\nQuando funciona…"
     },
     "step3": {
-      "prompt": "Por que você acha que este é um bom exemplo de Criatividade Móvel em Rede?"
+      "prompt": "Por que este é um bom exemplo de Criatividade Móvel em Rede?",
+      "placeholder": "Isso resolve um problema? Qual problema…\nÉ uma solução mais barata? Por que é mais barata…\nÉ algo que ninguém mais está fazendo?\nIsso une a comunidade?\nOutros motivos…"
     },
     "step4": {
       "prompt": "Você tem imagens ou vídeos para ilustrar o exemplo acima? Se sim, envie-os aqui:"
     },
     "step5": {
-      "prompt": "Quando esse evento aconteceu?"
-    },
-    "step6": {
-      "prompt": "Há alguma informação adicional que você gostaria de compartilhar sobre sua contribuição? Insira-a abaixo."
-    },
-    "step7": {
       "prompt": "Você deseja vincular suas informações pessoais à sua contribuição?",
       "yes": "Sim, quero que meu nome seja identificado na minha contribuição",
       "no": "Não, quero enviar anonimamente",
