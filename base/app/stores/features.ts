@@ -21,9 +21,14 @@ export const useFeatureStore = defineStore('features', () => {
    *
    * @param feature - The feature object to add.
    */
+  // Monotonic id source. Date.now() alone collides when several features are
+  // added within the same millisecond (e.g. loading user solutions in a loop),
+  // producing duplicate v-for keys; clamp to strictly increasing.
+  let lastId = 0
   function addFeature(feature: Omit<Feature, 'id'>): void {
+    lastId = Math.max(Date.now(), lastId + 1)
     features.push({
-      id: Date.now(),
+      id: lastId,
       ...feature,
     })
   }

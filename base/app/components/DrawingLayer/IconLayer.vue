@@ -16,10 +16,6 @@ const props = defineProps({
     type: Boolean,
     default: undefined,
   },
-  enableClick: {
-    type: Boolean,
-    default: false,
-  },
   isMapPage: {
     type: Boolean,
     default: false,
@@ -126,7 +122,7 @@ function handleCommentIconClick(feature, event) {
   <template v-for="feature in features" :key="feature.id">
     <ol-vector-layer>
       <ol-source-vector>
-        <ol-feature>
+        <ol-feature :properties="{ id: feature.id, iconName: feature.iconName, sourceFeature: feature }">
           <ol-geom-point :coordinates="feature.coordinates" />
           <ol-style>
             <ol-style-icon

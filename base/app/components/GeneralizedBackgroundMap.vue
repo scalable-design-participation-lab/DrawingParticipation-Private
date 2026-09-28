@@ -1,16 +1,17 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue'
+import type Feature from 'ol/Feature'
 import { useMapStore } from '../stores/map'
 import { useRuntimeConfig } from '#app'
 
 const props = defineProps({
   center: {
     type: Array,
-    default: () => [3172858.2941718884, 6317486.347640147],
+    default: () => [-7912281, 5214952],
   },
   zoom: {
     type: Number,
-    default: 12.83,
+    default: 4,
   },
   projection: {
     type: String,
@@ -34,11 +35,24 @@ const props = defineProps({
   },
   minZoom: {
     type: Number,
-    default: 10,
+    default: 2,
   },
   mapHeight: {
+    // `dvh` (dynamic viewport height) tracks the *visible* viewport on mobile,
+    // so the map no longer sits behind the address bar or leaves a gap when the
+    // bar collapses. ponytail: dvh is ~97% supported and universal on the
+    // actively-updated mobile browsers this map targets; pre-2022 engines
+    // without dvh drop this declaration (map collapses) — pass an explicit
+    // `mapHeight="100vh"` if you must support them.
     type: String,
-    default: '100vh',
+    default: '100dvh',
+  },
+  // Constrain panning to a single world so the view can't drift into the empty,
+  // repeated copies of the map (where the HTML marker overlays don't render).
+  // Defaults to the EPSG:3857 world extent.
+  extent: {
+    type: Array as PropType<number[]>,
+    default: () => [-20037508.342789244, -20037508.342789244, 20037508.342789244, 20037508.342789244],
   },
   showZoomControl: {
     type: Boolean,
@@ -54,7 +68,7 @@ const props = defineProps({
   },
 })
 
-const emit = defineEmits(['map-click'])
+const emit = defineEmits(['map-click', 'toggle-icon-details'])
 
 const config = useRuntimeConfig()
 const { mapType } = storeToRefs(useMapStore())
@@ -82,7 +96,56 @@ const mapboxUrl = computed(() => {
 
 const mapboxAttribution = '© <a href="https://www.mapbox.com/about/maps/">Mapbox</a> © <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
 
-function handleMapClick(event) {
+function handleMapClick(event: any) {
+  const olFeature = event.map.forEachFeatureAtPixel(
+    event.pixel,
+    (f: Feature) => f,
+  ) as Feature | undefined
+
+  if (olFeature) {
+    const iconName = olFeature.get('iconName')
+    const sourceFeature = olFeature.get('sourceFeature') // your original store feature
+    console.log('clicked icon name:', iconName)
+
+    const coordinate = olFeature.getGeometry().getCoordinates()
+
+    let markerPosition: { x: number, y: number } | undefined
+
+    // Preferred: convert map coordinate to viewport pixel using OpenLayers map + container bounds.
+    if (Array.isArray(coordinate) && coordinate.length === 2 && event?.map?.getPixelFromCoordinate) {
+      const mapPixel = event.map.getPixelFromCoordinate(coordinate)
+      const targetEl = event.map.getTargetElement?.()
+      const rect = targetEl?.getBoundingClientRect?.()
+      if (Array.isArray(mapPixel) && mapPixel.length === 2 && rect) {
+        markerPosition = {
+          x: rect.left + mapPixel[0],
+          y: rect.top + mapPixel[1],
+        }
+      }
+    }
+
+    // Fallback: DOM click viewport coordinates.
+    if (!markerPosition) {
+      const clickX = event?.originalEvent?.clientX
+      const clickY = event?.originalEvent?.clientY
+      if (Number.isFinite(clickX) && Number.isFinite(clickY)) {
+        markerPosition = { x: clickX, y: clickY }
+      }
+    }
+
+    // Last fallback: map pixel relative to viewport origin.
+    if (!markerPosition && Array.isArray(event?.pixel) && event.pixel.length === 2) {
+      markerPosition = { x: event.pixel[0], y: event.pixel[1] }
+    }
+
+    emit('toggle-icon-details', {
+      feature: sourceFeature,
+      markerPosition,
+    })
+    console.log(coordinate)
+    return
+  }
+
   emit('map-click', event)
 }
 
@@ -90,12 +153,45 @@ function handleMapClick(event) {
 defineExpose({
   mapInstance,
 })
+
+// Re-measure the map whenever the visible viewport changes. On mobile the map
+// is sized once on load, so without this it stays cropped/shifted when the
+// address bar collapses, the device rotates, or the keyboard opens. rAF
+// coalesces bursts of resize events into a single updateSize call.
+let resizeFrame = 0
+function scheduleUpdateSize() {
+  if (resizeFrame)
+    return
+  resizeFrame = requestAnimationFrame(() => {
+    resizeFrame = 0
+    mapInstance.value?.updateSize()
+  })
+}
+
 onMounted(() => {
   nextTick(() => {
     if (mapRef.value) {
       mapInstance.value = mapRef.value.map
+      // Force map to update its size after mounting
+      setTimeout(() => {
+        if (mapInstance.value) {
+          mapInstance.value.updateSize()
+        }
+      }, 100)
     }
   })
+
+  window.addEventListener('resize', scheduleUpdateSize)
+  window.addEventListener('orientationchange', scheduleUpdateSize)
+  window.visualViewport?.addEventListener('resize', scheduleUpdateSize)
+})
+
+onBeforeUnmount(() => {
+  if (resizeFrame)
+    cancelAnimationFrame(resizeFrame)
+  window.removeEventListener('resize', scheduleUpdateSize)
+  window.removeEventListener('orientationchange', scheduleUpdateSize)
+  window.visualViewport?.removeEventListener('resize', scheduleUpdateSize)
 })
 </script>
 
@@ -127,15 +223,21 @@ onMounted(() => {
         :bearing="bearing"
         :max-zoom="maxZoom"
         :min-zoom="minZoom"
+        :extent="extent"
       />
 
-      <ol-tile-layer>
+      <!-- preload=2 keeps a couple of lower-zoom levels ready so panning/zooming
+           shows low-res tiles instead of blank, without the main-thread jank of
+           preloading every level. A larger cacheSize keeps recently-seen tiles. -->
+      <ol-tile-layer :preload="2">
         <ol-source-xyz
           :url="mapboxUrl"
           :attributions="mapboxAttribution"
           :max-zoom="19"
           :tile-size="512"
           :tile-pixel-ratio="2"
+          :cache-size="2048"
+          :transition="0"
         />
       </ol-tile-layer>
 
