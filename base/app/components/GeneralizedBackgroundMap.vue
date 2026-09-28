@@ -38,8 +38,21 @@ const props = defineProps({
     default: 2,
   },
   mapHeight: {
+    // `dvh` (dynamic viewport height) tracks the *visible* viewport on mobile,
+    // so the map no longer sits behind the address bar or leaves a gap when the
+    // bar collapses. ponytail: dvh is ~97% supported and universal on the
+    // actively-updated mobile browsers this map targets; pre-2022 engines
+    // without dvh drop this declaration (map collapses) — pass an explicit
+    // `mapHeight="100vh"` if you must support them.
     type: String,
-    default: '100vh',
+    default: '100dvh',
+  },
+  // Constrain panning to a single world so the view can't drift into the empty,
+  // repeated copies of the map (where the HTML marker overlays don't render).
+  // Defaults to the EPSG:3857 world extent.
+  extent: {
+    type: Array as PropType<number[]>,
+    default: () => [-20037508.342789244, -20037508.342789244, 20037508.342789244, 20037508.342789244],
   },
   showZoomControl: {
     type: Boolean,
@@ -140,6 +153,21 @@ function handleMapClick(event: any) {
 defineExpose({
   mapInstance,
 })
+
+// Re-measure the map whenever the visible viewport changes. On mobile the map
+// is sized once on load, so without this it stays cropped/shifted when the
+// address bar collapses, the device rotates, or the keyboard opens. rAF
+// coalesces bursts of resize events into a single updateSize call.
+let resizeFrame = 0
+function scheduleUpdateSize() {
+  if (resizeFrame)
+    return
+  resizeFrame = requestAnimationFrame(() => {
+    resizeFrame = 0
+    mapInstance.value?.updateSize()
+  })
+}
+
 onMounted(() => {
   nextTick(() => {
     if (mapRef.value) {
@@ -152,6 +180,18 @@ onMounted(() => {
       }, 100)
     }
   })
+
+  window.addEventListener('resize', scheduleUpdateSize)
+  window.addEventListener('orientationchange', scheduleUpdateSize)
+  window.visualViewport?.addEventListener('resize', scheduleUpdateSize)
+})
+
+onBeforeUnmount(() => {
+  if (resizeFrame)
+    cancelAnimationFrame(resizeFrame)
+  window.removeEventListener('resize', scheduleUpdateSize)
+  window.removeEventListener('orientationchange', scheduleUpdateSize)
+  window.visualViewport?.removeEventListener('resize', scheduleUpdateSize)
 })
 </script>
 
@@ -183,6 +223,7 @@ onMounted(() => {
         :bearing="bearing"
         :max-zoom="maxZoom"
         :min-zoom="minZoom"
+        :extent="extent"
       />
 
       <!-- preload=2 keeps a couple of lower-zoom levels ready so panning/zooming

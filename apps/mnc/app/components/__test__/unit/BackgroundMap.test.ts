@@ -9,6 +9,12 @@ vi.mock('nuxt/app', () => ({
   useRoute: vi.fn(() => ({ name: 'result' })),
 }))
 
+// Nuxt auto-imports this composable in the app; vitest has no auto-imports,
+// so provide a pass-through (returns the untranslated fallback).
+vi.stubGlobal('useLocalizedEntry', () => ({
+  lf: (_p: unknown, _f: string, fallback = '') => fallback,
+}))
+
 // Reactive mock of the app filter store, the single source of truth for the
 // current selection (selectFeature / clearSelection / selectedFeature).
 const mockFilterStore: any = reactive({ selectedFeature: null, visibleTags: new Set<string>() })

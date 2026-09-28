@@ -30,8 +30,27 @@ export default defineNuxtConfig({
     '@pinia/nuxt',
     '@nuxt/ui',
     'nuxt-vuefire',
-    'nuxt-color-picker'
+    'nuxt-color-picker',
+    '@nuxtjs/i18n'
   ],
+
+  // Automatic language pick: detects the browser/OS language on first visit,
+  // then remembers the user's choice from the header switcher. `no_prefix`
+  // keeps the URLs clean (this is a single-page map app).
+  i18n: {
+    strategy: 'no_prefix',
+    defaultLocale: 'en',
+    locales: [
+      { code: 'en', language: 'en-US', name: 'English', file: 'en.json' },
+      { code: 'pt', language: 'pt-BR', name: 'Português', file: 'pt.json' },
+      { code: 'es', language: 'es-ES', name: 'Español', file: 'es.json' },
+    ],
+    detectBrowserLanguage: {
+      useCookie: true,
+      cookieKey: 'mnc_locale',
+      redirectOn: 'root',
+    },
+  },
 
   vuefire: {
     config: {
@@ -42,6 +61,15 @@ export default defineNuxtConfig({
       messagingSenderId: process.env.FIREBASE_MESSAGING_SENDER_ID,
       appId: process.env.FIREBASE_APP_ID,
       measurementId: process.env.FIREBASE_MEASUREMENT_ID,
+    },
+    // Opt-in local testing: set VUEFIRE_EMULATORS=true to point the app at the
+    // Firebase Emulator Suite instead of the cloud project. Off by default, so a
+    // normal `yarn dev` still uses the real project.
+    emulators: {
+      enabled: process.env.VUEFIRE_EMULATORS === 'true',
+      // Suppress the Firebase Auth SDK's fixed "Running in emulator mode" banner
+      // (it overlaps the mobile bottom nav). Emulator-only; production is unaffected.
+      auth: { options: { disableWarnings: true } },
     },
   },
 

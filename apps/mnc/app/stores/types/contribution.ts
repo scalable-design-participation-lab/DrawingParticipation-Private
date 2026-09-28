@@ -16,8 +16,8 @@ export interface MediaItem {
   size: number
   /** MIME type, e.g. "image/png". */
   contentType: string
-  /** High-level kind. Only "image" is produced today; "video" is planned. */
-  kind: 'image' | 'video'
+  /** High-level kind, derived from the MIME type. */
+  kind: 'image' | 'audio' | 'video'
 }
 
 /**
@@ -41,4 +41,6 @@ export interface Contribution {
   userId: string
   /** ISO timestamp of when the contribution was created (from serverTimestamp). */
   createdAt: string
+  /** Whether a moderator has approved this for public display. */
+  approved?: boolean
 }

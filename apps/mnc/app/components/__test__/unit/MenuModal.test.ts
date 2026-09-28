@@ -10,6 +10,13 @@ vi.mock('nuxt/app', () => ({
   })),
 }));
 
+// The component reads its labels via the auto-imported useI18n; vitest has no
+// Nuxt auto-imports, so provide it as a global returning the English strings.
+vi.stubGlobal('useI18n', () => ({
+  t: (key: string) =>
+    ({ 'menu.home': 'Home', 'menu.about': 'About Us', 'menu.support': 'Support' } as Record<string, string>)[key] ?? key,
+}));
+
 // Mocking the Vue components
 const UModal = {
   name: "UModel",
